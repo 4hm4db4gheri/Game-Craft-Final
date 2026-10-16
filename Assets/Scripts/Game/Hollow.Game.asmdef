@@ -6,7 +6,8 @@
         "Hollow.Data",
         "Hollow.Sim",
         "Hollow.App",
-        "Hollow.Presentation"
+        "Hollow.Presentation",
+        "Hollow.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -4,6 +4,7 @@ using Hollow.Core;
 using Hollow.Data;
 using Hollow.Presentation;
 using Hollow.Sim;
+using Hollow.UI;
 using UnityEngine;
 
 namespace Hollow.Game
@@ -19,6 +20,10 @@ namespace Hollow.Game
         [SerializeField] WorldPresenter presenter;
         [SerializeField] CameraRig cameraRig;
         [SerializeField] ReticleView reticle;
+        [SerializeField] UIRoot ui;
+
+        HudView hud;
+        XpCardScreen xpScreen;
 
         GameApp app;
         SimDriver driver;
@@ -36,6 +41,11 @@ namespace Hollow.Game
             Sim = new Simulation(Simulation.NewWorld(app.Balance.Live, layout, seed));
             app.Balance.Applied += OnBalanceApplied;
             arena.ShowPhase(Sim.World.Phase);
+
+            hud = ui.gameObject.AddComponent<HudView>();
+            hud.Init(ui);
+            xpScreen = ui.gameObject.AddComponent<XpCardScreen>();
+            xpScreen.Init(ui);
 
             driver = new SimDriver(app.States, StepOnce);
             app.States.Transition(GameState.Playing);
@@ -61,7 +71,31 @@ namespace Hollow.Game
             presenter.Sync(w, alpha);
             cameraRig.Sync(w, alpha);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
+            hud.Sync(w);
             w.Events.Clear();
+
+            if (app.States.Current == GameState.Playing && w.Progress.Pending != null) OpenXpChoice();
+        }
+    
+        // ---------------------------------------------------------------- XP choice (world fully paused)
+
+        void OpenXpChoice()
+        {
+            app.States.Transition(GameState.XPChoice);
+            xpScreen.Show(Sim.World, Sim.World.Progress.Pending, OnSkillChosen);
+        }
+
+        void OnSkillChosen(Hollow.Data.SkillId id)
+        {
+            var w = Sim.World;
+            if (app.States.Current != GameState.XPChoice || !XpSystem.Choose(w, id)) return;
+            if (w.Progress.Pending != null)
+            {
+                xpScreen.Show(w, w.Progress.Pending, OnSkillChosen);
+                return;
+            }
+            xpScreen.Hide();
+            app.States.Transition(GameState.Playing);
         }
     }
 }

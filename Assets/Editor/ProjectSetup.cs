@@ -120,11 +120,32 @@ namespace Hollow.EditorTools
             Wire(session, ("worldCamera", cam), ("arena", arena), ("presenter", presenter),
                 ("cameraRig", rig), ("reticle", reticle.GetComponent<ReticleView>()));
 
+            var uiRoot = new GameObject("UI").AddComponent<Hollow.UI.UIRoot>();
+            Wire(uiRoot, ("theme", LoadOrCreateTheme()));
+            Wire(session, ("ui", uiRoot));
+
             var sandbox = new GameObject("DevSandboxSpawner (temporary)").AddComponent<DevSandboxSpawner>();
             Wire(sandbox, ("session", session));
 
             ArenaTools.Bake(arena);
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.Game));
+        }
+
+        const string ThemePath = "Assets/Art/Placeholders/UITheme.asset";
+        const string DefaultFontPath = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset";
+
+        public static Hollow.UI.UITheme LoadOrCreateTheme()
+        {
+            var theme = AssetDatabase.LoadAssetAtPath<Hollow.UI.UITheme>(ThemePath);
+            if (theme == null)
+            {
+                theme = ScriptableObject.CreateInstance<Hollow.UI.UITheme>();
+                AssetDatabase.CreateAsset(theme, ThemePath);
+            }
+            if (theme.Font == null) theme.Font = AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>(DefaultFontPath);
+            EditorUtility.SetDirty(theme);
+            AssetDatabase.SaveAssets();
+            return theme;
         }
 
         static void Wire(Object target, params (string field, Object value)[] refs)

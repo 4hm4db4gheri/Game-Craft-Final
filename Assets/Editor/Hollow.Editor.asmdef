@@ -9,7 +9,9 @@
         "Hollow.Sim",
         "Hollow.Presentation",
         "Hollow.Game",
-        "Unity.Cinemachine"
+        "Unity.Cinemachine",
+        "Hollow.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
