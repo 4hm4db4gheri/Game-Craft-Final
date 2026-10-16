@@ -43,8 +43,8 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00 (پایه)، T01 (لایه‌ی داده؛ همه‌ی اعداد GDD با تست بازتولید می‌شوند)، T01b (پنل بالانس).
-- بعدی: T02 بازیکن (حرکت، نشانه‌گیری، dash) روی شبیه‌سازی `Hollow.Sim`.
+- انجام‌شده: T00، T01، T01b، T02، T03، T04، T06 (A1/A2)، T08، T09، T11، T10 (فقط شبیه‌سازی). ۲۹۲ تست پاس.
+- بعدی: وصل کردن WaveSystem به GameSession (شروع موج ۱ + آموزش، حذف DevSandboxSpawner، HUD موج و شمارش معکوس، Enter)، سپس T17 (ذخیره)، T15 (منوها/pause)، T07، T12، T13، T14، T16a، T05، T19.
 - build ویندوز خالی موفق بود (`Builds/Windows/Hollow.exe`، ۱۳۳ مگابایت به خاطر پکیج‌های AI).
 
 ## کارهای باز / ایده‌ها
@@ -85,3 +85,7 @@
 - T00: state machine، دو ساعت (sim/active)، InputRouter، صحنه‌ها، BuildTool، حذف Welcome و SampleScene. build ویندوز موفق.
 - T01: BalanceProfile + Baseline.json از GDD، calculator و validator، CSV سطح سلاح‌ها. T01b: پنل بالانس Editor + F9.
 - commitها: `35e6893` (T00)، `c9ee16c` (T01).
+
+### 2026-10-16 — T02 تا T11 و شبیه‌سازی T10
+- شبیه‌سازی C# خالص (`Assets/Scripts/Sim`)، نمایش pooled (`Presentation`)، UI با کد (`Assets/Scripts/UI`)، صحنه‌ی Game با `Hollow > Setup > Rebuild Game Scene` ساخته می‌شود.
+- commitها: `e5de9be` تا آخرین commit موج‌ها.
