@@ -76,6 +76,7 @@ namespace Hollow.EditorTools
             var playerPrefab = PrefabBuilder.BuildPlayer();
             var reticlePrefab = PrefabBuilder.BuildReticle();
             var shopPrefab = PrefabBuilder.BuildShop();
+            var catalog = EnemyPrefabBuilder.BuildAll();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var cam = CreateCamera("WorldCamera");
@@ -110,9 +111,17 @@ namespace Hollow.EditorTools
             var rig = new GameObject("CameraRig").AddComponent<CameraRig>();
             Wire(rig, ("followTarget", target), ("virtualCamera", vcam), ("composer", composer));
 
+            // Reload by path: creating the scene can unload assets made earlier in this call.
+            catalog = AssetDatabase.LoadAssetAtPath<VisualCatalog>(EnemyPrefabBuilder.CatalogPath);
+            var presenter = new GameObject("WorldPresenter").AddComponent<WorldPresenter>();
+            Wire(presenter, ("catalog", catalog), ("playerView", player.GetComponent<PlayerView>()));
+
             var session = new GameObject("GameSession").AddComponent<GameSession>();
-            Wire(session, ("worldCamera", cam), ("arena", arena), ("playerView", player.GetComponent<PlayerView>()),
+            Wire(session, ("worldCamera", cam), ("arena", arena), ("presenter", presenter),
                 ("cameraRig", rig), ("reticle", reticle.GetComponent<ReticleView>()));
+
+            var sandbox = new GameObject("DevSandboxSpawner (temporary)").AddComponent<DevSandboxSpawner>();
+            Wire(sandbox, ("session", session));
 
             ArenaTools.Bake(arena);
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.Game));

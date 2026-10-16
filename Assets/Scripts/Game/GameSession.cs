@@ -16,7 +16,7 @@ namespace Hollow.Game
     {
         [SerializeField] Camera worldCamera;
         [SerializeField] ArenaAuthoring arena;
-        [SerializeField] PlayerView playerView;
+        [SerializeField] WorldPresenter presenter;
         [SerializeField] CameraRig cameraRig;
         [SerializeField] ReticleView reticle;
 
@@ -58,7 +58,7 @@ namespace Hollow.Game
 
             var w = Sim.World;
             float alpha = driver.InterpolationAlpha;
-            playerView.Sync(w, alpha);
+            presenter.Sync(w, alpha);
             cameraRig.Sync(w, alpha);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
             w.Events.Clear();

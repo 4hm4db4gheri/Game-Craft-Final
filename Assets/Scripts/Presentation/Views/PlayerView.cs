@@ -26,8 +26,19 @@ namespace Hollow.Presentation
         [SerializeField] Color hurtColor = new(1f, 0.35f, 0.35f);
         [SerializeField] Color dashColor = new(0.5f, 0.9f, 1f, 0.6f);
 
-        public void Sync(World w, float alpha)
+        WeaponVisual shownWeapon;
+
+        public void Sync(World w, float alpha, WeaponVisual weapon)
         {
+            if (weapon != null && weapon != shownWeapon && weaponRenderer != null)
+            {
+                shownWeapon = weapon;
+                if (weapon.Sprite != null) weaponRenderer.sprite = weapon.Sprite;
+                weaponRenderer.color = weapon.Color;
+                var size = weaponRenderer.sprite.bounds.size;
+                weaponRenderer.transform.localScale = new Vector3(weapon.Size.x / size.x, weapon.Size.y / size.y, 1);
+                weaponRenderer.transform.localPosition = new Vector3(0.2f + weapon.Size.x * 0.5f, 0, 0);
+            }
             var p = w.Player;
             Vector2 pos = Vector2.Lerp(p.PrevPosition, p.Position, alpha);
             transform.position = new Vector3(pos.x, pos.y, 0);
@@ -40,7 +51,9 @@ namespace Hollow.Presentation
             Vector2 aimDir = p.Aim - (pos + Vector2.up * floatHeight);
             float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
             weaponPivot.localPosition = body.localPosition;
-            weaponPivot.localRotation = Quaternion.Euler(0, 0, angle);
+            // Reloading tilts the weapon down; purely visual, never delays input (§4).
+            float reloadTilt = p.Loadout.Reloading ? -35f * Mathf.Sign(aimDir.x == 0 ? 1 : aimDir.x) : 0f;
+            weaponPivot.localRotation = Quaternion.Euler(0, 0, angle + reloadTilt);
             if (weaponRenderer != null) weaponRenderer.flipY = aimDir.x < 0;
 
             bool hurt = w.Clock.Tick < p.InvulnerableUntilTick && !p.Dashing;

@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb41911ff1f6c994b868ed7d85dc53c3, type: 3}
+  m_Name: VisualCatalog
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.VisualCatalog
+  Enemies:
+  - Id: 0
+    Prefab: {fileID: 6758296160111883201, guid: f3c947ce6e090044c97dbcdacffd8066, type: 3}
+  - Id: 1
+    Prefab: {fileID: 4083147734094707982, guid: ed5df407f02334b45800ca671177bae6, type: 3}
+  - Id: 2
+    Prefab: {fileID: 1742648641425159656, guid: fc6f853efb543e341b0c62703a4488b5, type: 3}
+  - Id: 3
+    Prefab: {fileID: 7024374015446258753, guid: 38640789031efc84aae025e3a01927be, type: 3}
+  - Id: 4
+    Prefab: {fileID: 8789993883584365258, guid: e6d334cca8b85ed49b2c3ba9423b594e, type: 3}
+  - Id: 5
+    Prefab: {fileID: 1027631473085032211, guid: 491db22f729e35845bbb129dc2fa173a, type: 3}
+  - Id: 6
+    Prefab: {fileID: 8155796043577434880, guid: 0105ef76c79ba9547b3d912cdb4a0da4, type: 3}
+  - Id: 21
+    Prefab: {fileID: 6156565652058433250, guid: 0a448c317429768419011d0d6478fd4d, type: 3}
+  - Id: 7
+    Prefab: {fileID: 3740188648719642030, guid: f1fc68dd68eb90f4cbd6c24ff61b66ef, type: 3}
+  - Id: 8
+    Prefab: {fileID: 2685680373186416865, guid: 1d6b92f10319aba4ab642ff5449106d3, type: 3}
+  - Id: 9
+    Prefab: {fileID: 4892078171260089407, guid: ebf92faeab5de6d4fa7fdd654bc5eb3a, type: 3}
+  - Id: 10
+    Prefab: {fileID: 6904627021519857050, guid: 81456c320b632d7408befa07995a5dc1, type: 3}
+  - Id: 11
+    Prefab: {fileID: 7643698165307267705, guid: 2e064dd83f6b014419949c61aca5686c, type: 3}
+  - Id: 12
+    Prefab: {fileID: 7173988868480405686, guid: 1af258c89f270954cac41f111ce000b9, type: 3}
+  - Id: 13
+    Prefab: {fileID: 7458970015375664760, guid: 092540b5b3ce74e42a9df8711978f7f2, type: 3}
+  - Id: 22
+    Prefab: {fileID: 4834899349229911570, guid: 81f4acd61feff84458826b56c58935c6, type: 3}
+  - Id: 14
+    Prefab: {fileID: 9202185614255801899, guid: a2b175f584b93fb499cf680e3f6c2ce9, type: 3}
+  - Id: 15
+    Prefab: {fileID: 7015891045525992273, guid: 6f60d413d6354734591c0440073270ec, type: 3}
+  - Id: 16
+    Prefab: {fileID: 8620302646765263040, guid: 38189050861a5e749ab38946f135965c, type: 3}
+  - Id: 17
+    Prefab: {fileID: 4628434677969112997, guid: a62fa895e2f0d824d938ffd90d61afb5, type: 3}
+  - Id: 18
+    Prefab: {fileID: 73410765154889255, guid: c4223b57de12c6541954613da6292db1, type: 3}
+  - Id: 19
+    Prefab: {fileID: 1098356610650088827, guid: d49447d928037194fbc224ab0384bdf2, type: 3}
+  - Id: 20
+    Prefab: {fileID: 2164912879960410425, guid: f9c1ccfac3945ca4b8b21da2229d80a6, type: 3}
+  - Id: 23
+    Prefab: {fileID: 5763237062379922141, guid: 92a3c021b08fa5149a081deb3764976b, type: 3}
+  Weapons:
+  - Id: 0
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.85, g: 0.87, b: 0.9, a: 1}
+    Size: {x: 0.32, y: 0.1}
+    ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
+  - Id: 1
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.55, g: 0.6, b: 0.65, a: 1}
+    Size: {x: 0.45, y: 0.11}
+    ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
+  - Id: 2
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.5, g: 0.38, b: 0.28, a: 1}
+    Size: {x: 0.6, y: 0.13}
+    ProjectileColor: {r: 1, g: 0.95, b: 0.8, a: 1}
+  - Id: 3
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.3, g: 0.3, b: 0.35, a: 1}
+    Size: {x: 0.55, y: 0.08}
+    ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
+  - Id: 4
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.45, g: 0.45, b: 0.4, a: 1}
+    Size: {x: 0.65, y: 0.13}
+    ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
+  - Id: 5
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.35, g: 0.35, b: 0.4, a: 1}
+    Size: {x: 0.6, y: 0.15}
+    ProjectileColor: {r: 1, g: 0.95, b: 0.8, a: 1}
+  - Id: 6
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.5, g: 0.45, b: 0.4, a: 1}
+    Size: {x: 0.65, y: 0.2}
+    ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
+  - Id: 7
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.9, g: 0.95, b: 1, a: 1}
+    Size: {x: 0.7, y: 0.12}
+    ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
+  - Id: 8
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.9, g: 0.95, b: 1, a: 1}
+    Size: {x: 0.65, y: 0.16}
+    ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
+  - Id: 9
+    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
+    Color: {r: 0.55, g: 1, b: 1, a: 1}
+    Size: {x: 0.7, y: 0.08}
+    ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
+  PlayerProjectile: {fileID: 4609238632887027920, guid: f959378585e1bb94081e376a6b1ebb79, type: 3}
+  EnemyProjectile: {fileID: 5933724752300405815, guid: 425f6cc1a891f5e4eb5ed5e21cf6aed9, type: 3}
+  Coin: {fileID: 9064103742896683663, guid: de5eee30b37e4214394eb4958f035707, type: 3}
+  Arc: {fileID: 5821435725783849061, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+  Telegraph: {r: 1, g: 0.29, b: 0.11, a: 1}
+  HitFlash: {r: 1, g: 1, b: 1, a: 1}
