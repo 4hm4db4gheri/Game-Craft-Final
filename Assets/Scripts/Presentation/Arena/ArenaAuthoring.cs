@@ -6,16 +6,19 @@ using UnityEngine.Tilemaps;
 namespace Hollow.Presentation
 {
     /// <summary>
-    /// Arena authoring in the Game scene: the designer paints Tilemaps and moves the markers; the Editor bakes
+    /// Arena authoring in the Game scene: the designer paints Tilemaps, moves props and markers; the Editor bakes
     /// them into Resources/Arena/ArenaLayout.json, which is what the simulation uses (D13).
-    /// Walls: blocked in every phase. Obstacles[i]: extra blocked cells in phase i+1.
+    /// Walls: blocked in every phase. Per phase i+1: ground layer, decor, props (blocking) and an optional
+    /// obstacle Tilemap for extra painted blocking cells.
     /// </summary>
     public sealed class ArenaAuthoring : MonoBehaviour
     {
         public Grid Grid;
-        public Tilemap Ground;
         public Tilemap Walls;
+        public Tilemap[] Grounds = new Tilemap[3];
         public Tilemap[] Obstacles = new Tilemap[3];
+        public Transform[] Props = new Transform[3];
+        public Transform[] Decor = new Transform[3];
         public Vector2Int Size = new(48, 32);
 
         public Transform PlayerStart;
@@ -25,11 +28,17 @@ namespace Hollow.Presentation
 
         public List<SpawnZone> SpawnZones = new();
 
-        /// <summary>Shows only the obstacle layer of the given phase.</summary>
+        /// <summary>Shows the ground, decor, props and obstacle layer of the given phase only.</summary>
         public void ShowPhase(int phase)
         {
-            for (int i = 0; i < Obstacles.Length; i++)
-                if (Obstacles[i] != null) Obstacles[i].gameObject.SetActive(i == phase - 1);
+            for (int i = 0; i < 3; i++)
+            {
+                bool on = i == phase - 1;
+                if (Grounds.Length > i && Grounds[i] != null) Grounds[i].gameObject.SetActive(on);
+                if (Obstacles.Length > i && Obstacles[i] != null) Obstacles[i].gameObject.SetActive(on);
+                if (Props.Length > i && Props[i] != null) Props[i].gameObject.SetActive(on);
+                if (Decor.Length > i && Decor[i] != null) Decor[i].gameObject.SetActive(on);
+            }
         }
 
         void OnDrawGizmos()

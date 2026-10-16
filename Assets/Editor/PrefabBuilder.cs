@@ -23,7 +23,15 @@ namespace Hollow.EditorTools
             return prefab;
         }
 
-        public static SpriteRenderer AddSprite(Transform parent, string name, string sprite, Color color, Vector3 localPos, Vector3 scale, int order = 0)
+        public const string UnlitMaterialPath = "Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat";
+        /// <summary>Sorting orders from here up are overlays (bars, warnings, projectiles, reticle).</summary>
+        public const int OverlayOrder = 20;
+
+        /// <summary>
+        /// Adds a placeholder sprite. Overlays and <paramref name="unlit"/> sprites ignore the arena light, so the
+        /// darker phases never hide attack warnings, projectiles, coins or the player core (§14).
+        /// </summary>
+        public static SpriteRenderer AddSprite(Transform parent, string name, string sprite, Color color, Vector3 localPos, Vector3 scale, int order = 0, bool unlit = false)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
@@ -33,6 +41,7 @@ namespace Hollow.EditorTools
             r.sprite = PlaceholderArt.Load(sprite);
             r.color = color;
             r.sortingOrder = order;
+            if (unlit || order >= OverlayOrder) r.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(UnlitMaterialPath);
             return r;
         }
 
@@ -44,9 +53,9 @@ namespace Hollow.EditorTools
             var shadow = AddSprite(root.transform, "Shadow", "PH_Shadow", Color.white, Vector3.zero, new Vector3(0.7f, 0.7f, 1), -10);
             var body = new GameObject("Body").transform;
             body.SetParent(root.transform, false);
-            var core = AddSprite(body, "Core", "PH_Circle", new Color(0.85f, 0.95f, 1f), Vector3.zero, new Vector3(0.6f, 0.6f, 1), 1);
-            AddSprite(body, "Eye", "PH_Circle", new Color(0.5f, 0.92f, 1f), new Vector3(0.08f, 0.05f, 0), new Vector3(0.2f, 0.2f, 1), 2);
-            AddSprite(body, "Ring", "PH_Ring", new Color(0.5f, 0.92f, 1f, 0.6f), Vector3.zero, new Vector3(0.8f, 0.3f, 1), 0);
+            var core = AddSprite(body, "Core", "PH_Circle", new Color(0.85f, 0.95f, 1f), Vector3.zero, new Vector3(0.6f, 0.6f, 1), 1, unlit: true);
+            AddSprite(body, "Eye", "PH_Circle", new Color(0.5f, 0.92f, 1f), new Vector3(0.08f, 0.05f, 0), new Vector3(0.2f, 0.2f, 1), 2, unlit: true);
+            AddSprite(body, "Ring", "PH_Ring", new Color(0.5f, 0.92f, 1f, 0.6f), Vector3.zero, new Vector3(0.8f, 0.3f, 1), 0, unlit: true);
             var pivot = new GameObject("WeaponPivot").transform;
             pivot.SetParent(root.transform, false);
             var weapon = AddSprite(pivot, "Weapon", "PH_Square", new Color(0.75f, 0.78f, 0.82f), new Vector3(0.42f, 0, 0), new Vector3(0.45f, 0.12f, 1), 3);
@@ -106,8 +115,10 @@ namespace Hollow.EditorTools
             var root = new GameObject("PH_ShopStation");
             root.AddComponent<SortingGroup>();
             AddSprite(root.transform, "Shadow", "PH_Shadow", Color.white, Vector3.zero, new Vector3(2.4f, 1.2f, 1), -10);
-            AddSprite(root.transform, "Body", "PH_Square", new Color(0.18f, 0.25f, 0.30f), new Vector3(0, 0.75f, 0), new Vector3(2f, 1.5f, 1), 0);
-            AddSprite(root.transform, "Screen", "PH_Square", new Color(0.4f, 0.9f, 1f, 0.85f), new Vector3(0, 1.05f, 0), new Vector3(1.4f, 0.6f, 1), 1);
+            var visual = new GameObject("Visual").transform; // ENV_SHOP_Kiosk art replaces "Visual/Body"
+            visual.SetParent(root.transform, false);
+            AddSprite(visual, "Body", "PH_Square", new Color(0.18f, 0.25f, 0.30f), new Vector3(0, 0.75f, 0), new Vector3(2f, 1.5f, 1), 0);
+            AddSprite(visual, "Screen", "PH_Square", new Color(0.4f, 0.9f, 1f, 0.85f), new Vector3(0, 1.05f, 0), new Vector3(1.4f, 0.6f, 1), 1, unlit: true);
             return Save(root, "PH_ShopStation");
         }
     }

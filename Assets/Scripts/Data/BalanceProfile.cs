@@ -34,6 +34,7 @@ namespace Hollow.Data
         [PanelGroup(PanelGroups.SkillsFeedback)] public List<SkillData> Skills = new();
         [PanelGroup(PanelGroups.SkillsFeedback)] public FeedbackData Feedback = new();
         [PanelGroup(PanelGroups.SkillsFeedback)] public CameraData Camera = new();
+        [PanelGroup(PanelGroups.SkillsFeedback)] public AtmosphereData Atmosphere = new();
 
         [JsonIgnore, NonSerialized] Dictionary<EnemyId, EnemyData> enemyIndex;
         [JsonIgnore, NonSerialized] Dictionary<WeaponId, WeaponData> weaponIndex;
@@ -409,6 +410,32 @@ namespace Hollow.Data
         [Placeholder] public float ViewAspect;
         /// <summary>Ranged enemies only start an attack this far inside the view edge.</summary>
         [Placeholder, Unit("u")] public float ViewMargin;
+    }
+
+    /// <summary>
+    /// Arena light per phase (§14: phase three darker but readable, full darkness for the ending). Light decides
+    /// what the player can read, so it is tuned with the rest of the data. Attack warnings, projectiles, coins and
+    /// the player core are unlit and stay at full brightness.
+    /// </summary>
+    [Serializable]
+    public sealed class AtmosphereData
+    {
+        [Placeholder] public float LightPhase1;
+        [Placeholder] public float LightPhase2;
+        [Placeholder] public float LightPhase3;
+        /// <summary>Glow carried by the player AI: keeps the area around it readable in dark phases (scaled by how dark the phase is).</summary>
+        [Placeholder, Unit("u")] public float PlayerLightRadius;
+        [Placeholder] public float PlayerLightIntensity;
+        /// <summary>Ground mist opacity per phase.</summary>
+        [Placeholder] public float FogPhase1;
+        [Placeholder] public float FogPhase2;
+        [Placeholder] public float FogPhase3;
+        [Placeholder, Unit("s")] public float PhaseFadeTime;
+        /// <summary>The world goes dark during the ending scene.</summary>
+        [Placeholder, Unit("s")] public float EndingFadeTime;
+
+        public float Light(int phase) => phase switch { 1 => LightPhase1, 2 => LightPhase2, _ => LightPhase3 };
+        public float Fog(int phase) => phase switch { 1 => FogPhase1, 2 => FogPhase2, _ => FogPhase3 };
     }
 
     [Serializable]

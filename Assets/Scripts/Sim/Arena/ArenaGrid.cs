@@ -103,6 +103,32 @@ namespace Hollow.Sim
             return center;
         }
 
+        /// <summary>
+        /// Where to put something that appears or is teleported (spawns, drops, a phase change that puts a new
+        /// obstacle on someone): the point itself if the circle fits there, otherwise the nearest free-cell centre
+        /// where it fits. <see cref="Resolve"/> only fixes small overlaps and can fail deep inside a long obstacle.
+        /// </summary>
+        public Vector2 NearestFree(Vector2 p, float radius)
+        {
+            if (!CircleOverlaps(p, radius)) return p;
+            var c = CellOf(p);
+            Vector2 best = p;
+            float bestD = float.MaxValue;
+            int foundRing = -1, maxRing = Mathf.Max(Width, Height);
+            // Rings are square; one more ring after the first hit catches a closer point on its straight edge.
+            for (int ring = 0; ring <= maxRing && (foundRing < 0 || ring <= foundRing + 1); ring++)
+            for (int y = c.y - ring; y <= c.y + ring; y++)
+            for (int x = c.x - ring; x <= c.x + ring; x++)
+            {
+                if (Mathf.Max(Mathf.Abs(x - c.x), Mathf.Abs(y - c.y)) != ring || IsBlockedCell(x, y)) continue;
+                var q = CellCenter(x, y);
+                if (CircleOverlaps(q, radius)) continue;
+                float d = (q - p).sqrMagnitude;
+                if (d < bestD) { bestD = d; best = q; if (foundRing < 0) foundRing = ring; }
+            }
+            return best;
+        }
+
         /// <summary>Moves a circle by delta, sliding along walls, in sub-steps short enough never to tunnel.</summary>
         public Vector2 MoveCircle(Vector2 from, Vector2 delta, float radius)
         {

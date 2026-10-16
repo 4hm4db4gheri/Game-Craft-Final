@@ -59,7 +59,7 @@ namespace Hollow.Game
             GUILayout.Label(spawnType.ToString(), GUILayout.Width(200));
             if (GUILayout.Button("▶", GUILayout.Width(30))) spawnType = Cycle(spawnType, 1);
             GUILayout.EndHorizontal();
-            if (GUILayout.Button("Spawn it near me")) EnemySystem.Spawn(w, spawnType, w.Arena.Resolve(w.Player.Position + new Vector2(5, 2), 0.5f));
+            if (GUILayout.Button("Spawn it near me")) EnemySystem.Spawn(w, spawnType, w.Arena.NearestFree(w.Player.Position + new Vector2(5, 2), 0.5f));
 
             if (GUILayout.Button("+100 coins")) w.Progress.Wallet += 100;
             if (GUILayout.Button("+100 XP")) Rewards.GrantXp(w, 100, w.Player.Position);

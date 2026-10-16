@@ -2690,5 +2690,17 @@
     "FollowDamping": 0.12,
     "ViewAspect": 1.77777779,
     "ViewMargin": 0.75
+  },
+  "Atmosphere": {
+    "LightPhase1": 1.0,
+    "LightPhase2": 0.82,
+    "LightPhase3": 0.6,
+    "PlayerLightRadius": 8.0,
+    "PlayerLightIntensity": 0.7,
+    "FogPhase1": 0.1,
+    "FogPhase2": 0.08,
+    "FogPhase3": 0.12,
+    "PhaseFadeTime": 1.5,
+    "EndingFadeTime": 4.0
   }
 }

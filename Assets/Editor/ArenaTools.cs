@@ -1,120 +1,381 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Hollow.Presentation;
 using Hollow.Sim;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
+using Object = UnityEngine.Object;
 
 namespace Hollow.EditorTools
 {
     /// <summary>
-    /// Whitebox arena (D13: 48 × 32, four edge spawn zones, shop south of centre, one obstacle layout per phase)
-    /// and the bake step that turns the painted Tilemaps into the simulation's ArenaLayout.json.
+    /// The arena in three states (D13, §14): 48 × 32 cells, four edge spawn zones, shop south of centre, and per
+    /// phase its own ground, walk-over decor and named blocking props (docs/ART_ASSET_LIST.md). Props are prefabs
+    /// (PH_Prop_P&lt;n&gt;_&lt;Name&gt;) so imported AI art replaces them; their footprints are baked into
+    /// ArenaLayout.json, which is the only thing the simulation reads.
     /// </summary>
     public static class ArenaTools
     {
         public const string TilesDir = "Assets/Art/Placeholders/Tiles";
+        public const string ArtTilesDir = "Assets/Art/Tiles";
         public const string LayoutPath = "Assets/Resources/Arena/ArenaLayout.json";
+        static readonly Vector2Int ArenaSize = new(48, 32);
 
-        static readonly Color[] GroundColors =
+        enum Shape { Box, Round, Tree, Post }
+
+        sealed class PropSpec
         {
-            new(0.20f, 0.22f, 0.17f), new(0.22f, 0.24f, 0.18f), new(0.19f, 0.21f, 0.16f),
+            public string Name;
+            public int W, D;
+            public float Height;
+            public Shape Shape;
+            public Color Main, Top;
+            public Color? Glow;
+        }
+
+        static PropSpec P(string name, int w, int d, float h, Shape s, Color main, Color top, Color? glow = null) =>
+            new() { Name = name, W = w, D = d, Height = h, Shape = s, Main = main, Top = top, Glow = glow };
+
+        // Footprints and heights from docs/ART_ASSET_LIST.md.
+        static readonly PropSpec[][] Props =
+        {
+            new[] // Animals: soil, grass, rocks, trees, limited extraction
+            {
+                P("Tree", 1, 1, 4f, Shape.Tree, new(0.33f, 0.25f, 0.18f), new(0.24f, 0.34f, 0.2f)),
+                P("Rock", 2, 1, 1.2f, Shape.Round, new(0.42f, 0.41f, 0.38f), new(0.55f, 0.54f, 0.5f)),
+                P("Hedge", 3, 1, 1.4f, Shape.Box, new(0.2f, 0.3f, 0.17f), new(0.28f, 0.4f, 0.22f)),
+                P("Stumps", 1, 1, 0.6f, Shape.Round, new(0.4f, 0.3f, 0.2f), new(0.62f, 0.52f, 0.36f)),
+                P("LogPile", 2, 1, 0.9f, Shape.Box, new(0.38f, 0.28f, 0.19f), new(0.55f, 0.43f, 0.3f)),
+                P("Excavator", 3, 2, 2.4f, Shape.Box, new(0.5f, 0.36f, 0.16f), new(0.62f, 0.46f, 0.22f)),
+            },
+            new[] // Robots: cables, metal, lit machines
+            {
+                P("CableSpool", 1, 1, 1f, Shape.Round, new(0.3f, 0.26f, 0.22f), new(0.42f, 0.38f, 0.32f)),
+                P("MachineLit", 2, 2, 2.2f, Shape.Box, new(0.34f, 0.37f, 0.4f), new(0.46f, 0.49f, 0.52f), new Color(0.49f, 1f, 0.42f)),
+                P("CrateStack", 2, 1, 1.6f, Shape.Box, new(0.42f, 0.4f, 0.34f), new(0.55f, 0.52f, 0.44f)),
+                P("PipeBarrier", 3, 1, 1.1f, Shape.Box, new(0.36f, 0.38f, 0.4f), new(0.5f, 0.52f, 0.55f)),
+                P("Generator", 2, 1, 1.4f, Shape.Box, new(0.3f, 0.33f, 0.3f), new(0.42f, 0.45f, 0.4f), new Color(0.49f, 1f, 0.42f)),
+            },
+            new[] // Humans: security state, barricades, damaged machines, withered nature
+            {
+                P("Barricade", 3, 1, 1.2f, Shape.Box, new(0.26f, 0.27f, 0.3f), new(0.38f, 0.39f, 0.42f)),
+                P("MachineBroken", 2, 2, 1.8f, Shape.Box, new(0.27f, 0.27f, 0.28f), new(0.36f, 0.35f, 0.34f)),
+                P("Sandbags", 3, 1, 0.9f, Shape.Box, new(0.45f, 0.41f, 0.3f), new(0.56f, 0.52f, 0.39f)),
+                P("DeadTree", 1, 1, 3.2f, Shape.Tree, new(0.26f, 0.23f, 0.2f), new(0.3f, 0.27f, 0.23f)),
+                P("LightPost", 1, 1, 3f, Shape.Post, new(0.22f, 0.23f, 0.26f), new(0.7f, 0.85f, 1f), new Color(0.65f, 0.8f, 1f)),
+            },
         };
-        static readonly Color WallColor = new(0.11f, 0.11f, 0.12f);
-        static readonly Color[] ObstacleColors = { new(0.36f, 0.31f, 0.24f), new(0.33f, 0.37f, 0.40f), new(0.27f, 0.29f, 0.36f) };
 
-        // Phase obstacle layouts in cell coordinates (x, y, width, height). Centre (24,16) and the shop stay clear.
-        static readonly RectInt[][] PhaseObstacles =
+        /// <summary>
+        /// Prop placement per phase (lower-left cell). Rules checked by ArenaLayoutTests: at least two free cells
+        /// between any two obstacles and between an obstacle and the wall, spawn zones, starts and the shop.
+        /// </summary>
+        static readonly (string Name, int X, int Y)[][] Layout =
         {
-            new[] // Animals: hedges, rocks, trees, logs
+            new[] // Animals: open readable tutorial space, cover at the edges
             {
-                new RectInt(9, 22, 3, 1), new RectInt(35, 9, 3, 1), new RectInt(14, 8, 2, 2), new RectInt(32, 22, 2, 2),
-                new RectInt(8, 14, 1, 1), new RectInt(39, 17, 1, 1), new RectInt(20, 25, 1, 1), new RectInt(28, 6, 1, 1),
-                new RectInt(16, 18, 2, 1), new RectInt(31, 13, 2, 1),
+                ("Hedge", 9, 22), ("Hedge", 36, 9), ("Rock", 14, 7), ("Rock", 32, 23), ("Tree", 8, 15), ("Tree", 40, 17),
+                ("Tree", 20, 25), ("Tree", 28, 6), ("Stumps", 17, 19), ("LogPile", 30, 13), ("Excavator", 37, 21),
             },
-            new[] // Robots: machine blocks, pipe barriers, crates, cable spools — cover for ranged threats
+            new[] // Robots: lanes and cover for ranged threats
             {
-                new RectInt(12, 20, 2, 2), new RectInt(34, 10, 2, 2), new RectInt(18, 8, 3, 1), new RectInt(27, 24, 3, 1),
-                new RectInt(8, 10, 2, 1), new RectInt(38, 21, 2, 1), new RectInt(16, 26, 1, 1), new RectInt(31, 5, 1, 1),
-                new RectInt(20, 15, 1, 2), new RectInt(28, 15, 1, 2),
+                ("MachineLit", 12, 20), ("MachineLit", 34, 10), ("PipeBarrier", 17, 8), ("PipeBarrier", 27, 24),
+                ("CrateStack", 8, 10), ("CrateStack", 38, 21), ("CableSpool", 16, 26), ("CableSpool", 36, 5),
+                ("Generator", 19, 15), ("Generator", 28, 16),
             },
-            new[] // Humans: barricades and sandbags — crossfire space
+            new[] // Humans: barricade lines for crossfire
             {
-                new RectInt(10, 12, 3, 1), new RectInt(35, 19, 3, 1), new RectInt(20, 24, 3, 1), new RectInt(25, 7, 3, 1),
-                new RectInt(15, 20, 3, 1), new RectInt(30, 11, 3, 1), new RectInt(6, 22, 1, 1), new RectInt(41, 9, 1, 1),
+                ("Barricade", 10, 12), ("Barricade", 35, 19), ("Barricade", 20, 24), ("Barricade", 28, 6),
+                ("Sandbags", 15, 19), ("Sandbags", 30, 11), ("MachineBroken", 38, 25), ("DeadTree", 6, 25),
+                ("DeadTree", 41, 6), ("LightPost", 13, 4), ("LightPost", 36, 28), ("LightPost", 8, 6), ("LightPost", 23, 21),
             },
         };
 
-        public static Tile LoadOrCreateTile(string name, Color color)
+        // Ground: base tint per phase plus soft-edged patches (grass, oily concrete, ash) laid on top as sprites,
+        // so areas read as organic shapes instead of a checkerboard of cells.
+        static readonly (string Sprite, Color Base, Color Patch)[] Grounds =
         {
-            Directory.CreateDirectory(TilesDir);
-            string path = $"{TilesDir}/{name}.asset";
+            ("PH_Speckle", new(0.27f, 0.23f, 0.17f), new(0.2f, 0.27f, 0.14f)),  // dry soil, patchy grass
+            ("PH_Plate", new(0.27f, 0.29f, 0.31f), new(0.12f, 0.12f, 0.12f)),   // metal plates, oily concrete
+            ("PH_Speckle", new(0.17f, 0.17f, 0.18f), new(0.25f, 0.23f, 0.16f)), // cracked concrete, ash, dead grass
+        };
+
+        static readonly (string Name, string Sprite, Color Color, float Size, int Count)[][] DecorSpecs =
+        {
+            new[] { ("GrassTuft", "PH_Tuft", new Color(0.34f, 0.44f, 0.24f), 0.7f, 40), ("Roots", "PH_Crack", new Color(0.36f, 0.27f, 0.18f), 1.4f, 12), ("Leaves", "PH_Blob", new Color(0.45f, 0.3f, 0.17f, 0.7f), 0.5f, 18), ("Puddle", "PH_Blob", new Color(0.16f, 0.2f, 0.24f, 0.7f), 1.3f, 6) },
+            new[] { ("FloorCable", "PH_Crack", new Color(0.1f, 0.1f, 0.1f), 2f, 16), ("OilStain", "PH_Blob", new Color(0.05f, 0.05f, 0.06f, 0.55f), 1.5f, 14), ("Bolts", "PH_Circle", new Color(0.55f, 0.57f, 0.6f), 0.12f, 30) },
+            new[] { ("Ash", "PH_Blob", new Color(0.32f, 0.31f, 0.3f, 0.6f), 1.6f, 16), ("Cracks", "PH_Crack", new Color(0.07f, 0.07f, 0.08f), 1.8f, 22), ("Papers", "PH_Square", new Color(0.7f, 0.68f, 0.6f), 0.22f, 18) },
+        };
+
+        static readonly Color WallColor = new(0.08f, 0.08f, 0.09f);
+
+        public static Tile LoadOrCreateTile(string name, string sprite, Color color) => LoadOrCreateTile(TilesDir, name, PlaceholderArt.Load(sprite), color);
+
+        static Tile LoadOrCreateTile(string dir, string name, Sprite sprite, Color color)
+        {
+            Directory.CreateDirectory(dir);
+            string path = $"{dir}/{name}.asset";
             var tile = AssetDatabase.LoadAssetAtPath<Tile>(path);
             if (tile == null)
             {
                 tile = ScriptableObject.CreateInstance<Tile>();
                 AssetDatabase.CreateAsset(tile, path);
             }
-            tile.sprite = PlaceholderArt.Load("PH_Square");
+            tile.sprite = sprite;
             tile.color = color;
             tile.colliderType = Tile.ColliderType.None;
             EditorUtility.SetDirty(tile);
             return tile;
         }
 
-        /// <summary>Creates the Grid + Tilemaps + markers in the open scene and returns the authoring component.</summary>
+        // ------------------------------------------------------------------ build
+
+        /// <summary>Creates the Grid, Tilemaps, props, decor and markers in the open scene.</summary>
         public static ArenaAuthoring BuildWhitebox()
         {
-            var size = new Vector2Int(48, 32);
+            var size = ArenaSize;
             var gridGo = new GameObject("Arena");
             gridGo.transform.position = new Vector3(-size.x / 2f, -size.y / 2f, 0);
             var grid = gridGo.AddComponent<Grid>();
             grid.cellSize = Vector3.one;
-            var authoring = gridGo.AddComponent<ArenaAuthoring>();
-            authoring.Grid = grid;
-            authoring.Size = size;
+            var a = gridGo.AddComponent<ArenaAuthoring>();
+            a.Grid = grid;
+            a.Size = size;
 
-            authoring.Ground = NewTilemap(gridGo, "Ground", -100, TilemapRenderer.Mode.Chunk);
-            authoring.Walls = NewTilemap(gridGo, "Walls", 0, TilemapRenderer.Mode.Individual);
-            authoring.Obstacles = new Tilemap[3];
-            for (int i = 0; i < 3; i++) authoring.Obstacles[i] = NewTilemap(gridGo, $"Obstacles_P{i + 1}", 0, TilemapRenderer.Mode.Individual);
-
-            var groundTiles = new Tile[GroundColors.Length];
-            for (int i = 0; i < groundTiles.Length; i++) groundTiles[i] = LoadOrCreateTile($"PH_Tile_Ground_{i}", GroundColors[i]);
-            var wall = LoadOrCreateTile("PH_Tile_Wall", WallColor);
-            var rng = new System.Random(7);
+            a.Walls = NewTilemap(gridGo, "Walls", 0, TilemapRenderer.Mode.Individual);
+            var wall = LoadOrCreateTile("PH_Tile_Wall", "PH_Square", WallColor);
             for (int y = 0; y < size.y; y++)
             for (int x = 0; x < size.x; x++)
-            {
-                authoring.Ground.SetTile(new Vector3Int(x, y, 0), groundTiles[rng.Next(groundTiles.Length)]);
-                if (x == 0 || y == 0 || x == size.x - 1 || y == size.y - 1) authoring.Walls.SetTile(new Vector3Int(x, y, 0), wall);
-            }
+                if (x == 0 || y == 0 || x == size.x - 1 || y == size.y - 1) a.Walls.SetTile(new Vector3Int(x, y, 0), wall);
 
-            for (int phase = 0; phase < 3; phase++)
+            a.Grounds = new Tilemap[3];
+            a.Obstacles = new Tilemap[3];
+            a.Props = new Transform[3];
+            a.Decor = new Transform[3];
+            for (int i = 0; i < 3; i++)
             {
-                var tile = LoadOrCreateTile($"PH_Tile_Obstacle_P{phase + 1}", ObstacleColors[phase]);
-                foreach (var r in PhaseObstacles[phase])
-                    for (int y = r.yMin; y < r.yMax; y++)
-                    for (int x = r.xMin; x < r.xMax; x++)
-                        authoring.Obstacles[phase].SetTile(new Vector3Int(x, y, 0), tile);
+                a.Grounds[i] = NewTilemap(gridGo, $"Ground_P{i + 1}", -100, TilemapRenderer.Mode.Chunk);
+                a.Obstacles[i] = NewTilemap(gridGo, $"Obstacles_P{i + 1} (extra painted blocking)", 0, TilemapRenderer.Mode.Individual);
+                a.Decor[i] = new GameObject($"Decor_P{i + 1}").transform;
+                a.Decor[i].SetParent(gridGo.transform, false);
+                a.Props[i] = new GameObject($"Props_P{i + 1}").transform;
+                a.Props[i].SetParent(gridGo.transform, false);
             }
+            PaintGround(a);
 
-            authoring.PlayerStart = Marker(gridGo, "PlayerStart", new Vector2(0, 0));
-            authoring.CompanionStart = Marker(gridGo, "CompanionStart", new Vector2(-1.5f, -0.6f));
-            authoring.Shop = Marker(gridGo, "ShopStation", new Vector2(0, -6.5f));
-            authoring.ShopFootprint = new Vector2Int(2, 1);
+            var prefabs = BuildPropPrefabs();
+            for (int phase = 1; phase <= 3; phase++)
+                foreach (var (name, x, y) in Layout[phase - 1])
+                {
+                    var spec = Props[phase - 1].First(p => p.Name == name);
+                    var go = (GameObject)PrefabUtility.InstantiatePrefab(prefabs[(phase, name)], a.Props[phase - 1]);
+                    var prop = go.GetComponent<ArenaProp>();
+                    prop.Cell = new Vector2Int(x, y);
+                    go.name = $"{name} ({x},{y})";
+                    go.transform.position = CellToWorld(a, x + spec.W / 2f, y);
+                }
+
+            a.PlayerStart = Marker(gridGo, "PlayerStart", new Vector2(0, 0));
+            a.CompanionStart = Marker(gridGo, "CompanionStart", new Vector2(-1.5f, -0.6f));
+            a.Shop = Marker(gridGo, "ShopStation", new Vector2(0, -6.5f));
+            a.ShopFootprint = new Vector2Int(2, 1);
 
             float hx = size.x / 2f, hy = size.y / 2f;
-            authoring.SpawnZones = new List<SpawnZone>
+            a.SpawnZones = new List<SpawnZone>
             {
                 new() { Side = SpawnSide.North, Min = new Vector2(-8, hy - 4), Max = new Vector2(8, hy - 2) },
                 new() { Side = SpawnSide.East, Min = new Vector2(hx - 4, -6), Max = new Vector2(hx - 2, 6) },
                 new() { Side = SpawnSide.South, Min = new Vector2(-8, -hy + 2), Max = new Vector2(8, -hy + 4) },
                 new() { Side = SpawnSide.West, Min = new Vector2(-hx + 2, -6), Max = new Vector2(-hx + 4, 6) },
             };
-            authoring.ShowPhase(1);
-            return authoring;
+            ScatterDecor(a, prefabs);
+            a.ShowPhase(1);
+            return a;
+        }
+
+        static Vector3 CellToWorld(ArenaAuthoring a, float x, float y) => a.Grid.transform.position + new Vector3(x, y, 0);
+
+        /// <summary>
+        /// Paints each phase's ground: imported art (ENV_P&lt;n&gt;_Ground_ground, 8 × 8 tiles) when present,
+        /// otherwise tinted placeholder tiles plus soft placeholder patches (removed again once art exists).
+        /// </summary>
+        public static void PaintGround(ArenaAuthoring a)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                var map = a.Grounds[i];
+                map.ClearAllTiles();
+                var art = GroundArtTiles(i + 1);
+                var g = Grounds[i];
+                var baseTiles = new Tile[3];
+                for (int k = 0; k < 3; k++)
+                    baseTiles[k] = LoadOrCreateTile($"PH_Tile_P{i + 1}_Base_{k}", g.Sprite, Shade(g.Base, 0.98f + k * 0.02f));
+                var rng = new System.Random(17 + i);
+                for (int y = 0; y < a.Size.y; y++)
+                for (int x = 0; x < a.Size.x; x++)
+                {
+                    var cell = new Vector3Int(x, y, 0);
+                    map.SetTile(cell, art != null ? art[x % 8, y % 8] : baseTiles[rng.Next(3)]);
+                }
+
+                var old = map.transform.Find("PlaceholderPatches");
+                if (old != null) Object.DestroyImmediate(old.gameObject);
+                if (art != null) continue;
+                var patches = new GameObject("PlaceholderPatches").transform;
+                patches.SetParent(map.transform, false);
+                var blob = PlaceholderArt.Load("PH_Blob");
+                for (int k = 0; k < 34; k++)
+                {
+                    var go = new GameObject($"Patch_{k}");
+                    go.transform.SetParent(patches, false);
+                    go.transform.localPosition = new Vector3((float)rng.NextDouble() * a.Size.x, (float)rng.NextDouble() * a.Size.y, 0);
+                    go.transform.localRotation = Quaternion.Euler(0, 0, rng.Next(360));
+                    float s = 3f + (float)rng.NextDouble() * 5f;
+                    go.transform.localScale = new Vector3(s * (1.2f + (float)rng.NextDouble() * 0.6f), s, 1);
+                    var r = go.AddComponent<SpriteRenderer>();
+                    r.sprite = blob;
+                    var c = g.Patch;
+                    r.color = new Color(c.r, c.g, c.b, 0.55f + (float)rng.NextDouble() * 0.3f);
+                    r.sortingOrder = -99;
+                }
+            }
+        }
+
+        static Color Shade(Color c, float k) => new(c.r * k, c.g * k, c.b * k, c.a);
+
+        /// <summary>Tiles cut from an imported ground texture, or null when there is none.</summary>
+        static Tile[,] GroundArtTiles(int phase)
+        {
+            if (!AssetDatabase.IsValidFolder(ArtRules.IncomingDir)) return null;
+            foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { ArtRules.IncomingDir }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!ArtName.TryParse(path, out var n) || n.Category != "ENV" || n.Id != $"P{phase}" || n.State != "ground") continue;
+                var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToDictionary(s => s.name);
+                var tiles = new Tile[8, 8];
+                for (int y = 0; y < 8; y++)
+                for (int x = 0; x < 8; x++)
+                {
+                    if (!sprites.TryGetValue($"{n.Name}_{x}_{y}", out var s)) return null;
+                    tiles[x, y] = LoadOrCreateTile(ArtTilesDir, $"ENV_P{phase}_{n.Name}_{x}_{y}", s, Color.white);
+                }
+                return tiles;
+            }
+            return null;
+        }
+
+        static void ScatterDecor(ArenaAuthoring a, Dictionary<(int, string), GameObject> prefabs)
+        {
+            for (int phase = 1; phase <= 3; phase++)
+            {
+                var blocked = new HashSet<Vector2Int>();
+                foreach (var (name, x, y) in Layout[phase - 1])
+                {
+                    var s = Props[phase - 1].First(p => p.Name == name);
+                    for (int dy = -1; dy <= s.D; dy++)
+                    for (int dx = -1; dx <= s.W; dx++)
+                        blocked.Add(new Vector2Int(x + dx, y + dy));
+                }
+                var rng = new System.Random(101 + phase);
+                foreach (var d in DecorSpecs[phase - 1])
+                    for (int k = 0; k < d.Count; k++)
+                    {
+                        Vector2Int cell;
+                        int tries = 0;
+                        do cell = new Vector2Int(rng.Next(2, a.Size.x - 2), rng.Next(2, a.Size.y - 2));
+                        while (blocked.Contains(cell) && ++tries < 20);
+                        var go = (GameObject)PrefabUtility.InstantiatePrefab(prefabs[(phase, d.Name)], a.Decor[phase - 1]);
+                        go.transform.position = CellToWorld(a, cell.x + (float)rng.NextDouble(), cell.y + (float)rng.NextDouble());
+                        go.transform.localRotation = Quaternion.Euler(0, 0, d.Name is "GrassTuft" ? 0 : rng.Next(360));
+                        float s = 0.75f + (float)rng.NextDouble() * 0.5f;
+                        go.transform.localScale = new Vector3(rng.Next(2) == 0 ? s : -s, s, 1);
+                    }
+            }
+        }
+
+        // ------------------------------------------------------------------ prefabs
+
+        /// <summary>One prefab per prop and decor kind: the art importer swaps the "Body/Shape" sprite.</summary>
+        static Dictionary<(int, string), GameObject> BuildPropPrefabs()
+        {
+            var result = new Dictionary<(int, string), GameObject>();
+            for (int phase = 1; phase <= 3; phase++)
+            {
+                foreach (var spec in Props[phase - 1]) result[(phase, spec.Name)] = BuildProp(phase, spec);
+                foreach (var d in DecorSpecs[phase - 1])
+                {
+                    var root = new GameObject($"PH_Decor_P{phase}_{d.Name}");
+                    var body = new GameObject("Body").transform;
+                    body.SetParent(root.transform, false);
+                    PrefabBuilder.AddSprite(body, "Shape", d.Sprite, d.Color, Vector3.zero, new Vector3(d.Size, d.Size, 1), -90);
+                    result[(phase, d.Name)] = PrefabBuilder.Save(root, root.name);
+                }
+            }
+            return result;
+        }
+
+        static GameObject BuildProp(int phase, PropSpec s)
+        {
+            var root = new GameObject($"PH_Prop_P{phase}_{s.Name}");
+            root.AddComponent<SortingGroup>();
+            var prop = root.AddComponent<ArenaProp>();
+            prop.Phase = phase;
+            prop.PropName = s.Name;
+            prop.Footprint = new Vector2Int(s.W, s.D);
+
+            float w = s.W, d = s.D, top = d * 0.6f;
+            PrefabBuilder.AddSprite(root.transform, "Shadow", "PH_Shadow", Color.white, new Vector3(0, d * 0.5f, 0), new Vector3(w * 1.2f, d * 2.2f, 1), -10);
+            var body = new GameObject("Body").transform;
+            body.SetParent(root.transform, false);
+            switch (s.Shape)
+            {
+                case Shape.Box:
+                {
+                    float front = Mathf.Max(0.3f, s.Height - top);
+                    PrefabBuilder.AddSprite(body, "Shape", "PH_Square", s.Main, new Vector3(0, front * 0.5f, 0), new Vector3(w * 0.96f, front, 1), 0);
+                    PrefabBuilder.AddSprite(body, "Top", "PH_Square", s.Top, new Vector3(0, front + top * 0.5f, 0), new Vector3(w * 0.96f, top, 1), 1);
+                    if (s.Glow.HasValue)
+                        PrefabBuilder.AddSprite(body, "Lights", "PH_Square", s.Glow.Value, new Vector3(0, front * 0.6f, 0), new Vector3(w * 0.5f, 0.12f, 1), 2);
+                    break;
+                }
+                case Shape.Round:
+                    PrefabBuilder.AddSprite(body, "Shape", "PH_Circle", s.Main, new Vector3(0, s.Height * 0.5f, 0), new Vector3(w * 0.95f, s.Height, 1), 0);
+                    PrefabBuilder.AddSprite(body, "Top", "PH_Circle", s.Top, new Vector3(-w * 0.08f, s.Height * 0.68f, 0), new Vector3(w * 0.55f, s.Height * 0.45f, 1), 1);
+                    break;
+                case Shape.Tree:
+                    PrefabBuilder.AddSprite(body, "Shape", "PH_Square", s.Main, new Vector3(0, s.Height * 0.3f, 0), new Vector3(0.3f, s.Height * 0.6f, 1), 0);
+                    var crown = PrefabBuilder.AddSprite(body, "Top", s.Name == "DeadTree" ? "PH_Triangle" : "PH_Circle", s.Top,
+                        new Vector3(0, s.Height * 0.72f, 0), s.Name == "DeadTree" ? new Vector3(1.6f, 1.2f, 1) : new Vector3(2.4f, 2.2f, 1), 1);
+                    if (s.Name == "DeadTree") crown.transform.localRotation = Quaternion.Euler(0, 0, 90); // bare crown pointing up
+                    break;
+                case Shape.Post:
+                    PrefabBuilder.AddSprite(body, "Shape", "PH_Square", s.Main, new Vector3(0, s.Height * 0.5f, 0), new Vector3(0.18f, s.Height, 1), 0);
+                    PrefabBuilder.AddSprite(body, "Top", "PH_Circle", s.Top, new Vector3(0, s.Height, 0), new Vector3(0.45f, 0.3f, 1), 1);
+                    break;
+            }
+
+            if (s.Glow.HasValue)
+            {
+                // Lit props also light the ground around them (helps the darker phases stay readable).
+                var lightGo = new GameObject("Light");
+                lightGo.SetActive(false);
+                lightGo.transform.SetParent(root.transform, false);
+                lightGo.transform.localPosition = new Vector3(0, s.Shape == Shape.Post ? 1f : d * 0.5f, 0);
+                var l = lightGo.AddComponent<Light2D>();
+                l.lightType = Light2D.LightType.Point;
+                l.color = s.Glow.Value;
+                l.intensity = s.Shape == Shape.Post ? 0.9f : 0.45f;
+                l.pointLightOuterRadius = s.Shape == Shape.Post ? 4.5f : 2.5f;
+                l.pointLightInnerRadius = 0.3f;
+                l.falloffIntensity = 0.6f;
+                lightGo.SetActive(true);
+            }
+            return PrefabBuilder.Save(root, root.name);
         }
 
         static Tilemap NewTilemap(GameObject parent, string name, int order, TilemapRenderer.Mode mode)
@@ -135,6 +396,8 @@ namespace Hollow.EditorTools
             go.transform.position = worldPos;
             return go.transform;
         }
+
+        // ------------------------------------------------------------------ bake
 
         [MenuItem("Hollow/Arena/Bake Layout")]
         public static void BakeFromOpenScene()
@@ -167,10 +430,18 @@ namespace Hollow.EditorTools
                 if (x >= 0 && y >= 0 && x < layout.Width && y < layout.Height) layout.BaseBlocked.Add(layout.CellIndex(x, y));
             }
 
-            foreach (var map in a.Obstacles)
+            for (int i = 0; i < 3; i++)
             {
+                var cells = new HashSet<int>();
+                var painted = new List<int>();
+                CollectCells(a.Obstacles[i], layout, painted);
+                cells.UnionWith(painted);
+                if (a.Props[i] != null)
+                    foreach (var prop in a.Props[i].GetComponentsInChildren<ArenaProp>(true))
+                        foreach (var c in prop.Rect.allPositionsWithin)
+                            if (c.x >= 0 && c.y >= 0 && c.x < layout.Width && c.y < layout.Height) cells.Add(layout.CellIndex(c.x, c.y));
                 var phase = new PhaseCells();
-                CollectCells(map, layout, phase.Cells);
+                phase.Cells.AddRange(cells.OrderBy(c => c));
                 layout.PhaseBlocked.Add(phase);
             }
 

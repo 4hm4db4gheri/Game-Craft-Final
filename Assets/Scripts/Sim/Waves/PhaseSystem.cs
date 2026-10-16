@@ -18,11 +18,12 @@ namespace Hollow.Sim
             w.CompanionField = new FlowField(w.Arena);
 
             var p = w.Player;
-            p.Position = p.PrevPosition = w.Arena.Resolve(p.Position, w.Profile.Player.BodyRadius);
-            foreach (var e in w.Enemies) e.Position = e.PrevPosition = w.Arena.Resolve(e.Position, e.Radius);
+            p.Position = p.PrevPosition = w.Arena.NearestFree(p.Position, w.Profile.Player.BodyRadius);
+            foreach (var e in w.Enemies) e.Position = e.PrevPosition = w.Arena.NearestFree(e.Position, e.Radius);
+            foreach (var coin in w.Coins) coin.Position = coin.PrevPosition = w.Arena.NearestFree(coin.Position, 0.1f);
 
             Vector2 companionAt = w.Companion.Present ? w.Companion.Position : w.Layout.CompanionStart;
-            CompanionSystem.SpawnForPhase(w, w.Arena.Resolve(companionAt, w.Profile.Companion.BodyRadius));
+            CompanionSystem.SpawnForPhase(w, w.Arena.NearestFree(companionAt, w.Profile.Companion.BodyRadius));
 
             w.Waves.Wave = 0;
             WaveSystem.StartWave(w, 1);

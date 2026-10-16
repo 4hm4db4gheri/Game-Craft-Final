@@ -63,7 +63,7 @@ namespace Hollow.Sim
             b.Active = true;
             b.Dead = false;
             b.Id = d.Id;
-            b.Position = b.PrevPosition = w.Arena.Resolve(spawn, d.BodyRadius);
+            b.Position = b.PrevPosition = w.Arena.NearestFree(spawn, d.BodyRadius);
             b.Radius = d.BodyRadius;
             b.Health = b.MaxHealth = d.Health;
             b.Facing = Vector2.down;

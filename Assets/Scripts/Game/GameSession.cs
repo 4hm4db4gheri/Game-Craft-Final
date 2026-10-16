@@ -18,6 +18,7 @@ namespace Hollow.Game
     {
         [SerializeField] Camera worldCamera;
         [SerializeField] ArenaAuthoring arena;
+        [SerializeField] ArenaAtmosphere atmosphere;
         [SerializeField] WorldPresenter presenter;
         [SerializeField] CameraRig cameraRig;
         [SerializeField] ReticleView reticle;
@@ -79,7 +80,12 @@ namespace Hollow.Game
         }
 
         /// <summary>Live tuning: the next step already reads the new numbers.</summary>
-        void OnBalanceApplied(BalanceProfile profile) { if (Sim != null) W.Profile = profile; }
+        void OnBalanceApplied(BalanceProfile profile)
+        {
+            if (Sim == null) return;
+            W.Profile = profile;
+            if (!W.Completed) atmosphere.SetPhase(profile.Atmosphere, W.Phase, instant: false);
+        }
 
         // ---------------------------------------------------------------- start / load
 
@@ -131,6 +137,7 @@ namespace Hollow.Game
             Sim = new Simulation(world);
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
+            atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
         }
 
         void StepOnce() => Sim.Step(app.Router.Consume());
@@ -139,6 +146,7 @@ namespace Hollow.Game
         public void OnPhaseChangedByTool()
         {
             arena.ShowPhase(W.Phase);
+            atmosphere.SetPhase(W.Profile.Atmosphere, W.Phase, instant: true);
             presenter.ResetViews();
         }
 
@@ -258,9 +266,9 @@ namespace Hollow.Game
             menus.Hide();
             var w = W;
             Vector2 shop = w.Layout.ShopPosition;
-            w.Player.Position = w.Player.PrevPosition = w.Arena.Resolve(shop + new Vector2(0.8f, 1.6f), w.Profile.Player.BodyRadius);
+            w.Player.Position = w.Player.PrevPosition = w.Arena.NearestFree(shop + new Vector2(0.8f, 1.6f), w.Profile.Player.BodyRadius);
             if (w.Companion.Present)
-                w.Companion.Position = w.Companion.PrevPosition = w.Arena.Resolve(shop + new Vector2(-1.4f, 1.6f), w.Profile.Companion.BodyRadius);
+                w.Companion.Position = w.Companion.PrevPosition = w.Arena.NearestFree(shop + new Vector2(-1.4f, 1.6f), w.Profile.Companion.BodyRadius);
             w.Narrative.PreparingAtShop = true;
             app.States.Transition(GameState.Playing);
             ShopSystem.SetOpen(w, true);
@@ -284,6 +292,7 @@ namespace Hollow.Game
             app.States.Transition(GameState.PhaseTransition);
             shopPanel.Hide();
             arena.ShowPhase(from + 1); // the environment changes during the scene
+            atmosphere.SetPhase(W.Profile.Atmosphere, from + 1, instant: false);
             PlayScene($"Phase{from}To{from + 1}", () =>
             {
                 PhaseSystem.EnterPhase(W, from + 1);
@@ -300,6 +309,7 @@ namespace Hollow.Game
             SaveNow(quiet: true);
             app.States.Transition(GameState.Ending);
             shopPanel.Hide();
+            atmosphere.FadeToDark(W.Profile.Atmosphere); // the world goes dark while the last lines play
             PlayScene("Ending", () => ShowResults(montage: true));
         }
 

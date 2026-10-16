@@ -121,6 +121,11 @@ namespace Hollow.EditorTools
             };
 
             p.Camera = new CameraData { OrthographicSize = 7.5f, LookAheadFactor = 0.15f, LookAheadMax = 3f, FollowDamping = 0.12f, ViewAspect = 16f / 9f, ViewMargin = 0.75f };
+            p.Atmosphere = new AtmosphereData
+            {
+                LightPhase1 = 1f, LightPhase2 = 0.82f, LightPhase3 = 0.6f, PlayerLightRadius = 8f, PlayerLightIntensity = 0.7f,
+                FogPhase1 = 0.10f, FogPhase2 = 0.08f, FogPhase3 = 0.12f, PhaseFadeTime = 1.5f, EndingFadeTime = 4f,
+            };
 
             p.BuildIndex();
             return p;

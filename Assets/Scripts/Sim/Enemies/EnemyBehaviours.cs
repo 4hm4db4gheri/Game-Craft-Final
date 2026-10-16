@@ -305,7 +305,7 @@ namespace Hollow.Sim
 
             var childData = w.Profile.Enemy(d.Child);
             Vector2 offset = SimMath.Rotate(e.Facing, 140f + 80f * w.Rng.Value) * (e.Radius + childData.BodyRadius + 0.2f);
-            Vector2 at = w.Arena.Resolve(e.Position + offset, childData.BodyRadius);
+            Vector2 at = w.Arena.NearestFree(e.Position + offset, childData.BodyRadius);
             var child = Spawn(w, d.Child, at, warning: true, encounterGroup: e.EncounterGroup);
             child.ParentId = e.Id;
             child.ShareXp = d.ChildXpShare;

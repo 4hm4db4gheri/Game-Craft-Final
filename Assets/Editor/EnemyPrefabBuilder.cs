@@ -15,7 +15,7 @@ namespace Hollow.EditorTools
     public static class EnemyPrefabBuilder
     {
         public const string CatalogPath = "Assets/Art/Placeholders/VisualCatalog.asset";
-        const string SpriteMaterialPath = "Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat";
+        const string SpriteMaterialPath = PrefabBuilder.UnlitMaterialPath;
 
         static readonly Color Animal = new(0.45f, 0.38f, 0.30f);
         static readonly Color AnimalDark = new(0.30f, 0.27f, 0.22f);
@@ -156,7 +156,7 @@ namespace Hollow.EditorTools
             float barY = look.Size.y + 0.2f;
             var hpBack = PrefabBuilder.AddSprite(root.transform, "HpBack", "PH_Bar", new Color(0, 0, 0, 0.6f), new Vector3(0, barY, 0), new Vector3(1.2f, 0.5f, 1), 20);
             var hpFill = PrefabBuilder.AddSprite(root.transform, "HpFill", "PH_Bar", new Color(0.9f, 0.85f, 0.8f), new Vector3(0, barY, 0), new Vector3(1.2f, 0.5f, 1), 21);
-            var ring = PrefabBuilder.AddSprite(root.transform, "SpawnRing", "PH_Ring", Color.white, Vector3.zero, Vector3.one, -9);
+            var ring = PrefabBuilder.AddSprite(root.transform, "SpawnRing", "PH_Ring", Color.white, Vector3.zero, Vector3.one, -9, unlit: true);
             var line = PrefabBuilder.AddSprite(root.transform, "TelegraphLine", "PH_Square", Color.white, Vector3.zero, Vector3.one, 500);
             line.transform.SetParent(null, true); // drawn in world space; re-parented below to keep the prefab self-contained
             line.transform.SetParent(root.transform, true);
@@ -265,7 +265,7 @@ namespace Hollow.EditorTools
             root.AddComponent<SortingGroup>();
             var view = root.AddComponent<CoinView>();
             PrefabBuilder.AddSprite(root.transform, "Shadow", "PH_Shadow", Color.white, Vector3.zero, new Vector3(0.25f, 0.25f, 1), -10);
-            var coin = PrefabBuilder.AddSprite(root.transform, "Coin", "PH_Circle", new Color(1f, 0.78f, 0.24f), new Vector3(0, 0.12f, 0), new Vector3(0.22f, 0.22f, 1), 0);
+            var coin = PrefabBuilder.AddSprite(root.transform, "Coin", "PH_Circle", new Color(1f, 0.78f, 0.24f), new Vector3(0, 0.12f, 0), new Vector3(0.22f, 0.22f, 1), 0, unlit: true);
             var so = new SerializedObject(view);
             so.FindProperty("coin").objectReferenceValue = coin;
             so.ApplyModifiedPropertiesWithoutUndo();

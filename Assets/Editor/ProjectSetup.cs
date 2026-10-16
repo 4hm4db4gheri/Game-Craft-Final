@@ -122,8 +122,11 @@ namespace Hollow.EditorTools
             var presenter = new GameObject("WorldPresenter").AddComponent<WorldPresenter>();
             Wire(presenter, ("catalog", catalog), ("playerView", player.GetComponent<PlayerView>()), ("companionView", companion.GetComponent<CompanionView>()));
 
+            var atmosphere = new GameObject("Atmosphere").AddComponent<ArenaAtmosphere>();
+            Wire(atmosphere, ("follow", player.transform), ("fogSprite", PlaceholderArt.Load("PH_SoftGlow")));
+
             var session = new GameObject("GameSession").AddComponent<GameSession>();
-            Wire(session, ("worldCamera", cam), ("arena", arena), ("presenter", presenter),
+            Wire(session, ("worldCamera", cam), ("arena", arena), ("atmosphere", atmosphere), ("presenter", presenter),
                 ("cameraRig", rig), ("reticle", reticle.GetComponent<ReticleView>()));
 
             var uiRoot = new GameObject("UI").AddComponent<Hollow.UI.UIRoot>();

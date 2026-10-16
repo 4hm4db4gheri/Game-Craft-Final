@@ -39,7 +39,8 @@ namespace Hollow.EditorTools
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (!ArtName.TryParse(path, out var n)) continue;
-                string key = n.Category == "CHR" ? $"{n.Key}_{n.Name}" : n.Key; // the companion has P1 and P2 looks
+                // The companion has P1 and P2 looks, and each phase has several props: their keys include the name.
+                string key = n.Category is "CHR" or "ENV" ? $"{n.Key}_{n.Name}" : n.Key;
                 var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
                     .OrderBy(s => FrameIndex(s.name)).ToList();
                 if (sprites.Count == 0) continue;
@@ -63,6 +64,7 @@ namespace Hollow.EditorTools
             Directory.CreateDirectory(SetsDir);
             var catalog = AssetDatabase.LoadAssetAtPath<VisualCatalog>(EnemyPrefabBuilder.CatalogPath);
             int applied = 0;
+            bool ground = false;
             foreach (var (key, states) in map)
             {
                 string[] k = key.Split('_');
@@ -81,6 +83,14 @@ namespace Hollow.EditorTools
                         break;
                     case "BOS":
                         if (BossIds.TryGetValue(id, out var boss)) applied += Wire($"{PrefabBuilder.Dir}/PH_Boss_{boss}.prefab", "Body/Shape", Set(key, states));
+                        break;
+                    case "ENV" when id == "SHOP" && k.Length > 2 && k[2] == "Kiosk":
+                        applied += Wire($"{PrefabBuilder.Dir}/PH_ShopStation.prefab", "Visual/Body", Set(key, states));
+                        break;
+                    case "ENV" when k.Length > 2:
+                        if (states.ContainsKey("ground")) { ground = true; applied++; }
+                        else if (states.ContainsKey("prop")) applied += Wire($"{PrefabBuilder.Dir}/PH_Prop_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
+                        else if (states.Keys.Any(s => s.StartsWith("decor"))) applied += Wire($"{PrefabBuilder.Dir}/PH_Decor_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
                         break;
                     case "PKP" when id == "COIN":
                         applied += Wire($"{PrefabBuilder.Dir}/PH_Coin.prefab", "Coin", Set(key, states));
@@ -102,8 +112,19 @@ namespace Hollow.EditorTools
                         break;
                 }
             }
+            if (ground) RepaintGroundInOpenScene();
             AssetDatabase.SaveAssets();
             Debug.Log($"[Hollow art] Applied {applied} art set(s) from {ArtRules.IncomingDir}.");
+        }
+
+        /// <summary>Ground art lives in the scene's Tilemaps, not in a prefab: repaint them if the Game scene is open.</summary>
+        static void RepaintGroundInOpenScene()
+        {
+            var arena = UnityEngine.Object.FindAnyObjectByType<ArenaAuthoring>(FindObjectsInactive.Include);
+            if (arena == null) { Debug.Log("[Hollow art] Ground art found; open the Game scene and apply again (or rebuild the scene) to paint it."); return; }
+            ArenaTools.PaintGround(arena);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(arena.gameObject.scene);
+            UnityEditor.SceneManagement.EditorSceneManager.SaveScene(arena.gameObject.scene);
         }
 
         static SpriteSet Set(string key, Dictionary<string, List<Sprite>> states)

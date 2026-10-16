@@ -31,7 +31,8 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۳۷۱ تست، همه پاس) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۳۸۷ تست، همه پاس) |
+| `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
@@ -44,12 +45,12 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
-- باقی‌مانده: T16 (سه حالت آرنا، تاریکی فاز ۳)، T05 (جلوه‌ها: muzzle، ذرات، اعداد آسیب، جسد/لکه، shake)، T19 (صدا CC0)، T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
+- باقی‌مانده: T05 (جلوه‌ها: muzzle، ذرات، اعداد آسیب، جسد/لکه، shake)، T19 (صدا CC0)، T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
 ## کارهای باز / ایده‌ها
 
-- آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است. زمین و propها با T16 وصل می‌شوند.
+- آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است و زمین، prop، decor و کیوسک فروشگاه را هم پوشش می‌دهد (T16).
 ---
 
 ## تاریخچه‌ی کارها
@@ -99,3 +100,9 @@
 - `Assets/Editor/Art/ArtImport.cs`: از روی نام فایل، PPU (۱۲۸ پیکسل در واحد)، pivot (پا/دسته‌ی سلاح/وسط)، برش strip به فریم، برش زمین ۸×۸ به ۶۴ تایل، حذف پس‌زمینه‌ی مژنتا (و آلفای FX روی مشکی) روی خود PNG.
 - `Assets/Editor/Art/ApplyIncomingArt.cs`: ساخت SpriteSet برای هر موجودیت و جایگزینی شکل placeholder در prefabهای PH_ و catalog سلاح‌ها؛ `SpriteSetAnimator` حالت‌ها را از viewها می‌گیرد.
 - تست با strip مصنوعی گرگ در Play mode؛ فایل تست حذف شد. commit: `bb72f9e`.
+
+### 2026-10-16 — T16: سه حالت آرنا
+- هر فاز: زمین جدا (Tilemap)، decor جدا، و propهای نام‌دار (prefab `PH_Prop_P<n>_<Name>`) با footprint از `ART_ASSET_LIST.md`؛ bake برخورد را از propها می‌سازد. آرت AI زمین/prop/decor/کیوسک با `Apply Incoming Art` جایگزین می‌شود.
+- نور: گروه جدید `Atmosphere` در BalanceProfile (نور ۱ / ۰.۸۲ / ۰.۶، درخشش بازیکن، مه). هشدار حمله، گلوله، سکه، رتیکل و هسته‌ی بازیکن unlit هستند. پایان: همه‌ی نورها (حتی چراغ‌ها) خاموش می‌شوند.
+- باگ پیدا شده با تست: `Resolve` از وسط مانع ۳ خانه‌ای بیرون نمی‌آورد؛ `ArenaGrid.NearestFree` برای جای‌گذاری‌ها (تغییر فاز، spawn، سکه، فروشگاه) اضافه شد.
+- تست‌های `ArenaLayoutTests` (اتصال، نبود شکاف یک‌خانه‌ای، مسیر از هر spawn zone، تغییر فاز). اسکرین‌شات‌ها در `docs/screenshots/T16_*`. تصمیم‌ها D49–D52.

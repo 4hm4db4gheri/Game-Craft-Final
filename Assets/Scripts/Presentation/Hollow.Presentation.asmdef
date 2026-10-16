@@ -6,7 +6,9 @@
         "Hollow.Data",
         "Hollow.Sim",
         "Unity.Cinemachine",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.2D.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

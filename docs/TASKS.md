@@ -35,7 +35,7 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T12 | Items and combat inventory | §9 §10 | done | 13 tests |
 | T13 | Bosses and preparation flow | §7 | done | 13 tests; full prep/entrance/fight/transition flow verified in Play mode |
 | T14 | Story, dialogue, transitions, ending | §3 §7 §14 §15 | done | lines from GDD §3 only; victory jingle waits for T19 |
-| T16 | Arena (3 states) and placeholder art | §14 | todo | |
+| T16 | Arena (3 states) and placeholder art | §14 | done | per-phase ground, decor and named props (AI-art ready); escape-route and transition tests (7); phase-3 dark but readable, ending fades to black; screenshots in `docs/screenshots/T16_*` |
 | T18 | Balance panel completion, dev tools (F10), telemetry | §13 | todo | |
 | T19 | Audio (CC0 SFX + music) | §14 | todo | |
 | T20 | Tutorial pass and readability checklist | §6 §15 | todo | |
