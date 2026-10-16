@@ -1,0 +1,19 @@
+{
+    "name": "Hollow.Editor",
+    "rootNamespace": "Hollow.EditorTools",
+    "references": [
+        "Hollow.Core",
+        "Hollow.App"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
