@@ -31,6 +31,7 @@ namespace Hollow.App
 
         void Update()
         {
+            if (app != null && app.ToolFreeze) return;
             driver?.Update(Time.unscaledDeltaTime);
         }
     }

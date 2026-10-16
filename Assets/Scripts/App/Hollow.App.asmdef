@@ -3,6 +3,7 @@
     "rootNamespace": "Hollow.App",
     "references": [
         "Hollow.Core",
+        "Hollow.Data",
         "Unity.InputSystem",
         "UnityEngine.UI"
     ],

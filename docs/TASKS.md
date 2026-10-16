@@ -15,9 +15,9 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 
 | # | Task | GDD | Status | Notes |
 |---|---|---|---|---|
-| T00 | Foundation: folders, asmdefs, scenes, state machine, two clocks, input router, docs | §1 §13 §16 | todo | |
-| T01 | Data layer: BalanceProfile, seed values, calculator, validation, JSON/CSV, test profiles | §13 §8 §9 §12 | todo | |
-| T01b | Balance panel core (Editor window + in-game F9 panel, live edit, apply/undo/reset, import/export) | §13 | todo | pulled forward (D38); T18 finishes it |
+| T00 | Foundation: folders, asmdefs, scenes, state machine, two clocks, input router, docs | §1 §13 §16 | done | 144 tests; Windows build of the empty game: Succeeded, 0 errors (package warnings only), 133 MB |
+| T01 | Data layer: BalanceProfile, seed values, calculator, validation, JSON/CSV, test profiles | §13 §8 §9 §12 | done | every GDD total reproduced by tests (no mismatch found); save snapshot part lands with T17 |
+| T01b | Balance panel core (Editor window + in-game F9 panel, live edit, apply/undo/reset, import/export) | §13 | done | verified in Play mode (live edit + undo); T18 adds dev panel F10 and telemetry |
 | T02 | Player: movement, aim, dash, health | §2 §4 §10 | todo | |
 | T06 | Enemy framework + A1 runner wolf (+ A2 quill shooter for the tutorial) | §5 §6 §14 | todo | |
 | T03 | Guns: pistol, SMG, double-barrel first | §4 §8 §10 | todo | |

@@ -1,6 +1,7 @@
 using Hollow.App.Input;
 using Hollow.Core;
 using Hollow.Core.Input;
+using Hollow.Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,6 +26,10 @@ namespace Hollow.App
         public GameStateMachine States { get; private set; }
         public InputRouter Router { get; private set; }
         public UnityInputSource InputSource { get; private set; }
+        public BalanceService Balance { get; private set; }
+
+        /// <summary>Set by developer tools (balance panel) to hold the simulation while they are open.</summary>
+        public bool ToolFreeze { get; set; }
 
         /// <summary>Camera used to turn the mouse position into a world aim point.</summary>
         public Camera WorldCamera { get; set; }
@@ -54,6 +59,7 @@ namespace Hollow.App
             States = new GameStateMachine();
             Router = new InputRouter();
             InputSource = new UnityInputSource();
+            Balance = BalanceProfileStore.CreateService();
             States.Changed += (_, _) => RefreshWorldInput();
         }
 

@@ -3,7 +3,9 @@
     "rootNamespace": "Hollow.EditorTools",
     "references": [
         "Hollow.Core",
-        "Hollow.App"
+        "Hollow.Data",
+        "Hollow.App",
+        "Hollow.Dev"
     ],
     "includePlatforms": [
         "Editor"

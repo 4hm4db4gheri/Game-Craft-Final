@@ -1,0 +1,19 @@
+{
+    "name": "Hollow.Dev",
+    "rootNamespace": "Hollow.Dev",
+    "references": [
+        "Hollow.Core",
+        "Hollow.Data",
+        "Hollow.App",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
