@@ -30,6 +30,8 @@ namespace Hollow.Sim
         WaveCompleted,
         EnemyHealed,
         ItemUsed,
+        BossStarted,
+        BossDefeated,
     }
 
     /// <summary>

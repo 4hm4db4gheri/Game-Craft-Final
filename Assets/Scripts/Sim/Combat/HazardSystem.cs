@@ -25,6 +25,8 @@ namespace Hollow.Sim
         /// <summary>Optional flight: the visual travels from here to Position until it lands.</summary>
         public Vector2 LaunchFrom;
         public long LandTick;
+        /// <summary>Cleared by a boss death; removed on the next step without going off.</summary>
+        public bool Cancelled;
     }
 
     public static class HazardSystem
@@ -45,13 +47,17 @@ namespace Hollow.Sim
 
         public static void Step(World w)
         {
-            for (int i = w.Hazards.Count - 1; i >= 0; i--)
+            w.Hazards.RemoveAll(h => h.Cancelled);
+            // Iterate over a snapshot: a detonation can end a boss fight, which cancels the remaining hazards.
+            int count = w.Hazards.Count;
+            for (int i = 0; i < count && i < w.Hazards.Count; i++)
             {
                 var h = w.Hazards[i];
-                if (w.Clock.Tick < h.DetonateTick) continue;
+                if (h.Cancelled || w.Clock.Tick < h.DetonateTick) continue;
+                h.Cancelled = true;
                 Detonate(w, h);
-                w.Hazards.RemoveAt(i);
             }
+            w.Hazards.RemoveAll(h => h.Cancelled);
         }
 
         public static void Detonate(World w, HazardState h)
@@ -66,6 +72,9 @@ namespace Hollow.Sim
                 return;
             }
 
+            var boss = w.Boss;
+            if (boss.Active && !boss.Dead && Vector2.Distance(boss.Position, h.Position) <= h.Radius + boss.Radius)
+                BossSystem.Damage(w, h.Damage, DamageSource.Explosion, SimMath.SafeNormal(boss.Position - h.Position, Vector2.up));
             w.Crowd.Rebuild(w.Enemies);
             w.Crowd.Query(h.Position, h.Radius + ProjectileSystem.MaxEnemyRadius(w), Candidates);
             foreach (var e in Candidates)

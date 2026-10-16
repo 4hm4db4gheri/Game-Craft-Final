@@ -36,6 +36,7 @@ namespace Hollow.Sim
             WaveSystem.Step(w);
             CompanionSystem.Step(w);
             EnemySystem.Step(w);
+            BossSystem.Step(w);
             EnemySystem.Separate(w);
             ProjectileSystem.Step(w);
             HazardSystem.Step(w);

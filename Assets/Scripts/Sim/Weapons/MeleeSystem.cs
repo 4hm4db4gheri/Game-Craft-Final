@@ -44,6 +44,12 @@ namespace Hollow.Sim
                 if (e.Alive) EnemySystem.Knockback(w, e, travel, l.Knockback);
                 hits++;
             }
+            var boss = w.Boss;
+            if (boss.Active && !boss.Dead && InArc(p.Position, dir, l.Range, l.ArcDeg, boss.Position, boss.Radius) && w.Arena.LineOfSight(p.Position, boss.Position))
+            {
+                BossSystem.Damage(w, damage, DamageSource.Melee, dir);
+                hits++;
+            }
             w.Emit(SimEventType.MeleeSwing, PlayerState.EntityId, p.Position, dir * l.Range, l.ArcDeg, (int)active.Id);
             return hits;
         }

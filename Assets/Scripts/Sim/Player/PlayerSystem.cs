@@ -82,6 +82,17 @@ namespace Hollow.Sim
                 Combat.DamageEnemy(w, e, damage, DamageSource.Dash, p.DashDir);
             }
 
+            var boss = w.Boss;
+            if (boss.Active && !boss.Dead && !p.DashHitIds.Contains(BossState.EntityId))
+            {
+                float br = boss.Radius + data.BodyRadius;
+                if (SimMath.SegmentPointDistanceSq(from, p.Position, boss.Position) <= br * br)
+                {
+                    p.DashHitIds.Add(BossState.EntityId);
+                    BossSystem.Damage(w, damage, DamageSource.Dash, p.DashDir);
+                }
+            }
+
             if (w.Clock.Tick + 1 >= p.DashEndTick)
             {
                 p.Dashing = false;

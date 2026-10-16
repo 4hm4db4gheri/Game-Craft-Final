@@ -292,7 +292,7 @@ namespace Hollow.EditorTools
                     },
                     MoveSpeed = 2.4f, BodyRadius = 1.4f, RestTime = 1.0f, LowHealthFraction = 0.35f, LowHealthRestMultiplier = 0.7f,
                     ChargeTelegraph = 0.8f, ChargeSpeed = 13, ChargeDistance = 10, ChargeRecovery = 1.2f,
-                    StrikeWindup = 0.9f, StrikeRadius = 3, StrikeRecovery = 1.0f,
+                    StrikeWindup = 0.9f, StrikeRadius = 3, StrikeRecovery = 1.0f, AddSpawnGap = 0.5f,
                 },
                 new()
                 {
@@ -306,6 +306,7 @@ namespace Hollow.EditorTools
                     MoveSpeed = 1.8f, BodyRadius = 1.6f, RestTime = 1.0f, LowHealthFraction = 0.35f, LowHealthRestMultiplier = 0.75f,
                     BurstWarning = 0.7f, BurstDuration = 1.2f, BurstRecovery = 1.3f, BurstShotInterval = 0.1f, BurstSpread = 30, ProjectileSpeed = 13,
                     BlastWarning = 1.0f, BlastRadius = 3, BlastThrowRange = 9, HealCapFraction = 0.1f,
+                    BurstShotDamage = 8, ProjectileRange = 16, AddSpawnGap = 0.45f, EmpAffects = true,
                 },
                 new()
                 {
@@ -319,6 +320,7 @@ namespace Hollow.EditorTools
                     MoveSpeed = 2.2f, BodyRadius = 0.9f, RestTime = 1.0f, LowHealthFraction = 0.35f, LowHealthRestMultiplier = 0.75f,
                     BurstWarning = 0.7f, BurstDuration = 1.0f, BurstRecovery = 1.2f, BurstShotInterval = 0.12f, BurstSpread = 20, ProjectileSpeed = 14,
                     BlastWarning = 1.0f, BlastRadius = 2.2f, BlastThrowRange = 9, HealCapFraction = 0.1f,
+                    BurstShotDamage = 7, ProjectileRange = 15, AddSpawnGap = 0.4f, EmpAffects = true,
                 },
             };
         }

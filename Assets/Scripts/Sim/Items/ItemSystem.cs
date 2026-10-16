@@ -147,13 +147,22 @@ namespace Hollow.Sim
             foreach (var m in mines)
             {
                 if (!m.Alive || w.Clock.Tick < m.ArmedTick) continue;
+                var boss = w.Boss;
+                if (boss.Active && !boss.Dead && Vector2.Distance(boss.Position, m.Position) <= d.TriggerRadius + boss.Radius)
+                {
+                    m.Alive = false;
+                    var hb = HazardSystem.Create(w, HazardOwner.Player, m.Position, m.Position, d.Radius, d.Damage, 0f);
+                    hb.Cancelled = true;
+                    HazardSystem.Detonate(w, hb);
+                    continue;
+                }
                 foreach (var e in w.Enemies)
                 {
                     if (!e.IsActive || Vector2.Distance(e.Position, m.Position) > d.TriggerRadius + e.Radius) continue;
                     m.Alive = false;
                     var h = HazardSystem.Create(w, HazardOwner.Player, m.Position, m.Position, d.Radius, d.Damage, 0f);
+                    h.Cancelled = true;
                     HazardSystem.Detonate(w, h);
-                    w.Hazards.Remove(h);
                     break;
                 }
             }
@@ -172,6 +181,7 @@ namespace Hollow.Sim
                 if (!w.Profile.Enemy(e.Type).IsMachine) continue; // never human bodies (§9)
                 Stun(w, e, d.StunRegular);
             }
+            if (w.Boss.Active && Vector2.Distance(w.Boss.Position, p.Position) <= d.Radius + w.Boss.Radius) BossSystem.Emp(w, d.StunBoss, d.BossResistance);
             w.Emit(SimEventType.Explosion, PlayerState.EntityId, p.Position, default, d.Radius, -2);
             return true;
         }

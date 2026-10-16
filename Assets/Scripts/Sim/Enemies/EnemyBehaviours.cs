@@ -214,6 +214,18 @@ namespace Hollow.Sim
         static void StepHealer(World w, EnemyState e, EnemyData d, long now)
         {
             if (now < e.NextAttackTick || e.HealGiven >= d.HealTotalCap) return;
+            var boss = w.Boss;
+            if (boss.Active && !boss.Dead && boss.Health < boss.MaxHealth && Vector2.Distance(boss.Position, e.Position) <= d.AuraRadius + boss.Radius)
+            {
+                float healed = BossSystem.Heal(w, Mathf.Min(d.HealAmount, d.HealTotalCap - e.HealGiven));
+                if (healed > 0)
+                {
+                    e.HealGiven += healed;
+                    e.NextAttackTick = now + w.Ticks(d.HealInterval);
+                    w.Emit(SimEventType.EnemyHealed, BossState.EntityId, boss.Position, e.Position - boss.Position, healed, e.Id);
+                    return;
+                }
+            }
             EnemyState best = null;
             float bestMissing = 0;
             foreach (var o in w.Enemies)

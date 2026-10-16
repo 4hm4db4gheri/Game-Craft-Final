@@ -18,6 +18,7 @@ namespace Hollow.Sim
             coins = Mathf.Max(0, coins);
             e.XpPaid += xp;
             e.CoinsPaid += coins;
+            if (e.EncounterGroup == BossState.EncounterGroup) { w.Boss.PoolXpPaid += xp; w.Boss.PoolCoinsPaid += coins; }
             GrantXp(w, xp, e.Position);
             // Tutorial coins (the first group's) never expire (§6).
             bool tutorial = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase;

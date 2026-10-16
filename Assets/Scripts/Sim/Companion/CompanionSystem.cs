@@ -111,9 +111,13 @@ namespace Hollow.Sim
                 float d = Vector2.Distance(c.Position, e.Position);
                 if (d < bestDist && w.Arena.LineOfSight(c.Position, e.Position)) { best = e; bestDist = d; }
             }
-            if (best == null) return;
+            Vector2 targetPos;
+            var boss = w.Boss;
+            if (best != null) targetPos = best.Position;
+            else if (boss.Active && !boss.Dead && Vector2.Distance(c.Position, boss.Position) < data.FireRange && w.Arena.LineOfSight(c.Position, boss.Position)) targetPos = boss.Position;
+            else return;
 
-            Vector2 dir = SimMath.SafeNormal(best.Position - c.Position, c.Facing);
+            Vector2 dir = SimMath.SafeNormal(targetPos - c.Position, c.Facing);
             c.Facing = dir;
             w.Projectiles.Add(new ProjectileState
             {

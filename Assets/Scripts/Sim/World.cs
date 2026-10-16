@@ -32,6 +32,7 @@ namespace Hollow.Sim
         public ShopState Shop = new();
         public TutorialStage Tutorial;
         public WaveState Waves = new();
+        public BossState Boss = new();
 
         /// <summary>Death checkpoint: the world as it was at the start of the current wave or boss fight.</summary>
         public string CheckpointJson;

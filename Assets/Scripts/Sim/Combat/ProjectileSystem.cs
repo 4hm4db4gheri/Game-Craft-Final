@@ -92,6 +92,21 @@ namespace Hollow.Sim
             }
             Hits.Sort((a, b) => a.t != b.t ? a.t.CompareTo(b.t) : a.e.Id.CompareTo(b.e.Id));
 
+            var boss = w.Boss;
+            if (boss.Active && !boss.Dead && !p.HitIds.Contains(BossState.EntityId))
+            {
+                float tb = SimMath.SegmentCircleHit(from, to, boss.Position, boss.Radius + p.Radius);
+                if (tb >= 0 && tb <= wallT)
+                {
+                    p.HitIds.Add(BossState.EntityId);
+                    Vector2 hitPos = Vector2.Lerp(from, to, tb);
+                    float falloff = Mathf.Lerp(1f, p.FalloffAtMaxRange, Mathf.Clamp01(Vector2.Distance(p.Origin, hitPos) / Mathf.Max(0.01f, p.Range)));
+                    BossSystem.Damage(w, p.Damage * falloff, p.Owner == ProjectileOwner.Companion ? DamageSource.Companion : DamageSource.Weapon, p.Velocity.normalized);
+                    w.Emit(SimEventType.ProjectileImpact, p.Id, hitPos, p.Velocity.normalized, 1);
+                    if (--p.TargetsLeft <= 0) { p.Position = hitPos; p.Alive = false; return; }
+                }
+            }
+
             foreach (var (t, e) in Hits)
             {
                 Vector2 hitPos = Vector2.Lerp(from, to, t);

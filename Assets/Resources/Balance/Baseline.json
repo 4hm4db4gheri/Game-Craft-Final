@@ -573,7 +573,11 @@
       "BlastWarning": 0.0,
       "BlastRadius": 0.0,
       "BlastThrowRange": 0.0,
-      "HealCapFraction": 0.0
+      "HealCapFraction": 0.0,
+      "BurstShotDamage": 0.0,
+      "ProjectileRange": 0.0,
+      "AddSpawnGap": 0.5,
+      "EmpAffects": false
     },
     {
       "Id": "IndustrialRobot",
@@ -651,7 +655,11 @@
       "BlastWarning": 1.0,
       "BlastRadius": 3.0,
       "BlastThrowRange": 9.0,
-      "HealCapFraction": 0.1
+      "HealCapFraction": 0.1,
+      "BurstShotDamage": 8.0,
+      "ProjectileRange": 16.0,
+      "AddSpawnGap": 0.45,
+      "EmpAffects": true
     },
     {
       "Id": "FormerCompanion",
@@ -729,7 +737,11 @@
       "BlastWarning": 1.0,
       "BlastRadius": 2.2,
       "BlastThrowRange": 9.0,
-      "HealCapFraction": 0.1
+      "HealCapFraction": 0.1,
+      "BurstShotDamage": 7.0,
+      "ProjectileRange": 15.0,
+      "AddSpawnGap": 0.4,
+      "EmpAffects": true
     }
   ],
   "Enemies": [

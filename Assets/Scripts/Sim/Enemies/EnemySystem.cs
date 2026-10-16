@@ -325,6 +325,21 @@ namespace Hollow.Sim
             }
 
             var p = w.Player;
+            var boss = w.Boss;
+            if (boss.Active && !boss.Dead)
+            {
+                // The boss does not yield: push the player and adds out of its body.
+                float br = boss.Radius + w.Profile.Player.BodyRadius;
+                Vector2 dp = p.Position - boss.Position;
+                if (!p.Dashing && dp.sqrMagnitude < br * br) p.Position = w.Arena.Resolve(boss.Position + SimMath.SafeNormal(dp, Vector2.down) * br, w.Profile.Player.BodyRadius);
+                foreach (var e in w.Enemies)
+                {
+                    if (!e.IsActive) continue;
+                    float er = boss.Radius + e.Radius;
+                    Vector2 de = e.Position - boss.Position;
+                    if (de.sqrMagnitude < er * er) e.Position = w.Arena.Resolve(boss.Position + SimMath.SafeNormal(de, Vector2.right) * er, e.Radius);
+                }
+            }
             if (p.Dead || p.Dashing) return;
             float pr = w.Profile.Player.BodyRadius;
             float share = Mathf.Clamp01(w.Profile.Player.CrowdPushShare);

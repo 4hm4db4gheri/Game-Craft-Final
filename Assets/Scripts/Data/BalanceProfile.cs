@@ -253,6 +253,11 @@ namespace Hollow.Data
         [Placeholder, Unit("u")] public float BlastThrowRange;
 
         [Gdd("§7")] public float HealCapFraction;
+        [Placeholder] public float BurstShotDamage;
+        [Placeholder, Unit("u")] public float ProjectileRange;
+        [Placeholder, Unit("active s")] public float AddSpawnGap;
+        /// <summary>EMP affects this boss (machine body or machine equipment, §7/§9).</summary>
+        public bool EmpAffects;
     }
 
     [Serializable]
