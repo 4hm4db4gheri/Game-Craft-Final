@@ -12,6 +12,7 @@ namespace Hollow.Presentation
     {
         [SerializeField] VisualCatalog catalog;
         [SerializeField] PlayerView playerView;
+        [SerializeField] CompanionView companionView;
 
         readonly EntityViews<EnemyView> enemies = new();
         readonly EntityViews<ProjectileView> projectiles = new();
@@ -38,6 +39,7 @@ namespace Hollow.Presentation
         {
             HandleEvents(w);
             playerView.Sync(w, alpha, catalog.Weapon(w.Player.Loadout.ActiveId));
+            if (companionView != null) companionView.Sync(w, alpha);
 
             foreach (var e in w.Enemies)
             {
@@ -75,6 +77,9 @@ namespace Hollow.Presentation
                 {
                     case SimEventType.EnemyHit:
                         if (enemies.TryGet(ev.EntityId, out var ev1)) ev1.Flash(flash);
+                        break;
+                    case SimEventType.CompanionHit:
+                        if (companionView != null) companionView.Flash(flash);
                         break;
                     case SimEventType.MeleeSwing:
                         float reach = ev.Direction.magnitude;

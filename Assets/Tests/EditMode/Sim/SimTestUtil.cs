@@ -22,9 +22,11 @@ namespace Hollow.Tests.Sim
             return layout;
         }
 
-        public static Simulation NewSim(ArenaLayout layout = null, BalanceProfile profile = null, ulong seed = 1)
+        /// <summary>A fresh simulation; the companion is removed unless asked for, so solo tests stay isolated.</summary>
+        public static Simulation NewSim(ArenaLayout layout = null, BalanceProfile profile = null, ulong seed = 1, bool companion = false)
         {
             var world = Simulation.NewWorld(profile ?? TestData.Baseline(), layout ?? OpenArena(), seed);
+            if (!companion) world.Companion.Present = false;
             return new Simulation(world);
         }
 

@@ -36,6 +36,14 @@ namespace Hollow.Sim
         public static void Step(World w)
         {
             w.PlayerField.SetTarget(w.Player.Position);
+            bool companion = CompanionSystem.Active(w);
+            if (companion) w.CompanionField.SetTarget(w.Companion.Position);
+            companionAttackers = 0;
+            foreach (var o in w.Enemies)
+            {
+                if (!companion && o.Target == TargetKind.Companion) o.Target = TargetKind.Player;
+                if (o.IsActive && o.Target == TargetKind.Companion) companionAttackers++;
+            }
             int count = w.Enemies.Count; // children spawned this tick start next tick
             for (int i = 0; i < count; i++)
             {
@@ -51,6 +59,7 @@ namespace Hollow.Sim
                 if (w.Clock.Tick < e.StunnedUntilTick) { e.Velocity = Vector2.zero; continue; }
 
                 var d = w.Profile.Enemy(e.Type);
+                ConsiderCompanion(w, e, d);
                 if (w.Player.Dead) { e.Velocity = Vector2.zero; }
                 else
                 {
@@ -66,8 +75,29 @@ namespace Hollow.Sim
 
         // ---------------------------------------------------------------- targets
 
-        public static Vector2 TargetPosition(World w, EnemyState e) => w.Player.Position;
-        static float TargetRadius(World w, EnemyState e) => w.Profile.Player.BodyRadius;
+        static int companionAttackers;
+
+        static bool TargetsCompanion(World w, EnemyState e) => e.Target == TargetKind.Companion && CompanionSystem.Active(w);
+
+        public static Vector2 TargetPosition(World w, EnemyState e) => TargetsCompanion(w, e) ? w.Companion.Position : w.Player.Position;
+
+        static float TargetRadius(World w, EnemyState e) =>
+            TargetsCompanion(w, e) ? w.Profile.Companion.BodyRadius : w.Profile.Player.BodyRadius;
+
+        /// <summary>
+        /// Opportunistic companion attacks (§4, D25): an enemy closer to the companion than to the player and within
+        /// range may switch, while fewer than the cap already target the companion. Only switches while chasing.
+        /// </summary>
+        static void ConsiderCompanion(World w, EnemyState e, EnemyData d)
+        {
+            if (e.Target != TargetKind.Player || e.Ai != EnemyAi.Chase || !d.CanTargetCompanion || !CompanionSystem.Active(w)) return;
+            if (companionAttackers >= w.Profile.Companion.AttackerCap) return;
+            float toCompanion = Vector2.Distance(e.Position, w.Companion.Position);
+            if (toCompanion > w.Profile.Companion.OpportunisticRange) return;
+            if (toCompanion >= Vector2.Distance(e.Position, w.Player.Position)) return;
+            e.Target = TargetKind.Companion;
+            companionAttackers++;
+        }
 
         static float Gap(World w, EnemyState e) =>
             Vector2.Distance(e.Position, TargetPosition(w, e)) - e.Radius - TargetRadius(w, e);
@@ -219,7 +249,7 @@ namespace Hollow.Sim
 
         static void MoveToward(World w, EnemyState e, EnemyData d, Vector2 target)
         {
-            Vector2 dir = w.PlayerField.Direction(e.Position, target);
+            Vector2 dir = (TargetsCompanion(w, e) ? w.CompanionField : w.PlayerField).Direction(e.Position, target);
             float speed = d.MoveSpeed * (w.Clock.Tick < e.SpeedBoostUntilTick ? 1f + w.Profile.Enemy(EnemyId.A5_HowlingWolf).AuraSpeedBonus : 1f);
             e.Velocity = dir * speed;
             if (dir.sqrMagnitude > 1e-6f) e.Facing = dir;
@@ -235,7 +265,8 @@ namespace Hollow.Sim
         static void DamageTarget(World w, EnemyState e, float amount)
         {
             Vector2 dir = SimMath.SafeNormal(TargetPosition(w, e) - e.Position, e.Facing);
-            PlayerSystem.Damage(w, amount, dir);
+            if (TargetsCompanion(w, e)) CompanionSystem.Damage(w, amount, dir);
+            else PlayerSystem.Damage(w, amount, dir);
         }
 
         /// <summary>Pushes the enemy away from a hit (visual reaction with a small, data-driven displacement).</summary>

@@ -60,14 +60,24 @@ namespace Hollow.Sim
         static void StepEnemyShot(World w, ProjectileState p, Vector2 from, Vector2 to, float wallT)
         {
             var pl = w.Player;
-            if (pl.Dead) return;
-            float t = SimMath.SegmentCircleHit(from, to, pl.Position, w.Profile.Player.BodyRadius + p.Radius);
-            if (t < 0 || t > wallT) return;
-            p.Position = Vector2.Lerp(from, to, t);
-            PlayerSystem.Damage(w, p.Damage, p.Velocity.normalized);
+            float tPlayer = pl.Dead ? -1 : SimMath.SegmentCircleHit(from, to, pl.Position, w.Profile.Player.BodyRadius + p.Radius);
+            float tCompanion = CompanionSystem.Active(w)
+                ? SimMath.SegmentCircleHit(from, to, w.Companion.Position, w.Profile.Companion.BodyRadius + p.Radius) : -1;
+            bool hitsPlayer = tPlayer >= 0 && tPlayer <= wallT;
+            bool hitsCompanion = tCompanion >= 0 && tCompanion <= wallT;
+            if (!hitsPlayer && !hitsCompanion) return;
+            if (hitsPlayer && (!hitsCompanion || tPlayer <= tCompanion))
+            {
+                p.Position = Vector2.Lerp(from, to, tPlayer);
+                PlayerSystem.Damage(w, p.Damage, p.Velocity.normalized);
+            }
+            else
+            {
+                p.Position = Vector2.Lerp(from, to, tCompanion);
+                CompanionSystem.Damage(w, p.Damage, p.Velocity.normalized);
+            }
             Kill(w, p);
         }
-
         static void StepFriendlyShot(World w, ProjectileState p, Vector2 from, Vector2 to, float wallT)
         {
             Vector2 mid = (from + to) * 0.5f;

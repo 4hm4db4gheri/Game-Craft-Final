@@ -66,6 +66,30 @@ namespace Hollow.EditorTools
             return Save(root, "PH_Player");
         }
 
+        public static GameObject BuildCompanion()
+        {
+            var root = new GameObject("PH_Companion");
+            root.AddComponent<SortingGroup>();
+            var view = root.AddComponent<CompanionView>();
+            AddSprite(root.transform, "Shadow", "PH_Shadow", Color.white, Vector3.zero, new Vector3(0.8f, 0.7f, 1), -10);
+            var body = new GameObject("Body").transform;
+            body.SetParent(root.transform, false);
+            var overalls = AddSprite(body, "Overalls", "PH_Capsule", new Color(0.32f, 0.42f, 0.58f), new Vector3(0, 0.75f, 0), new Vector3(0.55f, 0.75f, 1), 0);
+            var vest = AddSprite(body, "Vest", "PH_Square", new Color(0.78f, 0.62f, 0.22f), new Vector3(0, 0.95f, 0), new Vector3(0.5f, 0.45f, 1), 1);
+            var head = AddSprite(body, "Head", "PH_Circle", new Color(0.86f, 0.72f, 0.6f), new Vector3(0, 1.5f, 0), new Vector3(0.38f, 0.38f, 1), 2);
+            var gun = AddSprite(body, "Rifle", "PH_Square", new Color(0.35f, 0.3f, 0.26f), new Vector3(0.3f, 0.95f, 0), new Vector3(0.5f, 0.09f, 1), 3);
+            var danger = AddSprite(root.transform, "Danger", "PH_Diamond", new Color(1f, 0.29f, 0.11f), new Vector3(0, 1.85f, 0), new Vector3(0.3f, 0.3f, 1), 50);
+            var so = new SerializedObject(view);
+            so.FindProperty("body").objectReferenceValue = body;
+            var arr = so.FindProperty("bodyRenderers");
+            var list = new[] { overalls, vest, head, gun };
+            arr.arraySize = list.Length;
+            for (int i = 0; i < list.Length; i++) arr.GetArrayElementAtIndex(i).objectReferenceValue = list[i];
+            so.FindProperty("danger").objectReferenceValue = danger;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return Save(root, "PH_Companion");
+        }
+
         public static GameObject BuildReticle()
         {
             var root = new GameObject("PH_Reticle");

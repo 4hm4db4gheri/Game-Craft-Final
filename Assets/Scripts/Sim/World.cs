@@ -21,6 +21,8 @@ namespace Hollow.Sim
         public bool SafeInterval;
 
         public PlayerState Player = new();
+        public CompanionState Companion = new();
+        public FailureReason Failure;
         public List<EnemyState> Enemies = new();
         public List<ProjectileState> Projectiles = new();
         public List<CoinState> Coins = new();
@@ -30,6 +32,7 @@ namespace Hollow.Sim
         [JsonIgnore] public ArenaLayout Layout;
         [JsonIgnore] public ArenaGrid Arena;
         [JsonIgnore] public FlowField PlayerField;
+        [JsonIgnore] public FlowField CompanionField;
         [JsonIgnore] public SpatialHash Crowd;
 
         /// <summary>Accumulates until the presentation layer drains it.</summary>
@@ -47,6 +50,7 @@ namespace Hollow.Sim
             Layout = layout;
             Arena = ArenaGrid.FromLayout(layout, Phase);
             PlayerField = new FlowField(Arena);
+            CompanionField = new FlowField(Arena);
             Crowd = new SpatialHash(2f);
         }
 

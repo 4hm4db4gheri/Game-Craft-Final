@@ -41,7 +41,13 @@
     "FollowDistanceMin": 2.5,
     "FollowDistanceMax": 4.0,
     "OpportunisticRange": 3.0,
-    "WarningSoundCooldown": 2.5
+    "WarningSoundCooldown": 2.5,
+    "ProjectileRange": 10.0,
+    "FollowSideBias": 0.6,
+    "FollowArriveRadius": 0.5,
+    "PathClearance": 0.3,
+    "DangerIndicatorTime": 1.5,
+    "CatchUpSpeedFactor": 1.15
   },
   "Spawning": {
     "BatchShares": [

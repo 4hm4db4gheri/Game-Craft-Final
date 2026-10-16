@@ -102,6 +102,7 @@ namespace Hollow.Sim
             {
                 p.Health = 0;
                 p.Dead = true;
+                if (w.Failure == FailureReason.None) w.Failure = FailureReason.PlayerDied;
                 w.Emit(SimEventType.PlayerDied, PlayerState.EntityId, p.Position, travelDir);
             }
             return true;

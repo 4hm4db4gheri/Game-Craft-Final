@@ -76,6 +76,7 @@ namespace Hollow.EditorTools
             var playerPrefab = PrefabBuilder.BuildPlayer();
             var reticlePrefab = PrefabBuilder.BuildReticle();
             var shopPrefab = PrefabBuilder.BuildShop();
+            var companionPrefab = PrefabBuilder.BuildCompanion();
             var catalog = EnemyPrefabBuilder.BuildAll();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -87,6 +88,7 @@ namespace Hollow.EditorTools
             shop.transform.position = arena.Shop.position + Vector3.down * 0.5f;
 
             var player = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab);
+            var companion = (GameObject)PrefabUtility.InstantiatePrefab(companionPrefab);
             var reticle = (GameObject)PrefabUtility.InstantiatePrefab(reticlePrefab);
 
             // Camera: follow target + Cinemachine camera confined to the arena.
@@ -114,7 +116,7 @@ namespace Hollow.EditorTools
             // Reload by path: creating the scene can unload assets made earlier in this call.
             catalog = AssetDatabase.LoadAssetAtPath<VisualCatalog>(EnemyPrefabBuilder.CatalogPath);
             var presenter = new GameObject("WorldPresenter").AddComponent<WorldPresenter>();
-            Wire(presenter, ("catalog", catalog), ("playerView", player.GetComponent<PlayerView>()));
+            Wire(presenter, ("catalog", catalog), ("playerView", player.GetComponent<PlayerView>()), ("companionView", companion.GetComponent<CompanionView>()));
 
             var session = new GameObject("GameSession").AddComponent<GameSession>();
             Wire(session, ("worldCamera", cam), ("arena", arena), ("presenter", presenter),

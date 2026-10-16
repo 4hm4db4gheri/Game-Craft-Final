@@ -24,6 +24,7 @@ namespace Hollow.Game
 
         HudView hud;
         XpCardScreen xpScreen;
+        FailureScreen failureScreen;
 
         GameApp app;
         SimDriver driver;
@@ -46,6 +47,8 @@ namespace Hollow.Game
             hud.Init(ui);
             xpScreen = ui.gameObject.AddComponent<XpCardScreen>();
             xpScreen.Init(ui);
+            failureScreen = ui.gameObject.AddComponent<FailureScreen>();
+            failureScreen.Init(ui, RetryAfterFailure, RetryAfterFailure, () => app.GoToMainMenu());
 
             driver = new SimDriver(app.States, StepOnce);
             app.States.Transition(GameState.Playing);
@@ -71,12 +74,20 @@ namespace Hollow.Game
             presenter.Sync(w, alpha);
             cameraRig.Sync(w, alpha);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
-            hud.Sync(w);
+            hud.Sync(w, worldCamera);
             w.Events.Clear();
 
-            if (app.States.Current == GameState.Playing && w.Progress.Pending != null) OpenXpChoice();
+            if (app.States.Current == GameState.Playing && w.Failure != FailureReason.None) { app.States.Transition(GameState.Failure); failureScreen.Show(w.Failure); }
+            else if (app.States.Current == GameState.Playing && w.Progress.Pending != null) OpenXpChoice();
         }
     
+        /// <summary>Until death checkpoints exist (T17) a retry restarts the run.</summary>
+        void RetryAfterFailure()
+        {
+            app.States.Transition(GameState.Loading);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(SceneNames.Game);
+        }
+
         // ---------------------------------------------------------------- XP choice (world fully paused)
 
         void OpenXpChoice()

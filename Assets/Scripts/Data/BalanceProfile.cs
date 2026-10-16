@@ -101,6 +101,16 @@ namespace Hollow.Data
         [Placeholder, Unit("u")] public float FollowDistanceMax;
         [Placeholder, Unit("u")] public float OpportunisticRange;
         [Placeholder, Unit("s")] public float WarningSoundCooldown;
+        [Placeholder, Unit("u")] public float ProjectileRange;
+        /// <summary>0 = straight behind the player, 1 = fully beside.</summary>
+        [Placeholder] public float FollowSideBias;
+        [Placeholder, Unit("u")] public float FollowArriveRadius;
+        /// <summary>Extra clearance kept from the line ahead of the moving player.</summary>
+        [Placeholder, Unit("u")] public float PathClearance;
+        /// <summary>How long the danger indicator stays after a hit.</summary>
+        [Placeholder, Unit("s")] public float DangerIndicatorTime;
+        /// <summary>Beyond the follow distance the companion moves at least this multiple of the player's speed.</summary>
+        [Placeholder] public float CatchUpSpeedFactor;
     }
 
     [Serializable]

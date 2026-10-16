@@ -24,6 +24,8 @@ namespace Hollow.Sim
         {
             if (!e.Alive || amount <= 0) return 0;
             float dealt = amount * ArmorMultiplier(w, e, travelDir, ignoresArmor);
+            // Attacking an enemy draws it away from the companion (§4).
+            if (source == DamageSource.Weapon || source == DamageSource.Melee || source == DamageSource.Dash) e.Target = TargetKind.Player;
             e.Health -= dealt;
             w.Emit(SimEventType.EnemyHit, e.Id, e.Position, travelDir, dealt, (int)source);
             if (e.Health <= 0)

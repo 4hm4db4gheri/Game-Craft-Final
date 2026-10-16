@@ -15,7 +15,7 @@ namespace Hollow.UI
     {
         UIRoot root;
         BarView health, companion, xp, reload;
-        TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText;
+        TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText, companionArrow;
         readonly StringBuilder sb = new(128);
 
         public void Init(UIRoot uiRoot)
@@ -46,13 +46,18 @@ namespace Hollow.UI
             walletText = UIFactory.Text(wallet, "Text", "", t, 32, TextAlignmentOptions.MidlineRight, t.Coin);
             var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -80), new Vector2(1200, 90));
             statusText = UIFactory.Text(status, "Text", "", t, 30, TextAlignmentOptions.Center, t.Accent);
+
+            var arrow = UIFactory.Rect(hud, "CompanionArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
+            companionArrow = UIFactory.Text(arrow, "Glyph", "▲", t, 48, TextAlignmentOptions.Center, t.Warning);
+            arrow.gameObject.SetActive(false);
         }
 
         public void SetStatus(string message) => statusText.text = message ?? "";
         public void SetTop(string text) => topText.text = text ?? "";
 
-        public void Sync(World w)
+        public void Sync(World w, Camera cam)
         {
+            SyncCompanion(w, cam);
             var p = w.Player;
             float max = PlayerStats.MaxHealth(w);
             health.Set(p.Health / max);
@@ -89,6 +94,31 @@ namespace Hollow.UI
             if (data.Kind == WeaponKind.Gun) sb.Append($"{o.Ammo}/{level.Magazine} | ∞");
             else sb.Append("melee");
             if (!active) sb.Append("</color>");
+        }
+    
+        /// <summary>Companion health bar and the screen-edge danger arrow when he is hurt off-screen (§4).</summary>
+        void SyncCompanion(World w, Camera cam)
+        {
+            var c = w.Companion;
+            companion.gameObject.SetActive(c.Present);
+            var arrowRt = (RectTransform)companionArrow.transform.parent;
+            if (!c.Present) { arrowRt.gameObject.SetActive(false); return; }
+            companion.Set(c.Health / Mathf.Max(1f, c.MaxHealth));
+            companionText.text = $"Operator {Mathf.CeilToInt(c.Health)}";
+
+            float since = (w.Clock.Tick - c.LastHitTick) * Hollow.Core.SimClock.Dt;
+            bool recentlyHit = !c.Dead && since < w.Profile.Companion.DangerIndicatorTime;
+            Vector3 vp = cam != null ? cam.WorldToViewportPoint(c.Position) : new Vector3(0.5f, 0.5f, 0);
+            bool offScreen = vp.x < 0.02f || vp.x > 0.98f || vp.y < 0.02f || vp.y > 0.98f;
+            arrowRt.gameObject.SetActive(recentlyHit && offScreen);
+            if (!(recentlyHit && offScreen)) return;
+
+            Vector2 dir = new Vector2(vp.x - 0.5f, vp.y - 0.5f);
+            float scale = 0.45f / Mathf.Max(Mathf.Abs(dir.x), Mathf.Abs(dir.y));
+            Vector2 edge = dir * scale;
+            var hudRect = root.Hud.rect;
+            arrowRt.anchoredPosition = new Vector2(edge.x * hudRect.width, edge.y * hudRect.height);
+            arrowRt.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f);
         }
     }
 }

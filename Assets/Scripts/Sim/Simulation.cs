@@ -20,6 +20,7 @@ namespace Hollow.Sim
             w.Bind(profile, layout);
             PlayerSystem.Spawn(w, layout.PlayerStart);
             WeaponSystem.Give(w, WeaponId.Pistol);
+            CompanionSystem.SpawnForPhase(w, layout.CompanionStart);
             return w;
         }
 
@@ -29,6 +30,7 @@ namespace Hollow.Sim
             PlayerSystem.Step(w, cmd);
             w.Crowd.Rebuild(w.Enemies);
             WeaponSystem.Step(w, cmd);
+            CompanionSystem.Step(w);
             EnemySystem.Step(w);
             EnemySystem.Separate(w);
             ProjectileSystem.Step(w);
