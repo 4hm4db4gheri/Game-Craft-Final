@@ -7,7 +7,9 @@ namespace Hollow.App
     {
         void Start()
         {
-            GameApp.Ensure().GoToMainMenu();
+            var app = GameApp.Ensure();
+            if (GameApp.StressRequested) UnityEngine.SceneManagement.SceneManager.LoadScene(SceneNames.Game); // straight to the stress test
+            else app.GoToMainMenu();
         }
     }
 }

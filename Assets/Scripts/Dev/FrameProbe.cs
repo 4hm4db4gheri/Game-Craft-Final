@@ -22,6 +22,7 @@ namespace Hollow.Dev
         float until;
         string label;
         int gcStart;
+        long peakAllocated, peakMono;
 
         public static FrameProbe Run(float seconds, string label)
         {
@@ -41,6 +42,8 @@ namespace Hollow.Dev
             if (Done) return;
             frames.Add(Time.unscaledDeltaTime);
             if (gcAlloc.Valid) allocs.Add(gcAlloc.LastValue);
+            peakAllocated = System.Math.Max(peakAllocated, UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong());
+            peakMono = System.Math.Max(peakMono, UnityEngine.Profiling.Profiler.GetMonoUsedSizeLong());
             if (Time.unscaledTime >= until) Finish();
         }
 
@@ -60,11 +63,13 @@ namespace Hollow.Dev
             var c = CultureInfo.InvariantCulture;
             Report = string.Format(c,
                 "{0}: {1} frames, avg {2:F2} ms ({3:F0} fps), p95 {4:F2} ms, p99 {5:F2} ms, max {6:F2} ms; GC alloc avg {7:F0} B/frame, gen0 collections {8}; " +
+                "memory peak: Unity allocated {16:F0} MB, managed heap used {17:F0} MB; " +
                 "{9}; CPU {10} ({11} threads), GPU {12}, RAM {13} MB, screen {14}x{15}",
                 label, frames.Count, avg * 1000f, 1f / Mathf.Max(1e-6f, avg), P(0.95f) * 1000f, P(0.99f) * 1000f, sorted.Count > 0 ? sorted[^1] * 1000f : 0f,
                 allocs.Count > 0 ? allocSum / (double)allocs.Count : 0, System.GC.CollectionCount(0) - gcStart,
                 Application.isEditor ? "Editor play mode" : Debug.isDebugBuild ? "development build" : "release build",
-                SystemInfo.processorType, SystemInfo.processorCount, SystemInfo.graphicsDeviceName, SystemInfo.systemMemorySize, Screen.width, Screen.height);
+                SystemInfo.processorType, SystemInfo.processorCount, SystemInfo.graphicsDeviceName, SystemInfo.systemMemorySize, Screen.width, Screen.height,
+                peakAllocated / 1048576.0, peakMono / 1048576.0);
             Debug.Log("[Hollow perf] " + Report);
         }
 

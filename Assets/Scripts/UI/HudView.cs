@@ -115,8 +115,28 @@ namespace Hollow.UI
             bossText.text = name;
         }
 
-        public void SetStatus(string message) => statusText.text = message ?? "";
-        public void SetTop(string text) => topText.text = text ?? "";
+        public void SetStatus(string message)
+        {
+            if (message == lastStatus) return;
+            lastStatus = message;
+            statusText.text = message ?? "";
+        }
+
+        public void SetTop(string text)
+        {
+            if (text == lastTop) return;
+            lastTop = text;
+            topText.text = text ?? "";
+        }
+
+        string dimHex;
+        string DimHex => dimHex ??= ColorUtility.ToHtmlStringRGB(root.Theme.TextDim);
+
+        // Texts are rebuilt only when what they show changes: no string garbage per frame in combat (G7, T21).
+        int lastHealth = int.MinValue, lastMaxHealth, lastXpToward = int.MinValue, lastXpNext, lastXpTotal = int.MinValue, lastWallet = int.MinValue;
+        int lastWeaponKey;
+        bool lastMaxed;
+        string lastTop, lastStatus;
 
         public void Sync(World w, Camera cam)
         {
@@ -125,15 +145,26 @@ namespace Hollow.UI
             var p = w.Player;
             float max = PlayerStats.MaxHealth(w);
             health.Set(p.Health / max);
-            healthText.text = $"{Mathf.CeilToInt(p.Health)} / {max:0}";
+            int hp = Mathf.CeilToInt(p.Health), maxHp = Mathf.RoundToInt(max);
+            if (hp != lastHealth || maxHp != lastMaxHealth)
+            {
+                lastHealth = hp;
+                lastMaxHealth = maxHp;
+                healthText.text = $"{hp} / {maxHp}";
+            }
 
             var L = p.Loadout;
             if (L.Owned.Count > 0)
             {
-                sb.Clear();
-                AppendWeapon(w, L.SlotPistol, L.ActiveSlot == 1, 1);
-                if (L.HasPrimary) { sb.Append('\n'); AppendWeapon(w, L.SlotPrimary, L.ActiveSlot == 2, 2); }
-                weaponText.text = sb.ToString();
+                int key = WeaponKey(w);
+                if (key != lastWeaponKey)
+                {
+                    lastWeaponKey = key;
+                    sb.Clear();
+                    AppendWeapon(w, L.SlotPistol, L.ActiveSlot == 1, 1);
+                    if (L.HasPrimary) { sb.Append('\n'); AppendWeapon(w, L.SlotPrimary, L.ActiveSlot == 2, 2); }
+                    weaponText.text = sb.ToString();
+                }
                 reload.gameObject.SetActive(L.Reloading);
                 if (L.Reloading)
                     reload.Set(1f - (L.ReloadEndTick - w.Clock.Tick) / (float)Mathf.Max(1, L.ReloadTotalTicks));
@@ -142,8 +173,28 @@ namespace Hollow.UI
             int next = XpSystem.NextThreshold(w);
             bool maxed = XpSystem.AllSkillsMaxed(w);
             xp.Set(maxed ? 1f : w.Progress.XpTowardNext / (float)Mathf.Max(1, next));
-            xpText.text = maxed ? $"XP {w.Progress.TotalXp}" : $"XP {w.Progress.XpTowardNext} / {next}";
-            walletText.text = $"{w.Progress.Wallet} ¢";
+            if (maxed != lastMaxed || w.Progress.XpTowardNext != lastXpToward || next != lastXpNext || (maxed && w.Progress.TotalXp != lastXpTotal))
+            {
+                lastMaxed = maxed;
+                lastXpToward = w.Progress.XpTowardNext;
+                lastXpNext = next;
+                lastXpTotal = w.Progress.TotalXp;
+                xpText.text = maxed ? $"XP {w.Progress.TotalXp}" : $"XP {w.Progress.XpTowardNext} / {next}";
+            }
+            if (w.Progress.Wallet != lastWallet)
+            {
+                lastWallet = w.Progress.Wallet;
+                walletText.text = $"{w.Progress.Wallet} ¢";
+            }
+        }
+
+        /// <summary>Everything the weapon panel shows, folded into one number.</summary>
+        static int WeaponKey(World w)
+        {
+            var L = w.Player.Loadout;
+            int h = L.ActiveSlot * 31 + (L.HasPrimary ? 7 : 0);
+            foreach (var o in L.Owned) h = h * 397 ^ ((int)o.Id * 1000003 + o.Level * 1009 + o.Ammo);
+            return h;
         }
 
         void AppendWeapon(World w, WeaponId id, bool active, int key)
@@ -152,8 +203,7 @@ namespace Hollow.UI
             if (o == null) return;
             var data = w.Profile.Weapon(id);
             var level = WeaponSystem.LevelData(w, o);
-            string dim = ColorUtility.ToHtmlStringRGB(root.Theme.TextDim);
-            if (!active) sb.Append($"<color=#{dim}>");
+            if (!active) sb.Append("<color=#").Append(DimHex).Append('>');
             sb.Append($"[{key}] {data.DisplayName} Lv{o.Level}   ");
             if (data.Kind == WeaponKind.Gun) sb.Append($"{o.Ammo}/{level.Magazine} | ∞");
             else sb.Append("melee");
@@ -161,6 +211,8 @@ namespace Hollow.UI
         }
     
         static readonly string[] ItemLetters = { "GRN", "PSH", "MIN", "EMP", "SHD" };
+        static readonly ItemId[] AllItems = (ItemId[])System.Enum.GetValues(typeof(ItemId));
+        readonly int[] itemKeys = { -1, -1, -1, -1, -1 };
 
         /// <summary>Five slots in the saved order: quantity, selection, lock and the shared use gap (§10).</summary>
         void SyncItems(World w)
@@ -168,7 +220,7 @@ namespace Hollow.UI
             var inv = w.Inventory;
             int n = 0;
             foreach (var s in inv.Slots) if (n < 5) itemOrder[n++] = s.Id;
-            foreach (ItemId id in System.Enum.GetValues(typeof(ItemId))) if (n < 5 && inv.Get(id) == null) itemOrder[n++] = id;
+            foreach (var id in AllItems) if (n < 5 && inv.Get(id) == null) itemOrder[n++] = id;
             float gap = Mathf.Clamp01((inv.NextUseTick - w.Clock.Tick) / (float)Mathf.Max(1, w.Ticks(w.Profile.Economy.ItemUseGap)));
             for (int i = 0; i < 5; i++)
             {
@@ -177,9 +229,13 @@ namespace Hollow.UI
                 bool locked = data.UnlockPhase > w.Phase;
                 int count = inv.Count(id);
                 bool held = inv.Holding && inv.Held == id;
-                string dim = ColorUtility.ToHtmlStringRGB(root.Theme.TextDim);
-                itemTexts[i].text = locked ? $"<color=#{dim}>{ItemLetters[(int)id]}\n<size=14>phase {data.UnlockPhase}</size></color>"
-                    : $"<b>{ItemLetters[(int)id]}</b>\n{count}/{data.Carry}{(i == 0 ? "  <size=13>[F]</size>" : "")}";
+                int key = ((int)id + 1) * 100000 + (locked ? 50000 : 0) + count * 100 + data.Carry * 3 + (i == 0 ? 1 : 0);
+                if (itemKeys[i] != key)
+                {
+                    itemKeys[i] = key;
+                    itemTexts[i].text = locked ? $"<color=#{DimHex}>{ItemLetters[(int)id]}\n<size=14>phase {data.UnlockPhase}</size></color>"
+                        : $"<b>{ItemLetters[(int)id]}</b>\n{count}/{data.Carry}{(i == 0 ? "  <size=13>[F]</size>" : "")}";
+                }
                 itemButtons[i].interactable = !locked && count > 0;
                 itemFrames[i].color = held ? root.Theme.Accent : gap > 0 && count > 0 ? new Color(1, 1, 1, 0.5f + 0.5f * (1 - gap)) : Color.white;
             }

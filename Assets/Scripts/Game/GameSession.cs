@@ -50,7 +50,8 @@ namespace Hollow.Game
         void Start()
         {
             app = GameApp.Ensure();
-            app.EnterGameDirectly();
+            // Played directly (Editor tests, stress runs): saves go to a separate folder, never the player's slots.
+            if (app.EnterGameDirectly()) SlotStore.RootOverride = System.IO.Path.Combine(Application.persistentDataPath, "dev_saves");
             app.WorldCamera = worldCamera;
             layout = ArenaLayoutStore.LoadFromResources();
 
@@ -73,6 +74,7 @@ namespace Hollow.Game
             app.Balance.Applied += OnBalanceApplied;
             GameSettings.Changed += ApplyFeelSettings;
             ApplyFeelSettings();
+            if (StressRun.Requested) gameObject.AddComponent<StressRun>().Init(this);
             audio = AudioBridge.Attach();
             driver = new SimDriver(app.States, StepOnce);
 
@@ -158,7 +160,16 @@ namespace Hollow.Game
             else audio.PlayMusic(world.Phase);
         }
 
-        void StepOnce() => Sim.Step(app.Router.Consume());
+        /// <summary>Dev tools (stress run): replaces player input with a scripted command for each tick.</summary>
+        public Func<World, Hollow.Core.Input.PlayerCommand> CommandOverride { get; set; }
+
+        void StepOnce() => Sim.Step(CommandOverride != null ? CommandOverride(W) : app.Router.Consume());
+
+        /// <summary>Dev tools: plays through the current dialogue scene at once.</summary>
+        public void FinishSceneNow()
+        {
+            for (int i = 0; i < 64 && app.States.Current == GameState.Scene; i++) dialogue.Next();
+        }
 
         /// <summary>Dev tools changed the phase directly: show the matching obstacle layout.</summary>
         public void OnPhaseChangedByTool()
@@ -229,7 +240,19 @@ namespace Hollow.Game
         void SyncEncounter(World w)
         {
             var ws = w.Waves;
-            string top = ws.Kind switch
+            int secondsLeft = ws.Kind == EncounterKind.SafeInterval ? Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)) : 0;
+            long key = ((((long)ws.Kind * 8 + w.Phase) * 16 + ws.Wave) * 4096 + WaveSystem.AliveCount(w)) * 1024 + secondsLeft;
+            if (key != lastTopKey) { lastTopKey = key; hud.SetTop(TopLine(w)); } // rebuilt only when it changes (T21)
+            var b = w.Boss;
+            hud.SetBoss(b.Active ? BossName(b.Id) : null, b.Active ? b.Health / b.MaxHealth : 0);
+        }
+
+        long lastTopKey = -1;
+
+        static string TopLine(World w)
+        {
+            var ws = w.Waves;
+            return ws.Kind switch
             {
                 EncounterKind.SafeInterval => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} cleared — next wave in {Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))} s  (Enter: start now)",
                 EncounterKind.BossPrep => $"Phase {w.Phase} · boss encounter ready — shop, then press Enter when ready",
@@ -237,9 +260,6 @@ namespace Hollow.Game
                 EncounterKind.PhaseComplete => $"Phase {w.Phase} · encounter won",
                 _ => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} · Enemies {WaveSystem.AliveCount(w)}",
             };
-            hud.SetTop(top);
-            var b = w.Boss;
-            hud.SetBoss(b.Active ? BossName(b.Id) : null, b.Active ? b.Health / b.MaxHealth : 0);
         }
 
         static string BossName(BossId id) => id switch

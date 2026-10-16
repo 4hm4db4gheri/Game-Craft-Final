@@ -122,11 +122,18 @@ namespace Hollow.App
         }
 
         /// <summary>Editor convenience: the Game scene was played directly, skip the menus.</summary>
-        public void EnterGameDirectly()
+        /// <returns>True when the game was entered without the menus (tools, tests): such runs must not touch real save slots.</returns>
+        public bool EnterGameDirectly()
         {
+            bool direct = States.Current == GameState.Boot;
             if (States.Current == GameState.Boot) States.Transition(GameState.MainMenu);
             if (States.Current == GameState.MainMenu) States.Transition(GameState.Loading);
+            return direct;
         }
+
+        /// <summary>Dev builds started with -hollowStress go straight to the Game scene (stress test, T21).</summary>
+        public static bool StressRequested =>
+            (Application.isEditor || Debug.isDebugBuild) && System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-hollowStress") >= 0;
 
         public void Quit()
         {

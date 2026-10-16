@@ -41,6 +41,7 @@ namespace Hollow.Sim
 
         public static void Collect(World w, CoinState c)
         {
+            if (!c.Alive) return; // a coin is paid once, even if two paths reach it in the same tick
             c.Alive = false;
             w.Progress.Wallet += c.Value;
             w.Progress.CoinsCollected += c.Value;

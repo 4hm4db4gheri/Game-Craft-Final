@@ -39,5 +39,5 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T18 | Balance panel completion, dev tools (F10), telemetry | §13 | done | telemetry JSON per run (observed vs calculated); dev panel boss start + starting state, stripped from release builds; apply-rule tests; 10 gameplay literals moved to data, guard test + `docs/CONSTANTS_SCAN.md`; 394 tests |
 | T19 | Audio (CC0 SFX + music) | §14 | done | 46 cues, all with CC0 files (71 Kenney effect files + 3 OpenGameArt loops, 5.5 MB), each logged in CREDITS.md; every cue played in Play mode; warnings bus never ducked; victory jingle then silence |
 | T20 | Tutorial pass and readability checklist | §6 §15 | done | `docs/T20_CHECKLIST.md`: opening completed with real input only; guide arrow to the shop, shop and slot-2 hints added; 3 readability tests; §15: 3 pass, 4 need a human test (perception never marked passed) |
-| T21 | Stress test, performance, bot playthrough | §6 §13 §16 | todo | |
+| T21 | Stress test, performance, bot playthrough | §6 §13 §16 | done | `docs/PERFORMANCE_REPORT.md`: bot plays 15 waves + 3 bosses (seed 2026) with exact rewards and no drift; worst case P3W5 in a dev build at 1080p: 60 fps locked, 605 fps uncapped (p99 3.1 ms), 2.7–3.3 KB GC/frame, 185 MB; release-build fps not measured |
 | T22 | Final verification, Windows build, release notes | §16 | todo | |
