@@ -12,6 +12,7 @@ namespace Hollow.Sim
         public static void EnterPhase(World w, int phase)
         {
             w.Phase = phase;
+            ItemSystem.ClearMines(w);
             w.Arena = ArenaGrid.FromLayout(w.Layout, phase);
             w.PlayerField = new FlowField(w.Arena);
             w.CompanionField = new FlowField(w.Arena);

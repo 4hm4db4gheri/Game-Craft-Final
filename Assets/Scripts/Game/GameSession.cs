@@ -49,6 +49,7 @@ namespace Hollow.Game
 
             hud = ui.gameObject.AddComponent<HudView>();
             hud.Init(ui);
+            hud.ItemClicked = id => { if (app.States.Current == GameState.Playing) ItemSystem.Equip(W, id); };
             xpScreen = ui.gameObject.AddComponent<XpCardScreen>();
             xpScreen.Init(ui);
             shopPanel = ui.gameObject.AddComponent<ShopPanel>();

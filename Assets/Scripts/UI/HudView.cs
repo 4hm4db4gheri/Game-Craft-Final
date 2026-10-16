@@ -17,6 +17,13 @@ namespace Hollow.UI
         BarView health, companion, xp, reload;
         TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText, companionArrow;
         readonly StringBuilder sb = new(128);
+        readonly UnityEngine.UI.Button[] itemButtons = new UnityEngine.UI.Button[5];
+        readonly TextMeshProUGUI[] itemTexts = new TextMeshProUGUI[5];
+        readonly UnityEngine.UI.Image[] itemFrames = new UnityEngine.UI.Image[5];
+        readonly ItemId[] itemOrder = new ItemId[5];
+
+        /// <summary>Clicking an item icon only equips it (§10).</summary>
+        public System.Action<ItemId> ItemClicked;
 
         public void Init(UIRoot uiRoot)
         {
@@ -47,6 +54,16 @@ namespace Hollow.UI
             var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -80), new Vector2(1200, 90));
             statusText = UIFactory.Text(status, "Text", "", t, 30, TextAlignmentOptions.Center, t.Accent);
 
+            for (int i = 0; i < itemButtons.Length; i++)
+            {
+                int index = i;
+                var b = UIFactory.Button(hud, $"Item{i}", "", t, new Vector2(0.5f, 0), new Vector2(-220 + i * 110, 75), new Vector2(96, 72),
+                    () => ItemClicked?.Invoke(itemOrder[index]), out var label, 18);
+                itemButtons[i] = b;
+                itemTexts[i] = label;
+                itemFrames[i] = b.GetComponent<UnityEngine.UI.Image>();
+            }
+
             var arrow = UIFactory.Rect(hud, "CompanionArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
             companionArrow = UIFactory.Text(arrow, "Glyph", "▲", t, 48, TextAlignmentOptions.Center, t.Warning);
             arrow.gameObject.SetActive(false);
@@ -58,6 +75,7 @@ namespace Hollow.UI
         public void Sync(World w, Camera cam)
         {
             SyncCompanion(w, cam);
+            SyncItems(w);
             var p = w.Player;
             float max = PlayerStats.MaxHealth(w);
             health.Set(p.Health / max);
@@ -96,6 +114,31 @@ namespace Hollow.UI
             if (!active) sb.Append("</color>");
         }
     
+        static readonly string[] ItemLetters = { "GRN", "PSH", "MIN", "EMP", "SHD" };
+
+        /// <summary>Five slots in the saved order: quantity, selection, lock and the shared use gap (§10).</summary>
+        void SyncItems(World w)
+        {
+            var inv = w.Inventory;
+            int n = 0;
+            foreach (var s in inv.Slots) if (n < 5) itemOrder[n++] = s.Id;
+            foreach (ItemId id in System.Enum.GetValues(typeof(ItemId))) if (n < 5 && inv.Get(id) == null) itemOrder[n++] = id;
+            float gap = Mathf.Clamp01((inv.NextUseTick - w.Clock.Tick) / (float)Mathf.Max(1, w.Ticks(w.Profile.Economy.ItemUseGap)));
+            for (int i = 0; i < 5; i++)
+            {
+                var id = itemOrder[i];
+                var data = w.Profile.Item(id);
+                bool locked = data.UnlockPhase > w.Phase;
+                int count = inv.Count(id);
+                bool held = inv.Holding && inv.Held == id;
+                string dim = ColorUtility.ToHtmlStringRGB(root.Theme.TextDim);
+                itemTexts[i].text = locked ? $"<color=#{dim}>{ItemLetters[(int)id]}\n<size=14>phase {data.UnlockPhase}</size></color>"
+                    : $"<b>{ItemLetters[(int)id]}</b>\n{count}/{data.Carry}{(i == 0 ? "  <size=13>[F]</size>" : "")}";
+                itemButtons[i].interactable = !locked && count > 0;
+                itemFrames[i].color = held ? root.Theme.Accent : gap > 0 && count > 0 ? new Color(1, 1, 1, 0.5f + 0.5f * (1 - gap)) : Color.white;
+            }
+        }
+
         /// <summary>Companion health bar and the screen-edge danger arrow when he is hurt off-screen (§4).</summary>
         void SyncCompanion(World w, Camera cam)
         {

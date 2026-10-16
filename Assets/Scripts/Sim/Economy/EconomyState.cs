@@ -33,5 +33,6 @@ namespace Hollow.Sim
         public int CoinsGenerated;
         public int CoinsCollected;
         public int Kills;
+        public int ItemsUsed;
     }
 }

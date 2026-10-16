@@ -29,6 +29,7 @@ namespace Hollow.Sim
         WaveStarted,
         WaveCompleted,
         EnemyHealed,
+        ItemUsed,
     }
 
     /// <summary>

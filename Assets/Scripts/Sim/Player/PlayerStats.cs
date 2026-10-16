@@ -26,6 +26,6 @@ namespace Hollow.Sim
         }
 
         public static bool IsInvulnerable(World w) =>
-            w.Player.Dashing || w.Clock.Tick < w.Player.InvulnerableUntilTick;
+            w.Player.Dashing || w.Clock.Tick < w.Player.InvulnerableUntilTick || w.Clock.Tick < w.Inventory.ShieldUntilTick;
     }
 }

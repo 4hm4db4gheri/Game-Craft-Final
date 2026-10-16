@@ -20,6 +20,8 @@ namespace Hollow.Presentation
         readonly EntityViews<ArcView> hazards = new();
         readonly ArcView[] flashes = new ArcView[12];
         int nextFlash;
+        readonly EntityViews<ArcView> mines = new();
+        ArcView previewArea, previewRay, shieldRing;
         readonly System.Collections.Generic.Dictionary<EnemyId, ViewPool<EnemyView>> poolsByType = new();
         ViewPool<ProjectileView> playerShots, enemyShots;
         ViewPool<CoinView> coinPool;
@@ -37,6 +39,9 @@ namespace Hollow.Presentation
             swingArc = arcPool.Get();
             swingArc.Hide();
             for (int i = 0; i < flashes.Length; i++) { flashes[i] = Instantiate(catalog.Arc, transform); flashes[i].Hide(); }
+            previewArea = Instantiate(catalog.Arc, transform);
+            previewRay = Instantiate(catalog.Arc, transform);
+            shieldRing = Instantiate(catalog.Arc, transform);
         }
 
         /// <summary>Drops every entity view (used when the world is replaced by a load or a retry).</summary>
@@ -46,6 +51,7 @@ namespace Hollow.Presentation
             projectiles.ReleaseUnseen();
             coins.ReleaseUnseen();
             hazards.ReleaseUnseen();
+            mines.ReleaseUnseen();
         }
 
         public void Sync(World w, float alpha)
@@ -90,6 +96,53 @@ namespace Hollow.Presentation
                 v.Set(h.Position, Vector2.right, h.Radius, 360f, c, 400);
             }
             hazards.ReleaseUnseen();
+
+            SyncItems(w, alpha);
+        }
+
+        /// <summary>Item previews (§10): grenade landing point and blast, mine under the player, pulse/shield ranges.</summary>
+        void SyncItems(World w, float alpha)
+        {
+            var inv = w.Inventory;
+            Vector2 pos = Vector2.Lerp(w.Player.PrevPosition, w.Player.Position, alpha);
+            var cyan = new Color(0.6f, 0.95f, 1f, 0.15f);
+            previewRay.Hide();
+            previewArea.Hide();
+            if (inv.Holding)
+            {
+                var d = w.Profile.Item(inv.Held);
+                switch (inv.Held)
+                {
+                    case ItemId.Grenade:
+                        Vector2 target = ItemSystem.GrenadeTarget(w);
+                        Vector2 to = target - pos;
+                        previewRay.Set(pos, to, to.magnitude, 1.5f, new Color(0.6f, 0.95f, 1f, 0.5f), 450);
+                        previewArea.Set(target, Vector2.right, d.Radius, 360f, cyan, 449);
+                        break;
+                    case ItemId.Mine:
+                        previewArea.Set(pos, Vector2.right, d.TriggerRadius, 360f, cyan, 449);
+                        break;
+                    case ItemId.PersonalShield:
+                        previewArea.Set(pos, Vector2.right, 0.7f, 360f, cyan, 449);
+                        break;
+                    default:
+                        previewArea.Set(pos, Vector2.right, d.Radius, 360f, cyan, 449);
+                        break;
+                }
+            }
+
+            bool shield = w.Clock.Tick < inv.ShieldUntilTick;
+            if (shield) shieldRing.Set(pos + Vector2.up * 0.35f, Vector2.right, 0.6f, 360f, new Color(0.6f, 0.95f, 1f, 0.3f + 0.1f * Mathf.Sin(Time.time * 8f)), 460);
+            else shieldRing.Hide();
+
+            foreach (var m in inv.Mines)
+            {
+                var v = mines.GetOrCreate(m.Id, arcPool, out _);
+                bool armed = w.Clock.Tick >= m.ArmedTick;
+                float a = armed ? 0.8f : 0.3f + 0.3f * Mathf.Sin(Time.time * 20f);
+                v.Set(m.Position, Vector2.right, 0.22f, 360f, new Color(0.6f, 0.95f, 1f, a), 10);
+            }
+            mines.ReleaseUnseen();
         }
 
         void HandleEvents(World w)

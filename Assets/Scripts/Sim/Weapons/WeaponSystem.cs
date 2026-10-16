@@ -76,7 +76,7 @@ namespace Hollow.Sim
 
             if (data.Kind == WeaponKind.Melee)
             {
-                MeleeSystem.Step(w, cmd, active, level);
+                if (!w.Inventory.Holding && !w.Inventory.SuppressFireUntilRelease) MeleeSystem.Step(w, cmd, active, level);
                 return;
             }
 
@@ -91,7 +91,7 @@ namespace Hollow.Sim
             if (cmd.ReloadPressed && !L.Reloading && active.Ammo < level.Magazine) StartReload(w, active, level);
             if (active.Ammo <= 0 && !L.Reloading && !swapping) StartReload(w, active, level);
 
-            bool wantsFire = cmd.FireHeld || cmd.FirePressed;
+            bool wantsFire = (cmd.FireHeld || cmd.FirePressed) && !w.Inventory.Holding && !w.Inventory.SuppressFireUntilRelease;
             double seconds = w.Clock.Seconds;
             if (wantsFire && !L.Reloading && !swapping && active.Ammo > 0 && seconds >= L.NextFireTime - 1e-9)
             {
