@@ -37,6 +37,7 @@ namespace Hollow.Game
 
         GameApp app;
         AudioDirector audio;
+        RunTelemetry telemetry;
         SimDriver driver;
         ArenaLayout layout;
         string lastSavedHash;
@@ -83,6 +84,11 @@ namespace Hollow.Game
         {
             if (app != null && app.Balance != null) app.Balance.Applied -= OnBalanceApplied;
             GameSettings.Changed -= ApplyFeelSettings;
+            if (telemetry != null && telemetry.Run.Observed.Outcome == "running")
+            {
+                telemetry.End("left");
+                TelemetryFile.Write(telemetry);
+            }
         }
 
         /// <summary>Live tuning: the next step already reads the new numbers.</summary>
@@ -100,6 +106,7 @@ namespace Hollow.Game
         void StartNewGame()
         {
             SetWorld(Simulation.NewWorld(app.Balance.Live, layout, DevPanel.FixedSeed ?? (ulong)DateTime.UtcNow.Ticks));
+            telemetry = new RunTelemetry(W, "new game", TelemetryFile.Build);
             WaveSystem.StartWave(W, 1);
             SaveNow(quiet: true); // claims the chosen slot (replacement was confirmed in the picker)
             app.States.Transition(GameState.Scene);
@@ -123,6 +130,7 @@ namespace Hollow.Game
                     ShowResults(montage: false);
                     return;
                 }
+                telemetry = new RunTelemetry(W, $"loaded slot {slot}", TelemetryFile.Build);
                 menus.ShowLoading(MenuScreens.Describe(save.Summary), () =>
                 {
                     menus.Hide();
@@ -189,6 +197,12 @@ namespace Hollow.Game
             hud.Sync(w, worldCamera);
             SyncShop(w);
             SyncEncounter(w);
+            if (telemetry != null)
+            {
+                telemetry.Observe(w);
+                telemetry.Frame(Time.unscaledDeltaTime, app.States.Current == GameState.Playing);
+                if (telemetry.Dirty) TelemetryFile.Write(telemetry);
+            }
             w.Events.Clear();
         }
 
@@ -258,7 +272,7 @@ namespace Hollow.Game
             if (w.Waves.Kind != EncounterKind.PhaseComplete) { phaseCompleteAt = -1f; return; }
             // Let the boss's coins reach the player first (D26), then leave safely.
             if (phaseCompleteAt < 0) phaseCompleteAt = Time.unscaledTime;
-            if (w.Coins.Count > 0 && Time.unscaledTime - phaseCompleteAt < 4f) return;
+            if (w.Coins.Count > 0 && Time.unscaledTime - phaseCompleteAt < w.Profile.Economy.PhaseEndCoinWait) return;
             foreach (var c in w.Coins) CoinSystem.Collect(w, c);
             w.Coins.Clear();
             phaseCompleteAt = -1f;
@@ -319,6 +333,7 @@ namespace Hollow.Game
         {
             W.Completed = true;
             SaveNow(quiet: true);
+            telemetry?.End("won");
             app.States.Transition(GameState.Ending);
             shopPanel.Hide();
             atmosphere.FadeToDark(W.Profile.Atmosphere); // the world goes dark while the last lines play

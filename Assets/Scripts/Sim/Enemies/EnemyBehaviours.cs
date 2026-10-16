@@ -266,7 +266,7 @@ namespace Hollow.Sim
                 TurnToward(w, e, d, -away);
                 e.Position = w.Arena.MoveCircle(e.Position, e.Velocity * Core.SimClock.Dt, e.Radius);
             }
-            else if (dist > d.KeepAwayDistance * 1.6f) MoveToward(w, e, d, target);
+            else if (dist > d.KeepAwayDistance * d.KeepAwayMaxFactor) MoveToward(w, e, d, target);
             else e.Velocity = Vector2.zero;
         }
 
@@ -284,7 +284,7 @@ namespace Hollow.Sim
                 if (dd < best) { best = dd; ally = o; }
             }
             if (ally == null) { KeepAway(w, e, d); return; }
-            if (Mathf.Sqrt(best) > d.AuraRadius * 0.6f) MoveToward(w, e, d, ally.Position);
+            if (Mathf.Sqrt(best) > d.AuraRadius * d.AuraStayFraction) MoveToward(w, e, d, ally.Position);
             else e.Velocity = Vector2.zero;
         }
 
@@ -304,7 +304,7 @@ namespace Hollow.Sim
             if (w.Waves.Kind == EncounterKind.Wave && WaveSystem.AliveCount(w) >= w.Waves.ActiveCap) return;
 
             var childData = w.Profile.Enemy(d.Child);
-            Vector2 offset = SimMath.Rotate(e.Facing, 140f + 80f * w.Rng.Value) * (e.Radius + childData.BodyRadius + 0.2f);
+            Vector2 offset = SimMath.Rotate(e.Facing, w.Profile.Spawning.ChildSpawnBackAngle + w.Profile.Spawning.ChildSpawnAngleSpread * w.Rng.Value) * (e.Radius + childData.BodyRadius + w.Profile.Spawning.ChildSpawnGap);
             Vector2 at = w.Arena.NearestFree(e.Position + offset, childData.BodyRadius);
             var child = Spawn(w, d.Child, at, warning: true, encounterGroup: e.EncounterGroup);
             child.ParentId = e.Id;

@@ -58,6 +58,7 @@ namespace Hollow.Sim
         public static void StartEncounter(World w)
         {
             var d = Data(w);
+            WaveSystem.CaptureHealth(w); // adds use the health captured now (§13)
             var b = w.Boss;
             Vector2 spawn = w.Layout.SpawnZones.Find(z => z.Side == SpawnSide.North)?.Center ?? Vector2.up * 8;
             b.Active = true;
@@ -219,7 +220,7 @@ namespace Hollow.Sim
             switch (d.Id)
             {
                 case BossId.LargeBeast:
-                    bool close = Vector2.Distance(b.Position, player) <= d.StrikeRadius * 1.5f;
+                    bool close = Vector2.Distance(b.Position, player) <= d.StrikeRadius * d.StrikeTriggerFactor;
                     if (pattern == 0 || !close)
                     {
                         b.Ai = BossAi.ChargeWindup;
@@ -258,7 +259,7 @@ namespace Hollow.Sim
             Vector2 target = w.Player.Position;
             if (Vector2.Distance(b.Position, target) > d.BlastThrowRange)
                 target = b.Position + SimMath.SafeNormal(target - b.Position, b.Facing) * d.BlastThrowRange;
-            float flight = d.Id == BossId.FormerCompanion ? d.BlastWarning * 0.6f : 0f;
+            float flight = d.Id == BossId.FormerCompanion ? d.BlastWarning * d.BlastFlightFraction : 0f;
             HazardSystem.Create(w, HazardOwner.Enemy, b.Position, target, d.BlastRadius, d.Damage, d.BlastWarning, BossState.EntityId, default, flight);
             w.Emit(SimEventType.EnemyTelegraph, BossState.EntityId, target, Vector2.right * d.BlastRadius, d.BlastWarning, (int)TelegraphShape.Circle);
         }
@@ -272,7 +273,7 @@ namespace Hollow.Sim
 
         static void Move(World w, BossState b, BossData d, Vector2 target)
         {
-            if (Vector2.Distance(b.Position, target) < b.Radius + 1.5f) return;
+            if (Vector2.Distance(b.Position, target) < b.Radius + d.ApproachStopDistance) return;
             Vector2 dir = w.PlayerField.Direction(b.Position, target);
             b.Position = w.Arena.MoveCircle(b.Position, dir * d.MoveSpeed * Core.SimClock.Dt, b.Radius);
             if (dir.sqrMagnitude > 1e-6f) b.Facing = dir;

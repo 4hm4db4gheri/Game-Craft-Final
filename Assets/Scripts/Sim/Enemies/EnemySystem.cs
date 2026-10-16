@@ -18,10 +18,11 @@ namespace Hollow.Sim
         public static EnemyState Spawn(World w, EnemyId type, Vector2 position, bool warning = true, int encounterGroup = 0)
         {
             var d = w.Profile.Enemy(type);
+            float health = WaveSystem.SpawnHealth(w, type);
             var e = new EnemyState
             {
                 Id = w.AllocateId(), Type = type, Position = position, PrevPosition = position,
-                Radius = d.BodyRadius, Health = d.Health, MaxHealth = d.Health,
+                Radius = d.BodyRadius, Health = health, MaxHealth = health,
                 SpawnTick = w.Clock.Tick, EncounterGroup = encounterGroup, Facing = Vector2.down,
             };
             float warn = warning ? w.Profile.Spawning.SpawnWarning : 0f;

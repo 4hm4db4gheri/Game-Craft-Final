@@ -8,8 +8,10 @@ using UnityEngine;
 namespace Hollow.Game
 {
     /// <summary>
-    /// Development-only panel (F10, §13): start any wave directly, spawn any enemy, grant coins or XP,
-    /// kill everything, god mode, fixed random seed for the next new game. Never active in release builds.
+    /// Development-only panel (F10, §13): start any wave or boss directly, a starting state (weapons, items and
+    /// coins of a phase), spawn any enemy, grant coins or XP, kill everything, god mode, fixed random seed for
+    /// the next new game. Inert outside the Editor and development builds, and removed from the scene when a
+    /// release build is made (ReleaseBuildStripper).
     /// </summary>
     public sealed class DevPanel : MonoBehaviour
     {
@@ -52,7 +54,11 @@ namespace Hollow.Game
             if (GUILayout.Button("-")) wave = Mathf.Max(1, wave - 1);
             if (GUILayout.Button("+")) wave = Mathf.Min(5, wave + 1);
             GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             if (GUILayout.Button("Start this wave now")) StartWave(w);
+            if (GUILayout.Button("Start this phase's boss")) StartBoss(w);
+            GUILayout.EndHorizontal();
+            if (GUILayout.Button("Starting state: every weapon, item and 300 coins of this phase")) GiveStartingState(w);
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("◀", GUILayout.Width(30))) spawnType = Cycle(spawnType, -1);
@@ -88,6 +94,36 @@ namespace Hollow.Game
             w.Tutorial = TutorialStage.None;
             w.Progress.ChoicesBlocked = false;
             session.OnPhaseChangedByTool();
+        }
+
+        /// <summary>Clears the field and goes to the boss preparation of the chosen phase (shop, then entrance).</summary>
+        void StartBoss(World w)
+        {
+            ClearField(w);
+            if (w.Phase != phase) PhaseSystem.EnterPhase(w, phase);
+            ClearField(w);
+            w.Waves.Wave = WaveSystem.WaveCount(w);
+            WaveSystem.StartNextEncounter(w);
+            session.OnPhaseChangedByTool();
+        }
+
+        void GiveStartingState(World w)
+        {
+            foreach (var d in w.Profile.Weapons)
+                if (d.UnlockPhase <= phase && !w.Player.Loadout.Owns(d.Id)) WeaponSystem.Give(w, d.Id, 1, equip: false);
+            foreach (var item in w.Profile.Items)
+                if (item.UnlockPhase <= phase) w.Inventory.Add(item.Id, Mathf.Max(0, item.Carry - w.Inventory.Count(item.Id)));
+            w.Progress.Wallet += 300;
+        }
+
+        static void ClearField(World w)
+        {
+            foreach (var e in w.Enemies) e.Alive = false;
+            w.Enemies.Clear();
+            w.Projectiles.Clear();
+            w.Hazards.Clear();
+            w.Tutorial = TutorialStage.None;
+            w.Progress.ChoicesBlocked = false;
         }
 
         static EnemyId Cycle(EnemyId id, int d)

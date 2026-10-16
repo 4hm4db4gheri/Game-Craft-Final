@@ -17,6 +17,7 @@ namespace Hollow.Sim
         {
             var w = new World();
             w.Rng.Reseed(seed);
+            w.Seed = seed;
             w.Bind(profile, layout);
             PlayerSystem.Spawn(w, layout.PlayerStart);
             WeaponSystem.Give(w, WeaponId.Pistol);

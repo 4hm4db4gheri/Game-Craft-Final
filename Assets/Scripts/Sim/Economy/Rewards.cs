@@ -41,7 +41,7 @@ namespace Hollow.Sim
             {
                 float angle = w.Rng.Range(0f, Mathf.PI * 2f);
                 float dist = r * Mathf.Sqrt(w.Rng.Value);
-                Vector2 pos = w.Arena.NearestFree(at + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * dist, 0.1f);
+                Vector2 pos = w.Arena.NearestFree(at + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * dist, w.Profile.Economy.CoinRadius);
                 w.Coins.Add(new CoinState
                 {
                     Id = w.AllocateId(), Position = pos, PrevPosition = pos, Value = 1,

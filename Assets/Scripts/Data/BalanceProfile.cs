@@ -159,6 +159,10 @@ namespace Hollow.Data
         [Placeholder, Unit("deg/s")] public float TurnRateDeg;
         /// <summary>Supports and non-fighting producers keep at least this distance from the player.</summary>
         [Placeholder, Unit("u")] public float KeepAwayDistance;
+        /// <summary>Keep-away roles walk back toward the player only beyond KeepAwayDistance × this.</summary>
+        [Placeholder] public float KeepAwayMaxFactor = 1.6f;
+        /// <summary>Supports return to their allies when farther than AuraRadius × this.</summary>
+        [Placeholder] public float AuraStayFraction = 0.6f;
 
         public bool HasChild;
         public EnemyId Child;
@@ -213,6 +217,10 @@ namespace Hollow.Data
         [Placeholder, Unit("s")] public float SafeIntervalSeconds;
         [Placeholder, Unit("s")] public float NoSafePointRetryDelay;
         [Gdd("§6")] public int TutorialFirstGroupCount;
+        /// <summary>Offspring appear behind the producer: this angle from its facing, plus up to the spread.</summary>
+        [Placeholder, Unit("deg")] public float ChildSpawnBackAngle = 140f;
+        [Placeholder, Unit("deg")] public float ChildSpawnAngleSpread = 80f;
+        [Placeholder, Unit("u")] public float ChildSpawnGap = 0.2f;
     }
 
     [Serializable]
@@ -241,6 +249,10 @@ namespace Hollow.Data
         [Gdd("§7"), Unit("s")] public float ChargeRecovery;
         [Gdd("§7"), Unit("s")] public float StrikeWindup;
         [Placeholder, Unit("u")] public float StrikeRadius;
+        /// <summary>The area strike is chosen when the player is within StrikeRadius × this.</summary>
+        [Placeholder] public float StrikeTriggerFactor = 1.5f;
+        /// <summary>The boss stops approaching this far beyond its own radius.</summary>
+        [Placeholder, Unit("u")] public float ApproachStopDistance = 1.5f;
         [Placeholder, Unit("s")] public float StrikeRecovery;
 
         [Gdd("§7"), Unit("s")] public float BurstWarning;
@@ -250,6 +262,8 @@ namespace Hollow.Data
         [Placeholder, Unit("deg")] public float BurstSpread;
         [Placeholder, Unit("u/s")] public float ProjectileSpeed;
         [Gdd("§7"), Unit("s")] public float BlastWarning;
+        /// <summary>Thrown blasts (former companion) fly for BlastWarning × this before the zone shows its full danger.</summary>
+        [Placeholder] public float BlastFlightFraction = 0.6f;
         [Placeholder, Unit("u")] public float BlastRadius;
         [Placeholder, Unit("u")] public float BlastThrowRange;
 
@@ -337,6 +351,10 @@ namespace Hollow.Data
         [Gdd("§9"), Unit("active s")] public float CoinLifetime;
         [Gdd("§9"), Unit("s")] public float CoinBlinkTime;
         [Placeholder, Unit("u")] public float CoinScatterRadius;
+        /// <summary>Clearance a dropped coin needs from walls and obstacles.</summary>
+        [Placeholder, Unit("u")] public float CoinRadius = 0.1f;
+        /// <summary>After a boss, the phase ends once the pulled coins arrive, or after this long at most.</summary>
+        [Placeholder, Unit("s")] public float PhaseEndCoinWait = 4f;
         [Gdd("§9"), Unit("s")] public float ItemUseGap;
         /// <summary>D26: at boss death every ground coin flies to the player before the transition.</summary>
         public bool BossDeathCollectsGroundCoins;
@@ -363,6 +381,10 @@ namespace Hollow.Data
         [Gdd("§9"), Unit("s")] public float StunBoss;
         [Gdd("§9"), Unit("s")] public float BossResistance;
         [Gdd("§9"), Unit("s")] public float Duration;
+        /// <summary>Grenade: flight time = FuseTime × this (the rest of the fuse is spent on the ground).</summary>
+        [Placeholder] public float FlightTimeFraction = 0.8f;
+        /// <summary>Mine: clearance needed from walls to place it.</summary>
+        [Placeholder, Unit("u")] public float PlacementRadius = 0.2f;
     }
 
     [Serializable]

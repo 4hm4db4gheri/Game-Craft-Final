@@ -32,6 +32,10 @@ namespace Hollow.Sim
         ItemUsed,
         BossStarted,
         BossDefeated,
+        /// <summary>Shop purchase: Code = OfferKind, EntityId = weapon or item id, Value = price, Direction.x = level.</summary>
+        Purchased,
+        /// <summary>XP card choice: Code = SkillId, Value = new rank.</summary>
+        SkillChosen,
     }
 
     /// <summary>

@@ -16,6 +16,8 @@ namespace Hollow.Sim
         public SimRandom Rng = new(1);
         public int Phase = 1;
         public int NextEntityId = 1;
+        /// <summary>Seed the run started with (telemetry, reproducing a run).</summary>
+        public ulong Seed;
 
         /// <summary>True between waves and in other safe moments: active gameplay seconds stop (G4).</summary>
         public bool SafeInterval;

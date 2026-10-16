@@ -36,6 +36,7 @@
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
+| `Assets/Scripts/Sim/Telemetry/` | `RunTelemetry`: لاگ هر بازی (Observed جدا از Calculated)؛ فایل در `persistentDataPath/telemetry` توسط `Game/TelemetryFile.cs` |
 | `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
@@ -48,9 +49,9 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
-- باقی‌مانده: T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
+- باقی‌مانده: T20، T21 (stress/perf)، T22 (build و release notes).
 ## کارهای باز / ایده‌ها
 
 - آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است و زمین، prop، decor و کیوسک فروشگاه را هم پوشش می‌دهد (T16).
@@ -123,3 +124,9 @@
 - با تأیید کاربر دانلود شد: ۶ پک CC0 کنی + ۳ لوپ CC0 از OpenGameArt. ۷۱ فایل افکت در `Assets/Audio/Sfx` و ۳ موسیقی در `Assets/Audio/Music` (۵.۵ مگابایت، LFS)، با نام `<Cue>_<n>`؛ همه در `docs/CREDITS.md`.
 - هر ۴۶ cue در Play mode پخش شد. انتخاب‌ها بر اساس نام فایل بوده؛ یک انسان باید گوش کند و در صورت نیاز عوض کند. تصمیم D56.
 - نکته: اگر ادیتور بسته باشد، `unity status` چیزی نشان نمی‌دهد؛ کاربر ادیتور را از Hub باز می‌کند.
+
+### 2026-10-16 — T18: telemetry، ابزار توسعه، اعداد hard-code
+- `RunTelemetry` + `TelemetryFile`: فایل JSON برای هر بازی (مدت موج/باس، FPS، آسیب، سکه، خرید، مهارت، سلاح و سطح، آیتم، هزینه‌ی درمان، علت مرگ). رویدادهای جدید `Purchased` و `SkillChosen`؛ `World.Seed`.
+- DevPanel: شروع مستقیم باس، وضعیت شروع؛ در build نسخه‌ی release با `ReleaseBuildStripper` حذف می‌شود.
+- ۱۰ عدد گیم‌پلی به داده منتقل شد؛ تست `NoUnlistedNumberLiteralsInTheSimulation` جلوی عدد جدید در `Sim` را می‌گیرد (گزارش: `docs/CONSTANTS_SCAN.md`). health snapshot حالا روی بچه‌ها و add باس هم اعمال می‌شود.
+- نکته: کاربر گاهی ادیتور را می‌بندد؛ با `unity open <path>` دوباره باز می‌شود (چند دقیقه).

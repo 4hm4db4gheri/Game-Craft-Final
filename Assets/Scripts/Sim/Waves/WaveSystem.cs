@@ -16,6 +16,21 @@ namespace Hollow.Sim
 
         public static int WaveCount(World w) => w.Profile.WavesOfPhase(w.Phase).Count;
 
+        /// <summary>Freezes enemy health for the encounter that is starting (§13 apply rules).</summary>
+        public static void CaptureHealth(World w)
+        {
+            var snap = w.Waves.HealthSnapshot;
+            snap.Clear();
+            foreach (EnemyId id in System.Enum.GetValues(typeof(EnemyId))) snap.Add(w.Profile.Enemy(id).Health);
+        }
+
+        /// <summary>Health of a newly spawned enemy: the value captured at encounter start, else the live data.</summary>
+        public static float SpawnHealth(World w, EnemyId type)
+        {
+            var snap = w.Waves.HealthSnapshot;
+            return (int)type < snap.Count ? snap[(int)type] : w.Profile.Enemy(type).Health;
+        }
+
         public static void StartWave(World w, int wave)
         {
             var data = w.Profile.Wave(w.Phase, wave);
@@ -50,8 +65,7 @@ namespace Hollow.Sim
             ws.SpawnedTotal = 0;
             ws.NextSpawnActiveTick = w.Clock.ActiveTicks;
             ws.BonusPaid = false;
-            ws.HealthSnapshot.Clear();
-            foreach (EnemyId id in System.Enum.GetValues(typeof(EnemyId))) ws.HealthSnapshot.Add(p.Enemy(id).Health);
+            CaptureHealth(w);
 
             ShopSystem.RefreshStock(w);
             w.Emit(SimEventType.WaveStarted, 0, Vector2.zero, default, wave, w.Phase);
@@ -145,8 +159,7 @@ namespace Hollow.Sim
                 return;
             }
 
-            var e = EnemySystem.Spawn(w, type, pos);
-            if ((int)type < ws.HealthSnapshot.Count) e.Health = e.MaxHealth = ws.HealthSnapshot[(int)type];
+            EnemySystem.Spawn(w, type, pos); // health comes from the snapshot taken at wave start
             ws.Queue.RemoveAt(index);
             ws.SpawnedInBatch++;
             ws.SpawnedTotal++;

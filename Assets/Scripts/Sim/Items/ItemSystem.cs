@@ -109,7 +109,7 @@ namespace Hollow.Sim
         {
             Vector2 target = GrenadeTarget(w);
             // Lands and goes off FuseTime after the throw (flight included, D32).
-            HazardSystem.Create(w, HazardOwner.Player, w.Player.Position, target, d.Radius, d.Damage, d.FuseTime, 0, default, d.FuseTime * 0.8f);
+            HazardSystem.Create(w, HazardOwner.Player, w.Player.Position, target, d.Radius, d.Damage, d.FuseTime, 0, default, d.FuseTime * d.FlightTimeFraction);
             return true;
         }
 
@@ -134,7 +134,7 @@ namespace Hollow.Sim
             foreach (var m in inv.Mines) if (m.Alive) active++;
             if (active >= d.MaxActivePerPhase) return false;
             Vector2 at = w.Player.Position;
-            if (w.Arena.CircleOverlaps(at, 0.2f)) return false;
+            if (w.Arena.CircleOverlaps(at, d.PlacementRadius)) return false;
             inv.Mines.Add(new MineState { Id = w.AllocateId(), Position = at, ArmedTick = w.Clock.Tick + w.Ticks(d.ArmingTime) });
             return true;
         }

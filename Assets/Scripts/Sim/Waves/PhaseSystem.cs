@@ -20,7 +20,7 @@ namespace Hollow.Sim
             var p = w.Player;
             p.Position = p.PrevPosition = w.Arena.NearestFree(p.Position, w.Profile.Player.BodyRadius);
             foreach (var e in w.Enemies) e.Position = e.PrevPosition = w.Arena.NearestFree(e.Position, e.Radius);
-            foreach (var coin in w.Coins) coin.Position = coin.PrevPosition = w.Arena.NearestFree(coin.Position, 0.1f);
+            foreach (var coin in w.Coins) coin.Position = coin.PrevPosition = w.Arena.NearestFree(coin.Position, w.Profile.Economy.CoinRadius);
 
             Vector2 companionAt = w.Companion.Present ? w.Companion.Position : w.Layout.CompanionStart;
             CompanionSystem.SpawnForPhase(w, w.Arena.NearestFree(companionAt, w.Profile.Companion.BodyRadius));

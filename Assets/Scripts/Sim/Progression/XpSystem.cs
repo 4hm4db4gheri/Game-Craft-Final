@@ -61,6 +61,7 @@ namespace Hollow.Sim
             var pr = w.Progress;
             if (pr.Pending == null || !pr.Pending.Options.Contains(id)) return false;
             ApplyRank(w, id);
+            w.Emit(SimEventType.SkillChosen, PlayerState.EntityId, w.Player.Position, default, w.Player.SkillRank(id), (int)id);
             pr.Pending = null;
             pr.ChoicesTaken++;
             pr.ChosenSkills.Add(id);

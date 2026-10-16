@@ -229,6 +229,8 @@ namespace Hollow.Sim
             }
             w.Shop.PurchaseCount++;
             if (w.Shop.FirstPurchaseTick < 0) w.Shop.FirstPurchaseTick = w.Clock.Tick;
+            int id = kind == OfferKind.BuyItem ? (int)item : (int)weapon;
+            w.Emit(SimEventType.Purchased, id, w.Player.Position, new Vector2(offer.Level, 0), offer.Price, (int)kind);
             return true;
         }
 
