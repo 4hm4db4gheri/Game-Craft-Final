@@ -32,6 +32,12 @@ namespace Hollow.Sim
         public TutorialStage Tutorial;
         public WaveState Waves = new();
 
+        /// <summary>Death checkpoint: the world as it was at the start of the current wave or boss fight.</summary>
+        public string CheckpointJson;
+        public int Retries;
+        /// <summary>The run reached the ending; continuing shows results, never an endless mode (§11).</summary>
+        public bool Completed;
+
         [JsonIgnore] public BalanceProfile Profile;
         [JsonIgnore] public ArenaLayout Layout;
         [JsonIgnore] public ArenaGrid Arena;

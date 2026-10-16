@@ -55,6 +55,7 @@ namespace Hollow.Sim
 
             ShopSystem.RefreshStock(w);
             w.Emit(SimEventType.WaveStarted, 0, Vector2.zero, default, wave, w.Phase);
+            Checkpoints.Capture(w);
         }
 
         public static void Step(World w)
