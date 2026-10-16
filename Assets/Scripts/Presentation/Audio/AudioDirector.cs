@@ -37,6 +37,8 @@ namespace Hollow.Presentation
 
         /// <summary>Cues that have no audio file yet and play silent stubs.</summary>
         public readonly List<AudioCue> MissingCues = new();
+        /// <summary>Every cue played since start (checks that each cue is reachable in game).</summary>
+        public readonly HashSet<AudioCue> Played = new();
 
         public static AudioDirector Ensure()
         {
@@ -100,6 +102,7 @@ namespace Hollow.Presentation
             float cooldown = d != null ? d.Cooldown : 0.05f;
             if (lastPlayed.TryGetValue(cue, out float last) && now - last < cooldown) return;
             lastPlayed[cue] = now;
+            Played.Add(cue);
 
             var clip = PickClip(cue, d);
             var bus = d != null ? d.Bus : AudioBus.Effects;
@@ -183,6 +186,7 @@ namespace Hollow.Presentation
             musicOutStart = musicB.volume;
             var d = catalog.Get(cue);
             musicA.clip = PickClip(cue, d);
+            Played.Add(cue);
             musicA.volume = 0f;
             musicA.Play();
             musicFadeStart = Time.unscaledTime;

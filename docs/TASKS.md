@@ -37,7 +37,7 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T14 | Story, dialogue, transitions, ending | §3 §7 §14 §15 | done | lines from GDD §3 only; victory jingle waits for T19 |
 | T16 | Arena (3 states) and placeholder art | §14 | done | per-phase ground, decor and named props (AI-art ready); escape-route and transition tests (7); phase-3 dark but readable, ending fades to black; screenshots in `docs/screenshots/T16_*` |
 | T18 | Balance panel completion, dev tools (F10), telemetry | §13 | todo | |
-| T19 | Audio (CC0 SFX + music) | §14 | partial | system done: 46 cues, buses, cooldowns, priorities, ducking, music per phase, jingle then silence, silent stubs; files wait for the user's download approval (Kenney CC0 packs + 3 CC0 OpenGameArt loops) |
+| T19 | Audio (CC0 SFX + music) | §14 | done | 46 cues, all with CC0 files (71 Kenney effect files + 3 OpenGameArt loops, 5.5 MB), each logged in CREDITS.md; every cue played in Play mode; warnings bus never ducked; victory jingle then silence |
 | T20 | Tutorial pass and readability checklist | §6 §15 | todo | |
 | T21 | Stress test, performance, bot playthrough | §6 §13 §16 | todo | |
 | T22 | Final verification, Windows build, release notes | §16 | todo | |
