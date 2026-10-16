@@ -21,7 +21,7 @@ namespace Hollow.Presentation
             block = new MaterialPropertyBlock();
         }
 
-        public void Set(Vector2 origin, Vector2 dir, float radius, float arcDegrees, Color color, int sortingOrder)
+        public void Set(Vector2 origin, Vector2 dir, float radius, float arcDegrees, Color color, int sortingOrder, int sortingLayer = 0)
         {
             filter.sharedMesh = ArcMesh.Get(arcDegrees);
             transform.position = new Vector3(origin.x, origin.y, 0);
@@ -32,13 +32,14 @@ namespace Hollow.Presentation
             block.SetTexture("_MainTex", Texture2D.whiteTexture);
             meshRenderer.SetPropertyBlock(block);
             meshRenderer.sortingOrder = sortingOrder;
+            meshRenderer.sortingLayerID = sortingLayer;
             meshRenderer.enabled = true;
         }
 
         /// <summary>Shows the arc for a short real-time duration (cosmetic).</summary>
-        public void Flash(Vector2 origin, Vector2 dir, float radius, float arcDegrees, Color color, float seconds)
+        public void Flash(Vector2 origin, Vector2 dir, float radius, float arcDegrees, Color color, float seconds, int sortingLayer = 0)
         {
-            Set(origin, dir, radius, arcDegrees, color, -5);
+            Set(origin, dir, radius, arcDegrees, color, -5, sortingLayer);
             hideAt = Time.time + seconds;
         }
 

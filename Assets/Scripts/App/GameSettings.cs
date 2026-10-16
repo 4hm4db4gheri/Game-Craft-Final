@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Hollow.App
@@ -11,14 +12,17 @@ namespace Hollow.App
         const string KMusic = "hollow.music", KEffects = "hollow.effects", KShake = "hollow.shake",
             KFullscreen = "hollow.fullscreen", KNumbers = "hollow.damageNumbers", KBudget = "hollow.effectBudget";
 
-        public static float MusicVolume { get => PlayerPrefs.GetFloat(KMusic, 0.7f); set => PlayerPrefs.SetFloat(KMusic, Mathf.Clamp01(value)); }
-        public static float EffectsVolume { get => PlayerPrefs.GetFloat(KEffects, 0.8f); set => PlayerPrefs.SetFloat(KEffects, Mathf.Clamp01(value)); }
+        /// <summary>Raised after any setting changes, so the game applies it at once (shake, effects, volume).</summary>
+        public static event Action Changed;
+
+        public static float MusicVolume { get => PlayerPrefs.GetFloat(KMusic, 0.7f); set { PlayerPrefs.SetFloat(KMusic, Mathf.Clamp01(value)); Changed?.Invoke(); } }
+        public static float EffectsVolume { get => PlayerPrefs.GetFloat(KEffects, 0.8f); set { PlayerPrefs.SetFloat(KEffects, Mathf.Clamp01(value)); Changed?.Invoke(); } }
         /// <summary>0 = no camera shake, 1 = full data-defined shake.</summary>
-        public static float ShakeIntensity { get => PlayerPrefs.GetFloat(KShake, 1f); set => PlayerPrefs.SetFloat(KShake, Mathf.Clamp01(value)); }
+        public static float ShakeIntensity { get => PlayerPrefs.GetFloat(KShake, 1f); set { PlayerPrefs.SetFloat(KShake, Mathf.Clamp01(value)); Changed?.Invoke(); } }
         public static bool Fullscreen { get => PlayerPrefs.GetInt(KFullscreen, 1) == 1; set { PlayerPrefs.SetInt(KFullscreen, value ? 1 : 0); ApplyWindow(); } }
-        public static bool DamageNumbers { get => PlayerPrefs.GetInt(KNumbers, 1) == 1; set => PlayerPrefs.SetInt(KNumbers, value ? 1 : 0); }
+        public static bool DamageNumbers { get => PlayerPrefs.GetInt(KNumbers, 1) == 1; set { PlayerPrefs.SetInt(KNumbers, value ? 1 : 0); Changed?.Invoke(); } }
         /// <summary>0 low, 1 medium, 2 high: scales the effect caps from the balance data.</summary>
-        public static int EffectBudget { get => PlayerPrefs.GetInt(KBudget, 2); set => PlayerPrefs.SetInt(KBudget, Mathf.Clamp(value, 0, 2)); }
+        public static int EffectBudget { get => PlayerPrefs.GetInt(KBudget, 2); set { PlayerPrefs.SetInt(KBudget, Mathf.Clamp(value, 0, 2)); Changed?.Invoke(); } }
 
         public static void ApplyWindow()
         {

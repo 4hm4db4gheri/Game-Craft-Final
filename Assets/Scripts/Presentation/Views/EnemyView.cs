@@ -22,7 +22,7 @@ namespace Hollow.Presentation
         [SerializeField] float hpBarWidth = 1.2f;
 
         Color[] baseColors;
-        float flashUntil;
+        float flashUntil, flashLength = 0.1f, squash;
         SpriteSetAnimator anim;
         int telegraphOrder = 500;
 
@@ -41,7 +41,16 @@ namespace Hollow.Presentation
             if (countdown != null) countdown.enabled = false;
         }
 
-        public void Flash(float seconds) => flashUntil = Time.time + seconds;
+        /// <summary>The body used for the corpse look (aftermath).</summary>
+        public SpriteRenderer MainRenderer => bodyRenderers != null && bodyRenderers.Length > 0 ? bodyRenderers[0] : null;
+
+        /// <summary>Hit reaction: white flash plus a short squash. Visual only; the hitbox never changes (§14).</summary>
+        public void Flash(float seconds, float squashAmount = 0f)
+        {
+            flashLength = Mathf.Max(0.01f, seconds);
+            flashUntil = Time.time + flashLength;
+            squash = squashAmount;
+        }
 
         public void Sync(World w, EnemyState e, float alpha, Color telegraphColor)
         {
@@ -50,7 +59,8 @@ namespace Hollow.Presentation
             transform.position = new Vector3(pos.x, pos.y, 0);
 
             bool facingLeft = e.Facing.x < -0.05f;
-            body.localScale = new Vector3(facingLeft ? -1 : 1, 1, 1);
+            float punch = squash * Mathf.Clamp01((flashUntil - Time.time) / flashLength);
+            body.localScale = new Vector3((facingLeft ? -1 : 1) * (1f + punch), 1f - punch, 1);
             if (frontPlate != null)
             {
                 float a = Mathf.Atan2(e.Facing.y, e.Facing.x) * Mathf.Rad2Deg;

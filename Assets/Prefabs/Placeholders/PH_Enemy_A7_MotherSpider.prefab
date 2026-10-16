@@ -470,6 +470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5072037735116417139}
   - component: {fileID: 9059197030767966190}
+  - component: {fileID: 5121480363825269738}
   m_Layer: 0
   m_Name: TelegraphLine
   m_TagString: Untagged
@@ -552,6 +553,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!210 &5121480363825269738
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7017623499438286263}
+  m_Enabled: 1
+  m_SortingLayerID: 1208025090
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
+  m_Sort3DAs2D: 0
 --- !u!1 &7586130908543827670
 GameObject:
   m_ObjectHideFlags: 0
@@ -809,14 +823,17 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8391832155387472895, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3649053691920907916}
   m_SourcePrefab: {fileID: 100100000, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
 --- !u!114 &4832951201884340889 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5821435725783849061, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
   m_PrefabInstance: {fileID: 1431004969300941564}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 7470967734102290691}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e850cdc97cde77e4ca2007c4d0969774, type: 3}
@@ -827,3 +844,21 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4920320648956046688, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
   m_PrefabInstance: {fileID: 1431004969300941564}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7470967734102290691 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8391832155387472895, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+  m_PrefabInstance: {fileID: 1431004969300941564}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &3649053691920907916
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7470967734102290691}
+  m_Enabled: 1
+  m_SortingLayerID: 1208025090
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
+  m_Sort3DAs2D: 0

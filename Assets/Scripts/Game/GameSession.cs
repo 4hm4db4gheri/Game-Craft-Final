@@ -20,6 +20,7 @@ namespace Hollow.Game
         [SerializeField] ArenaAuthoring arena;
         [SerializeField] ArenaAtmosphere atmosphere;
         [SerializeField] WorldPresenter presenter;
+        [SerializeField] FeedbackDirector feedback;
         [SerializeField] CameraRig cameraRig;
         [SerializeField] ReticleView reticle;
         [SerializeField] UIRoot ui;
@@ -68,6 +69,8 @@ namespace Hollow.Game
             ending.Init(ui);
 
             app.Balance.Applied += OnBalanceApplied;
+            GameSettings.Changed += ApplyFeelSettings;
+            ApplyFeelSettings();
             driver = new SimDriver(app.States, StepOnce);
 
             if (app.Launch == LaunchMode.LoadSlot) LoadFromSlot(app.ActiveSlot);
@@ -77,9 +80,12 @@ namespace Hollow.Game
         void OnDestroy()
         {
             if (app != null && app.Balance != null) app.Balance.Applied -= OnBalanceApplied;
+            GameSettings.Changed -= ApplyFeelSettings;
         }
 
         /// <summary>Live tuning: the next step already reads the new numbers.</summary>
+        void ApplyFeelSettings() => feedback.Configure(GameSettings.ShakeIntensity, GameSettings.DamageNumbers, GameSettings.EffectBudget);
+
         void OnBalanceApplied(BalanceProfile profile)
         {
             if (Sim == null) return;

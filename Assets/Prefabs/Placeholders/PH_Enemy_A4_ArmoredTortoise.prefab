@@ -534,6 +534,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5736925761542328366}
   - component: {fileID: 8263076856567012032}
+  - component: {fileID: 8572683441694077436}
   m_Layer: 0
   m_Name: TelegraphLine
   m_TagString: Untagged
@@ -616,6 +617,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!210 &8572683441694077436
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4643952152896031990}
+  m_Enabled: 1
+  m_SortingLayerID: 1208025090
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
+  m_Sort3DAs2D: 0
 --- !u!1 &7080621085456856863
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,8 +855,29 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8391832155387472895, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6203050878561861528}
   m_SourcePrefab: {fileID: 100100000, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+--- !u!1 &6412477816481527921 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8391832155387472895, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+  m_PrefabInstance: {fileID: 3208942807236875150}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &6203050878561861528
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6412477816481527921}
+  m_Enabled: 1
+  m_SortingLayerID: 1208025090
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
+  m_Sort3DAs2D: 0
 --- !u!4 &7548043923074940654 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4920320648956046688, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
@@ -853,7 +888,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5821435725783849061, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
   m_PrefabInstance: {fileID: 3208942807236875150}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 6412477816481527921}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e850cdc97cde77e4ca2007c4d0969774, type: 3}

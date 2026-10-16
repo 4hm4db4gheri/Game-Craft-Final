@@ -2681,7 +2681,19 @@
     "DamageNumbersMaxPerSecond": 40,
     "MaxParticles": 1500,
     "MaxDecals": 300,
-    "MaxCorpses": 150
+    "MaxCorpses": 150,
+    "ShakeOnBossDefeated": 0.7,
+    "ShotShakeMinInterval": 0.08,
+    "ShakeDuration": 0.18,
+    "MuzzleFlashTime": 0.05,
+    "ImpactSparks": 5,
+    "DeathSparks": 14,
+    "ExplosionSparks": 24,
+    "DamageNumberLifetime": 0.65,
+    "MaxDamageNumbersOnScreen": 40,
+    "HitSquash": 0.14,
+    "BudgetLowScale": 0.3,
+    "BudgetMediumScale": 0.6
   },
   "Camera": {
     "OrthographicSize": 7.5,

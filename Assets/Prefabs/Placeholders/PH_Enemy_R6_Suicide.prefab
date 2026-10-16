@@ -398,6 +398,7 @@ GameObject:
   - component: {fileID: 6392656165186793040}
   - component: {fileID: 3105079001179290256}
   - component: {fileID: 1347273848452145029}
+  - component: {fileID: 6123568988609226744}
   m_Layer: 0
   m_Name: Countdown
   m_TagString: Untagged
@@ -568,6 +569,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 3105079001179290256}
   m_maskType: 0
+--- !u!210 &6123568988609226744
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2824504174100619155}
+  m_Enabled: 1
+  m_SortingLayerID: 1208025090
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
+  m_Sort3DAs2D: 0
 --- !u!1 &2975248608620990511
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,6 +592,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1670220078813516992}
   - component: {fileID: 464876953130200809}
+  - component: {fileID: 725764244060659220}
   m_Layer: 0
   m_Name: TelegraphLine
   m_TagString: Untagged
@@ -660,6 +675,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!210 &725764244060659220
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2975248608620990511}
+  m_Enabled: 1
+  m_SortingLayerID: 1208025090
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
+  m_Sort3DAs2D: 0
 --- !u!1 &4975858252727155157
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,14 +1019,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8391832155387472895, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6055750304925067535}
   m_SourcePrefab: {fileID: 100100000, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+--- !u!1 &5556833800820566327 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8391832155387472895, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+  m_PrefabInstance: {fileID: 4136573869946897096}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &6055750304925067535
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5556833800820566327}
+  m_Enabled: 1
+  m_SortingLayerID: 1208025090
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 1
+  m_Sort3DAs2D: 0
 --- !u!114 &7611634189867440813 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5821435725783849061, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
   m_PrefabInstance: {fileID: 4136573869946897096}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 5556833800820566327}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e850cdc97cde77e4ca2007c4d0969774, type: 3}

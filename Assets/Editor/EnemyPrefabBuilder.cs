@@ -91,7 +91,7 @@ namespace Hollow.EditorTools
                 catalog.Enemies.Add(new EnemyVisual { Id = kv.Key, Prefab = prefab.GetComponent<EnemyView>() });
             }
             catalog.PlayerProjectile = BuildProjectile("PH_Projectile_Player", new Vector2(0.28f, 0.1f), true).GetComponent<ProjectileView>();
-            catalog.EnemyProjectile = BuildProjectile("PH_Projectile_Enemy", new Vector2(0.3f, 0.14f), true).GetComponent<ProjectileView>();
+            catalog.EnemyProjectile = BuildProjectile("PH_Projectile_Enemy", new Vector2(0.3f, 0.14f), true, "Telegraphs").GetComponent<ProjectileView>();
             catalog.Coin = BuildCoin().GetComponent<CoinView>();
             catalog.Weapons = WeaponVisuals();
             catalog.Bosses = new List<BossVisual>
@@ -162,6 +162,8 @@ namespace Hollow.EditorTools
             line.transform.SetParent(root.transform, true);
             var arc = (GameObject)PrefabUtility.InstantiatePrefab(arcPrefab, root.transform);
             arc.name = "TelegraphArc";
+            PrefabBuilder.OnTopLayer(line.gameObject);
+            PrefabBuilder.OnTopLayer(arc);
 
             var so = new SerializedObject(view);
             so.FindProperty("body").objectReferenceValue = body;
@@ -186,6 +188,7 @@ namespace Hollow.EditorTools
                 tmp.rectTransform.sizeDelta = new Vector2(2, 1);
                 tmp.sortingOrder = 600;
                 tmp.enabled = false;
+                PrefabBuilder.OnTopLayer(label);
                 so.FindProperty("countdown").objectReferenceValue = tmp;
             }
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -205,6 +208,8 @@ namespace Hollow.EditorTools
             var lane = PrefabBuilder.AddSprite(root.transform, "Lane", "PH_Square", Color.white, Vector3.zero, Vector3.one, 500);
             lane.enabled = false;
             var arc = (GameObject)PrefabUtility.InstantiatePrefab(arcPrefab, root.transform);
+            PrefabBuilder.OnTopLayer(lane.gameObject);
+            PrefabBuilder.OnTopLayer(arc);
             var so = new SerializedObject(view);
             so.FindProperty("body").objectReferenceValue = body;
             var arr = so.FindProperty("bodyRenderers");
@@ -234,7 +239,8 @@ namespace Hollow.EditorTools
             return PrefabBuilder.Save(root, "PH_Arc");
         }
 
-        static GameObject BuildProjectile(string name, Vector2 size, bool trail)
+        /// <summary>Enemy shots are attacks: they go on the top layer so no effect ever covers them.</summary>
+        static GameObject BuildProjectile(string name, Vector2 size, bool trail, string layer = "Default")
         {
             var root = new GameObject(name);
             var view = root.AddComponent<ProjectileView>();
@@ -251,7 +257,9 @@ namespace Hollow.EditorTools
                 tr.minVertexDistance = 0.05f;
                 tr.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(SpriteMaterialPath);
                 tr.sortingOrder = 299;
+                tr.sortingLayerName = layer;
             }
+            core.sortingLayerName = layer;
             var so = new SerializedObject(view);
             so.FindProperty("core").objectReferenceValue = core;
             so.FindProperty("trail").objectReferenceValue = tr;

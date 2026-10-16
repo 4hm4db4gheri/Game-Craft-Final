@@ -13,6 +13,7 @@ namespace Hollow.Presentation
         [SerializeField] VisualCatalog catalog;
         [SerializeField] PlayerView playerView;
         [SerializeField] CompanionView companionView;
+        [SerializeField] FeedbackDirector feedback;
 
         readonly EntityViews<EnemyView> enemies = new();
         readonly EntityViews<ProjectileView> projectiles = new();
@@ -53,6 +54,16 @@ namespace Hollow.Presentation
             coins.ReleaseUnseen();
             hazards.ReleaseUnseen();
             mines.ReleaseUnseen();
+            if (feedback != null) feedback.Clear();
+        }
+
+        /// <summary>Colour of a projectile that is still shown (its impact sparks use it).</summary>
+        public bool TryProjectileColor(int id, out Color color)
+        {
+            color = Color.white;
+            if (!projectiles.TryGet(id, out var v)) return false;
+            color = v.Color;
+            return true;
         }
 
         public void Sync(World w, float alpha)
@@ -95,7 +106,7 @@ namespace Hollow.Presentation
                 float progress = Mathf.Clamp01((w.Clock.Tick - h.CreatedTick) / (float)Mathf.Max(1, h.DetonateTick - h.CreatedTick));
                 var c = h.Owner == HazardOwner.Enemy ? catalog.Telegraph : new Color(0.6f, 0.95f, 1f);
                 c.a = Mathf.Lerp(0.15f, 0.55f, progress);
-                v.Set(h.Position, Vector2.right, h.Radius, 360f, c, 400);
+                v.Set(h.Position, Vector2.right, h.Radius, 360f, c, 400, SortingLayers.Telegraphs);
             }
             hazards.ReleaseUnseen();
 
@@ -133,23 +144,29 @@ namespace Hollow.Presentation
                     case ItemId.Grenade:
                         Vector2 target = ItemSystem.GrenadeTarget(w);
                         Vector2 to = target - pos;
-                        previewRay.Set(pos, to, to.magnitude, 1.5f, new Color(0.6f, 0.95f, 1f, 0.5f), 450);
-                        previewArea.Set(target, Vector2.right, d.Radius, 360f, cyan, 449);
+                        previewRay.Set(pos, to, to.magnitude, 1.5f, new Color(0.6f, 0.95f, 1f, 0.5f), 450, SortingLayers.Telegraphs);
+                        previewArea.Set(target, Vector2.right, d.Radius, 360f, cyan, 449, SortingLayers.Telegraphs);
                         break;
                     case ItemId.Mine:
-                        previewArea.Set(pos, Vector2.right, d.TriggerRadius, 360f, cyan, 449);
+                        previewArea.Set(pos, Vector2.right, d.TriggerRadius, 360f, cyan, 449, SortingLayers.Telegraphs);
                         break;
                     case ItemId.PersonalShield:
-                        previewArea.Set(pos, Vector2.right, 0.7f, 360f, cyan, 449);
+                        previewArea.Set(pos, Vector2.right, 0.7f, 360f, cyan, 449, SortingLayers.Telegraphs);
                         break;
                     default:
-                        previewArea.Set(pos, Vector2.right, d.Radius, 360f, cyan, 449);
+                        previewArea.Set(pos, Vector2.right, d.Radius, 360f, cyan, 449, SortingLayers.Telegraphs);
                         break;
                 }
             }
 
+            // Visible shield time (§14): the ring empties as the shield runs out.
             bool shield = w.Clock.Tick < inv.ShieldUntilTick;
-            if (shield) shieldRing.Set(pos + Vector2.up * 0.35f, Vector2.right, 0.6f, 360f, new Color(0.6f, 0.95f, 1f, 0.3f + 0.1f * Mathf.Sin(Time.time * 8f)), 460);
+            if (shield)
+            {
+                long total = System.Math.Max(1, w.Ticks(w.Profile.Item(ItemId.PersonalShield).Duration));
+                float left = Mathf.Clamp01((inv.ShieldUntilTick - w.Clock.Tick) / (float)total);
+                shieldRing.Set(pos + Vector2.up * 0.35f, Vector2.up, 0.6f, 360f * left, new Color(0.6f, 0.95f, 1f, 0.35f + 0.1f * Mathf.Sin(Time.time * 8f)), 460, SortingLayers.Effects);
+            }
             else shieldRing.Hide();
 
             foreach (var m in inv.Mines)
@@ -167,16 +184,17 @@ namespace Hollow.Presentation
             float flash = w.Profile.Feedback.HitFlashDuration;
             foreach (var ev in w.Events)
             {
+                if (feedback != null) feedback.OnEvent(w, ev);
                 switch (ev.Type)
                 {
                     case SimEventType.EnemyHit:
-                        if (enemies.TryGet(ev.EntityId, out var ev1)) ev1.Flash(flash);
+                        if (enemies.TryGet(ev.EntityId, out var ev1)) ev1.Flash(flash, w.Profile.Feedback.HitSquash);
                         else if (ev.EntityId == BossState.EntityId && w.Boss.Active && bossViews.TryGetValue(w.Boss.Id, out var bv)) bv.Flash(flash);
                         break;
                     case SimEventType.Explosion:
                         var f = flashes[nextFlash];
                         nextFlash = (nextFlash + 1) % flashes.Length;
-                        f.Flash(ev.Position, Vector2.right, ev.Value, 360f, new Color(1f, 0.85f, 0.6f, 0.6f), 0.15f);
+                        f.Flash(ev.Position, Vector2.right, ev.Value, 360f, new Color(1f, 0.85f, 0.6f, 0.6f), 0.15f, SortingLayers.Effects);
                         break;
                     case SimEventType.CompanionHit:
                         if (companionView != null) companionView.Flash(flash);
@@ -187,6 +205,7 @@ namespace Hollow.Presentation
                         break;
                 }
             }
+            if (feedback != null) feedback.EndFrame(w);
         }
 
         ViewPool<EnemyView> PoolFor(EnemyId id)

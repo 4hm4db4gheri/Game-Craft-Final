@@ -21,7 +21,7 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T02 | Player: movement, aim, dash, health | §2 §4 §10 | done | 10 tests; greybox playable; dash bar near player |
 | T06 | Enemy framework + A1 runner wolf (+ A2 quill shooter for the tutorial) | §5 §6 §14 | done | loop, rewards for all 21 types, armour angles, telegraph-before-attack, view rule; temporary sandbox spawner until T10 |
 | T03 | Guns: pistol, SMG, double-barrel first | §4 §8 §10 | done | all 7 guns work from data; 12 tests |
-| T05 | Game-feel pipeline (8 layers, budgets) | §14 §4 | todo | basic layers in slice, rest later |
+| T05 | Game-feel pipeline (8 layers, budgets) | §14 §4 | done | all layers but sound (T19 listens to the same events); effect budget caps particles, decals, corpses, numbers; telegraphs on the top sorting layer. 40-enemy stress, SMG firing, Editor play mode: avg 7.3 ms (136 fps), p95 9.9 ms, p99 14.2 ms on i7-8700 / GTX 1650 SUPER (one 308 ms spike = the screenshot capture); GC 27 KB/frame → T21. Build numbers in T21 |
 | T08 | Coins, XP, skills | §9 §10 | done | 13 tests; XP card UI verified in Play mode (no click leak); pending-card save lands with T17 |
 | T09 | Companion | §4 §3 | done | 12 tests; failure screen names the cause; retry = restart until T17 |
 | T11 | Shop and inventory | §8 §9 §11 | done | 12 tests; Play mode: Buy click never fires |

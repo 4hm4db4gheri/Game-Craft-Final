@@ -31,6 +31,16 @@ namespace Hollow.Presentation
 
         void Awake() => anim = GetComponent<SpriteSetAnimator>();
 
+        /// <summary>Tip of the held weapon in world space (muzzle flash position).</summary>
+        public Vector2 Muzzle
+        {
+            get
+            {
+                float length = shownWeapon != null ? shownWeapon.Size.x * (shownWeapon.PivotAtGrip ? 0.75f : 1f) : 0.45f;
+                return weaponPivot.position + weaponPivot.right * (0.2f + length);
+            }
+        }
+
         public void Sync(World w, float alpha, WeaponVisual weapon)
         {
             if (weapon != null && weapon != shownWeapon && weaponRenderer != null)

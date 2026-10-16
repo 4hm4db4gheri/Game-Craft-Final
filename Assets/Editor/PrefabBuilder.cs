@@ -45,6 +45,18 @@ namespace Hollow.EditorTools
             return r;
         }
 
+        /// <summary>
+        /// Moves a warning (or anything that must never be covered) to the top sorting layer, even inside a
+        /// character's sorting group: attack telegraphs are always drawn above effects (§14).
+        /// </summary>
+        public static void OnTopLayer(GameObject go, string layer = "Telegraphs", int order = 0)
+        {
+            var g = go.AddComponent<SortingGroup>();
+            g.sortAtRoot = true;
+            g.sortingLayerName = layer;
+            g.sortingOrder = order;
+        }
+
         public static GameObject BuildPlayer()
         {
             var root = new GameObject("PH_Player");
@@ -104,6 +116,7 @@ namespace Hollow.EditorTools
             var root = new GameObject("PH_Reticle");
             var view = root.AddComponent<ReticleView>();
             var r = AddSprite(root.transform, "Reticle", "PH_Reticle", new Color(0.6f, 0.95f, 1f, 0.9f), Vector3.zero, new Vector3(0.45f, 0.45f, 1), 1000);
+            r.sortingLayerName = "Telegraphs";
             var so = new SerializedObject(view);
             so.FindProperty("reticle").objectReferenceValue = r;
             so.ApplyModifiedPropertiesWithoutUndo();

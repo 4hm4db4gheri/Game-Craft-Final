@@ -396,6 +396,23 @@ namespace Hollow.Data
         [Placeholder] public int MaxParticles;
         [Placeholder] public int MaxDecals;
         [Placeholder] public int MaxCorpses;
+        [Placeholder] public float ShakeOnBossDefeated;
+        /// <summary>Shots in quick succession (SMG) shake at most this often, so shake never builds up.</summary>
+        [Placeholder, Unit("s")] public float ShotShakeMinInterval;
+        [Placeholder, Unit("s")] public float ShakeDuration;
+        [Placeholder, Unit("s")] public float MuzzleFlashTime;
+        [Placeholder] public int ImpactSparks;
+        [Placeholder] public int DeathSparks;
+        [Placeholder] public int ExplosionSparks;
+        [Placeholder, Unit("s")] public float DamageNumberLifetime;
+        [Placeholder] public int MaxDamageNumbersOnScreen;
+        /// <summary>Hit squash of an enemy body (fraction of its size); visual only, hitboxes never change.</summary>
+        [Placeholder] public float HitSquash;
+        /// <summary>Effect budget setting Low / Medium: share of the particle, decal, corpse and number caps (High = all).</summary>
+        [Placeholder] public float BudgetLowScale;
+        [Placeholder] public float BudgetMediumScale;
+
+        public float BudgetScale(int level) => level <= 0 ? BudgetLowScale : level == 1 ? BudgetMediumScale : 1f;
     }
 
     /// <summary>Framing decides what the player can see, so it is gameplay data (§14, D11, D12).</summary>

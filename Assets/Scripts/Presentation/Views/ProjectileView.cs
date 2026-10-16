@@ -8,8 +8,11 @@ namespace Hollow.Presentation
         [SerializeField] SpriteRenderer core;
         [SerializeField] TrailRenderer trail;
 
+        public Color Color { get; private set; }
+
         public void Begin(ProjectileState p, Color color)
         {
+            Color = color;
             transform.position = new Vector3(p.Position.x, p.Position.y, 0);
             if (core != null) core.color = color;
             if (trail != null)

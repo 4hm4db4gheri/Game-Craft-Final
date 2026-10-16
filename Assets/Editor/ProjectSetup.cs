@@ -25,6 +25,7 @@ namespace Hollow.EditorTools
         {
             RemoveTemplateLeftovers();
             ConfigureRenderer();
+            ConfigureSortingLayers();
             BuildBootScene();
             BuildMainMenuScene();
             BuildGameScene();
@@ -39,6 +40,31 @@ namespace Hollow.EditorTools
             foreach (var path in new[] { "Assets/Welcome", ScenePath("SampleScene") })
                 if (AssetDatabase.LoadMainAssetAtPath(path) != null || AssetDatabase.IsValidFolder(path))
                     AssetDatabase.DeleteAsset(path);
+        }
+
+        /// <summary>
+        /// Sorting layers above the world: Effects (particles, flashes, damage numbers), then Telegraphs (attack
+        /// warnings, enemy shots, hazard zones, reticle), so effects can never hide a warning (§14).
+        /// </summary>
+        [MenuItem("Hollow/Setup/Configure Sorting Layers")]
+        public static void ConfigureSortingLayers()
+        {
+            var tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+            var layers = tagManager.FindProperty("m_SortingLayers");
+            var wanted = new[] { ("Effects", 0x48010001), ("Telegraphs", 0x48010002) };
+            foreach (var (name, id) in wanted)
+            {
+                bool exists = false;
+                for (int i = 0; i < layers.arraySize; i++)
+                    if (layers.GetArrayElementAtIndex(i).FindPropertyRelative("name").stringValue == name) exists = true;
+                if (exists) continue;
+                layers.InsertArrayElementAtIndex(layers.arraySize);
+                var e = layers.GetArrayElementAtIndex(layers.arraySize - 1);
+                e.FindPropertyRelative("name").stringValue = name;
+                e.FindPropertyRelative("uniqueID").longValue = id;
+                e.FindPropertyRelative("locked").intValue = 0;
+            }
+            tagManager.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Characters lower on screen draw in front (sorting by feet, D16).</summary>
@@ -76,6 +102,7 @@ namespace Hollow.EditorTools
         [MenuItem("Hollow/Setup/Rebuild Game Scene")]
         public static void BuildGameScene()
         {
+            ConfigureSortingLayers();
             PlaceholderArt.GenerateAll();
             var playerPrefab = PrefabBuilder.BuildPlayer();
             var reticlePrefab = PrefabBuilder.BuildReticle();
@@ -120,13 +147,18 @@ namespace Hollow.EditorTools
             // Reload by path: creating the scene can unload assets made earlier in this call.
             catalog = AssetDatabase.LoadAssetAtPath<VisualCatalog>(EnemyPrefabBuilder.CatalogPath);
             var presenter = new GameObject("WorldPresenter").AddComponent<WorldPresenter>();
-            Wire(presenter, ("catalog", catalog), ("playerView", player.GetComponent<PlayerView>()), ("companionView", companion.GetComponent<CompanionView>()));
+            var feedback = new GameObject("Feedback").AddComponent<FeedbackDirector>();
+            Wire(presenter, ("catalog", catalog), ("playerView", player.GetComponent<PlayerView>()), ("companionView", companion.GetComponent<CompanionView>()), ("feedback", feedback));
+            Wire(feedback, ("presenter", presenter), ("playerView", player.GetComponent<PlayerView>()), ("cameraRig", rig),
+                ("unlitMaterial", AssetDatabase.LoadAssetAtPath<Material>(PrefabBuilder.UnlitMaterialPath)),
+                ("sparkSprite", PlaceholderArt.Load("PH_Circle")),
+                ("glowSprite", PlaceholderArt.Load("PH_SoftGlow")), ("blobSprite", PlaceholderArt.Load("PH_Blob")));
 
             var atmosphere = new GameObject("Atmosphere").AddComponent<ArenaAtmosphere>();
             Wire(atmosphere, ("follow", player.transform), ("fogSprite", PlaceholderArt.Load("PH_SoftGlow")));
 
             var session = new GameObject("GameSession").AddComponent<GameSession>();
-            Wire(session, ("worldCamera", cam), ("arena", arena), ("atmosphere", atmosphere), ("presenter", presenter),
+            Wire(session, ("worldCamera", cam), ("arena", arena), ("atmosphere", atmosphere), ("presenter", presenter), ("feedback", feedback),
                 ("cameraRig", rig), ("reticle", reticle.GetComponent<ReticleView>()));
 
             var uiRoot = new GameObject("UI").AddComponent<Hollow.UI.UIRoot>();

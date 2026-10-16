@@ -33,6 +33,8 @@
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
 | `Assets/Tests/EditMode/` | تست‌های NUnit (۳۸۷ تست، همه پاس) |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
+| `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
+| `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
@@ -45,9 +47,9 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
-- باقی‌مانده: T05 (جلوه‌ها: muzzle، ذرات، اعداد آسیب، جسد/لکه، shake)، T19 (صدا CC0)، T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
+- باقی‌مانده: T19 (صدا CC0)، T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
 ## کارهای باز / ایده‌ها
 
 - آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است و زمین، prop، decor و کیوسک فروشگاه را هم پوشش می‌دهد (T16).
@@ -106,3 +108,8 @@
 - نور: گروه جدید `Atmosphere` در BalanceProfile (نور ۱ / ۰.۸۲ / ۰.۶، درخشش بازیکن، مه). هشدار حمله، گلوله، سکه، رتیکل و هسته‌ی بازیکن unlit هستند. پایان: همه‌ی نورها (حتی چراغ‌ها) خاموش می‌شوند.
 - باگ پیدا شده با تست: `Resolve` از وسط مانع ۳ خانه‌ای بیرون نمی‌آورد؛ `ArenaGrid.NearestFree` برای جای‌گذاری‌ها (تغییر فاز، spawn، سکه، فروشگاه) اضافه شد.
 - تست‌های `ArenaLayoutTests` (اتصال، نبود شکاف یک‌خانه‌ای، مسیر از هر spawn zone، تغییر فاز). اسکرین‌شات‌ها در `docs/screenshots/T16_*`. تصمیم‌ها D49–D52.
+
+### 2026-10-16 — T05: حس بازی (game feel)
+- `FeedbackDirector` (Presentation/Feel): muzzle flash، جرقه‌ی ذره‌ای pooled، flash و squash دشمن، جسد و لکه‌ی خون/روغن/سوختگی با سقف، عدد آسیب (جمع گلوله‌های شاتگان در یک عدد، محدودیت نرخ، روشن/خاموش از تنظیمات)، shake کوتاه با Cinemachine Impulse و ضریب تنظیمات. همه‌ی اعداد در `Feedback` داده؛ effect budget سقف‌ها را ضرب می‌کند. `GameSettings.Changed` تنظیمات را فوراً اعمال می‌کند.
+- sorting layer جدید: Default → Effects → Telegraphs؛ هشدار حمله، گلوله‌ی دشمن، hazard و رتیکل همیشه رو هستند (sortAtRoot). ذرات باید با متریال sprite باشند (رندرر 2D شیدر ذره‌ی 3D را نمی‌کشد).
+- stress با ۴۰ دشمن در Play mode ادیتور: میانگین 7.3ms (136fps)، p95 9.9ms؛ GC حدود 27KB در فریم (برای T21). صدای لایه‌ی ۶ با T19.

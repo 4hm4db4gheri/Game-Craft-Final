@@ -14,6 +14,22 @@ namespace Hollow.Presentation
         [SerializeField] CinemachineCamera virtualCamera;
         [SerializeField] CinemachinePositionComposer composer;
 
+        CinemachineImpulseSource impulse;
+
+        void Awake()
+        {
+            impulse = gameObject.AddComponent<CinemachineImpulseSource>();
+            impulse.ImpulseDefinition.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
+            impulse.ImpulseDefinition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Bump;
+        }
+
+        /// <summary>Short camera kick (§14: short and adjustable; never a hit-stop). Offset in world units.</summary>
+        public void Shake(Vector2 offset, float seconds)
+        {
+            impulse.ImpulseDefinition.ImpulseDuration = Mathf.Max(0.05f, seconds);
+            impulse.GenerateImpulseWithVelocity(new Vector3(offset.x, offset.y, 0));
+        }
+
         public void Sync(World w, float alpha)
         {
             var cam = w.Profile.Camera;
