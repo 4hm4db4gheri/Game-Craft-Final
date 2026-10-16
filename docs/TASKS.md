@@ -27,7 +27,7 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T11 | Shop and inventory | §8 §9 §11 | done | 12 tests; Play mode: Buy click never fires |
 | T17 | Exact saves and death recovery | §12 | done | save → load from disk → identical hash and identical 1200-tick future; checkpoints; verified in Play mode |
 | T10 | Spawning, waves, tutorial | §6 | done | headless bot completes all 15 waves; caps never exceeded |
-| T16a | AI-art import pipeline (name-driven importer, magenta key-out, strip slicing, visual configs) | §14 | todo | serves `ART_MASTER_BRIEF.md` |
+| T16a | AI-art import pipeline (name-driven importer, magenta key-out, strip slicing, visual configs) | §14 | done | drop files in `Assets/Art/Incoming`, then Hollow > Art > Apply Incoming Art; verified with a synthetic 6-frame wolf strip in Play mode |
 | T15 | HUD and all screens | §10 §11 §15 | done (functional) | all §11 screens; flows verified in Play mode; placeholder styling; 1600×900/1280×720 not yet checked |
 | — | **Vertical slice cut line** | | | |
 | T04 | Melee weapons | §8 §10 | done (early) | done together with T03; 8 tests |

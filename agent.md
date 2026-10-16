@@ -16,7 +16,7 @@
 
 ## معماری (خلاصه)
 
-- گیم‌پلی یک **شبیه‌سازی C# خالص** است (`Hollow.Sim`, هنوز ساخته نشده) با تیک ثابت ۶۰ هرتز؛ MonoBehaviourها فقط رندر می‌کنند و ورودی می‌دهند (D40–D47 در `docs/DECISIONS.md`).
+- گیم‌پلی یک **شبیه‌سازی C# خالص** است (`Hollow.Sim`) با تیک ثابت ۶۰ هرتز؛ MonoBehaviourها فقط رندر می‌کنند و ورودی می‌دهند (D40–D47 در `docs/DECISIONS.md`).
 - **همه‌ی اعداد گیم‌پلی** در `Assets/Resources/Balance/Baseline.json` هستند (کلاس‌ها در `Assets/Scripts/Data/BalanceProfile.cs`). هیچ عدد گیم‌پلی در کد نباشد. `Assets/Editor/BaselineSeed.cs` فقط seed اولیه است و Baseline.json را بازنویسی می‌کند (با تأیید).
 - **پنل بالانس:** Editor: منوی `Hollow > Balance Panel` (Ctrl+Shift+B). داخل بازی: F9 (در Editor و development build). `BalanceService` = draft/live/apply/undo/reset group.
 
@@ -29,8 +29,9 @@
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
-| `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۱۸۲ تست، همه پاس) |
+| `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
+| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۳۷۱ تست، همه پاس) |
 | `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
@@ -43,12 +44,12 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15 (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
-- باقی‌مانده: T16a (importer آرت AI)، T16 (سه حالت آرنا، تاریکی فاز ۳)، T05 (جلوه‌ها: muzzle، ذرات، اعداد آسیب، جسد/لکه، shake)، T19 (صدا CC0)، T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
+- باقی‌مانده: T16 (سه حالت آرنا، تاریکی فاز ۳)، T05 (جلوه‌ها: muzzle، ذرات، اعداد آسیب، جسد/لکه، shake)، T19 (صدا CC0)، T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
 ## کارهای باز / ایده‌ها
 
-- آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ T16a باید importer خودکار بسازد.
+- آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است. زمین و propها با T16 وصل می‌شوند.
 ---
 
 ## تاریخچه‌ی کارها
@@ -93,3 +94,8 @@
 - ذخیره‌ی دقیق (WorldSerializer، SlotStore با نوشتن اتمی)، checkpoint اول هر موج/باس، منوی اصلی/slot/pause/loading/settings/controls.
 - رفتار همه‌ی دشمن‌ها، producerها با pool ثابت، hazard، آیتم‌ها، باس‌ها، دیالوگ از `Resources/Narrative/Dialogue.json`، انتقال فاز و پایان.
 - ابزارهای تست Play mode در scratchpad: `click.ps1`، `state.ps1`، `run.ps1`.
+
+### 2026-10-16 — T16a: pipeline واردکردن آرت AI
+- `Assets/Editor/Art/ArtImport.cs`: از روی نام فایل، PPU (۱۲۸ پیکسل در واحد)، pivot (پا/دسته‌ی سلاح/وسط)، برش strip به فریم، برش زمین ۸×۸ به ۶۴ تایل، حذف پس‌زمینه‌ی مژنتا (و آلفای FX روی مشکی) روی خود PNG.
+- `Assets/Editor/Art/ApplyIncomingArt.cs`: ساخت SpriteSet برای هر موجودیت و جایگزینی شکل placeholder در prefabهای PH_ و catalog سلاح‌ها؛ `SpriteSetAnimator` حالت‌ها را از viewها می‌گیرد.
+- تست با strip مصنوعی گرگ در Play mode؛ فایل تست حذف شد. commit: `bb72f9e`.
