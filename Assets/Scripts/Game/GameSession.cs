@@ -25,6 +25,7 @@ namespace Hollow.Game
         HudView hud;
         XpCardScreen xpScreen;
         FailureScreen failureScreen;
+        ShopPanel shopPanel;
 
         GameApp app;
         SimDriver driver;
@@ -47,6 +48,8 @@ namespace Hollow.Game
             hud.Init(ui);
             xpScreen = ui.gameObject.AddComponent<XpCardScreen>();
             xpScreen.Init(ui);
+            shopPanel = ui.gameObject.AddComponent<ShopPanel>();
+            shopPanel.Init(ui, OnShopBuy, item => Sim.World.Inventory.MoveToFirst(item));
             failureScreen = ui.gameObject.AddComponent<FailureScreen>();
             failureScreen.Init(ui, RetryAfterFailure, RetryAfterFailure, () => app.GoToMainMenu());
 
@@ -75,6 +78,7 @@ namespace Hollow.Game
             cameraRig.Sync(w, alpha);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
             hud.Sync(w, worldCamera);
+            SyncShop(w);
             w.Events.Clear();
 
             if (app.States.Current == GameState.Playing && w.Failure != FailureReason.None) { app.States.Transition(GameState.Failure); failureScreen.Show(w.Failure); }
@@ -86,6 +90,22 @@ namespace Hollow.Game
         {
             app.States.Transition(GameState.Loading);
             UnityEngine.SceneManagement.SceneManager.LoadScene(SceneNames.Game);
+        }
+
+        // ---------------------------------------------------------------- shop (live, never pauses)
+
+        void SyncShop(World w)
+        {
+            bool show = w.Shop.Open && (app.States.Current == GameState.Playing);
+            if (show) { shopPanel.Bind(w); shopPanel.Show(w); }
+            else if (shopPanel.Visible) shopPanel.Hide();
+            hud.SetStatus(!w.Shop.Open && ShopSystem.InRange(w) && app.States.Current == GameState.Playing ? "Press E to open the shop" : null);
+        }
+
+        void OnShopBuy(ShopOffer offer)
+        {
+            if (app.States.Current != GameState.Playing) return;
+            ShopSystem.Purchase(Sim.World, offer.Kind, offer.Weapon, offer.Item);
         }
 
         // ---------------------------------------------------------------- XP choice (world fully paused)

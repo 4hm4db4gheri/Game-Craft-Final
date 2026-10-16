@@ -27,6 +27,9 @@ namespace Hollow.Sim
         public List<ProjectileState> Projectiles = new();
         public List<CoinState> Coins = new();
         public ProgressState Progress = new();
+        public InventoryState Inventory = new();
+        public ShopState Shop = new();
+        public TutorialStage Tutorial;
 
         [JsonIgnore] public BalanceProfile Profile;
         [JsonIgnore] public ArenaLayout Layout;

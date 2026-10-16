@@ -18,19 +18,19 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T00 | Foundation: folders, asmdefs, scenes, state machine, two clocks, input router, docs | §1 §13 §16 | done | 144 tests; Windows build of the empty game: Succeeded, 0 errors (package warnings only), 133 MB |
 | T01 | Data layer: BalanceProfile, seed values, calculator, validation, JSON/CSV, test profiles | §13 §8 §9 §12 | done | every GDD total reproduced by tests (no mismatch found); save snapshot part lands with T17 |
 | T01b | Balance panel core (Editor window + in-game F9 panel, live edit, apply/undo/reset, import/export) | §13 | done | verified in Play mode (live edit + undo); T18 adds dev panel F10 and telemetry |
-| T02 | Player: movement, aim, dash, health | §2 §4 §10 | todo | |
-| T06 | Enemy framework + A1 runner wolf (+ A2 quill shooter for the tutorial) | §5 §6 §14 | todo | |
-| T03 | Guns: pistol, SMG, double-barrel first | §4 §8 §10 | todo | |
+| T02 | Player: movement, aim, dash, health | §2 §4 §10 | done | 10 tests; greybox playable; dash bar near player |
+| T06 | Enemy framework + A1 runner wolf (+ A2 quill shooter for the tutorial) | §5 §6 §14 | done | loop, rewards for all 21 types, armour angles, telegraph-before-attack, view rule; temporary sandbox spawner until T10 |
+| T03 | Guns: pistol, SMG, double-barrel first | §4 §8 §10 | done | all 7 guns work from data; 12 tests |
 | T05 | Game-feel pipeline (8 layers, budgets) | §14 §4 | todo | basic layers in slice, rest later |
-| T08 | Coins, XP, skills | §9 §10 | todo | |
-| T09 | Companion | §4 §3 | todo | |
+| T08 | Coins, XP, skills | §9 §10 | done | 13 tests; XP card UI verified in Play mode (no click leak); pending-card save lands with T17 |
+| T09 | Companion | §4 §3 | done | 12 tests; failure screen names the cause; retry = restart until T17 |
 | T11 | Shop and inventory | §8 §9 §11 | todo | |
 | T17 | Exact saves and death recovery | §12 | todo | sim designed for it from T00 |
 | T10 | Spawning, waves, tutorial | §6 | todo | |
 | T16a | AI-art import pipeline (name-driven importer, magenta key-out, strip slicing, visual configs) | §14 | todo | serves `ART_MASTER_BRIEF.md` |
 | T15 | HUD and all screens | §10 §11 §15 | todo | minimal HUD in slice |
 | — | **Vertical slice cut line** | | | |
-| T04 | Melee weapons | §8 §10 | todo | |
+| T04 | Melee weapons | §8 §10 | done (early) | done together with T03; 8 tests |
 | T07 | Remaining 20 enemies | §5 | todo | |
 | T12 | Items and combat inventory | §9 §10 | todo | |
 | T13 | Bosses and preparation flow | §7 | todo | |

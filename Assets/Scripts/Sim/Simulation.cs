@@ -21,6 +21,7 @@ namespace Hollow.Sim
             PlayerSystem.Spawn(w, layout.PlayerStart);
             WeaponSystem.Give(w, WeaponId.Pistol);
             CompanionSystem.SpawnForPhase(w, layout.CompanionStart);
+            ShopSystem.RefreshStock(w);
             return w;
         }
 
@@ -28,6 +29,7 @@ namespace Hollow.Sim
         {
             var w = World;
             PlayerSystem.Step(w, cmd);
+            ShopSystem.Step(w, cmd);
             w.Crowd.Rebuild(w.Enemies);
             WeaponSystem.Step(w, cmd);
             CompanionSystem.Step(w);
