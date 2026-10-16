@@ -1,7 +1,7 @@
-# Hollow — User stories (DRAFT, awaiting approval)
+# Hollow — User stories (approved, D37)
 
 Derived from GDD §15 (journey + acceptance table) and the section named per task.
-Nothing here is approved. Tasks are built against a story only after the user approves it.
+Approved by the user (D37). Their status after the build is reviewed in `docs/RELEASE_NOTES.md`.
 Acceptance criteria marked (human) need a human playtest and will never be marked passed by me.
 
 | Task | Story | Acceptance criteria (testable) |
