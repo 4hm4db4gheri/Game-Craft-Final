@@ -43,6 +43,9 @@ namespace Hollow.App
         /// <summary>The slot this game saves into (1..3).</summary>
         public int ActiveSlot { get; set; } = 1;
 
+        /// <summary>Set by the ending's 'New game': the main menu opens straight on the new-game slot picker.</summary>
+        public bool OpenNewGamePicker { get; set; }
+
         public static GameApp Ensure()
         {
             if (Instance != null) return Instance;

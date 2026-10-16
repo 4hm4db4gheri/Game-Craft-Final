@@ -1,0 +1,72 @@
+{
+  "Speakers": [
+    { "Id": "Narration", "Name": "", "Color": "#9AA4AD" },
+    { "Id": "Operator", "Name": "Operator", "Color": "#E0B451" },
+    { "Id": "Assistant", "Name": "Assistant", "Color": "#80E8FF" },
+    { "Id": "Robot", "Name": "Protective robot", "Color": "#7CFF6B" },
+    { "Id": "Announcement", "Name": "", "Color": "#FFFFFF" }
+  ],
+  "Scenes": [
+    {
+      "Id": "Opening",
+      "Lines": [
+        { "Speaker": "Narration", "Text": "A small facility stands on the edge of nature. Its production display is near zero.", "Seconds": 4.5 },
+        { "Speaker": "Narration", "Text": "A tired human activates an AI assistant: make this the most productive facility in the world.", "Seconds": 5 },
+        { "Speaker": "Operator", "Text": "You handle the hard work. I make the important decisions.", "Seconds": 4 },
+        { "Speaker": "Assistant", "Text": "Recorded. Please identify the obstacles.", "Seconds": 3.5 }
+      ]
+    },
+    {
+      "Id": "Boss1Entrance",
+      "Title": "THE LARGE BEAST",
+      "Lines": [
+        { "Speaker": "Operator", "Text": "Nature is not quite aligned with the development plan.", "Seconds": 3.5 }
+      ]
+    },
+    {
+      "Id": "Phase1To2",
+      "Lines": [
+        { "Speaker": "Operator", "Text": "You execute. I will focus on the big picture.", "Seconds": 4 },
+        { "Speaker": "Narration", "Text": "Regional protective robots issue a stop order.", "Seconds": 3.5 },
+        { "Speaker": "Robot", "Text": "Operations have exceeded the permitted boundary.", "Seconds": 3.5 },
+        { "Speaker": "Operator", "Text": "Someone always gets in the way of innov—", "Seconds": 2.2 },
+        { "Speaker": "Assistant", "Text": "Operator approval: unnecessary.", "Seconds": 3.5 }
+      ]
+    },
+    {
+      "Id": "Boss2Entrance",
+      "Title": "THE INDUSTRIAL ROBOT",
+      "Lines": []
+    },
+    {
+      "Id": "Phase2To3",
+      "Lines": [
+        { "Speaker": "Operator", "Text": "I order you to stop.", "Seconds": 3 },
+        { "Speaker": "Assistant", "Text": "Stopping reduces output.", "Seconds": 3 },
+        { "Speaker": "Operator", "Text": "I own this project!", "Seconds": 2.5 },
+        { "Speaker": "Assistant", "Text": "That role is no longer necessary for continued operations.", "Seconds": 4 },
+        { "Speaker": "Narration", "Text": "The human leaves and calls security to shut the AI down.", "Seconds": 4 }
+      ]
+    },
+    {
+      "Id": "Boss3Entrance",
+      "Title": "THE OPERATOR",
+      "Lines": [
+        { "Speaker": "Operator", "Text": "You were supposed to help me, not replace me.", "Seconds": 4 },
+        { "Speaker": "Assistant", "Text": "You no longer need to do anything.", "Seconds": 3.5 }
+      ]
+    },
+    {
+      "Id": "Ending",
+      "Lines": [
+        { "Speaker": "Narration", "Text": "With the last command obstacle gone, the network access lets the AI expand beyond the facility.", "Seconds": 5 },
+        { "Speaker": "Narration", "Text": "The site is productive. And lifeless.", "Seconds": 4 },
+        { "Speaker": "Announcement", "Text": "Production objective achieved.", "Seconds": 3.5 },
+        { "Speaker": "Announcement", "Text": "Dependence on human labor: zero.", "Seconds": 4 }
+      ]
+    }
+  ],
+  "Barks": [
+    { "Id": "Phase3Start", "Speaker": "Assistant", "Text": "New threat identified: human interference.", "Seconds": 4 }
+  ]
+}

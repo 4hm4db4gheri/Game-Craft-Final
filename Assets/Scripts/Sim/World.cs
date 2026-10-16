@@ -33,6 +33,7 @@ namespace Hollow.Sim
         public TutorialStage Tutorial;
         public WaveState Waves = new();
         public BossState Boss = new();
+        public NarrativeState Narrative = new();
 
         /// <summary>Death checkpoint: the world as it was at the start of the current wave or boss fight.</summary>
         public string CheckpointJson;
@@ -67,5 +68,14 @@ namespace Hollow.Sim
         }
 
         public long Ticks(float seconds) => SimClock.ToTicks(seconds);
+    }
+
+    /// <summary>Story progress that must survive saves (§12: narrative state).</summary>
+    public sealed class NarrativeState
+    {
+        public List<string> SeenScenes = new();
+        /// <summary>The player chose to visit the shop before the boss and is now preparing.</summary>
+        public bool PreparingAtShop;
+        public bool PhaseBarkShown;
     }
 }

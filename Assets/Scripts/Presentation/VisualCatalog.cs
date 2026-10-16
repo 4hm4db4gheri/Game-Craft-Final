@@ -13,6 +13,13 @@ namespace Hollow.Presentation
     }
 
     [Serializable]
+    public sealed class BossVisual
+    {
+        public BossId Id;
+        public BossView Prefab;
+    }
+
+    [Serializable]
     public sealed class WeaponVisual
     {
         public WeaponId Id;
@@ -31,6 +38,7 @@ namespace Hollow.Presentation
     {
         public List<EnemyVisual> Enemies = new();
         public List<WeaponVisual> Weapons = new();
+        public List<BossVisual> Bosses = new();
         public ProjectileView PlayerProjectile;
         public ProjectileView EnemyProjectile;
         public CoinView Coin;
@@ -44,6 +52,12 @@ namespace Hollow.Presentation
         {
             foreach (var e in Enemies) if (e.Id == id) return e.Prefab;
             return Enemies.Count > 0 ? Enemies[0].Prefab : null;
+        }
+
+        public BossView BossPrefab(BossId id)
+        {
+            foreach (var b in Bosses) if (b.Id == id) return b.Prefab;
+            return null;
         }
 
         public WeaponVisual Weapon(WeaponId id)

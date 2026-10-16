@@ -94,6 +94,12 @@ namespace Hollow.EditorTools
             catalog.EnemyProjectile = BuildProjectile("PH_Projectile_Enemy", new Vector2(0.3f, 0.14f), true).GetComponent<ProjectileView>();
             catalog.Coin = BuildCoin().GetComponent<CoinView>();
             catalog.Weapons = WeaponVisuals();
+            catalog.Bosses = new List<BossVisual>
+            {
+                new() { Id = BossId.LargeBeast, Prefab = BuildBoss(BossId.LargeBeast, "PH_Capsule", new Vector2(4.6f, 2.6f), new Color(0.32f, 0.26f, 0.2f), "PH_Triangle", new Color(0.8f, 0.76f, 0.66f), new Vector2(0.9f, 0.6f), new Vector2(2.1f, 0.4f), arcPrefab) },
+                new() { Id = BossId.IndustrialRobot, Prefab = BuildBoss(BossId.IndustrialRobot, "PH_Square", new Vector2(3.4f, 4.2f), new Color(0.42f, 0.44f, 0.4f), "PH_Circle", new Color(0.49f, 1f, 0.42f), new Vector2(0.9f, 0.9f), new Vector2(0, 1f), arcPrefab) },
+                new() { Id = BossId.FormerCompanion, Prefab = BuildBoss(BossId.FormerCompanion, "PH_Capsule", new Vector2(1.5f, 2.6f), new Color(0.32f, 0.36f, 0.42f), "PH_Square", new Color(0.78f, 0.62f, 0.22f), new Vector2(1.4f, 0.8f), new Vector2(0, 0.3f), arcPrefab) },
+            };
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             return catalog;
@@ -184,6 +190,31 @@ namespace Hollow.EditorTools
             }
             so.ApplyModifiedPropertiesWithoutUndo();
             return PrefabBuilder.Save(root, $"PH_Enemy_{id}");
+        }
+
+        static BossView BuildBoss(BossId id, string sprite, Vector2 size, Color color, string accent, Color accentColor, Vector2 accentSize, Vector2 accentOffset, GameObject arcPrefab)
+        {
+            var root = new GameObject($"PH_Boss_{id}");
+            root.AddComponent<SortingGroup>();
+            var view = root.AddComponent<BossView>();
+            PrefabBuilder.AddSprite(root.transform, "Shadow", "PH_Shadow", Color.white, Vector3.zero, new Vector3(size.x * 1.1f, size.x * 0.8f, 1), -10);
+            var body = new GameObject("Body").transform;
+            body.SetParent(root.transform, false);
+            var main = PrefabBuilder.AddSprite(body, "Shape", sprite, color, new Vector3(0, size.y * 0.5f, 0), Scale(sprite, size), 0);
+            var acc = PrefabBuilder.AddSprite(body, "Accent", accent, accentColor, new Vector3(accentOffset.x, size.y * 0.5f + accentOffset.y, 0), Scale(accent, accentSize), 1);
+            var lane = PrefabBuilder.AddSprite(root.transform, "Lane", "PH_Square", Color.white, Vector3.zero, Vector3.one, 500);
+            lane.enabled = false;
+            var arc = (GameObject)PrefabUtility.InstantiatePrefab(arcPrefab, root.transform);
+            var so = new SerializedObject(view);
+            so.FindProperty("body").objectReferenceValue = body;
+            var arr = so.FindProperty("bodyRenderers");
+            arr.arraySize = 2;
+            arr.GetArrayElementAtIndex(0).objectReferenceValue = main;
+            arr.GetArrayElementAtIndex(1).objectReferenceValue = acc;
+            so.FindProperty("laneLine").objectReferenceValue = lane;
+            so.FindProperty("area").objectReferenceValue = arc.GetComponent<ArcView>();
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return PrefabBuilder.Save(root, $"PH_Boss_{id}").GetComponent<BossView>();
         }
 
         static Vector3 Scale(string sprite, Vector2 size)

@@ -28,6 +28,9 @@ namespace Hollow.Game
         FailureScreen failureScreen;
         ShopPanel shopPanel;
         MenuScreens menus;
+        DialogueView dialogue;
+        EndingScreen ending;
+        float phaseCompleteAt = -1f;
         readonly SettingsAdapter settings = new();
 
         GameApp app;
@@ -58,6 +61,10 @@ namespace Hollow.Game
             failureScreen.Init(ui, RetryFromCheckpoint, () => ShowSlotLoad(fromFailure: true), () => app.GoToMainMenu());
             menus = ui.gameObject.AddComponent<MenuScreens>();
             menus.Init(ui);
+            dialogue = ui.gameObject.AddComponent<DialogueView>();
+            dialogue.Init(ui, DialogueData.Load());
+            ending = ui.gameObject.AddComponent<EndingScreen>();
+            ending.Init(ui);
 
             app.Balance.Applied += OnBalanceApplied;
             driver = new SimDriver(app.States, StepOnce);
@@ -80,8 +87,9 @@ namespace Hollow.Game
         {
             SetWorld(Simulation.NewWorld(app.Balance.Live, layout, DevPanel.FixedSeed ?? (ulong)DateTime.UtcNow.Ticks));
             WaveSystem.StartWave(W, 1);
-            app.States.Transition(GameState.Playing);
             SaveNow(quiet: true); // claims the chosen slot (replacement was confirmed in the picker)
+            app.States.Transition(GameState.Scene);
+            PlayScene("Opening", () => app.States.Transition(GameState.Playing));
         }
 
         void LoadFromSlot(int slot)
@@ -94,6 +102,13 @@ namespace Hollow.Game
                 world.Profile = app.Balance.Live;
                 SetWorld(world);
                 lastSavedHash = WorldSerializer.Hash(W);
+                if (W.Completed)
+                {
+                    // A completed slot shows its results; it never starts an endless mode (§11).
+                    app.States.Transition(GameState.Ending);
+                    ShowResults(montage: false);
+                    return;
+                }
                 menus.ShowLoading(MenuScreens.Describe(save.Summary), () =>
                 {
                     menus.Hide();
@@ -135,6 +150,8 @@ namespace Hollow.Game
             HandleKeys();
 
             var state = app.States.Current;
+            if (state == GameState.Playing && W.Failure == FailureReason.None) EncounterFlow(W);
+            state = app.States.Current;
             if (state == GameState.Playing && W.Failure != FailureReason.None)
             {
                 app.States.Transition(GameState.Failure);
@@ -160,6 +177,12 @@ namespace Hollow.Game
         {
             var input = app.InputSource;
             var state = app.States.Current;
+            if (dialogue.Playing)
+            {
+                if (input.TakeConfirm()) dialogue.Next();
+                if (input.TakePause()) dialogue.Skip();
+                return;
+            }
             if (input.TakePause())
             {
                 if (state == GameState.Playing || state == GameState.XPChoice || state == GameState.BossPrep) OpenPause();
@@ -176,24 +199,134 @@ namespace Hollow.Game
             string top = ws.Kind switch
             {
                 EncounterKind.SafeInterval => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} cleared — next wave in {Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))} s  (Enter: start now)",
-                EncounterKind.BossPrep => $"Phase {w.Phase} · all waves cleared — boss encounter (T13, not built yet). Enter: continue",
+                EncounterKind.BossPrep => $"Phase {w.Phase} · boss encounter ready — shop, then press Enter when ready",
+                EncounterKind.Boss => $"Phase {w.Phase} · boss encounter · Enemies {WaveSystem.AliveCount(w)}",
+                EncounterKind.PhaseComplete => $"Phase {w.Phase} · encounter won",
                 _ => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} · Enemies {WaveSystem.AliveCount(w)}",
             };
             hud.SetTop(top);
+            var b = w.Boss;
+            hud.SetBoss(b.Active ? BossName(b.Id) : null, b.Active ? b.Health / b.MaxHealth : 0);
         }
+
+        static string BossName(BossId id) => id switch
+        {
+            BossId.LargeBeast => "The large beast",
+            BossId.IndustrialRobot => "The industrial robot",
+            _ => "The Operator (body and equipment)",
+        };
 
         void OnConfirm()
         {
             var w = W;
             if (w.Waves.Kind == EncounterKind.SafeInterval) WaveSystem.SkipSafeInterval(w);
-            else if (w.Waves.Kind == EncounterKind.BossPrep && w.Phase < 3)
-            {
-                // Temporary until bosses and transitions exist (T13/T14).
-                PhaseSystem.EnterPhase(w, w.Phase + 1);
-                arena.ShowPhase(w.Phase);
-            }
+            else if (w.Waves.Kind == EncounterKind.BossPrep && w.Narrative.PreparingAtShop) BeginBossEntrance();
         }
 
+        // ---------------------------------------------------------------- boss preparation, transitions, ending
+
+        /// <summary>Runs the encounter-level flow while playing (§7): boss preparation prompt and phase end.</summary>
+        void EncounterFlow(World w)
+        {
+            if (w.Waves.Kind == EncounterKind.BossPrep && !w.Narrative.PreparingAtShop)
+            {
+                app.States.Transition(GameState.BossPrep);
+                shopPanel.Hide();
+                ShowBossPrompt();
+                return;
+            }
+
+            if (w.Waves.Kind != EncounterKind.PhaseComplete) { phaseCompleteAt = -1f; return; }
+            // Let the boss's coins reach the player first (D26), then leave safely.
+            if (phaseCompleteAt < 0) phaseCompleteAt = Time.unscaledTime;
+            if (w.Coins.Count > 0 && Time.unscaledTime - phaseCompleteAt < 4f) return;
+            foreach (var c in w.Coins) CoinSystem.Collect(w, c);
+            w.Coins.Clear();
+            phaseCompleteAt = -1f;
+            if (w.Phase < 3) BeginPhaseTransition(w.Phase);
+            else EndGame();
+        }
+
+        void ShowBossPrompt() =>
+            menus.ShowConfirm("The boss encounter is ready.", "Visit the shop first?",
+                ("Visit the shop", VisitShopBeforeBoss),
+                ("Start the encounter", () => { menus.Hide(); BeginBossEntrance(); }));
+
+        /// <summary>Places the player and companion safely beside the shop; shopping is calm until Ready (§7).</summary>
+        void VisitShopBeforeBoss()
+        {
+            menus.Hide();
+            var w = W;
+            Vector2 shop = w.Layout.ShopPosition;
+            w.Player.Position = w.Player.PrevPosition = w.Arena.Resolve(shop + new Vector2(0.8f, 1.6f), w.Profile.Player.BodyRadius);
+            if (w.Companion.Present)
+                w.Companion.Position = w.Companion.PrevPosition = w.Arena.Resolve(shop + new Vector2(-1.4f, 1.6f), w.Profile.Companion.BodyRadius);
+            w.Narrative.PreparingAtShop = true;
+            app.States.Transition(GameState.Playing);
+            ShopSystem.SetOpen(w, true);
+        }
+
+        void BeginBossEntrance()
+        {
+            var w = W;
+            w.Narrative.PreparingAtShop = false;
+            ShopSystem.SetOpen(w, false);
+            app.States.Transition(GameState.Scene);
+            PlayScene($"Boss{w.Phase}Entrance", () =>
+            {
+                BossSystem.StartEncounter(W);
+                app.States.Transition(GameState.Playing);
+            });
+        }
+
+        void BeginPhaseTransition(int from)
+        {
+            app.States.Transition(GameState.PhaseTransition);
+            shopPanel.Hide();
+            arena.ShowPhase(from + 1); // the environment changes during the scene
+            PlayScene($"Phase{from}To{from + 1}", () =>
+            {
+                PhaseSystem.EnterPhase(W, from + 1);
+                presenter.ResetViews();
+                arena.ShowPhase(W.Phase);
+                app.States.Transition(GameState.Playing);
+                if (W.Phase == 3) dialogue.ShowBark("Phase3Start");
+            });
+        }
+
+        void EndGame()
+        {
+            W.Completed = true;
+            SaveNow(quiet: true);
+            app.States.Transition(GameState.Ending);
+            shopPanel.Hide();
+            PlayScene("Ending", () => ShowResults(montage: true));
+        }
+
+        void ShowResults(bool montage)
+        {
+            ending.Show(montage, Statistics(W), null,
+                () => app.GoToMainMenu(),
+                () => { app.OpenNewGamePicker = true; app.GoToMainMenu(); });
+        }
+
+        static string Statistics(World w)
+        {
+            var t = TimeSpan.FromSeconds(w.Clock.Seconds);
+            var weapons = new System.Text.StringBuilder();
+            foreach (var o in w.Player.Loadout.Owned) weapons.Append($"{w.Profile.Weapon(o.Id).DisplayName} Lv{o.Level}  ");
+            return $"Playtime {(int)t.TotalMinutes}:{t.Seconds:00}   ·   Enemies removed {w.Progress.Kills}   ·   Retries {w.Retries}\n" +
+                   $"Coins generated {w.Progress.CoinsGenerated}, collected {w.Progress.CoinsCollected}   ·   XP {w.Progress.TotalXp}   ·   Items used {w.Progress.ItemsUsed}\n" +
+                   $"Skills: {string.Join(", ", w.Progress.ChosenSkills)}\nWeapons: {weapons}";
+        }
+
+        void PlayScene(string id, Action done)
+        {
+            var seen = W.Narrative.SeenScenes;
+            bool canSkip = seen.Contains(id);
+            if (!canSkip) seen.Add(id);
+            dialogue.PlayScene(id, canSkip, done);
+        }
         static string TutorialPrompt(World w) => w.Tutorial switch
         {
             TutorialStage.FirstGroup => "WASD to move · aim with the mouse · hold left click to fire · Space to dash",
@@ -259,6 +392,7 @@ namespace Hollow.Game
         {
             menus.Hide();
             app.States.Resume();
+            if (app.States.Current == GameState.BossPrep) ShowBossPrompt();
             if (app.States.Current == GameState.XPChoice && W.Progress.Pending != null)
                 xpScreen.Show(W, W.Progress.Pending, OnSkillChosen);
         }

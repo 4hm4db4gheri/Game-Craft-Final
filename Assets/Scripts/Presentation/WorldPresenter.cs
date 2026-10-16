@@ -22,6 +22,7 @@ namespace Hollow.Presentation
         int nextFlash;
         readonly EntityViews<ArcView> mines = new();
         ArcView previewArea, previewRay, shieldRing;
+        readonly System.Collections.Generic.Dictionary<BossId, BossView> bossViews = new();
         readonly System.Collections.Generic.Dictionary<EnemyId, ViewPool<EnemyView>> poolsByType = new();
         ViewPool<ProjectileView> playerShots, enemyShots;
         ViewPool<CoinView> coinPool;
@@ -59,6 +60,7 @@ namespace Hollow.Presentation
             HandleEvents(w);
             playerView.Sync(w, alpha, catalog.Weapon(w.Player.Loadout.ActiveId));
             if (companionView != null) companionView.Sync(w, alpha);
+            SyncBoss(w, alpha);
 
             foreach (var e in w.Enemies)
             {
@@ -98,6 +100,21 @@ namespace Hollow.Presentation
             hazards.ReleaseUnseen();
 
             SyncItems(w, alpha);
+        }
+
+        void SyncBoss(World w, float alpha)
+        {
+            foreach (var kv in bossViews) kv.Value.gameObject.SetActive(w.Boss.Active && kv.Key == w.Boss.Id);
+            if (!w.Boss.Active) return;
+            if (!bossViews.TryGetValue(w.Boss.Id, out var view))
+            {
+                var prefab = catalog.BossPrefab(w.Boss.Id);
+                if (prefab == null) return;
+                view = Instantiate(prefab, transform);
+                bossViews[w.Boss.Id] = view;
+            }
+            view.gameObject.SetActive(true);
+            view.Sync(w, alpha, catalog.Telegraph);
         }
 
         /// <summary>Item previews (§10): grenade landing point and blast, mine under the player, pulse/shield ranges.</summary>
@@ -154,6 +171,7 @@ namespace Hollow.Presentation
                 {
                     case SimEventType.EnemyHit:
                         if (enemies.TryGet(ev.EntityId, out var ev1)) ev1.Flash(flash);
+                        else if (ev.EntityId == BossState.EntityId && w.Boss.Active && bossViews.TryGetValue(w.Boss.Id, out var bv)) bv.Flash(flash);
                         break;
                     case SimEventType.Explosion:
                         var f = flashes[nextFlash];

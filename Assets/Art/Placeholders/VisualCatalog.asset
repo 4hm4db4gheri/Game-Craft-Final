@@ -112,6 +112,13 @@ MonoBehaviour:
     Color: {r: 0.55, g: 1, b: 1, a: 1}
     Size: {x: 0.7, y: 0.08}
     ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
+  Bosses:
+  - Id: 0
+    Prefab: {fileID: 1321717015412269441, guid: dbf31126bc7d68b46b3a6eb1abe223b9, type: 3}
+  - Id: 1
+    Prefab: {fileID: 612414243718059190, guid: c4dc6b37819c21e4da691bb9e552c2d9, type: 3}
+  - Id: 2
+    Prefab: {fileID: 6205931626733871840, guid: eeddac5ad8bb4ff4fae4813b8f37b214, type: 3}
   PlayerProjectile: {fileID: 4609238632887027920, guid: f959378585e1bb94081e376a6b1ebb79, type: 3}
   EnemyProjectile: {fileID: 5933724752300405815, guid: 425f6cc1a891f5e4eb5ed5e21cf6aed9, type: 3}
   Coin: {fileID: 9064103742896683663, guid: de5eee30b37e4214394eb4958f035707, type: 3}

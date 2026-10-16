@@ -14,7 +14,8 @@ namespace Hollow.UI
     public sealed class HudView : MonoBehaviour
     {
         UIRoot root;
-        BarView health, companion, xp, reload;
+        BarView health, companion, xp, reload, bossBar;
+        TextMeshProUGUI bossText;
         TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText, companionArrow;
         readonly StringBuilder sb = new(128);
         readonly UnityEngine.UI.Button[] itemButtons = new UnityEngine.UI.Button[5];
@@ -51,7 +52,7 @@ namespace Hollow.UI
             topText = UIFactory.Text(top, "Text", "", t, 26, TextAlignmentOptions.Center);
             var wallet = UIFactory.Rect(hud, "Wallet", new Vector2(1, 1), new Vector2(1, 1), new Vector2(-40, -16), new Vector2(300, 48));
             walletText = UIFactory.Text(wallet, "Text", "", t, 32, TextAlignmentOptions.MidlineRight, t.Coin);
-            var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -80), new Vector2(1200, 90));
+            var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -175), new Vector2(1200, 90));
             statusText = UIFactory.Text(status, "Text", "", t, 30, TextAlignmentOptions.Center, t.Accent);
 
             for (int i = 0; i < itemButtons.Length; i++)
@@ -64,9 +65,23 @@ namespace Hollow.UI
                 itemFrames[i] = b.GetComponent<UnityEngine.UI.Image>();
             }
 
+            bossBar = UIFactory.Bar(hud, "Boss", t, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -100), new Vector2(900, 22), t.Warning);
+            bossText = UIFactory.Text(bossBar.transform, "Name", "", t, 22, TextAlignmentOptions.Center);
+            bossText.rectTransform.anchoredPosition = new Vector2(0, 26);
+            bossBar.gameObject.SetActive(false);
+
             var arrow = UIFactory.Rect(hud, "CompanionArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
             companionArrow = UIFactory.Text(arrow, "Glyph", "▲", t, 48, TextAlignmentOptions.Center, t.Warning);
             arrow.gameObject.SetActive(false);
+        }
+
+        /// <summary>Boss bar during encounters (§10); the human boss bar is body and equipment together.</summary>
+        public void SetBoss(string name, float fraction)
+        {
+            bossBar.gameObject.SetActive(name != null);
+            if (name == null) return;
+            bossBar.Set(fraction);
+            bossText.text = name;
         }
 
         public void SetStatus(string message) => statusText.text = message ?? "";

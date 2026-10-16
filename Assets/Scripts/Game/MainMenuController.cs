@@ -22,6 +22,11 @@ namespace Hollow.Game
             menus = ui.gameObject.AddComponent<MenuScreens>();
             menus.Init(ui);
             Main();
+            if (app.OpenNewGamePicker)
+            {
+                app.OpenNewGamePicker = false;
+                menus.ShowSlots(SlotPickMode.NewGame, slot => app.StartNewGame(slot), Main);
+            }
         }
 
         void Main()
