@@ -33,6 +33,7 @@ namespace Hollow.Data
         [PanelGroup(PanelGroups.SkillsFeedback)] public XpData Xp = new();
         [PanelGroup(PanelGroups.SkillsFeedback)] public List<SkillData> Skills = new();
         [PanelGroup(PanelGroups.SkillsFeedback)] public FeedbackData Feedback = new();
+        [PanelGroup(PanelGroups.SkillsFeedback)] public CameraData Camera = new();
 
         [JsonIgnore, NonSerialized] Dictionary<EnemyId, EnemyData> enemyIndex;
         [JsonIgnore, NonSerialized] Dictionary<WeaponId, WeaponData> weaponIndex;
@@ -83,6 +84,8 @@ namespace Hollow.Data
         [Gdd("§4"), Unit("u")] public float MagnetRadius;
         [Placeholder, Unit("u/s")] public float CoinPullSpeed;
         [Placeholder, Unit("u")] public float ShopInteractRange;
+        /// <summary>Share of a player–enemy overlap resolved by moving the player (the enemy takes the rest).</summary>
+        [Placeholder] public float CrowdPushShare;
     }
 
     [Serializable]
@@ -365,6 +368,16 @@ namespace Hollow.Data
         [Placeholder] public int MaxParticles;
         [Placeholder] public int MaxDecals;
         [Placeholder] public int MaxCorpses;
+    }
+
+    /// <summary>Framing decides what the player can see, so it is gameplay data (§14, D11, D12).</summary>
+    [Serializable]
+    public sealed class CameraData
+    {
+        [Placeholder, Unit("u")] public float OrthographicSize;
+        [Placeholder] public float LookAheadFactor;
+        [Placeholder, Unit("u")] public float LookAheadMax;
+        [Placeholder, Unit("s")] public float FollowDamping;
     }
 
     [Serializable]

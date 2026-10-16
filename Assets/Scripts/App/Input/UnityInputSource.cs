@@ -56,7 +56,18 @@ namespace Hollow.App.Input
             foreach (var a in All()) a.Enable();
         }
 
-        static InputAction Button(string name, string binding) => new(name, InputActionType.Button, binding);
+        readonly System.Collections.Generic.HashSet<InputAction> pressed = new();
+
+        InputAction Button(string name, string binding)
+        {
+            var a = new InputAction(name, InputActionType.Button, binding);
+            // Latch presses from callbacks so a press is never lost, whatever update it arrives in.
+            a.performed += _ => pressed.Add(a);
+            return a;
+        }
+
+        /// <summary>True once per physical press, until read.</summary>
+        public bool TakePress(InputAction a) => pressed.Remove(a);
 
         InputAction[] All() => new[]
         {
@@ -70,16 +81,16 @@ namespace Hollow.App.Input
             {
                 Move = move.ReadValue<Vector2>(),
                 FireHeld = fire.IsPressed(),
-                FireDown = fire.WasPressedThisFrame(),
-                CancelDown = cancel.WasPressedThisFrame(),
-                DashDown = dash.WasPressedThisFrame(),
-                ReloadDown = reload.WasPressedThisFrame(),
-                Weapon1Down = weapon1.WasPressedThisFrame(),
-                Weapon2Down = weapon2.WasPressedThisFrame(),
+                FireDown = TakePress(fire),
+                CancelDown = TakePress(cancel),
+                DashDown = TakePress(dash),
+                ReloadDown = TakePress(reload),
+                Weapon1Down = TakePress(weapon1),
+                Weapon2Down = TakePress(weapon2),
                 Scroll = scroll.ReadValue<float>(),
-                EquipItemDown = equipItem.WasPressedThisFrame(),
-                CycleItemDown = cycleItem.WasPressedThisFrame(),
-                InteractDown = interact.WasPressedThisFrame(),
+                EquipItemDown = TakePress(equipItem),
+                CycleItemDown = TakePress(cycleItem),
+                InteractDown = TakePress(interact),
                 PointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(),
             };
 

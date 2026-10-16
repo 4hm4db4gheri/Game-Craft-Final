@@ -1,0 +1,17 @@
+{
+    "name": "Hollow.Sim",
+    "rootNamespace": "Hollow.Sim",
+    "references": [
+        "Hollow.Core",
+        "Hollow.Data"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

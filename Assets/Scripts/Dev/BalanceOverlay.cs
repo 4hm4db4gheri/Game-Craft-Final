@@ -39,7 +39,7 @@ namespace Hollow.Dev
         {
             var app = GameApp.Instance;
             if (app == null) return;
-            if (app.InputSource.BalancePanel.WasPressedThisFrame()) SetOpen(!open);
+            if (app.InputSource.TakePress(app.InputSource.BalancePanel)) SetOpen(!open);
         }
 
         void SetOpen(bool value)

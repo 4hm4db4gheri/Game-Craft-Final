@@ -1,5 +1,8 @@
 using System.Linq;
 using Hollow.App;
+using Hollow.Game;
+using Hollow.Presentation;
+using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -66,17 +69,66 @@ namespace Hollow.EditorTools
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.MainMenu));
         }
 
-        static void BuildGameScene()
+        [MenuItem("Hollow/Setup/Rebuild Game Scene")]
+        public static void BuildGameScene()
         {
+            PlaceholderArt.GenerateAll();
+            var playerPrefab = PrefabBuilder.BuildPlayer();
+            var reticlePrefab = PrefabBuilder.BuildReticle();
+            var shopPrefab = PrefabBuilder.BuildShop();
+
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var cam = CreateCamera("WorldCamera");
-            var root = new GameObject("GameSceneRoot").AddComponent<GameSceneRoot>();
-            var so = new SerializedObject(root);
-            so.FindProperty("worldCamera").objectReferenceValue = cam;
-            so.ApplyModifiedPropertiesWithoutUndo();
+            cam.gameObject.AddComponent<CinemachineBrain>();
+
+            var arena = ArenaTools.BuildWhitebox();
+            var shop = (GameObject)PrefabUtility.InstantiatePrefab(shopPrefab);
+            shop.transform.position = arena.Shop.position + Vector3.down * 0.5f;
+
+            var player = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab);
+            var reticle = (GameObject)PrefabUtility.InstantiatePrefab(reticlePrefab);
+
+            // Camera: follow target + Cinemachine camera confined to the arena.
+            var target = new GameObject("CameraFollowTarget").transform;
+            var boundsGo = new GameObject("CameraBounds");
+            var bounds = boundsGo.AddComponent<PolygonCollider2D>();
+            bounds.isTrigger = true;
+            float hx = arena.Size.x / 2f, hy = arena.Size.y / 2f;
+            bounds.points = new[] { new Vector2(-hx, -hy), new Vector2(hx, -hy), new Vector2(hx, hy), new Vector2(-hx, hy) };
+            var vcamGo = new GameObject("CM FollowCamera");
+            var vcam = vcamGo.AddComponent<CinemachineCamera>();
+            vcam.Target.TrackingTarget = target;
+            var lens = vcam.Lens;
+            lens.OrthographicSize = 7.5f;
+            vcam.Lens = lens;
+            var composer = vcamGo.AddComponent<CinemachinePositionComposer>();
+            composer.CameraDistance = 10f;
+            var confiner = vcamGo.AddComponent<CinemachineConfiner2D>();
+            confiner.BoundingShape2D = bounds;
+            vcamGo.AddComponent<CinemachineImpulseListener>();
+
+            var rig = new GameObject("CameraRig").AddComponent<CameraRig>();
+            Wire(rig, ("followTarget", target), ("virtualCamera", vcam), ("composer", composer));
+
+            var session = new GameObject("GameSession").AddComponent<GameSession>();
+            Wire(session, ("worldCamera", cam), ("arena", arena), ("playerView", player.GetComponent<PlayerView>()),
+                ("cameraRig", rig), ("reticle", reticle.GetComponent<ReticleView>()));
+
+            ArenaTools.Bake(arena);
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.Game));
         }
 
+        static void Wire(Object target, params (string field, Object value)[] refs)
+        {
+            var so = new SerializedObject(target);
+            foreach (var (field, value) in refs)
+            {
+                var prop = so.FindProperty(field);
+                if (prop == null) { Debug.LogError($"[Hollow] {target.GetType().Name} has no field '{field}'"); continue; }
+                prop.objectReferenceValue = value;
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
         static Camera CreateCamera(string name)
         {
             var go = new GameObject(name) { tag = "MainCamera" };

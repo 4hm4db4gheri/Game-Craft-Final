@@ -15,7 +15,8 @@
     "BodyRadius": 0.35,
     "MagnetRadius": 1.0,
     "CoinPullSpeed": 9.0,
-    "ShopInteractRange": 2.0
+    "ShopInteractRange": 2.0,
+    "CrowdPushShare": 0.3
   },
   "Companion": {
     "Phases": [
@@ -2600,5 +2601,11 @@
     "MaxParticles": 1500,
     "MaxDecals": 300,
     "MaxCorpses": 150
+  },
+  "Camera": {
+    "OrthographicSize": 7.5,
+    "LookAheadFactor": 0.15,
+    "LookAheadMax": 3.0,
+    "FollowDamping": 0.12
   }
 }

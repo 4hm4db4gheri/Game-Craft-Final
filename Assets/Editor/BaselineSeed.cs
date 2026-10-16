@@ -46,7 +46,7 @@ namespace Hollow.EditorTools
                 MaxHealth = 100, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
                 DashDistance = 3, DashDuration = 0.18f, DashCooldown = 2.5f, DashDamage = 50,
                 PostHitInvulnerability = 0.5f, BodyRadius = 0.35f, MagnetRadius = 1,
-                CoinPullSpeed = 9, ShopInteractRange = 2,
+                CoinPullSpeed = 9, ShopInteractRange = 2, CrowdPushShare = 0.3f,
             };
 
             p.Companion = new CompanionData
@@ -116,6 +116,8 @@ namespace Hollow.EditorTools
                 HitFlashDuration = 0.08f, HitKnockback = 0.12f, DamageNumbersDefaultOn = true, DamageNumbersMaxPerSecond = 40,
                 MaxParticles = 1500, MaxDecals = 300, MaxCorpses = 150,
             };
+
+            p.Camera = new CameraData { OrthographicSize = 7.5f, LookAheadFactor = 0.15f, LookAheadMax = 3f, FollowDamping = 0.12f };
 
             p.BuildIndex();
             return p;

@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Hollow.Core",
-        "Hollow.Data"
+        "Hollow.Data",
+        "Hollow.Sim"
     ],
     "includePlatforms": [
         "Editor"

@@ -5,7 +5,11 @@
         "Hollow.Core",
         "Hollow.Data",
         "Hollow.App",
-        "Hollow.Dev"
+        "Hollow.Dev",
+        "Hollow.Sim",
+        "Hollow.Presentation",
+        "Hollow.Game",
+        "Unity.Cinemachine"
     ],
     "includePlatforms": [
         "Editor"

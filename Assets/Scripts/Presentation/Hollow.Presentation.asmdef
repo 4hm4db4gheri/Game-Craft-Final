@@ -1,0 +1,19 @@
+{
+    "name": "Hollow.Presentation",
+    "rootNamespace": "Hollow.Presentation",
+    "references": [
+        "Hollow.Core",
+        "Hollow.Data",
+        "Hollow.Sim",
+        "Unity.Cinemachine"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
