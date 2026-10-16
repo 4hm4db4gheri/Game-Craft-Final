@@ -9,50 +9,47 @@
 
 ## خلاصه‌ی پروژه
 
-- **نام:** Game Craft Final
-- **نوع:** بازی دوبعدی (2D) با Unity
-- **نسخه‌ی Unity:** `6000.6.0f1` (Unity 6)
-- **رندر پایپ‌لاین:** URP با Renderer2D (`Assets/Settings/UniversalRP.asset`، `Assets/Settings/Renderer2D.asset`)
-- **ورودی:** Input System جدید (`Assets/Settings/InputSystem_Actions.inputactions`)
-- **کنترل نسخه:** git، شاخه‌ی `main`
-- **مرحله:** پروژه تازه از تمپلیت 2D یونیتی ساخته شده و هنوز کد گیم‌پلی ندارد.
-- **بازی:** «Hollow» — شوتر دید از بالا با نشانه‌گیری دستی، سه فاز (حیوانات، ربات‌ها، انسان‌ها)، ۵ موج + ۱ باس در هر فاز. مرجع طراحی: docs/GDD.md (تبدیل‌شده از Hollow_Game_Design_EN.docx نسخه‌ی 0.12).
+- **نام:** Game Craft Final — بازی **Hollow** (جم دو روزه). شوتر دوبعدی با دید 3/4 از بالا مثل Kill The Crows (نه پیکسل‌آرت)، سه فاز (حیوانات، ربات‌ها، انسان‌ها)، ۵ موج + ۱ باس در هر فاز.
+- **مرجع طراحی:** `docs/GDD.md` (تبدیل‌شده از `Assets/GDD/Hollow_Game_Design_EN.docx` نسخه‌ی 0.12). پرامپت اصلی کاربر شامل تسک‌های T00 تا T22 است؛ وضعیت در `docs/TASKS.md`.
+- **Unity:** `6000.6.0f1`، URP با Renderer2D (sort axis = Y برای مرتب‌سازی بر اساس پا)، Input System جدید (actionها در کد، `UnityInputSource`)، Cinemachine 6.6 و AI Navigation (کاربر نصب کرده؛ Navigation استفاده نمی‌شود)، Newtonsoft JSON.
+- **git:** شاخه‌ی `main`، یک commit برای هر تسک، بدون push مگر کاربر بخواهد.
+
+## معماری (خلاصه)
+
+- گیم‌پلی یک **شبیه‌سازی C# خالص** است (`Hollow.Sim`, هنوز ساخته نشده) با تیک ثابت ۶۰ هرتز؛ MonoBehaviourها فقط رندر می‌کنند و ورودی می‌دهند (D40–D47 در `docs/DECISIONS.md`).
+- **همه‌ی اعداد گیم‌پلی** در `Assets/Resources/Balance/Baseline.json` هستند (کلاس‌ها در `Assets/Scripts/Data/BalanceProfile.cs`). هیچ عدد گیم‌پلی در کد نباشد. `Assets/Editor/BaselineSeed.cs` فقط seed اولیه است و Baseline.json را بازنویسی می‌کند (با تأیید).
+- **پنل بالانس:** Editor: منوی `Hollow > Balance Panel` (Ctrl+Shift+B). داخل بازی: F9 (در Editor و development build). `BalanceService` = draft/live/apply/undo/reset group.
 
 ## ساختار پروژه
 
 | مسیر | توضیح |
 |---|---|
-| `Assets/Scenes/SampleScene.unity` | تنها صحنه؛ در Build Settings فعال است |
-| `Assets/Settings/` | تنظیمات URP، Renderer2D، Volume Profile، Input Actions، Scene Template |
-| `Assets/Welcome/` | فایل‌های صفحه‌ی خوش‌آمد تمپلیت (`Welcome2DScript.cs` و asmdef) — مربوط به گیم‌پلی نیست |
-| `Packages/manifest.json` | لیست پکیج‌ها |
-| `ProjectSettings/` | تنظیمات پروژه |
-| `docs/GDD.md` | سند طراحی بازی (منبع حقیقت) |
-| `docs/QUESTIONS.md` | سؤال‌های باز با پیش‌فرض پیشنهادی (★ = مسدودکننده) و یافته‌های بررسی |
-| `docs/DECISIONS.md` | لاگ تصمیم‌ها با منبع هر تصمیم |
-| `docs/USER_STORIES.md` | پیش‌نویس user story برای تسک‌های T00 تا T22 (تأییدنشده) |
-
-### پکیج‌های مهم
-2D Animation، Aseprite Importer، PSD Importer، Sprite Shape، Tilemap + Tilemap Extras، Input System، URP 17.6، Timeline، uGUI، Visual Scripting، Test Framework، AI Assistant / AI Inference.
+| `Assets/Scenes/` | `Boot` → `MainMenu` (منوی موقت IMGUI) → `Game` |
+| `Assets/Scripts/Core/` | `Hollow.Core`: state machine، `SimClock`/تایمرها، `SimDriver`، `SimRandom`، `InputRouting/` (InputRouter، PlayerCommand) |
+| `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
+| `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
+| `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
+| `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow` |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۱۸۲ تست، همه پاس) |
+| `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
 
-- اسکریپت‌های گیم‌پلی جدید را در `Assets/Scripts/` قرار بده (هنوز ساخته نشده).
-- اسکریپت‌های Editor در `Assets/Editor/`.
-- فایل‌های `Library/`، `Temp/`، `Logs/`، `UserSettings/` و `*.csproj` تولیدی هستند؛ آن‌ها را نخوان و ویرایش نکن.
+- هر عدد گیم‌پلی → فیلد در `BalanceProfile` با برچسب `[Gdd]` یا `[Placeholder]`.
+- شناسه‌ها enum هستند (`EnemyId`، `WeaponId`، …) نه رشته.
+- کار با ادیتور باز از طریق `unity command ... --project-path` (اسکریپت‌های کمکی در scratchpad: compile/tests). Play mode در Editor حتی بدون فوکوس اجرا می‌شود (`runInBackground` فقط در Editor).
+- اگر فایل جدیدی در یک پوشه‌ی تازه ساختی و Unity آن را کامپایل نکرد، پوشه را با `AssetDatabase.MoveAsset` جابه‌جا کن (مشکل کش؛ اتفاق افتاد).
+- `Library/`، `Temp/`، `Logs/`، `UserSettings/`، `Builds/` تولیدی‌اند.
 
 ## وضعیت فعلی
 
-- هیچ سیستم گیم‌پلی‌ای پیاده‌سازی نشده است.
-- اسکریپت `Assets/Editor/HubForceResolve.cs` حذف شده و پوشه‌ی `Assets/Editor/` فعلاً وجود ندارد.
-- تصاویر (`*.png` و غیره) طبق `.gitattributes` با Git LFS ذخیره می‌شوند.
-- آخرین commit‌ها: `485e18c`، `c439e31`. پوشه‌ی `docs/` و تغییر `agent.md` هنوز commit نشده‌اند.
-- **منتظر جواب کاربر به `docs/QUESTIONS.md`** — طبق دستور کاربر تا جواب نیامده هیچ فایلی خارج از `docs/` ساخته یا تغییر داده نمی‌شود.
+- انجام‌شده: T00 (پایه)، T01 (لایه‌ی داده؛ همه‌ی اعداد GDD با تست بازتولید می‌شوند)، T01b (پنل بالانس).
+- بعدی: T02 بازیکن (حرکت، نشانه‌گیری، dash) روی شبیه‌سازی `Hollow.Sim`.
+- build ویندوز خالی موفق بود (`Builds/Windows/Hollow.exe`، ۱۳۳ مگابایت به خاطر پکیج‌های AI).
 
 ## کارهای باز / ایده‌ها
 
-- گرفتن جواب سؤال‌ها و تأیید user storyها، سپس نوشتن `docs/TASKS.md` و `docs/DECISIONS.md` و شروع T00.
-
+- آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ T16a باید importer خودکار بسازد.
 ---
 
 ## تاریخچه‌ی کارها
@@ -82,3 +79,9 @@
 - کاربر اعلام کرد بازی 2D (ایزومتریک/شبیه ویدیوی Kill The Crows) است. پاسخ: نیازی به پروژه‌ی 3D نیست.
 - ساخت `docs/DECISIONS.md` (D1، D2). اصلاح `docs/QUESTIONS.md`: Q2/Q9 پاسخ داده شد؛ Q4، Q5 (flow field به‌جای NavMesh)، Q10–Q14 برای 2D بازنویسی شد؛ سؤال‌های جدید Q72 (sorting و hitbox)، Q73 (مانع کوتاه/بلند)، Q74 (نورهای 2D و مه).
 - فایل‌های تغییرکرده: `docs/DECISIONS.md` (جدید)، `docs/QUESTIONS.md`، `agent.md`.
+
+### 2026-10-16 — جواب سؤال‌ها، پرامپت آرت، T00، T01، T01b
+- کاربر به همه‌ی سؤال‌ها جواب داد (اکثراً پیش‌فرض پیشنهادی)؛ ثبت در `docs/DECISIONS.md`. پرامپت master brief و لیست asset برای تولید آرت با AI نوشته شد.
+- T00: state machine، دو ساعت (sim/active)، InputRouter، صحنه‌ها، BuildTool، حذف Welcome و SampleScene. build ویندوز موفق.
+- T01: BalanceProfile + Baseline.json از GDD، calculator و validator، CSV سطح سلاح‌ها. T01b: پنل بالانس Editor + F9.
+- commitها: `35e6893` (T00)، `c9ee16c` (T01).
