@@ -61,11 +61,15 @@ namespace Hollow.EditorTools
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.Boot));
         }
 
-        static void BuildMainMenuScene()
+        [MenuItem("Hollow/Setup/Rebuild Main Menu Scene")]
+        public static void BuildMainMenuScene()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             CreateCamera("MenuCamera");
-            new GameObject("MainMenu").AddComponent<MainMenuPlaceholder>();
+            var uiRoot = new GameObject("UI").AddComponent<Hollow.UI.UIRoot>();
+            Wire(uiRoot, ("theme", LoadOrCreateTheme()));
+            var menu = new GameObject("MainMenu").AddComponent<MainMenuController>();
+            Wire(menu, ("ui", uiRoot));
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.MainMenu));
         }
 

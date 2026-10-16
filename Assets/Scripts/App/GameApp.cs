@@ -14,6 +14,8 @@ namespace Hollow.App
         public const string Game = "Game";
     }
 
+    public enum LaunchMode { NewGame, LoadSlot }
+
     /// <summary>
     /// Composition root that lives across scenes: game-state machine, input source and router.
     /// Created by the Boot scene, or on demand when a scene is played directly in the Editor.
@@ -35,6 +37,11 @@ namespace Hollow.App
         public Camera WorldCamera { get; set; }
 
         int modalCount;
+
+        /// <summary>What the Game scene should do when it starts.</summary>
+        public LaunchMode Launch { get; private set; } = LaunchMode.NewGame;
+        /// <summary>The slot this game saves into (1..3).</summary>
+        public int ActiveSlot { get; set; } = 1;
 
         public static GameApp Ensure()
         {
@@ -60,6 +67,7 @@ namespace Hollow.App
             Router = new InputRouter();
             InputSource = new UnityInputSource();
             Balance = BalanceProfileStore.CreateService();
+            GameSettings.ApplyWindow();
             States.Changed += (_, _) => RefreshWorldInput();
         }
 
@@ -86,13 +94,27 @@ namespace Hollow.App
 
         public void GoToMainMenu()
         {
-            States.Transition(GameState.MainMenu);
+            if (States.Current != GameState.MainMenu) States.Transition(GameState.MainMenu);
             SceneManager.LoadScene(SceneNames.MainMenu);
         }
 
-        public void StartNewGame()
+        public void StartNewGame(int slot)
         {
-            States.Transition(GameState.Loading);
+            Launch = LaunchMode.NewGame;
+            ActiveSlot = slot;
+            EnterGameScene();
+        }
+
+        public void LoadGame(int slot)
+        {
+            Launch = LaunchMode.LoadSlot;
+            ActiveSlot = slot;
+            EnterGameScene();
+        }
+
+        void EnterGameScene()
+        {
+            if (States.Current != GameState.Loading) States.Transition(GameState.Loading);
             SceneManager.LoadScene(SceneNames.Game);
         }
 

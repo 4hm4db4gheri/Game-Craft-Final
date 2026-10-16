@@ -10,8 +10,9 @@ using UnityEngine;
 namespace Hollow.Game
 {
     /// <summary>
-    /// Root of the Game scene: owns the simulation, steps it in fixed ticks with routed input,
-    /// and hands the result to the views every frame.
+    /// Root of the Game scene: owns the simulation, steps it in fixed ticks with routed input, hands the
+    /// result to the views every frame, and runs the in-game flow (XP card, shop, pause, save/load,
+    /// failure and checkpoint retry).
     /// </summary>
     public sealed class GameSession : MonoBehaviour
     {
@@ -26,36 +27,42 @@ namespace Hollow.Game
         XpCardScreen xpScreen;
         FailureScreen failureScreen;
         ShopPanel shopPanel;
+        MenuScreens menus;
+        readonly SettingsAdapter settings = new();
 
         GameApp app;
         SimDriver driver;
+        ArenaLayout layout;
+        string lastSavedHash;
+        string flashMessage;
+        float flashUntil;
 
         public Simulation Sim { get; private set; }
+        World W => Sim.World;
 
         void Start()
         {
             app = GameApp.Ensure();
             app.EnterGameDirectly();
             app.WorldCamera = worldCamera;
-
-            var layout = ArenaLayoutStore.LoadFromResources();
-            ulong seed = (ulong)DateTime.UtcNow.Ticks;
-            Sim = new Simulation(Simulation.NewWorld(app.Balance.Live, layout, seed));
-            app.Balance.Applied += OnBalanceApplied;
-            arena.ShowPhase(Sim.World.Phase);
+            layout = ArenaLayoutStore.LoadFromResources();
 
             hud = ui.gameObject.AddComponent<HudView>();
             hud.Init(ui);
             xpScreen = ui.gameObject.AddComponent<XpCardScreen>();
             xpScreen.Init(ui);
             shopPanel = ui.gameObject.AddComponent<ShopPanel>();
-            shopPanel.Init(ui, OnShopBuy, item => Sim.World.Inventory.MoveToFirst(item));
+            shopPanel.Init(ui, OnShopBuy, item => W.Inventory.MoveToFirst(item));
             failureScreen = ui.gameObject.AddComponent<FailureScreen>();
-            failureScreen.Init(ui, RetryAfterFailure, RetryAfterFailure, () => app.GoToMainMenu());
+            failureScreen.Init(ui, RetryFromCheckpoint, () => ShowSlotLoad(fromFailure: true), () => app.GoToMainMenu());
+            menus = ui.gameObject.AddComponent<MenuScreens>();
+            menus.Init(ui);
 
-            WaveSystem.StartWave(Sim.World, 1);
+            app.Balance.Applied += OnBalanceApplied;
             driver = new SimDriver(app.States, StepOnce);
-            app.States.Transition(GameState.Playing);
+
+            if (app.Launch == LaunchMode.LoadSlot) LoadFromSlot(app.ActiveSlot);
+            else StartNewGame();
         }
 
         void OnDestroy()
@@ -64,16 +71,73 @@ namespace Hollow.Game
         }
 
         /// <summary>Live tuning: the next step already reads the new numbers.</summary>
-        void OnBalanceApplied(BalanceProfile profile) => Sim.World.Profile = profile;
+        void OnBalanceApplied(BalanceProfile profile) { if (Sim != null) W.Profile = profile; }
+
+        // ---------------------------------------------------------------- start / load
+
+        void StartNewGame()
+        {
+            SetWorld(Simulation.NewWorld(app.Balance.Live, layout, (ulong)DateTime.UtcNow.Ticks));
+            WaveSystem.StartWave(W, 1);
+            app.States.Transition(GameState.Playing);
+            SaveNow(quiet: true); // claims the chosen slot (replacement was confirmed in the picker)
+        }
+
+        void LoadFromSlot(int slot)
+        {
+            try
+            {
+                var save = SlotStore.Read(slot);
+                app.Balance.ResetLive(save.Profile);
+                var world = save.LoadWorld(layout);
+                world.Profile = app.Balance.Live;
+                SetWorld(world);
+                lastSavedHash = WorldSerializer.Hash(W);
+                menus.ShowLoading(MenuScreens.Describe(save.Summary), () =>
+                {
+                    menus.Hide();
+                    app.States.Transition(GameState.Playing);
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[Hollow] Load of slot {slot} failed: {e}");
+                menus.ShowConfirm("Load failed", $"Slot {slot} could not be read.\n{e.Message}", ("Main menu", () =>
+                {
+                    app.States.Transition(GameState.MainMenu);
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(SceneNames.MainMenu);
+                }));
+            }
+        }
+
+        void SetWorld(World world)
+        {
+            Sim = new Simulation(world);
+            presenter.ResetViews();
+            arena.ShowPhase(world.Phase);
+        }
 
         void StepOnce() => Sim.Step(app.Router.Consume());
+
+        // ---------------------------------------------------------------- frame
 
         void Update()
         {
             if (Sim == null) return;
+            HandleKeys();
+
+            var state = app.States.Current;
+            if (state == GameState.Playing && W.Failure != FailureReason.None)
+            {
+                app.States.Transition(GameState.Failure);
+                shopPanel.Hide();
+                failureScreen.Show(W.Failure);
+            }
+            else if (state == GameState.Playing && W.Progress.Pending != null) OpenXpChoice();
+
             if (!app.ToolFreeze) driver.Update(Time.unscaledDeltaTime);
 
-            var w = Sim.World;
+            var w = W;
             float alpha = driver.InterpolationAlpha;
             presenter.Sync(w, alpha);
             cameraRig.Sync(w, alpha);
@@ -82,16 +146,18 @@ namespace Hollow.Game
             SyncShop(w);
             SyncEncounter(w);
             w.Events.Clear();
-
-            if (app.States.Current == GameState.Playing && w.Failure != FailureReason.None) { app.States.Transition(GameState.Failure); failureScreen.Show(w.Failure); }
-            else if (app.States.Current == GameState.Playing && w.Progress.Pending != null) OpenXpChoice();
         }
-    
-        /// <summary>Until death checkpoints exist (T17) a retry restarts the run.</summary>
-        void RetryAfterFailure()
+
+        void HandleKeys()
         {
-            app.States.Transition(GameState.Loading);
-            UnityEngine.SceneManagement.SceneManager.LoadScene(SceneNames.Game);
+            var input = app.InputSource;
+            var state = app.States.Current;
+            if (input.TakePause())
+            {
+                if (state == GameState.Playing || state == GameState.XPChoice || state == GameState.BossPrep) OpenPause();
+                else if (state == GameState.Paused) ClosePause();
+            }
+            if (input.TakeConfirm() && state == GameState.Playing) OnConfirm();
         }
 
         // ---------------------------------------------------------------- waves
@@ -99,18 +165,20 @@ namespace Hollow.Game
         void SyncEncounter(World w)
         {
             var ws = w.Waves;
-            int enemies = WaveSystem.AliveCount(w);
             string top = ws.Kind switch
             {
                 EncounterKind.SafeInterval => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} cleared — next wave in {Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))} s  (Enter: start now)",
                 EncounterKind.BossPrep => $"Phase {w.Phase} · all waves cleared — boss encounter (T13, not built yet). Enter: continue",
-                _ => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} · Enemies {enemies}",
+                _ => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} · Enemies {WaveSystem.AliveCount(w)}",
             };
             hud.SetTop(top);
+        }
 
-            if (app.States.Current != GameState.Playing || !app.InputSource.TakeConfirm()) return;
-            if (ws.Kind == EncounterKind.SafeInterval) WaveSystem.SkipSafeInterval(w);
-            else if (ws.Kind == EncounterKind.BossPrep && w.Phase < 3)
+        void OnConfirm()
+        {
+            var w = W;
+            if (w.Waves.Kind == EncounterKind.SafeInterval) WaveSystem.SkipSafeInterval(w);
+            else if (w.Waves.Kind == EncounterKind.BossPrep && w.Phase < 3)
             {
                 // Temporary until bosses and transitions exist (T13/T14).
                 PhaseSystem.EnterPhase(w, w.Phase + 1);
@@ -121,9 +189,7 @@ namespace Hollow.Game
         static string TutorialPrompt(World w) => w.Tutorial switch
         {
             TutorialStage.FirstGroup => "WASD to move · aim with the mouse · hold left click to fire · Space to dash",
-            TutorialStage.Purchase => w.Coins.Count > 0
-                ? "Collect the coins they dropped"
-                : "Go to the shop (south) and buy the SMG",
+            TutorialStage.Purchase => w.Coins.Count > 0 ? "Collect the coins they dropped" : "Go to the shop (south) and buy the SMG",
             _ => null,
         };
 
@@ -131,18 +197,20 @@ namespace Hollow.Game
 
         void SyncShop(World w)
         {
-            bool show = w.Shop.Open && (app.States.Current == GameState.Playing);
-            if (show) { shopPanel.Bind(w); shopPanel.Show(w); }
+            bool playing = app.States.Current == GameState.Playing;
+            if (w.Shop.Open && playing) { shopPanel.Bind(w); shopPanel.Show(w); }
             else if (shopPanel.Visible) shopPanel.Hide();
+
             string status = TutorialPrompt(w);
-            if (!w.Shop.Open && ShopSystem.InRange(w) && app.States.Current == GameState.Playing) status = "Press E to open the shop";
+            if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = "Press E to open the shop";
+            if (Time.unscaledTime < flashUntil) status = flashMessage;
             hud.SetStatus(status);
         }
 
         void OnShopBuy(ShopOffer offer)
         {
             if (app.States.Current != GameState.Playing) return;
-            ShopSystem.Purchase(Sim.World, offer.Kind, offer.Weapon, offer.Item);
+            ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item);
         }
 
         // ---------------------------------------------------------------- XP choice (world fully paused)
@@ -150,12 +218,12 @@ namespace Hollow.Game
         void OpenXpChoice()
         {
             app.States.Transition(GameState.XPChoice);
-            xpScreen.Show(Sim.World, Sim.World.Progress.Pending, OnSkillChosen);
+            xpScreen.Show(W, W.Progress.Pending, OnSkillChosen);
         }
 
-        void OnSkillChosen(Hollow.Data.SkillId id)
+        void OnSkillChosen(SkillId id)
         {
-            var w = Sim.World;
+            var w = W;
             if (app.States.Current != GameState.XPChoice || !XpSystem.Choose(w, id)) return;
             if (w.Progress.Pending != null)
             {
@@ -163,6 +231,77 @@ namespace Hollow.Game
                 return;
             }
             xpScreen.Hide();
+            app.States.Transition(GameState.Playing);
+        }
+
+        // ---------------------------------------------------------------- pause, save, load
+
+        void OpenPause()
+        {
+            app.States.Transition(GameState.Paused);
+            xpScreen.Hide();
+            ShowPauseMenu();
+        }
+
+        void ShowPauseMenu(string status = null) =>
+            menus.ShowPause(ClosePause, () => { SaveNow(); ShowPauseMenu(flashMessage); }, CanSave(), () => ShowSlotLoad(fromFailure: false),
+                () => menus.ShowSettings(settings, () => ShowPauseMenu()), () => menus.ShowControls(() => ShowPauseMenu()), ExitToMenu, status);
+
+        void ClosePause()
+        {
+            menus.Hide();
+            app.States.Resume();
+            if (app.States.Current == GameState.XPChoice && W.Progress.Pending != null)
+                xpScreen.Show(W, W.Progress.Pending, OnSkillChosen);
+        }
+
+        /// <summary>Saving is refused during short scenes and transitions (§11); everything else is exact.</summary>
+        bool CanSave() => app.States.ResumeState != GameState.Scene && app.States.ResumeState != GameState.PhaseTransition;
+
+        void SaveNow(bool quiet = false)
+        {
+            var result = SlotStore.Write(app.ActiveSlot, SaveFile.Create(W, W.Clock.Seconds));
+            if (result.Ok)
+            {
+                lastSavedHash = WorldSerializer.Hash(W);
+                if (!quiet) Flash($"Saved to slot {app.ActiveSlot}.");
+            }
+            else Flash($"SAVE FAILED: {result.Error}");
+        }
+
+        void Flash(string message)
+        {
+            flashMessage = message;
+            flashUntil = Time.unscaledTime + 3f;
+        }
+
+        void ShowSlotLoad(bool fromFailure)
+        {
+            menus.ShowSlots(SlotPickMode.Load, slot => app.LoadGame(slot),
+                () => { if (fromFailure) { menus.Hide(); failureScreen.Show(W.Failure); } else ShowPauseMenu(); });
+            if (fromFailure) failureScreen.Hide();
+        }
+
+        void ExitToMenu()
+        {
+            bool unsaved = lastSavedHash != WorldSerializer.Hash(W);
+            if (!unsaved) { app.GoToMainMenu(); return; }
+            menus.ShowConfirm("Unsaved progress", "Leave the game?",
+                ("Save and exit", () => { SaveNow(); app.GoToMainMenu(); }),
+                ("Exit without saving", () => app.GoToMainMenu()),
+                ("Cancel", () => ShowPauseMenu()));
+        }
+
+        // ---------------------------------------------------------------- failure
+
+        /// <summary>Death (or the companion's) restores the wave/boss start checkpoint (§12).</summary>
+        void RetryFromCheckpoint()
+        {
+            var restored = Checkpoints.Restore(W);
+            restored.Profile = app.Balance.Live;
+            failureScreen.Hide();
+            SetWorld(restored);
+            app.States.Transition(GameState.Loading);
             app.States.Transition(GameState.Playing);
         }
     }

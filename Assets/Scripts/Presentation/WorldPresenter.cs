@@ -35,6 +35,14 @@ namespace Hollow.Presentation
             swingArc.Hide();
         }
 
+        /// <summary>Drops every entity view (used when the world is replaced by a load or a retry).</summary>
+        public void ResetViews()
+        {
+            enemies.ReleaseUnseen();
+            projectiles.ReleaseUnseen();
+            coins.ReleaseUnseen();
+        }
+
         public void Sync(World w, float alpha)
         {
             HandleEvents(w);

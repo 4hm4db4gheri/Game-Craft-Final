@@ -92,6 +92,14 @@ namespace Hollow.Data
             LastIssues = BalanceValidator.Validate(Draft);
         }
 
+        /// <summary>Makes a loaded save's own profile snapshot live (no undo step: it is a different game).</summary>
+        public void ResetLive(BalanceProfile profile)
+        {
+            undo.Clear();
+            SetLive(BalanceJson.Clone(profile));
+            Draft = BalanceJson.Clone(Live);
+        }
+
         /// <summary>Puts an imported profile into the draft; it becomes live only on Apply.</summary>
         public void LoadIntoDraft(BalanceProfile imported)
         {
