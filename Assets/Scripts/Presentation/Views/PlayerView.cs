@@ -27,6 +27,9 @@ namespace Hollow.Presentation
         [SerializeField] Color dashColor = new(0.5f, 0.9f, 1f, 0.6f);
 
         WeaponVisual shownWeapon;
+        SpriteSetAnimator anim;
+
+        void Awake() => anim = GetComponent<SpriteSetAnimator>();
 
         public void Sync(World w, float alpha, WeaponVisual weapon)
         {
@@ -37,7 +40,7 @@ namespace Hollow.Presentation
                 weaponRenderer.color = weapon.Color;
                 var size = weaponRenderer.sprite.bounds.size;
                 weaponRenderer.transform.localScale = new Vector3(weapon.Size.x / size.x, weapon.Size.y / size.y, 1);
-                weaponRenderer.transform.localPosition = new Vector3(0.2f + weapon.Size.x * 0.5f, 0, 0);
+                weaponRenderer.transform.localPosition = new Vector3(weapon.PivotAtGrip ? 0.2f : 0.2f + weapon.Size.x * 0.5f, 0, 0);
             }
             var p = w.Player;
             Vector2 pos = Vector2.Lerp(p.PrevPosition, p.Position, alpha);
@@ -59,6 +62,7 @@ namespace Hollow.Presentation
             bool hurt = w.Clock.Tick < p.InvulnerableUntilTick && !p.Dashing;
             bodyRenderer.color = p.Dashing ? dashColor : hurt && (Time.frameCount / 4) % 2 == 0 ? hurtColor : normalColor;
             if (p.Dead) bodyRenderer.color = Color.gray;
+            if (anim != null) anim.SetState(p.Dead ? "death" : p.Velocity.sqrMagnitude > 0.25f ? "move" : "idle");
 
             // Dash readiness near the player: shown only while recharging.
             long cooldownTicks = w.Ticks(PlayerStats.DashCooldown(w));

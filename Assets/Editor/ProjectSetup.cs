@@ -135,6 +135,7 @@ namespace Hollow.EditorTools
 
             ArenaTools.Bake(arena);
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.Game));
+            ApplyIncomingArt.Apply(); // regenerated placeholders get the imported AI art back
         }
 
         const string ThemePath = "Assets/Art/Placeholders/UITheme.asset";

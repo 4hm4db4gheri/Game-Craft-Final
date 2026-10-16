@@ -23,10 +23,12 @@ namespace Hollow.Presentation
 
         Color[] baseColors;
         float flashUntil;
+        SpriteSetAnimator anim;
         int telegraphOrder = 500;
 
         void Awake()
         {
+            anim = GetComponent<SpriteSetAnimator>();
             baseColors = new Color[bodyRenderers.Length];
             for (int i = 0; i < bodyRenderers.Length; i++) baseColors[i] = bodyRenderers[i].color;
         }
@@ -88,6 +90,7 @@ namespace Hollow.Presentation
                 hpFill.transform.localPosition = new Vector3(-full * 0.5f * (1f - frac), hpFill.transform.localPosition.y, 0);
             }
 
+            if (anim != null) anim.SetState(AnimState(e));
             DrawTelegraph(w, e, d, pos, telegraphColor);
         }
 
@@ -141,6 +144,14 @@ namespace Hollow.Presentation
                     break;
             }
         }
+
+        static string AnimState(EnemyState e) => e.Ai switch
+        {
+            EnemyAi.Windup => "windup",
+            EnemyAi.Attack or EnemyAi.Charge => "attack",
+            EnemyAi.Recover => "recover",
+            _ => e.Velocity.sqrMagnitude > 0.05f ? "move" : "idle",
+        };
 
         void Line(Vector2 from, Vector2 dir, float length, float width, Color c)
         {

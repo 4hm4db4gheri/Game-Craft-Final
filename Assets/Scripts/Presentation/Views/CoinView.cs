@@ -10,7 +10,12 @@ namespace Hollow.Presentation
 
         float phase;
 
-        public void Begin(int id) => phase = (id * 0.37f) % 1f;
+        public void Begin(int id)
+        {
+            phase = (id * 0.37f) % 1f;
+            var anim = GetComponent<SpriteSetAnimator>();
+            if (anim != null) anim.SetState("spin");
+        }
 
         public void Sync(World w, CoinState c, float alpha)
         {

@@ -11,7 +11,8 @@
         "Hollow.Game",
         "Unity.Cinemachine",
         "Hollow.UI",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.2D.Sprite.Editor"
     ],
     "includePlatforms": [
         "Editor"

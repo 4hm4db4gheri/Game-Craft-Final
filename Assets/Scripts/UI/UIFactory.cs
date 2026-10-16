@@ -113,12 +113,4 @@ namespace Hollow.UI
             return white;
         }
     }
-
-    public sealed class BarView : MonoBehaviour
-    {
-        Image fill;
-        public void Init(Image f) => fill = f;
-        public void Set(float fraction) { if (fill != null) fill.fillAmount = Mathf.Clamp01(fraction); }
-        public void SetColor(Color c) { if (fill != null) fill.color = c; }
-    }
 }

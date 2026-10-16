@@ -27,6 +27,8 @@ namespace Hollow.Presentation
         public Color Color = Color.white;
         public Vector2 Size = new(0.45f, 0.12f);
         public Color ProjectileColor = Color.white;
+        /// <summary>Imported art has its pivot at the grip; placeholders are centred.</summary>
+        public bool PivotAtGrip;
     }
 
     /// <summary>

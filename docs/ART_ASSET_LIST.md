@@ -112,6 +112,8 @@ Arena border (repeatable, transparent): `ENV_Px_BorderH_prop` 4 wide × 2 tall, 
 
 Name them `ENV_<phase>_<Name>_prop` / `ENV_<phase>_<Name>_decor_<a|b|c>`.
 
+Prop cells (square, ground point 10 % from the bottom): Tree 5, Rock 2.5, Hedge 3.5, Stumps 1.5, LogPile 2.5, Excavator 4, CableSpool 1.5, MachineLit 3, CrateStack 2.5, PipeBarrier 3.5, Generator 2.5, Barricade 3.5, MachineBroken 3, Sandbags 3.5, DeadTree 4, LightPost 3.5, shop Kiosk 3. Decor cell 1.
+
 Shop station: `ENV_SHOP_Kiosk_prop` 2×1, height 2.5 — a vending-terminal kiosk with a screen (no text on the screen), cyan accent light. P0.
 
 ## Effects (black background, additive) and decals (transparent)

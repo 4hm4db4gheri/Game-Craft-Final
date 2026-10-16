@@ -13,10 +13,12 @@ namespace Hollow.Presentation
         [SerializeField] ArcView area;
 
         Color[] baseColors;
+        SpriteSetAnimator anim;
         float flashUntil;
 
         void Awake()
         {
+            anim = GetComponent<SpriteSetAnimator>();
             baseColors = new Color[bodyRenderers.Length];
             for (int i = 0; i < bodyRenderers.Length; i++) baseColors[i] = bodyRenderers[i].color;
         }
@@ -34,6 +36,14 @@ namespace Hollow.Presentation
             for (int i = 0; i < bodyRenderers.Length; i++)
                 bodyRenderers[i].color = flashing ? Color.white : stunned ? Color.Lerp(baseColors[i], new Color(0.5f, 0.8f, 1f), 0.5f) : baseColors[i];
 
+            if (anim != null) anim.SetState(b.Ai switch
+            {
+                BossAi.ChargeWindup => "windup_charge", BossAi.Charging => "charge", BossAi.ChargeRecover => "recover",
+                BossAi.StrikeWindup => "windup_strike", BossAi.StrikeRecover => "strike",
+                BossAi.BurstWarning => "windup_burst", BossAi.Bursting => "burst", BossAi.BurstRecover => "recover",
+                BossAi.BlastWarning => b.Id == BossId.FormerCompanion ? "throw" : "blast",
+                _ => w.Clock.Tick < b.StunnedUntilTick ? "stunned" : "move",
+            });
             var d = w.Profile.Boss(w.Phase);
             laneLine.enabled = false;
             area.Hide();

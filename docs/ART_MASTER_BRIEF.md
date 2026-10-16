@@ -5,7 +5,7 @@ How to use it:
 1. Start every conversation with an image AI by pasting the **MASTER BRIEF** block (section 1) unchanged.
 2. Paste **one ASSET REQUEST** (section 2) filled from `docs/ART_ASSET_LIST.md`. One asset per request gives the most consistent results.
 3. After the first approved character and first approved environment piece, attach them as **style reference images** to every later request (most tools accept a reference image). This keeps the whole game in one style.
-4. Save the image under the exact file name from the request into `Assets/Art/Incoming/`. The project's importer reads the name and sets scale, pivot, slicing and background removal automatically. Nothing else needs to be done by hand.
+4. Save the image under the exact file name from the request into `Assets/Art/Incoming/`. The project's importer reads the name and sets scale, pivot, slicing and background removal automatically. Then run the Unity menu **Hollow > Art > Apply Incoming Art**: the art replaces the placeholder in the game (characters, enemies, bosses, coin, held weapons). Rebuilding the scene keeps it.
 5. If the tool cannot make a transparent background, the brief asks it for a flat pure magenta (#FF00FF) background; the importer removes it.
 
 The brief is written for any image model (GPT image, Midjourney, Gemini, Stable Diffusion/Scenario, Leonardo…). If a tool ignores the ASSET CARD text part, that's fine: the file name is what the project needs.

@@ -16,10 +16,12 @@ namespace Hollow.Presentation
         [SerializeField] float phaseTwoScale = 0.92f;
 
         Color[] baseColors;
+        SpriteSetAnimator anim;
         float flashUntil;
 
         void Awake()
         {
+            anim = GetComponent<SpriteSetAnimator>();
             baseColors = new Color[bodyRenderers.Length];
             for (int i = 0; i < bodyRenderers.Length; i++) baseColors[i] = bodyRenderers[i].color;
         }
@@ -43,6 +45,7 @@ namespace Hollow.Presentation
                 bodyRenderers[i].color = c.Dead ? Color.gray : flashing ? Color.white : baseC;
             }
 
+            if (anim != null) anim.SetState(c.Dead ? "death" : c.Velocity.sqrMagnitude > 0.05f ? "move" : "idle");
             float since = (w.Clock.Tick - c.LastHitTick) * Core.SimClock.Dt;
             bool showDanger = !c.Dead && since < w.Profile.Companion.DangerIndicatorTime;
             danger.enabled = showDanger;
