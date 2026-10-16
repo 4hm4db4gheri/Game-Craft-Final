@@ -11,8 +11,11 @@ namespace Hollow.Sim
         public static void OnEnemyKilled(World w, EnemyState e)
         {
             var d = w.Profile.Enemy(e.Type);
-            int xp = Mathf.Max(0, d.Xp - e.XpPaid);
-            int coins = Mathf.Max(0, d.Coins - e.CoinsPaid);
+            // Children pay their assigned share of the parent's pool; producers pay what was never assigned (§6).
+            int xp = d.IsChild ? e.ShareXp - e.XpPaid : d.Xp - e.XpAllocated - e.XpPaid;
+            int coins = d.IsChild ? e.ShareCoins - e.CoinsPaid : d.Coins - e.CoinsAllocated - e.CoinsPaid;
+            xp = Mathf.Max(0, xp);
+            coins = Mathf.Max(0, coins);
             e.XpPaid += xp;
             e.CoinsPaid += coins;
             GrantXp(w, xp, e.Position);

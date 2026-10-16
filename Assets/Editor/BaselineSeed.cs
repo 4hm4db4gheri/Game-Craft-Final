@@ -140,7 +140,7 @@ namespace Hollow.EditorTools
             list.Add(Ranged(EnemyId.A2_QuillShooter, Faction.Animals, 36, 7, 4, 3, speed: 2.6f, radius: 0.35f, range: 7f, windup: 0.6f, recovery: 0.6f, cooldown: 2.2f, projSpeed: 9f, burst: 1, burstGap: 0f));
             list.Add(Charger(EnemyId.A3_ChargingBoar, Faction.Animals, 75, 14, 5, 4, speed: 2.8f, radius: 0.55f, trigger: 6f, telegraph: 0.8f, chargeSpeed: 11f, chargeDist: 7f, recovery: 1.0f, cooldown: 3f));
             var tortoise = Melee(EnemyId.A4_ArmoredTortoise, Faction.Animals, 100, 10, 6, 5, speed: 1.8f, radius: 0.6f, range: 1.1f, windup: 0.6f, recovery: 0.8f, cooldown: 1.6f, companion: true);
-            tortoise.FrontalArmor = true; tortoise.KnockbackResistance = 0.6f; list.Add(tortoise);
+            tortoise.FrontalArmor = true; tortoise.KnockbackResistance = 0.6f; tortoise.TurnRateDeg = 90; list.Add(tortoise);
             var howler = Base(EnemyId.A5_HowlingWolf, Faction.Animals, EnemyRole.Support, 45, 0, 5, 4, speed: 3.0f, radius: 0.35f);
             howler.AttackWindup = 0.8f; howler.AttackCooldown = 4f; howler.AuraRadius = 4f; howler.AuraSpeedBonus = 0.15f; howler.AuraDuration = 4.5f;
             howler.CountsAsSupport = true; list.Add(howler);
@@ -155,7 +155,7 @@ namespace Hollow.EditorTools
             list.Add(Machine(Ranged(EnemyId.R2_Shooter, Faction.Robots, 65, 10, 5, 4, speed: 2.2f, radius: 0.4f, range: 8f, windup: 0.7f, recovery: 0.9f, cooldown: 2.4f, projSpeed: 11f, burst: 1, burstGap: 0f)));
             list.Add(Machine(Charger(EnemyId.R3_SawCharger, Faction.Robots, 105, 18, 6, 5, speed: 3.0f, radius: 0.45f, trigger: 6f, telegraph: 0.7f, chargeSpeed: 12f, chargeDist: 7f, recovery: 1.0f, cooldown: 3f)));
             var shieldBot = Machine(Melee(EnemyId.R4_ShieldRobot, Faction.Robots, 150, 14, 7, 6, speed: 1.9f, radius: 0.6f, range: 1.2f, windup: 0.6f, recovery: 0.8f, cooldown: 1.6f, companion: true));
-            shieldBot.FrontalArmor = true; shieldBot.KnockbackResistance = 0.6f; list.Add(shieldBot);
+            shieldBot.FrontalArmor = true; shieldBot.KnockbackResistance = 0.6f; shieldBot.TurnRateDeg = 100; list.Add(shieldBot);
             var repair = Machine(Base(EnemyId.R5_Repair, Faction.Robots, EnemyRole.Support, 75, 0, 6, 5, speed: 2.6f, radius: 0.4f));
             repair.HealAmount = 12; repair.HealInterval = 2f; repair.AuraRadius = 4f; repair.HealTotalCap = 60; repair.AttackWindup = 0.5f;
             repair.CountsAsSupport = true; list.Add(repair);
@@ -171,7 +171,7 @@ namespace Hollow.EditorTools
             list.Add(Ranged(EnemyId.H2_RifleGuard, Faction.Humans, 90, 12, 6, 5, speed: 2.6f, radius: 0.35f, range: 9f, windup: 0.6f, recovery: 1.0f, cooldown: 2.6f, projSpeed: 14f, burst: 3, burstGap: 0.12f));
             list.Add(Charger(EnemyId.H3_FastAssaulter, Faction.Humans, 140, 22, 7, 6, speed: 3.3f, radius: 0.35f, trigger: 5.5f, telegraph: 0.6f, chargeSpeed: 12f, chargeDist: 6f, recovery: 0.8f, cooldown: 2.5f));
             var shieldGuard = Melee(EnemyId.H4_ShieldGuard, Faction.Humans, 200, 16, 8, 7, speed: 2.2f, radius: 0.55f, range: 1.2f, windup: 0.55f, recovery: 0.7f, cooldown: 1.5f, companion: true);
-            shieldGuard.FrontalArmor = true; shieldGuard.KnockbackResistance = 0.6f; list.Add(shieldGuard);
+            shieldGuard.FrontalArmor = true; shieldGuard.KnockbackResistance = 0.6f; shieldGuard.TurnRateDeg = 120; list.Add(shieldGuard);
             var medic = Base(EnemyId.H5_Medic, Faction.Humans, EnemyRole.Support, 100, 0, 7, 6, speed: 2.8f, radius: 0.35f);
             medic.HealAmount = 15; medic.HealInterval = 2.5f; medic.AuraRadius = 4.5f; medic.HealTotalCap = 75; medic.AttackWindup = 0.5f;
             medic.CountsAsSupport = true; list.Add(medic);
@@ -186,7 +186,8 @@ namespace Hollow.EditorTools
         }
 
         static EnemyData Base(EnemyId id, Faction f, EnemyRole role, float hp, float dmg, int xp, int coins, float speed, float radius) =>
-            new() { Id = id, Faction = f, Role = role, Health = hp, Damage = dmg, Xp = xp, Coins = coins, MoveSpeed = speed, BodyRadius = radius };
+            new() { Id = id, Faction = f, Role = role, Health = hp, Damage = dmg, Xp = xp, Coins = coins, MoveSpeed = speed, BodyRadius = radius,
+                TurnRateDeg = 720, KeepAwayDistance = role == EnemyRole.Support || role == EnemyRole.Producer ? 5f : 0f };
 
         static EnemyData Melee(EnemyId id, Faction f, float hp, float dmg, int xp, int coins, float speed, float radius,
             float range, float windup, float recovery, float cooldown, bool companion)
@@ -230,6 +231,7 @@ namespace Hollow.EditorTools
         static void Producer(EnemyData e, EnemyId child, int max, float delay, int xpShare, int coinShare)
         {
             e.Role = EnemyRole.Producer;
+            e.KeepAwayDistance = e.Damage > 0 ? 0f : 5f;
             e.HasChild = true; e.Child = child; e.ProduceMax = max; e.ProduceDelay = delay;
             e.ChildXpShare = xpShare; e.ChildCoinShare = coinShare;
         }

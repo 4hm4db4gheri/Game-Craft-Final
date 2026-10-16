@@ -42,6 +42,14 @@ namespace Hollow.Sim
         public int ParentId;
         public int XpPaid;
         public int CoinsPaid;
+        /// <summary>Producer pool already assigned to produced children (they pay it when they die, §6).</summary>
+        public int XpAllocated;
+        public int CoinsAllocated;
+        /// <summary>For children: the share of the parent's pool this child pays.</summary>
+        public int ShareXp;
+        public int ShareCoins;
+        public float ChargeTravelled;
+        public bool ChargeHit;
 
         public long SpawnTick;
         /// <summary>0 = regular wave enemy; otherwise the boss encounter group it belongs to.</summary>

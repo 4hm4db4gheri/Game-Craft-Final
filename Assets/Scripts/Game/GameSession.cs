@@ -77,7 +77,7 @@ namespace Hollow.Game
 
         void StartNewGame()
         {
-            SetWorld(Simulation.NewWorld(app.Balance.Live, layout, (ulong)DateTime.UtcNow.Ticks));
+            SetWorld(Simulation.NewWorld(app.Balance.Live, layout, DevPanel.FixedSeed ?? (ulong)DateTime.UtcNow.Ticks));
             WaveSystem.StartWave(W, 1);
             app.States.Transition(GameState.Playing);
             SaveNow(quiet: true); // claims the chosen slot (replacement was confirmed in the picker)
@@ -118,6 +118,13 @@ namespace Hollow.Game
         }
 
         void StepOnce() => Sim.Step(app.Router.Consume());
+
+        /// <summary>Dev tools changed the phase directly: show the matching obstacle layout.</summary>
+        public void OnPhaseChangedByTool()
+        {
+            arena.ShowPhase(W.Phase);
+            presenter.ResetViews();
+        }
 
         // ---------------------------------------------------------------- frame
 

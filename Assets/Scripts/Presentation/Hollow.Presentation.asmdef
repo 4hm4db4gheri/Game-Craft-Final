@@ -5,7 +5,8 @@
         "Hollow.Core",
         "Hollow.Data",
         "Hollow.Sim",
-        "Unity.Cinemachine"
+        "Unity.Cinemachine",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

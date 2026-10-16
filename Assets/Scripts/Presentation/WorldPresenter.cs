@@ -17,6 +17,9 @@ namespace Hollow.Presentation
         readonly EntityViews<EnemyView> enemies = new();
         readonly EntityViews<ProjectileView> projectiles = new();
         readonly EntityViews<CoinView> coins = new();
+        readonly EntityViews<ArcView> hazards = new();
+        readonly ArcView[] flashes = new ArcView[12];
+        int nextFlash;
         readonly System.Collections.Generic.Dictionary<EnemyId, ViewPool<EnemyView>> poolsByType = new();
         ViewPool<ProjectileView> playerShots, enemyShots;
         ViewPool<CoinView> coinPool;
@@ -33,6 +36,7 @@ namespace Hollow.Presentation
             arcPool = new ViewPool<ArcView>(catalog.Arc, transform);
             swingArc = arcPool.Get();
             swingArc.Hide();
+            for (int i = 0; i < flashes.Length; i++) { flashes[i] = Instantiate(catalog.Arc, transform); flashes[i].Hide(); }
         }
 
         /// <summary>Drops every entity view (used when the world is replaced by a load or a retry).</summary>
@@ -41,6 +45,7 @@ namespace Hollow.Presentation
             enemies.ReleaseUnseen();
             projectiles.ReleaseUnseen();
             coins.ReleaseUnseen();
+            hazards.ReleaseUnseen();
         }
 
         public void Sync(World w, float alpha)
@@ -74,6 +79,17 @@ namespace Hollow.Presentation
                 v.Sync(w, c, alpha);
             }
             coins.ReleaseUnseen();
+
+            // Marked hazard zones: visible for the whole delay, brighter as detonation nears (§5, §7).
+            foreach (var h in w.Hazards)
+            {
+                var v = hazards.GetOrCreate(h.Id, arcPool, out _);
+                float progress = Mathf.Clamp01((w.Clock.Tick - h.CreatedTick) / (float)Mathf.Max(1, h.DetonateTick - h.CreatedTick));
+                var c = h.Owner == HazardOwner.Enemy ? catalog.Telegraph : new Color(0.6f, 0.95f, 1f);
+                c.a = Mathf.Lerp(0.15f, 0.55f, progress);
+                v.Set(h.Position, Vector2.right, h.Radius, 360f, c, 400);
+            }
+            hazards.ReleaseUnseen();
         }
 
         void HandleEvents(World w)
@@ -85,6 +101,11 @@ namespace Hollow.Presentation
                 {
                     case SimEventType.EnemyHit:
                         if (enemies.TryGet(ev.EntityId, out var ev1)) ev1.Flash(flash);
+                        break;
+                    case SimEventType.Explosion:
+                        var f = flashes[nextFlash];
+                        nextFlash = (nextFlash + 1) % flashes.Length;
+                        f.Flash(ev.Position, Vector2.right, ev.Value, 360f, new Color(1f, 0.85f, 0.6f, 0.6f), 0.15f);
                         break;
                     case SimEventType.CompanionHit:
                         if (companionView != null) companionView.Flash(flash);

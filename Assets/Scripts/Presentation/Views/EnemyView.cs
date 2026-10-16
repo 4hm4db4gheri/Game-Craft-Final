@@ -18,6 +18,7 @@ namespace Hollow.Presentation
         [SerializeField] SpriteRenderer spawnRing;
         [SerializeField] SpriteRenderer telegraphLine;
         [SerializeField] ArcView telegraphArc;
+        [SerializeField] TMPro.TextMeshPro countdown;
         [SerializeField] float hpBarWidth = 1.2f;
 
         Color[] baseColors;
@@ -35,6 +36,7 @@ namespace Hollow.Presentation
             flashUntil = 0;
             telegraphLine.enabled = false;
             telegraphArc.Hide();
+            if (countdown != null) countdown.enabled = false;
         }
 
         public void Flash(float seconds) => flashUntil = Time.time + seconds;
@@ -92,32 +94,63 @@ namespace Hollow.Presentation
         void DrawTelegraph(World w, EnemyState e, EnemyData d, Vector2 pos, Color color)
         {
             bool windup = e.Ai == EnemyAi.Windup;
+            if (countdown != null) countdown.enabled = false;
             if (!windup) { telegraphLine.enabled = false; telegraphArc.Hide(); return; }
 
-            long total = System.Math.Max(1, w.Ticks(d.AttackWindup));
-            float progress = 1f - Mathf.Clamp01((e.AiUntilTick - w.Clock.Tick) / (float)total);
+            long totalTicks = d.Role == EnemyRole.Explosive ? w.Ticks(d.FuseTime) : w.Ticks(d.AttackWindup);
+            long total = System.Math.Max(1, totalTicks);
+            long left = e.AiUntilTick - w.Clock.Tick;
+            float progress = 1f - Mathf.Clamp01(left / (float)total);
             var c = color;
             c.a = Mathf.Lerp(0.25f, 0.75f, progress);
 
-            if (d.Role == EnemyRole.Ranged)
+            bool lobber = d.Role == EnemyRole.Ranged && d.ExplosionRadius > 0 && d.FuseTime > 0;
+            switch (d.Role)
             {
-                telegraphArc.Hide();
-                telegraphLine.enabled = true;
-                float len = d.ProjectileRange;
-                float angle = Mathf.Atan2(e.AttackDir.y, e.AttackDir.x) * Mathf.Rad2Deg;
-                var t = telegraphLine.transform;
-                t.position = new Vector3(pos.x, pos.y, 0) + (Vector3)(e.AttackDir * len * 0.5f);
-                t.rotation = Quaternion.Euler(0, 0, angle);
-                t.localScale = new Vector3(len / telegraphLine.sprite.bounds.size.x, Mathf.Lerp(0.04f, 0.12f, progress) / telegraphLine.sprite.bounds.size.y, 1);
-                telegraphLine.color = c;
-                telegraphLine.sortingOrder = telegraphOrder;
-            }
-            else
-            {
-                telegraphLine.enabled = false;
-                float reach = d.AttackRange + e.Radius + w.Profile.Player.BodyRadius;
-                telegraphArc.Set(pos, e.AttackDir, reach, w.Profile.Combat.EnemyMeleeHitHalfAngle * 2f, c, telegraphOrder);
+                case EnemyRole.Ranged when !lobber:
+                    telegraphArc.Hide();
+                    Line(pos, e.AttackDir, d.ProjectileRange, Mathf.Lerp(0.04f, 0.12f, progress), c);
+                    break;
+                case EnemyRole.Charger:
+                    telegraphArc.Hide();
+                    Line(pos, e.AttackDir, d.ChargeDistance, e.Radius * 2f, new Color(c.r, c.g, c.b, c.a * 0.6f));
+                    break;
+                case EnemyRole.Explosive:
+                    telegraphLine.enabled = false;
+                    telegraphArc.Set(pos, Vector2.right, d.ExplosionRadius, 360f, new Color(c.r, c.g, c.b, c.a * 0.5f), telegraphOrder);
+                    if (countdown != null)
+                    {
+                        countdown.enabled = true;
+                        countdown.text = Mathf.CeilToInt(left * Core.SimClock.Dt).ToString();
+                        countdown.color = color;
+                    }
+                    break;
+                case EnemyRole.Support:
+                    telegraphLine.enabled = false;
+                    telegraphArc.Set(pos, Vector2.right, d.AuraRadius * progress, 360f, new Color(0.9f, 0.85f, 0.6f, 0.2f), telegraphOrder - 1);
+                    break;
+                default:
+                    telegraphLine.enabled = false;
+                    if (lobber)
+                    {
+                        telegraphArc.Set(e.AttackPoint, Vector2.right, d.ExplosionRadius, 360f, new Color(c.r, c.g, c.b, c.a * 0.5f), telegraphOrder);
+                        break;
+                    }
+                    float reach = d.AttackRange + e.Radius + w.Profile.Player.BodyRadius;
+                    telegraphArc.Set(pos, e.AttackDir, reach, w.Profile.Combat.EnemyMeleeHitHalfAngle * 2f, c, telegraphOrder);
+                    break;
             }
         }
-    }
+
+        void Line(Vector2 from, Vector2 dir, float length, float width, Color c)
+        {
+            telegraphLine.enabled = true;
+            var t = telegraphLine.transform;
+            t.position = new Vector3(from.x, from.y, 0) + (Vector3)(dir * length * 0.5f);
+            t.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
+            var size = telegraphLine.sprite.bounds.size;
+            t.localScale = new Vector3(length / size.x, width / size.y, 1);
+            telegraphLine.color = c;
+            telegraphLine.sortingOrder = telegraphOrder;
+        }    }
 }

@@ -28,6 +28,7 @@ namespace Hollow.Sim
         Explosion,
         WaveStarted,
         WaveCompleted,
+        EnemyHealed,
     }
 
     /// <summary>

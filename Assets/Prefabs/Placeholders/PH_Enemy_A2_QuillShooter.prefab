@@ -660,6 +660,7 @@ MonoBehaviour:
   spawnRing: {fileID: 5580822756925744759}
   telegraphLine: {fileID: 168167857064559928}
   telegraphArc: {fileID: 1717183469697604524}
+  countdown: {fileID: 0}
   hpBarWidth: 1.2
 --- !u!1 &9119680316102579521
 GameObject:

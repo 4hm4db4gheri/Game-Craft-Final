@@ -129,6 +129,8 @@ namespace Hollow.EditorTools
             var uiRoot = new GameObject("UI").AddComponent<Hollow.UI.UIRoot>();
             Wire(uiRoot, ("theme", LoadOrCreateTheme()));
             Wire(session, ("ui", uiRoot));
+            var dev = new GameObject("DevPanel (dev builds only)").AddComponent<DevPanel>();
+            Wire(dev, ("session", session));
 
 
             ArenaTools.Bake(arena);

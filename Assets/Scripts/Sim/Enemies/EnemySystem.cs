@@ -65,7 +65,14 @@ namespace Hollow.Sim
                 {
                     switch (d.Role)
                     {
-                        case EnemyRole.Ranged: StepRanged(w, e, d); break;
+                        case EnemyRole.Ranged:
+                            if (d.ExplosionRadius > 0 && d.FuseTime > 0) StepLobber(w, e, d);
+                            else StepRanged(w, e, d);
+                            break;
+                        case EnemyRole.Charger: StepCharger(w, e, d); break;
+                        case EnemyRole.Explosive: StepExplosive(w, e, d); break;
+                        case EnemyRole.Support: StepSupport(w, e, d); break;
+                        case EnemyRole.Producer: StepProducer(w, e, d); break;
                         default: StepMelee(w, e, d); break;
                     }
                 }
@@ -120,6 +127,7 @@ namespace Hollow.Sim
 
                 case EnemyAi.Windup:
                     e.Velocity = Vector2.zero;
+                    TurnToward(w, e, d, e.AttackDir);
                     if (now >= e.AiUntilTick) MeleeStrike(w, e, d);
                     break;
 
@@ -242,7 +250,6 @@ namespace Hollow.Sim
             e.AiUntilTick = w.Clock.Tick + w.Ticks(d.AttackWindup);
             e.AttackPoint = TargetPosition(w, e);
             e.AttackDir = SimMath.SafeNormal(e.AttackPoint - e.Position, e.Facing);
-            e.Facing = e.AttackDir;
             e.Velocity = Vector2.zero;
             w.Emit(SimEventType.EnemyTelegraph, e.Id, e.Position, e.AttackDir * length, d.AttackWindup, (int)shape);
         }
@@ -252,8 +259,19 @@ namespace Hollow.Sim
             Vector2 dir = (TargetsCompanion(w, e) ? w.CompanionField : w.PlayerField).Direction(e.Position, target);
             float speed = d.MoveSpeed * (w.Clock.Tick < e.SpeedBoostUntilTick ? 1f + w.Profile.Enemy(EnemyId.A5_HowlingWolf).AuraSpeedBonus : 1f);
             e.Velocity = dir * speed;
-            if (dir.sqrMagnitude > 1e-6f) e.Facing = dir;
+            if (dir.sqrMagnitude > 1e-6f) TurnToward(w, e, d, dir);
             e.Position = w.Arena.MoveCircle(e.Position, e.Velocity * Core.SimClock.Dt, e.Radius);
+        }
+
+        /// <summary>Turns the facing toward a direction at the enemy's turn rate (slow turners can be flanked).</summary>
+        static void TurnToward(World w, EnemyState e, EnemyData d, Vector2 dir)
+        {
+            if (dir.sqrMagnitude < 1e-8f) return;
+            float maxDeg = d.TurnRateDeg * Core.SimClock.Dt;
+            float current = Mathf.Atan2(e.Facing.y, e.Facing.x) * Mathf.Rad2Deg;
+            float target = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            float next = Mathf.MoveTowardsAngle(current, target, maxDeg) * Mathf.Deg2Rad;
+            e.Facing = new Vector2(Mathf.Cos(next), Mathf.Sin(next));
         }
 
         static void ApplyKnockback(World w, EnemyState e)

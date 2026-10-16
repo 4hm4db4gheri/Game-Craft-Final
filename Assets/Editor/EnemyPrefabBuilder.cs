@@ -168,6 +168,20 @@ namespace Hollow.EditorTools
             so.FindProperty("spawnRing").objectReferenceValue = ring;
             so.FindProperty("telegraphLine").objectReferenceValue = line;
             so.FindProperty("telegraphArc").objectReferenceValue = arc.GetComponent<ArcView>();
+            if (id == EnemyId.R6_Suicide)
+            {
+                // Visible countdown (§5 R6).
+                var label = new GameObject("Countdown");
+                label.transform.SetParent(root.transform, false);
+                label.transform.localPosition = new Vector3(0, look.Size.y + 0.55f, 0);
+                var tmp = label.AddComponent<TMPro.TextMeshPro>();
+                tmp.fontSize = 6;
+                tmp.alignment = TMPro.TextAlignmentOptions.Center;
+                tmp.rectTransform.sizeDelta = new Vector2(2, 1);
+                tmp.sortingOrder = 600;
+                tmp.enabled = false;
+                so.FindProperty("countdown").objectReferenceValue = tmp;
+            }
             so.ApplyModifiedPropertiesWithoutUndo();
             return PrefabBuilder.Save(root, $"PH_Enemy_{id}");
         }

@@ -154,6 +154,10 @@ namespace Hollow.Data
         [Placeholder, Unit("s")] public float HealInterval;
         [Placeholder] public float HealTotalCap;
         [Placeholder] public float KnockbackResistance;
+        /// <summary>How fast the enemy can turn; slow turners (frontal armour) can be flanked.</summary>
+        [Placeholder, Unit("deg/s")] public float TurnRateDeg;
+        /// <summary>Supports and non-fighting producers keep at least this distance from the player.</summary>
+        [Placeholder, Unit("u")] public float KeepAwayDistance;
 
         public bool HasChild;
         public EnemyId Child;

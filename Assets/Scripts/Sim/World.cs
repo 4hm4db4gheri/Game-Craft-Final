@@ -26,6 +26,7 @@ namespace Hollow.Sim
         public List<EnemyState> Enemies = new();
         public List<ProjectileState> Projectiles = new();
         public List<CoinState> Coins = new();
+        public List<HazardState> Hazards = new();
         public ProgressState Progress = new();
         public InventoryState Inventory = new();
         public ShopState Shop = new();

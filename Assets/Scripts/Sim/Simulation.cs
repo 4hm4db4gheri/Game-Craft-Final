@@ -37,6 +37,7 @@ namespace Hollow.Sim
             EnemySystem.Step(w);
             EnemySystem.Separate(w);
             ProjectileSystem.Step(w);
+            HazardSystem.Step(w);
             CoinSystem.Step(w);
             XpSystem.Step(w);
             w.Enemies.RemoveAll(e => !e.Alive);
