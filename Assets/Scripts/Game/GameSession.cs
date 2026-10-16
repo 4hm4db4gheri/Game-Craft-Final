@@ -53,6 +53,7 @@ namespace Hollow.Game
             failureScreen = ui.gameObject.AddComponent<FailureScreen>();
             failureScreen.Init(ui, RetryAfterFailure, RetryAfterFailure, () => app.GoToMainMenu());
 
+            WaveSystem.StartWave(Sim.World, 1);
             driver = new SimDriver(app.States, StepOnce);
             app.States.Transition(GameState.Playing);
         }
@@ -79,6 +80,7 @@ namespace Hollow.Game
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
             hud.Sync(w, worldCamera);
             SyncShop(w);
+            SyncEncounter(w);
             w.Events.Clear();
 
             if (app.States.Current == GameState.Playing && w.Failure != FailureReason.None) { app.States.Transition(GameState.Failure); failureScreen.Show(w.Failure); }
@@ -92,6 +94,39 @@ namespace Hollow.Game
             UnityEngine.SceneManagement.SceneManager.LoadScene(SceneNames.Game);
         }
 
+        // ---------------------------------------------------------------- waves
+
+        void SyncEncounter(World w)
+        {
+            var ws = w.Waves;
+            int enemies = WaveSystem.AliveCount(w);
+            string top = ws.Kind switch
+            {
+                EncounterKind.SafeInterval => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} cleared — next wave in {Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))} s  (Enter: start now)",
+                EncounterKind.BossPrep => $"Phase {w.Phase} · all waves cleared — boss encounter (T13, not built yet). Enter: continue",
+                _ => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} · Enemies {enemies}",
+            };
+            hud.SetTop(top);
+
+            if (app.States.Current != GameState.Playing || !app.InputSource.TakeConfirm()) return;
+            if (ws.Kind == EncounterKind.SafeInterval) WaveSystem.SkipSafeInterval(w);
+            else if (ws.Kind == EncounterKind.BossPrep && w.Phase < 3)
+            {
+                // Temporary until bosses and transitions exist (T13/T14).
+                PhaseSystem.EnterPhase(w, w.Phase + 1);
+                arena.ShowPhase(w.Phase);
+            }
+        }
+
+        static string TutorialPrompt(World w) => w.Tutorial switch
+        {
+            TutorialStage.FirstGroup => "WASD to move · aim with the mouse · hold left click to fire · Space to dash",
+            TutorialStage.Purchase => w.Coins.Count > 0
+                ? "Collect the coins they dropped"
+                : "Go to the shop (south) and buy the SMG",
+            _ => null,
+        };
+
         // ---------------------------------------------------------------- shop (live, never pauses)
 
         void SyncShop(World w)
@@ -99,7 +134,9 @@ namespace Hollow.Game
             bool show = w.Shop.Open && (app.States.Current == GameState.Playing);
             if (show) { shopPanel.Bind(w); shopPanel.Show(w); }
             else if (shopPanel.Visible) shopPanel.Hide();
-            hud.SetStatus(!w.Shop.Open && ShopSystem.InRange(w) && app.States.Current == GameState.Playing ? "Press E to open the shop" : null);
+            string status = TutorialPrompt(w);
+            if (!w.Shop.Open && ShopSystem.InRange(w) && app.States.Current == GameState.Playing) status = "Press E to open the shop";
+            hud.SetStatus(status);
         }
 
         void OnShopBuy(ShopOffer offer)

@@ -69,6 +69,12 @@ namespace Hollow.App.Input
         /// <summary>True once per physical press, until read.</summary>
         public bool TakePress(InputAction a) => pressed.Remove(a);
 
+        // App-level keys, so callers do not need the Input System assembly.
+        public bool TakeConfirm() => TakePress(Confirm);
+        public bool TakePause() => TakePress(Pause);
+        public bool TakeBalancePanel() => TakePress(BalancePanel);
+        public bool TakeDevPanel() => TakePress(DevPanel);
+
         InputAction[] All() => new[]
         {
             move, fire, cancel, dash, reload, weapon1, weapon2, scroll, equipItem, cycleItem, interact,

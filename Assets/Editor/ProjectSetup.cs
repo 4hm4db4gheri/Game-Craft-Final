@@ -126,8 +126,6 @@ namespace Hollow.EditorTools
             Wire(uiRoot, ("theme", LoadOrCreateTheme()));
             Wire(session, ("ui", uiRoot));
 
-            var sandbox = new GameObject("DevSandboxSpawner (temporary)").AddComponent<DevSandboxSpawner>();
-            Wire(sandbox, ("session", session));
 
             ArenaTools.Bake(arena);
             EditorSceneManager.SaveScene(scene, ScenePath(SceneNames.Game));
