@@ -18,6 +18,7 @@ namespace Hollow.Game
         void Start()
         {
             app = GameApp.Ensure();
+            AudioBridge.Attach().StopMusic(0.8f); // the menu is quiet
             if (app.States.Current == GameState.Boot) app.States.Transition(GameState.MainMenu);
             menus = ui.gameObject.AddComponent<MenuScreens>();
             menus.Init(ui);

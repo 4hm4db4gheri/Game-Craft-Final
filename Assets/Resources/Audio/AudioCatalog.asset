@@ -1,0 +1,338 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a44193d95fab1d4e90510238f583e62, type: 3}
+  m_Name: AudioCatalog
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.AudioCatalog
+  Cues:
+  - Cue: 0
+    Clips: []
+    Bus: 1
+    Volume: 0.55
+    PitchJitter: 0.06
+    Cooldown: 0.03
+    Priority: 60
+  - Cue: 1
+    Clips: []
+    Bus: 1
+    Volume: 0.45
+    PitchJitter: 0.06
+    Cooldown: 0.045
+    Priority: 60
+  - Cue: 2
+    Clips: []
+    Bus: 1
+    Volume: 0.65
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 65
+  - Cue: 3
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 62
+  - Cue: 4
+    Clips: []
+    Bus: 1
+    Volume: 0.55
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 62
+  - Cue: 5
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 65
+  - Cue: 6
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 60
+  - Cue: 7
+    Clips: []
+    Bus: 1
+    Volume: 0.4
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 40
+  - Cue: 8
+    Clips: []
+    Bus: 1
+    Volume: 0.5
+    PitchJitter: 0.06
+    Cooldown: 0.06
+    Priority: 55
+  - Cue: 9
+    Clips: []
+    Bus: 1
+    Volume: 0.5
+    PitchJitter: 0.06
+    Cooldown: 0.04
+    Priority: 30
+  - Cue: 10
+    Clips: []
+    Bus: 1
+    Volume: 0.5
+    PitchJitter: 0.06
+    Cooldown: 0.04
+    Priority: 30
+  - Cue: 11
+    Clips: []
+    Bus: 1
+    Volume: 0.35
+    PitchJitter: 0.06
+    Cooldown: 0.06
+    Priority: 20
+  - Cue: 12
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 45
+  - Cue: 13
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 45
+  - Cue: 14
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 45
+  - Cue: 15
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 70
+  - Cue: 16
+    Clips: []
+    Bus: 1
+    Volume: 0.5
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 70
+  - Cue: 17
+    Clips: []
+    Bus: 1
+    Volume: 0.5
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 70
+  - Cue: 18
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 75
+  - Cue: 19
+    Clips: []
+    Bus: 2
+    Volume: 0.8
+    PitchJitter: 0
+    Cooldown: 0.15
+    Priority: 90
+  - Cue: 20
+    Clips: []
+    Bus: 1
+    Volume: 0.35
+    PitchJitter: 0.06
+    Cooldown: 0.06
+    Priority: 20
+  - Cue: 21
+    Clips: []
+    Bus: 1
+    Volume: 0.5
+    PitchJitter: 0.06
+    Cooldown: 0.035
+    Priority: 35
+  - Cue: 22
+    Clips: []
+    Bus: 3
+    Volume: 0.7
+    PitchJitter: 0
+    Cooldown: 0.05
+    Priority: 80
+  - Cue: 23
+    Clips: []
+    Bus: 3
+    Volume: 0.6
+    PitchJitter: 0
+    Cooldown: 0.15
+    Priority: 80
+  - Cue: 24
+    Clips: []
+    Bus: 3
+    Volume: 0.7
+    PitchJitter: 0
+    Cooldown: 0.2
+    Priority: 80
+  - Cue: 25
+    Clips: []
+    Bus: 3
+    Volume: 0.8
+    PitchJitter: 0
+    Cooldown: 0.1
+    Priority: 80
+  - Cue: 26
+    Clips: []
+    Bus: 2
+    Volume: 0.9
+    PitchJitter: 0
+    Cooldown: 1.2
+    Priority: 95
+  - Cue: 27
+    Clips: []
+    Bus: 2
+    Volume: 0.75
+    PitchJitter: 0
+    Cooldown: 0.12
+    Priority: 90
+  - Cue: 28
+    Clips: []
+    Bus: 2
+    Volume: 0.75
+    PitchJitter: 0
+    Cooldown: 0.12
+    Priority: 90
+  - Cue: 29
+    Clips: []
+    Bus: 2
+    Volume: 0.75
+    PitchJitter: 0
+    Cooldown: 0.12
+    Priority: 90
+  - Cue: 30
+    Clips: []
+    Bus: 2
+    Volume: 1
+    PitchJitter: 0
+    Cooldown: 0.3
+    Priority: 100
+  - Cue: 31
+    Clips: []
+    Bus: 1
+    Volume: 0.8
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 80
+  - Cue: 32
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 70
+  - Cue: 33
+    Clips: []
+    Bus: 1
+    Volume: 0.7
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 70
+  - Cue: 34
+    Clips: []
+    Bus: 1
+    Volume: 0.6
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 70
+  - Cue: 35
+    Clips: []
+    Bus: 1
+    Volume: 0.8
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 70
+  - Cue: 36
+    Clips: []
+    Bus: 1
+    Volume: 0.7
+    PitchJitter: 0.06
+    Cooldown: 0.1
+    Priority: 70
+  - Cue: 37
+    Clips: []
+    Bus: 3
+    Volume: 0.6
+    PitchJitter: 0
+    Cooldown: 0.5
+    Priority: 85
+  - Cue: 38
+    Clips: []
+    Bus: 3
+    Volume: 0.7
+    PitchJitter: 0
+    Cooldown: 0.5
+    Priority: 85
+  - Cue: 39
+    Clips: []
+    Bus: 3
+    Volume: 1
+    PitchJitter: 0
+    Cooldown: 1
+    Priority: 100
+  - Cue: 40
+    Clips: []
+    Bus: 3
+    Volume: 0.9
+    PitchJitter: 0
+    Cooldown: 1
+    Priority: 100
+  - Cue: 41
+    Clips: []
+    Bus: 3
+    Volume: 0.5
+    PitchJitter: 0
+    Cooldown: 0.03
+    Priority: 60
+  - Cue: 42
+    Clips: []
+    Bus: 3
+    Volume: 1
+    PitchJitter: 0
+    Cooldown: 1
+    Priority: 100
+  - Cue: 43
+    Clips: []
+    Bus: 0
+    Volume: 0.55
+    PitchJitter: 0
+    Cooldown: 0
+    Priority: 100
+  - Cue: 44
+    Clips: []
+    Bus: 0
+    Volume: 0.55
+    PitchJitter: 0
+    Cooldown: 0
+    Priority: 100
+  - Cue: 45
+    Clips: []
+    Bus: 0
+    Volume: 0.55
+    PitchJitter: 0
+    Cooldown: 0
+    Priority: 100
+  DuckLevel: 0.35

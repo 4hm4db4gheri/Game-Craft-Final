@@ -35,6 +35,7 @@
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
+| `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
 | `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
@@ -113,3 +114,7 @@
 - `FeedbackDirector` (Presentation/Feel): muzzle flash، جرقه‌ی ذره‌ای pooled، flash و squash دشمن، جسد و لکه‌ی خون/روغن/سوختگی با سقف، عدد آسیب (جمع گلوله‌های شاتگان در یک عدد، محدودیت نرخ، روشن/خاموش از تنظیمات)، shake کوتاه با Cinemachine Impulse و ضریب تنظیمات. همه‌ی اعداد در `Feedback` داده؛ effect budget سقف‌ها را ضرب می‌کند. `GameSettings.Changed` تنظیمات را فوراً اعمال می‌کند.
 - sorting layer جدید: Default → Effects → Telegraphs؛ هشدار حمله، گلوله‌ی دشمن، hazard و رتیکل همیشه رو هستند (sortAtRoot). ذرات باید با متریال sprite باشند (رندرر 2D شیدر ذره‌ی 3D را نمی‌کشد).
 - stress با ۴۰ دشمن در Play mode ادیتور: میانگین 7.3ms (136fps)، p95 9.9ms؛ GC حدود 27KB در فریم (برای T21). صدای لایه‌ی ۶ با T19.
+
+### 2026-10-16 — T19 بخش ۱: سیستم صدا
+- `AudioDirector` + `AudioCatalog` + `AudioBridge` (حجم از تنظیمات، کلیک UI). ۴۶ cue همه فعلاً stub بی‌صدا.
+- منابع CC0 پیدا شد (۶ پک Kenney + ۳ لوپ OpenGameArt، حدود ۱۵ مگابایت دانلود)؛ **دانلود منتظر تأیید کاربر است** (قانون: دانلود هر فایل با اجازه‌ی صریح).

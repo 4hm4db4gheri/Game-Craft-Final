@@ -36,6 +36,7 @@ namespace Hollow.Game
         readonly SettingsAdapter settings = new();
 
         GameApp app;
+        AudioDirector audio;
         SimDriver driver;
         ArenaLayout layout;
         string lastSavedHash;
@@ -71,6 +72,7 @@ namespace Hollow.Game
             app.Balance.Applied += OnBalanceApplied;
             GameSettings.Changed += ApplyFeelSettings;
             ApplyFeelSettings();
+            audio = AudioBridge.Attach();
             driver = new SimDriver(app.States, StepOnce);
 
             if (app.Launch == LaunchMode.LoadSlot) LoadFromSlot(app.ActiveSlot);
@@ -144,6 +146,8 @@ namespace Hollow.Game
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
+            if (world.Completed) audio.StopMusic(0.1f);
+            else audio.PlayMusic(world.Phase);
         }
 
         void StepOnce() => Sim.Step(app.Router.Consume());
@@ -153,6 +157,7 @@ namespace Hollow.Game
         {
             arena.ShowPhase(W.Phase);
             atmosphere.SetPhase(W.Profile.Atmosphere, W.Phase, instant: true);
+            audio.PlayMusic(W.Phase);
             presenter.ResetViews();
         }
 
@@ -299,6 +304,7 @@ namespace Hollow.Game
             shopPanel.Hide();
             arena.ShowPhase(from + 1); // the environment changes during the scene
             atmosphere.SetPhase(W.Profile.Atmosphere, from + 1, instant: false);
+            audio.PlayMusic(from + 1); // the mood changes with the environment
             PlayScene($"Phase{from}To{from + 1}", () =>
             {
                 PhaseSystem.EnterPhase(W, from + 1);
@@ -316,12 +322,13 @@ namespace Hollow.Game
             app.States.Transition(GameState.Ending);
             shopPanel.Hide();
             atmosphere.FadeToDark(W.Profile.Atmosphere); // the world goes dark while the last lines play
+            audio.StopMusic(W.Profile.Atmosphere.EndingFadeTime);
             PlayScene("Ending", () => ShowResults(montage: true));
         }
 
         void ShowResults(bool montage)
         {
-            ending.Show(montage, Statistics(W), null,
+            ending.Show(montage, Statistics(W), () => audio.PlayVictory(),
                 () => app.GoToMainMenu(),
                 () => { app.OpenNewGamePicker = true; app.GoToMainMenu(); });
         }
@@ -367,7 +374,7 @@ namespace Hollow.Game
         void OnShopBuy(ShopOffer offer)
         {
             if (app.States.Current != GameState.Playing) return;
-            ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item);
+            audio.Play(ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item) ? AudioCue.Purchase : AudioCue.Denied);
         }
 
         // ---------------------------------------------------------------- XP choice (world fully paused)
@@ -375,6 +382,7 @@ namespace Hollow.Game
         void OpenXpChoice()
         {
             app.States.Transition(GameState.XPChoice);
+            audio.Play(AudioCue.XpReady);
             xpScreen.Show(W, W.Progress.Pending, OnSkillChosen);
         }
 
@@ -382,6 +390,7 @@ namespace Hollow.Game
         {
             var w = W;
             if (app.States.Current != GameState.XPChoice || !XpSystem.Choose(w, id)) return;
+            audio.Play(AudioCue.Upgrade);
             if (w.Progress.Pending != null)
             {
                 xpScreen.Show(w, w.Progress.Pending, OnSkillChosen);

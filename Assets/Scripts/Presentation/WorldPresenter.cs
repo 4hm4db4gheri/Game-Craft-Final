@@ -182,9 +182,11 @@ namespace Hollow.Presentation
         void HandleEvents(World w)
         {
             float flash = w.Profile.Feedback.HitFlashDuration;
+            var audio = AudioDirector.Instance;
             foreach (var ev in w.Events)
             {
                 if (feedback != null) feedback.OnEvent(w, ev);
+                if (audio != null) audio.OnSimEvent(w, ev);
                 switch (ev.Type)
                 {
                     case SimEventType.EnemyHit:

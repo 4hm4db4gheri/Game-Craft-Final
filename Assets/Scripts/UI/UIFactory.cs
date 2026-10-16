@@ -8,6 +8,9 @@ namespace Hollow.UI
     /// <summary>Small helpers to build uGUI hierarchies in code from the theme (one look everywhere).</summary>
     public static class UIFactory
     {
+        /// <summary>Raised for every button press (the audio bridge plays the UI click).</summary>
+        public static event Action ButtonClicked;
+
         public static RectTransform Rect(Transform parent, string name, Vector2 anchor, Vector2 pivot, Vector2 pos, Vector2 size)
         {
             var go = new GameObject(name, typeof(RectTransform));
@@ -71,7 +74,7 @@ namespace Hollow.UI
             colors.disabledColor = theme.ButtonDisabled;
             colors.colorMultiplier = 1;
             b.colors = colors;
-            b.onClick.AddListener(() => onClick());
+            b.onClick.AddListener(() => { ButtonClicked?.Invoke(); onClick(); });
             text = Text(rt, "Label", label, theme, fontSize > 0 ? fontSize : theme.BaseFontSize, TextAlignmentOptions.Center);
             text.margin = new Vector4(10, 6, 10, 6);
             return b;
