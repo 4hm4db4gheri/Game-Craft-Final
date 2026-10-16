@@ -256,6 +256,12 @@ namespace Hollow.Data
         [Gdd("§9"), Unit("s")] public float ReloadFloor;
         [Gdd("§4"), Unit("s")] public float WeaponSwapTime;
         [Placeholder, Unit("s")] public float KnockbackDuration;
+        [Placeholder, Unit("deg")] public float EnemyMeleeHitHalfAngle;
+        [Placeholder, Unit("u")] public float EnemyMeleeHitTolerance;
+        [Placeholder, Unit("u")] public float EnemyProjectileRadius;
+        [Placeholder, Unit("u")] public float PlayerProjectileRadius;
+        /// <summary>Ranged enemies stop approaching once within this fraction of their attack range.</summary>
+        [Placeholder] public float RangedHoldFraction;
         /// <summary>D21: unapproved (placeholder) weapon levels can be bought in editor/dev builds only.</summary>
         public bool DevBuildsSellUnapprovedLevels;
     }
@@ -270,6 +276,8 @@ namespace Hollow.Data
         [Gdd("§8")] public int UnlockPhase;
         /// <summary>D22: the pistol's reload is not cancelled by dash.</summary>
         public bool ReloadSurvivesDash;
+        /// <summary>GDD §5: the energy blade ignores frontal resistance.</summary>
+        [Gdd("§5")] public bool IgnoresFrontalArmor;
         [Gdd("§8")] public List<WeaponLevel> Levels = new();
     }
 
@@ -378,6 +386,10 @@ namespace Hollow.Data
         [Placeholder] public float LookAheadFactor;
         [Placeholder, Unit("u")] public float LookAheadMax;
         [Placeholder, Unit("s")] public float FollowDamping;
+        /// <summary>Width / height of the play view; with OrthographicSize it defines "inside the view" for ranged attacks (§6).</summary>
+        [Placeholder] public float ViewAspect;
+        /// <summary>Ranged enemies only start an attack this far inside the view edge.</summary>
+        [Placeholder, Unit("u")] public float ViewMargin;
     }
 
     [Serializable]

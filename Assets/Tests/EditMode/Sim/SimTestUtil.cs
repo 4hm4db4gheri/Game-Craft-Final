@@ -37,12 +37,8 @@ namespace Hollow.Tests.Sim
 
         public static EnemyState AddEnemy(this World w, EnemyId type, Vector2 position, float health = 1000f)
         {
-            var e = new EnemyState
-            {
-                Id = w.AllocateId(), Type = type, Position = position, PrevPosition = position,
-                Radius = w.Profile.Enemy(type).BodyRadius, Health = health, MaxHealth = health,
-            };
-            w.Enemies.Add(e);
+            var e = EnemySystem.Spawn(w, type, position, warning: false);
+            e.Health = e.MaxHealth = health;
             return e;
         }
 

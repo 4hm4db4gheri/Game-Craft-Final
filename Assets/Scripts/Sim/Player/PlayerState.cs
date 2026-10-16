@@ -24,6 +24,8 @@ namespace Hollow.Sim
         public long DashReadyTick;
         public List<int> DashHitIds = new();
 
+        public LoadoutState Loadout = new();
+
         /// <summary>Rank taken per skill (index = (int)SkillId), 0 = not taken.</summary>
         public int[] SkillRanks = new int[System.Enum.GetValues(typeof(SkillId)).Length];
 

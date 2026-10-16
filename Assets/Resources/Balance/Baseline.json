@@ -1787,6 +1787,11 @@
     "ReloadFloor": 0.45,
     "WeaponSwapTime": 0.15,
     "KnockbackDuration": 0.12,
+    "EnemyMeleeHitHalfAngle": 60.0,
+    "EnemyMeleeHitTolerance": 0.15,
+    "EnemyProjectileRadius": 0.12,
+    "PlayerProjectileRadius": 0.1,
+    "RangedHoldFraction": 0.85,
     "DevBuildsSellUnapprovedLevels": true
   },
   "Weapons": [
@@ -1797,6 +1802,7 @@
       "Family": "Sidearm",
       "UnlockPhase": 0,
       "ReloadSurvivesDash": true,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -1858,6 +1864,7 @@
       "Family": "Direct",
       "UnlockPhase": 1,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -1919,6 +1926,7 @@
       "Family": "Spread",
       "UnlockPhase": 1,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -1980,6 +1988,7 @@
       "Family": "Melee",
       "UnlockPhase": 1,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -2041,6 +2050,7 @@
       "Family": "Direct",
       "UnlockPhase": 2,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -2102,6 +2112,7 @@
       "Family": "Spread",
       "UnlockPhase": 2,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -2163,6 +2174,7 @@
       "Family": "Melee",
       "UnlockPhase": 2,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -2224,6 +2236,7 @@
       "Family": "Direct",
       "UnlockPhase": 3,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -2285,6 +2298,7 @@
       "Family": "Spread",
       "UnlockPhase": 3,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": false,
       "Levels": [
         {
           "Level": 1,
@@ -2346,6 +2360,7 @@
       "Family": "Melee",
       "UnlockPhase": 3,
       "ReloadSurvivesDash": false,
+      "IgnoresFrontalArmor": true,
       "Levels": [
         {
           "Level": 1,
@@ -2606,6 +2621,8 @@
     "OrthographicSize": 7.5,
     "LookAheadFactor": 0.15,
     "LookAheadMax": 3.0,
-    "FollowDamping": 0.12
+    "FollowDamping": 0.12,
+    "ViewAspect": 1.77777779,
+    "ViewMargin": 0.75
   }
 }

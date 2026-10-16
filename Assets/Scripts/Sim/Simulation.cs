@@ -19,6 +19,7 @@ namespace Hollow.Sim
             w.Rng.Reseed(seed);
             w.Bind(profile, layout);
             PlayerSystem.Spawn(w, layout.PlayerStart);
+            WeaponSystem.Give(w, WeaponId.Pistol);
             return w;
         }
 
@@ -26,6 +27,12 @@ namespace Hollow.Sim
         {
             var w = World;
             PlayerSystem.Step(w, cmd);
+            w.Crowd.Rebuild(w.Enemies);
+            WeaponSystem.Step(w, cmd);
+            EnemySystem.Step(w);
+            EnemySystem.Separate(w);
+            ProjectileSystem.Step(w);
+            CoinSystem.Step(w);
             w.Enemies.RemoveAll(e => !e.Alive);
             w.Clock.Step(activeTimeRunning: !w.SafeInterval);
         }

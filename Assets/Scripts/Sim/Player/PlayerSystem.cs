@@ -54,6 +54,7 @@ namespace Hollow.Sim
             p.DashEndTick = w.Clock.Tick + DashTicks(w);
             p.DashReadyTick = w.Clock.Tick + w.Ticks(PlayerStats.DashCooldown(w));
             p.DashHitIds.Clear();
+            WeaponSystem.OnDashStarted(w);
             w.Emit(SimEventType.PlayerDashStarted, PlayerState.EntityId, p.Position, p.DashDir);
         }
 

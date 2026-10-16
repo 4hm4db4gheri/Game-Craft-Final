@@ -85,6 +85,8 @@ namespace Hollow.EditorTools
             {
                 FrontalArmorReduction = 0.7f, FrontalArmorArc = 120, ReloadFloor = 0.45f, WeaponSwapTime = 0.15f,
                 KnockbackDuration = 0.12f, DevBuildsSellUnapprovedLevels = true,
+                EnemyMeleeHitHalfAngle = 60, EnemyMeleeHitTolerance = 0.15f, EnemyProjectileRadius = 0.12f,
+                PlayerProjectileRadius = 0.1f, RangedHoldFraction = 0.85f,
             };
             p.Weapons = Weapons();
 
@@ -117,7 +119,7 @@ namespace Hollow.EditorTools
                 MaxParticles = 1500, MaxDecals = 300, MaxCorpses = 150,
             };
 
-            p.Camera = new CameraData { OrthographicSize = 7.5f, LookAheadFactor = 0.15f, LookAheadMax = 3f, FollowDamping = 0.12f };
+            p.Camera = new CameraData { OrthographicSize = 7.5f, LookAheadFactor = 0.15f, LookAheadMax = 3f, FollowDamping = 0.12f, ViewAspect = 16f / 9f, ViewMargin = 0.75f };
 
             p.BuildIndex();
             return p;
@@ -378,7 +380,7 @@ namespace Hollow.EditorTools
             new() { Id = id, DisplayName = name, Kind = WeaponKind.Gun, Family = family, UnlockPhase = phase, ReloadSurvivesDash = reloadSurvivesDash, Levels = new List<WeaponLevel>(levels) };
 
         static WeaponData Melee(WeaponId id, string name, int phase, params WeaponLevel[] levels) =>
-            new() { Id = id, DisplayName = name, Kind = WeaponKind.Melee, Family = WeaponFamily.Melee, UnlockPhase = phase, Levels = new List<WeaponLevel>(levels) };
+            new() { Id = id, DisplayName = name, Kind = WeaponKind.Melee, Family = WeaponFamily.Melee, UnlockPhase = phase, Levels = new List<WeaponLevel>(levels), IgnoresFrontalArmor = id == WeaponId.EnergyBlade };
 
         static WeaponLevel G(int level, bool approved, int cost, float dmg, float rate, int count, float spread, int mag,
             float reload, float range, int targets, float projSpeed, float falloff) =>

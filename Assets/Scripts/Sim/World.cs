@@ -22,10 +22,15 @@ namespace Hollow.Sim
 
         public PlayerState Player = new();
         public List<EnemyState> Enemies = new();
+        public List<ProjectileState> Projectiles = new();
+        public List<CoinState> Coins = new();
+        public ProgressState Progress = new();
 
         [JsonIgnore] public BalanceProfile Profile;
         [JsonIgnore] public ArenaLayout Layout;
         [JsonIgnore] public ArenaGrid Arena;
+        [JsonIgnore] public FlowField PlayerField;
+        [JsonIgnore] public SpatialHash Crowd;
 
         /// <summary>Accumulates until the presentation layer drains it.</summary>
         [JsonIgnore] public readonly List<SimEvent> Events = new();
@@ -41,6 +46,8 @@ namespace Hollow.Sim
             Profile = profile;
             Layout = layout;
             Arena = ArenaGrid.FromLayout(layout, Phase);
+            PlayerField = new FlowField(Arena);
+            Crowd = new SpatialHash(2f);
         }
 
         public long Ticks(float seconds) => SimClock.ToTicks(seconds);

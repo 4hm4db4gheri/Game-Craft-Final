@@ -31,6 +31,11 @@ namespace Hollow.Sim
                 e.Health = 0;
                 e.Alive = false;
                 w.Emit(SimEventType.EnemyDied, e.Id, e.Position, travelDir, 0, (int)e.Type);
+                Rewards.OnEnemyKilled(w, e);
+            }
+            else if (source == DamageSource.Weapon || source == DamageSource.Companion)
+            {
+                EnemySystem.Knockback(w, e, travelDir, w.Profile.Feedback.HitKnockback);
             }
             return dealt;
         }
