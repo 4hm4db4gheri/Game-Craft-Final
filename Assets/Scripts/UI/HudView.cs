@@ -16,7 +16,7 @@ namespace Hollow.UI
         UIRoot root;
         BarView health, companion, xp, reload, bossBar;
         TextMeshProUGUI bossText;
-        TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText, companionArrow;
+        TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText, companionArrow, guideArrow;
         readonly StringBuilder sb = new(128);
         readonly UnityEngine.UI.Button[] itemButtons = new UnityEngine.UI.Button[5];
         readonly TextMeshProUGUI[] itemTexts = new TextMeshProUGUI[5];
@@ -46,7 +46,7 @@ namespace Hollow.UI
 
             xp = UIFactory.Bar(hud, "Xp", t, new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 14), new Vector2(900, 10), t.Xp);
             xpText = UIFactory.Text(xp.transform, "Text", "", t, 16, TextAlignmentOptions.Center, t.TextDim);
-            xpText.rectTransform.anchoredPosition = new Vector2(0, 16);
+            xpText.rectTransform.anchoredPosition = new Vector2(-545, 0); // beside the bar: above it the item buttons would cover it at 1280×720
 
             var top = UIFactory.Rect(hud, "Top", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -16), new Vector2(900, 48));
             topText = UIFactory.Text(top, "Text", "", t, 26, TextAlignmentOptions.Center);
@@ -73,6 +73,37 @@ namespace Hollow.UI
             var arrow = UIFactory.Rect(hud, "CompanionArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
             companionArrow = UIFactory.Text(arrow, "Glyph", "▲", t, 48, TextAlignmentOptions.Center, t.Warning);
             arrow.gameObject.SetActive(false);
+
+            var guide = UIFactory.Rect(hud, "GuideArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
+            guideArrow = UIFactory.Text(guide, "Glyph", "▲", t, 48, TextAlignmentOptions.Center, t.Accent);
+            guide.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Tutorial guide (§6, §15 "Understand the start"): points at a place without words — from the screen edge
+        /// when it is off screen, bobbing above it when it is visible. Null hides it.
+        /// </summary>
+        public void SetGuide(Vector2? worldTarget, Camera cam)
+        {
+            var rt = (RectTransform)guideArrow.transform.parent;
+            rt.gameObject.SetActive(worldTarget.HasValue && cam != null);
+            if (!worldTarget.HasValue || cam == null) return;
+            var hudRect = root.Hud.rect;
+            Vector3 vp = cam.WorldToViewportPoint(worldTarget.Value);
+            bool offScreen = vp.x < 0.05f || vp.x > 0.95f || vp.y < 0.05f || vp.y > 0.95f;
+            if (offScreen)
+            {
+                Vector2 dir = new Vector2(vp.x - 0.5f, vp.y - 0.5f);
+                Vector2 edge = dir * (0.42f / Mathf.Max(Mathf.Abs(dir.x), Mathf.Abs(dir.y)));
+                rt.anchoredPosition = new Vector2(edge.x * hudRect.width, edge.y * hudRect.height);
+                rt.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f);
+            }
+            else
+            {
+                Vector3 above = cam.WorldToViewportPoint(worldTarget.Value + Vector2.up * (2.6f + 0.25f * Mathf.Sin(Time.unscaledTime * 5f)));
+                rt.anchoredPosition = new Vector2((above.x - 0.5f) * hudRect.width, (above.y - 0.5f) * hudRect.height);
+                rt.localRotation = Quaternion.Euler(0, 0, 180f); // pointing down at the place
+            }
         }
 
         /// <summary>Boss bar during encounters (§10); the human boss bar is body and equipment together.</summary>

@@ -173,7 +173,7 @@ namespace Hollow.UI
             var wd = w.Profile.Weapon(o.Weapon);
             var l = wd.Levels[0];
             string verb = o.Kind == OfferKind.EquipWeapon ? "Equip" : "Buy";
-            return $"<b>{verb} {wd.DisplayName}</b>   {Tail(o)}\n<size=14>{Stats(wd, l)}</size>";
+            return $"<b>{verb} {wd.DisplayName}</b>   {Tail(o)}\n<size=16>{Stats(wd, l)}</size>";
         }
 
         string UpgradeLabel(World w, ShopOffer o)
@@ -182,14 +182,14 @@ namespace Hollow.UI
             if (o.Lock == LockReason.MaxLevel) return $"<b>{wd.DisplayName}</b>  Lv{o.Level} (max)";
             var cur = wd.Levels[o.Level - 2];
             var next = wd.Levels[o.Level - 1];
-            string tag = next.Approved ? "" : " <size=14>(placeholder values)</size>";
-            return $"<b>{wd.DisplayName} Lv{o.Level - 1} → {o.Level}</b>{tag}   {Tail(o)}\n<size=14>{Diff(wd, cur, next)}</size>";
+            string tag = next.Approved ? "" : " <size=16>(placeholder values)</size>";
+            return $"<b>{wd.DisplayName} Lv{o.Level - 1} → {o.Level}</b>{tag}   {Tail(o)}\n<size=16>{Diff(wd, cur, next)}</size>";
         }
 
         string ItemLabel(World w, ShopOffer o)
         {
             var item = w.Profile.Item(o.Item);
-            return $"<b>{item.DisplayName}</b>  ({w.Inventory.Count(o.Item)}/{item.Carry}, stock {o.StockLeft})   {Tail(o)}\n<size=14>{ItemEffect(item)}</size>";
+            return $"<b>{item.DisplayName}</b>  ({w.Inventory.Count(o.Item)}/{item.Carry}, stock {o.StockLeft})   {Tail(o)}\n<size=16>{ItemEffect(item)}</size>";
         }
 
         string HealLabel(World w, ShopOffer o)
@@ -197,7 +197,7 @@ namespace Hollow.UI
             var eco = w.Profile.Economy;
             bool player = o.Kind == OfferKind.HealPlayer;
             float amount = player ? eco.PlayerHealAmount : eco.CompanionHealAmount;
-            return $"<b>Repair {(player ? "yourself" : "the Operator")}</b>  +{amount:0}   {Tail(o)}\n<size=14>{Mathf.Max(0, o.StockLeft)} left this encounter</size>";
+            return $"<b>Repair {(player ? "yourself" : "the Operator")}</b>  +{amount:0}   {Tail(o)}\n<size=16>{Mathf.Max(0, o.StockLeft)} left this encounter</size>";
         }
 
         static string Stats(WeaponData wd, WeaponLevel l) => wd.Kind == WeaponKind.Melee

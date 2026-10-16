@@ -28,7 +28,7 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T17 | Exact saves and death recovery | §12 | done | save → load from disk → identical hash and identical 1200-tick future; checkpoints; verified in Play mode |
 | T10 | Spawning, waves, tutorial | §6 | done | headless bot completes all 15 waves; caps never exceeded |
 | T16a | AI-art import pipeline (name-driven importer, magenta key-out, strip slicing, visual configs) | §14 | done | drop files in `Assets/Art/Incoming`, then Hollow > Art > Apply Incoming Art; verified with a synthetic 6-frame wolf strip in Play mode |
-| T15 | HUD and all screens | §10 §11 §15 | done (functional) | all §11 screens; flows verified in Play mode; placeholder styling; 1600×900/1280×720 not yet checked |
+| T15 | HUD and all screens | §10 §11 §15 | done (functional) | all §11 screens; flows verified in Play mode; placeholder styling; 1280×720, 1600×900, 1920×1080 checked in T20 |
 | — | **Vertical slice cut line** | | | |
 | T04 | Melee weapons | §8 §10 | done (early) | done together with T03; 8 tests |
 | T07 | Remaining 20 enemies | §5 | done | producer pool exact in 12 kill orders; every attacker telegraphs first |
@@ -38,6 +38,6 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T16 | Arena (3 states) and placeholder art | §14 | done | per-phase ground, decor and named props (AI-art ready); escape-route and transition tests (7); phase-3 dark but readable, ending fades to black; screenshots in `docs/screenshots/T16_*` |
 | T18 | Balance panel completion, dev tools (F10), telemetry | §13 | done | telemetry JSON per run (observed vs calculated); dev panel boss start + starting state, stripped from release builds; apply-rule tests; 10 gameplay literals moved to data, guard test + `docs/CONSTANTS_SCAN.md`; 394 tests |
 | T19 | Audio (CC0 SFX + music) | §14 | done | 46 cues, all with CC0 files (71 Kenney effect files + 3 OpenGameArt loops, 5.5 MB), each logged in CREDITS.md; every cue played in Play mode; warnings bus never ducked; victory jingle then silence |
-| T20 | Tutorial pass and readability checklist | §6 §15 | todo | |
+| T20 | Tutorial pass and readability checklist | §6 §15 | done | `docs/T20_CHECKLIST.md`: opening completed with real input only; guide arrow to the shop, shop and slot-2 hints added; 3 readability tests; §15: 3 pass, 4 need a human test (perception never marked passed) |
 | T21 | Stress test, performance, bot playthrough | §6 §13 §16 | todo | |
 | T22 | Final verification, Windows build, release notes | §16 | todo | |

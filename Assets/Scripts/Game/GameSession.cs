@@ -365,10 +365,16 @@ namespace Hollow.Game
             if (!canSkip) seen.Add(id);
             dialogue.PlayScene(id, canSkip, done);
         }
+        static string TutorialWeaponName(World w) => w.Profile.Weapon(w.Profile.Economy.TutorialWeapon).DisplayName;
+
         static string TutorialPrompt(World w) => w.Tutorial switch
         {
             TutorialStage.FirstGroup => "WASD to move · aim with the mouse · hold left click to fire · Space to dash",
-            TutorialStage.Purchase => w.Coins.Count > 0 ? "Collect the coins they dropped" : "Go to the shop (south) and buy the SMG",
+            TutorialStage.Purchase => w.Coins.Count > 0 ? "Collect the coins they dropped"
+                : w.Shop.Open ? $"Click \"Buy {TutorialWeaponName(w)}\" in the shop" : "Follow the arrow to the shop and buy the SMG",
+            // A bought weapon goes to slot 2; the pistol stays in hand until the player switches.
+            TutorialStage.SecondGroup when w.Player.Loadout.ActiveId != w.Profile.Economy.TutorialWeapon && w.Player.Loadout.Owns(w.Profile.Economy.TutorialWeapon)
+                => $"Press 2 to use the {TutorialWeaponName(w)}",
             _ => null,
         };
 
@@ -380,6 +386,9 @@ namespace Hollow.Game
             if (w.Shop.Open && playing) { shopPanel.Bind(w); shopPanel.Show(w); }
             else if (shopPanel.Visible) shopPanel.Hide();
 
+            // The first purchase is shown, not told: an arrow leads to the shop once the coins are collected.
+            bool guideToShop = w.Tutorial == TutorialStage.Purchase && w.Coins.Count == 0 && !w.Shop.Open && playing;
+            hud.SetGuide(guideToShop ? w.Layout.ShopPosition : null, worldCamera);
             string status = TutorialPrompt(w);
             if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = "Press E to open the shop";
             if (Time.unscaledTime < flashUntil) status = flashMessage;
