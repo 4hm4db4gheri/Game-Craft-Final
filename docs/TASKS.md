@@ -24,17 +24,17 @@ Gameplay is a **plain C# simulation** (`Hollow.Sim`) stepped at a fixed 60 Hz in
 | T05 | Game-feel pipeline (8 layers, budgets) | §14 §4 | todo | basic layers in slice, rest later |
 | T08 | Coins, XP, skills | §9 §10 | done | 13 tests; XP card UI verified in Play mode (no click leak); pending-card save lands with T17 |
 | T09 | Companion | §4 §3 | done | 12 tests; failure screen names the cause; retry = restart until T17 |
-| T11 | Shop and inventory | §8 §9 §11 | todo | |
-| T17 | Exact saves and death recovery | §12 | todo | sim designed for it from T00 |
-| T10 | Spawning, waves, tutorial | §6 | todo | |
+| T11 | Shop and inventory | §8 §9 §11 | done | 12 tests; Play mode: Buy click never fires |
+| T17 | Exact saves and death recovery | §12 | done | save → load from disk → identical hash and identical 1200-tick future; checkpoints; verified in Play mode |
+| T10 | Spawning, waves, tutorial | §6 | done | headless bot completes all 15 waves; caps never exceeded |
 | T16a | AI-art import pipeline (name-driven importer, magenta key-out, strip slicing, visual configs) | §14 | todo | serves `ART_MASTER_BRIEF.md` |
-| T15 | HUD and all screens | §10 §11 §15 | todo | minimal HUD in slice |
+| T15 | HUD and all screens | §10 §11 §15 | done (functional) | all §11 screens; flows verified in Play mode; placeholder styling; 1600×900/1280×720 not yet checked |
 | — | **Vertical slice cut line** | | | |
 | T04 | Melee weapons | §8 §10 | done (early) | done together with T03; 8 tests |
-| T07 | Remaining 20 enemies | §5 | todo | |
-| T12 | Items and combat inventory | §9 §10 | todo | |
-| T13 | Bosses and preparation flow | §7 | todo | |
-| T14 | Story, dialogue, transitions, ending | §3 §7 §14 §15 | todo | |
+| T07 | Remaining 20 enemies | §5 | done | producer pool exact in 12 kill orders; every attacker telegraphs first |
+| T12 | Items and combat inventory | §9 §10 | done | 13 tests |
+| T13 | Bosses and preparation flow | §7 | done | 13 tests; full prep/entrance/fight/transition flow verified in Play mode |
+| T14 | Story, dialogue, transitions, ending | §3 §7 §14 §15 | done | lines from GDD §3 only; victory jingle waits for T19 |
 | T16 | Arena (3 states) and placeholder art | §14 | todo | |
 | T18 | Balance panel completion, dev tools (F10), telemetry | §13 | todo | |
 | T19 | Audio (CC0 SFX + music) | §14 | todo | |

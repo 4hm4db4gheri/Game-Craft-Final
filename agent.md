@@ -43,10 +43,9 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00، T01، T01b، T02، T03، T04، T06 (A1/A2)، T08، T09، T11، T10 (فقط شبیه‌سازی). ۲۹۲ تست پاس.
-- بعدی: وصل کردن WaveSystem به GameSession (شروع موج ۱ + آموزش، حذف DevSandboxSpawner، HUD موج و شمارش معکوس، Enter)، سپس T17 (ذخیره)، T15 (منوها/pause)، T07، T12، T13، T14، T16a، T05، T19.
-- build ویندوز خالی موفق بود (`Builds/Windows/Hollow.exe`، ۱۳۳ مگابایت به خاطر پکیج‌های AI).
-
+- انجام‌شده: T00–T04، T06–T15 (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
+- کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
+- باقی‌مانده: T16a (importer آرت AI)، T16 (سه حالت آرنا، تاریکی فاز ۳)، T05 (جلوه‌ها: muzzle، ذرات، اعداد آسیب، جسد/لکه، shake)، T19 (صدا CC0)، T18 (telemetry و جست‌وجوی عدد hard-code)، T20، T21 (stress/perf)، T22 (build و release notes).
 ## کارهای باز / ایده‌ها
 
 - آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ T16a باید importer خودکار بسازد.
@@ -89,3 +88,8 @@
 ### 2026-10-16 — T02 تا T11 و شبیه‌سازی T10
 - شبیه‌سازی C# خالص (`Assets/Scripts/Sim`)، نمایش pooled (`Presentation`)، UI با کد (`Assets/Scripts/UI`)، صحنه‌ی Game با `Hollow > Setup > Rebuild Game Scene` ساخته می‌شود.
 - commitها: `e5de9be` تا آخرین commit موج‌ها.
+
+### 2026-10-16 — موج‌ها در صحنه، T17، T15، T07، T12، T13، T14
+- ذخیره‌ی دقیق (WorldSerializer، SlotStore با نوشتن اتمی)، checkpoint اول هر موج/باس، منوی اصلی/slot/pause/loading/settings/controls.
+- رفتار همه‌ی دشمن‌ها، producerها با pool ثابت، hazard، آیتم‌ها، باس‌ها، دیالوگ از `Resources/Narrative/Dialogue.json`، انتقال فاز و پایان.
+- ابزارهای تست Play mode در scratchpad: `click.ps1`، `state.ps1`، `run.ps1`.
