@@ -25,6 +25,11 @@ namespace Hollow.Sim
         /// <summary>XP gathered toward the next skill threshold (overflow is kept, GDD §9).</summary>
         public int XpTowardNext;
         public int ChoicesTaken;
+        /// <summary>The rolled XP card waiting for the player, if any (saved exactly).</summary>
+        public PendingChoice Pending;
+        /// <summary>Tutorial gate: no XP card may overlap the first shop explanation (§6).</summary>
+        public bool ChoicesBlocked;
+        public List<Hollow.Data.SkillId> ChosenSkills = new();
         public int CoinsGenerated;
         public int CoinsCollected;
         public int Kills;

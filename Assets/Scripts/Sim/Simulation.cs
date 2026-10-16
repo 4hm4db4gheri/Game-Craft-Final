@@ -33,6 +33,7 @@ namespace Hollow.Sim
             EnemySystem.Separate(w);
             ProjectileSystem.Step(w);
             CoinSystem.Step(w);
+            XpSystem.Step(w);
             w.Enemies.RemoveAll(e => !e.Alive);
             w.Clock.Step(activeTimeRunning: !w.SafeInterval);
         }
