@@ -33,7 +33,8 @@ namespace Hollow.Data
         {
             int total = 0;
             foreach (var c in counts) total += c.Count;
-            int target = (int)Math.Round(total * (double)multiplier, MidpointRounding.AwayFromZero);
+            // The epsilon keeps decimal multipliers like 1.15 from landing just under a half because of float storage.
+            int target = (int)Math.Round(total * (double)multiplier + 1e-6, MidpointRounding.AwayFromZero);
 
             var weights = new float[counts.Count];
             for (int i = 0; i < counts.Count; i++) weights[i] = counts[i].Count;
@@ -45,7 +46,7 @@ namespace Hollow.Data
         }
 
         public static int ScaleCap(int cap, float multiplier) =>
-            Math.Max(1, (int)Math.Round(cap * (double)multiplier, MidpointRounding.AwayFromZero));
+            Math.Max(1, (int)Math.Round(cap * (double)multiplier + 1e-6, MidpointRounding.AwayFromZero));
 
         static void DistributeLeftover(int[] result, double[] remainders, int leftover)
         {

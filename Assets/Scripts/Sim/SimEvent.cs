@@ -26,6 +26,8 @@ namespace Hollow.Sim
         CompanionHit,
         CompanionDied,
         Explosion,
+        WaveStarted,
+        WaveCompleted,
     }
 
     /// <summary>

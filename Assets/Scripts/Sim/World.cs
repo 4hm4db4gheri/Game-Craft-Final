@@ -30,6 +30,7 @@ namespace Hollow.Sim
         public InventoryState Inventory = new();
         public ShopState Shop = new();
         public TutorialStage Tutorial;
+        public WaveState Waves = new();
 
         [JsonIgnore] public BalanceProfile Profile;
         [JsonIgnore] public ArenaLayout Layout;

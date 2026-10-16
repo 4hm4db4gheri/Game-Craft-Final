@@ -16,7 +16,9 @@ namespace Hollow.Sim
             e.XpPaid += xp;
             e.CoinsPaid += coins;
             GrantXp(w, xp, e.Position);
-            DropCoins(w, e.Position, coins);
+            // Tutorial coins (the first group's) never expire (§6).
+            bool tutorial = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase;
+            DropCoins(w, e.Position, coins, tutorial);
             w.Progress.Kills++;
         }
 

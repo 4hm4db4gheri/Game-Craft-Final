@@ -1,0 +1,30 @@
+using UnityEngine;
+
+namespace Hollow.Sim
+{
+    /// <summary>
+    /// Entering a phase: switch the obstacle layout, push characters out of any new obstacle (§14: never
+    /// leave anyone inside one), restore or remove the companion, and start wave one.
+    /// The transition scene itself is presentation (T14).
+    /// </summary>
+    public static class PhaseSystem
+    {
+        public static void EnterPhase(World w, int phase)
+        {
+            w.Phase = phase;
+            w.Arena = ArenaGrid.FromLayout(w.Layout, phase);
+            w.PlayerField = new FlowField(w.Arena);
+            w.CompanionField = new FlowField(w.Arena);
+
+            var p = w.Player;
+            p.Position = p.PrevPosition = w.Arena.Resolve(p.Position, w.Profile.Player.BodyRadius);
+            foreach (var e in w.Enemies) e.Position = e.PrevPosition = w.Arena.Resolve(e.Position, e.Radius);
+
+            Vector2 companionAt = w.Companion.Present ? w.Companion.Position : w.Layout.CompanionStart;
+            CompanionSystem.SpawnForPhase(w, w.Arena.Resolve(companionAt, w.Profile.Companion.BodyRadius));
+
+            w.Waves.Wave = 0;
+            WaveSystem.StartWave(w, 1);
+        }
+    }
+}

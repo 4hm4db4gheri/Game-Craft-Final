@@ -32,6 +32,7 @@ namespace Hollow.Sim
             ShopSystem.Step(w, cmd);
             w.Crowd.Rebuild(w.Enemies);
             WeaponSystem.Step(w, cmd);
+            WaveSystem.Step(w);
             CompanionSystem.Step(w);
             EnemySystem.Step(w);
             EnemySystem.Separate(w);
