@@ -56,6 +56,30 @@ namespace Hollow.Sim
 
         public static SaveFile Read(int slot) => SaveFile.FromJson(File.ReadAllText(PathOf(slot)));
 
+        /// <summary>Forget all progress, including tutorials and checkpoints stored inside each save.
+        /// Only known slot files are removed; preferences and diagnostic files are preserved.</summary>
+        public static SaveResult DeleteAll()
+        {
+            try
+            {
+                for (int slot = 1; slot <= SlotCount; slot++)
+                {
+                    File.Delete(PathOf(slot));
+                    File.Delete(PathOf(slot) + ".tmp");
+                }
+                return new SaveResult(true, null);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                // A first launch has no saves directory yet: progress is already clear.
+                return new SaveResult(true, null);
+            }
+            catch (Exception e)
+            {
+                return new SaveResult(false, e.Message);
+            }
+        }
+
         public static SlotSummary TryReadSummary(int slot)
         {
             try { return Exists(slot) ? Read(slot).Summary : null; }

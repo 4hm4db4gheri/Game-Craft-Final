@@ -70,7 +70,7 @@ namespace Hollow.UI
 
         // ---------------------------------------------------------------- main menu
 
-        public void ShowMain(Action newGame, Action continueGame, bool anySave, Action settings, Action controls, Action quit)
+        public void ShowMain(Action newGame, Action continueGame, bool anySave, Action settings, Action controls, Action resetProgress, Action quit)
         {
             // The parallax backdrop stays in view: no dimmer, a translucent column on the right (Persian reads from the right).
             Hide();
@@ -85,6 +85,7 @@ namespace Hollow.UI
             Btn(box, Loc.T("menu.continue"), y, continueGame, anySave); y -= 80;
             Btn(box, Loc.T("menu.settings"), y, settings); y -= 80;
             Btn(box, Loc.T("menu.controls"), y, controls); y -= 80;
+            Btn(box, Loc.T("reset.menu"), y, resetProgress); y -= 80;
             Btn(box, Loc.T("menu.quit"), y, quit);
         }
 

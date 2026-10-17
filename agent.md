@@ -29,7 +29,9 @@
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
 | `Assets/Resources/Localization/fa.json` | همه‌ی متن‌های بازیکن به فارسی (کلید ← متن)، خوانده با `Hollow.UI.Loc` (`Loc.T`/`Loc.F`/`Loc.Weapon`…). متن جدید = کلید جدید در همین فایل؛ تست `LocalizationTests` کلیدهای کد را چک می‌کند |
-| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ حداکثر ۴ ثانیه). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
+| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ حداکثر ۴ ثانیه). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
+| `Assets/Scripts/Sim/Save/SlotStore.cs` + `Game/MainMenuController.cs` | گزینهٔ «پاک‌کردن پیشرفت بازی» در منوی اصلی، با تأیید بازیکن: حذف سه فایل جایگاه و فایل‌های موقت، سپس انتخاب جایگاه برای بازی تازه. تنظیمات و فایل‌های دیگر حفظ می‌شوند؛ خطای حذف پیام و امکان تلاش دوباره دارد |
+
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
@@ -56,6 +58,7 @@
 
 ## وضعیت فعلی
 
+- گزینهٔ پاک‌کردن پیشرفت از منوی اصلی اضافه شد؛ همهٔ جایگاه‌ها، آموزش و راهنماهای ذخیره‌شده پس از تأیید پاک می‌شوند. ۳ تست جدید حذف و ۲ بررسی متن فارسی خارج از ادیتور با Mono پاس شدند و چهار اسمبلی مرتبط با کامپایلر و response fileهای یونیتی کامپایل شدند. تست داخل ادیتور و بررسی ظاهری این تغییر هنوز انجام نشده: بستهٔ Pipeline به علت خطای دسترسی به رجیستری بارگذاری نشده است.
 - انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۳۳ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
 - باقی‌مانده: هیچ تسکی از T00–T22 نمانده. کارهای بعدی با طراح/کاربر: اعداد سطح ۲ و ۳ سلاح‌ها، playtest انسانی، آرت AI، گوش دادن به صداها (فهرست در `docs/RELEASE_NOTES.md`).
@@ -219,3 +222,10 @@
 
 ### 2026-10-17 — کوتاه کردن راهنماها
 - به خواست کاربر راهنماهای چند سلاح، خشاب خالی، جان کم و سکه برای ارتقا حذف شدند. متن اپراتور زخمی حالا می‌گوید خود بازیکن هم در فروشگاه درمان می‌شود. زمان: حداکثر ۴ ثانیه (قبلاً ۷)، حداقل ۰.۸، فاصله‌ی بین دو راهنما ۱.۲ ثانیه. ۴۳۳ تست پاس.
+
+### 2026-10-17 — گزینهٔ پاک‌کردن پیشرفت بازی
+- خواندن کامل agent.md و بررسی مسیر ذخیره: آموزش، checkpoint و راهنماهای دیده‌شده داخل save هستند؛ تنظیمات در PlayerPrefs جدا هستند.
+- افزودن گزینهٔ فارسی به منوی اصلی، تأیید حذف برگشت‌ناپذیر هر سه جایگاه، حذف فایل‌های slot و tmp با `SlotStore.DeleteAll`، مدیریت خطا و تلاش مجدد، سپس بازکردن انتخاب جایگاه بازی تازه. تنظیمات صدا و تصویر، بالانس و فایل‌های گزارش حفظ می‌شوند. هنگام ورود به منوی اصلی، مسیر dev_saves به مسیر جایگاه‌های واقعی برمی‌گردد.
+- تأیید: کامپایل `Hollow.Sim`، `Hollow.UI`، `Hollow.Game` و `Hollow.Tests.EditMode` با Roslyn و response fileهای موجود Unity به پوشهٔ موقت. اجرای مستقیم ۳ تست جدید NUnit و ۲ تست متن فارسی با Mono: همه پاس. تست نبودن پوشهٔ saves یک DirectoryNotFoundException پیدا کرد و اصلاح شد. ذخیره‌های واقعی برای آزمایش حذف نشدند.
+- محدودیت بررسی: Editor باز است ولی بستهٔ Pipeline به علت منع دسترسی رجیستری بارگذاری نشده؛ اجرای Test Runner داخل Unity و Play Mode و بررسی ظاهری انجام نشد. اسکریپت موقت بررسی در `Temp/ResetProgressCheck` است.
+- فایل‌های تغییرکرده: `Assets/Scripts/UI/MenuScreens.cs`، `Assets/Scripts/Game/MainMenuController.cs`، `Assets/Scripts/Sim/Save/SlotStore.cs`، `Assets/Resources/Localization/fa.json`، `Assets/Tests/EditMode/Sim/SaveTests.cs`، `agent.md`.
