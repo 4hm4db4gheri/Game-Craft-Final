@@ -1,0 +1,2807 @@
+fileFormatVersion: 2
+guid: 1366371d3d06cde4a9699003937bfe0b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1784804441967098016
+    second: ENV_P3_Ash_decor_a_0
+  - first:
+      213: 7269959510460851848
+    second: ENV_P3_Ash_decor_a_1
+  - first:
+      213: 1083611828702064747
+    second: ENV_P3_Ash_decor_a_2
+  - first:
+      213: 9153473679498868403
+    second: ENV_P3_Ash_decor_a_3
+  - first:
+      213: -2446517765148285477
+    second: ENV_P3_Ash_decor_a_4
+  - first:
+      213: -8431004085287770234
+    second: ENV_P3_Ash_decor_a_5
+  - first:
+      213: -5219717794488776589
+    second: ENV_P3_Ash_decor_a_6
+  - first:
+      213: -2912087724959313052
+    second: ENV_P3_Ash_decor_a_7
+  - first:
+      213: 6783250331851401403
+    second: ENV_P3_Ash_decor_a_8
+  - first:
+      213: 7128543001382007
+    second: ENV_P3_Ash_decor_a_9
+  - first:
+      213: -4865030425788468460
+    second: ENV_P3_Ash_decor_a_10
+  - first:
+      213: -6005281636204105502
+    second: ENV_P3_Ash_decor_a_11
+  - first:
+      213: 9033128444381879969
+    second: ENV_P3_Ash_decor_a_12
+  - first:
+      213: 6864350452887615018
+    second: ENV_P3_Ash_decor_a_13
+  - first:
+      213: 5056423665668366229
+    second: ENV_P3_Ash_decor_a_14
+  - first:
+      213: -1261727508052586976
+    second: ENV_P3_Ash_decor_a_15
+  - first:
+      213: -3667281583124155507
+    second: ENV_P3_Ash_decor_a_16
+  - first:
+      213: 1400828893204992610
+    second: ENV_P3_Ash_decor_a_17
+  - first:
+      213: -8042850159294373132
+    second: ENV_P3_Ash_decor_a_18
+  - first:
+      213: -8162008834814850792
+    second: ENV_P3_Ash_decor_a_19
+  - first:
+      213: 5314263276366454401
+    second: ENV_P3_Ash_decor_a_20
+  - first:
+      213: -7803863975794406322
+    second: ENV_P3_Ash_decor_a_21
+  - first:
+      213: 8392794856953434922
+    second: ENV_P3_Ash_decor_a_22
+  - first:
+      213: -7776642792604525403
+    second: ENV_P3_Ash_decor_a_23
+  - first:
+      213: 9022653029624258796
+    second: ENV_P3_Ash_decor_a_24
+  - first:
+      213: -8509716479100263174
+    second: ENV_P3_Ash_decor_a_25
+  - first:
+      213: -6735732190799938249
+    second: ENV_P3_Ash_decor_a_26
+  - first:
+      213: -6488508230565818089
+    second: ENV_P3_Ash_decor_a_27
+  - first:
+      213: 3657314143758810840
+    second: ENV_P3_Ash_decor_a_28
+  - first:
+      213: -85506877515601744
+    second: ENV_P3_Ash_decor_a_29
+  - first:
+      213: 7437836359711541369
+    second: ENV_P3_Ash_decor_a_30
+  - first:
+      213: -1400500110633295521
+    second: ENV_P3_Ash_decor_a_31
+  - first:
+      213: 3164491833852238185
+    second: ENV_P3_Ash_decor_a_32
+  - first:
+      213: -900163657162503711
+    second: ENV_P3_Ash_decor_a_33
+  - first:
+      213: -5696897600202172911
+    second: ENV_P3_Ash_decor_a_34
+  - first:
+      213: -7866328328098858051
+    second: ENV_P3_Ash_decor_a_35
+  - first:
+      213: -8004025104271657350
+    second: ENV_P3_Ash_decor_a_36
+  - first:
+      213: -8424329865715439503
+    second: ENV_P3_Ash_decor_a_37
+  - first:
+      213: -4325515844517216523
+    second: ENV_P3_Ash_decor_a_38
+  - first:
+      213: 3579321030068835
+    second: ENV_P3_Ash_decor_a_39
+  - first:
+      213: 8675145958521687995
+    second: ENV_P3_Ash_decor_a_40
+  - first:
+      213: -5192641260183672851
+    second: ENV_P3_Ash_decor_a_41
+  - first:
+      213: 2983006805978999506
+    second: ENV_P3_Ash_decor_a_42
+  - first:
+      213: 6561711864149285083
+    second: ENV_P3_Ash_decor_a_43
+  - first:
+      213: 8635755660339919518
+    second: ENV_P3_Ash_decor_a_44
+  - first:
+      213: -3511466243432099504
+    second: ENV_P3_Ash_decor_a_45
+  - first:
+      213: -6920089312081110378
+    second: ENV_P3_Ash_decor_a_46
+  - first:
+      213: 339698134744646279
+    second: ENV_P3_Ash_decor_a_47
+  - first:
+      213: 1469439394227437837
+    second: ENV_P3_Ash_decor_a_48
+  - first:
+      213: 3070126503916538875
+    second: ENV_P3_Ash_decor_a_49
+  - first:
+      213: -4835643619906183572
+    second: ENV_P3_Ash_decor_a_50
+  - first:
+      213: -2728535386861265315
+    second: ENV_P3_Ash_decor_a_51
+  - first:
+      213: 3068115776430299804
+    second: ENV_P3_Ash_decor_a_52
+  - first:
+      213: -4886943354640767691
+    second: ENV_P3_Ash_decor_a_53
+  - first:
+      213: 626199736937318390
+    second: ENV_P3_Ash_decor_a_54
+  - first:
+      213: 7530958038613535378
+    second: ENV_P3_Ash_decor_a_55
+  - first:
+      213: -4950407041304126010
+    second: ENV_P3_Ash_decor_a_56
+  - first:
+      213: 1072537069625114762
+    second: ENV_P3_Ash_decor_a_57
+  - first:
+      213: -6820130141026207808
+    second: ENV_P3_Ash_decor_a_58
+  - first:
+      213: -8392581249668331143
+    second: ENV_P3_Ash_decor_a_59
+  - first:
+      213: -4435521866358661648
+    second: ENV_P3_Ash_decor_a_60
+  - first:
+      213: 5110870525886770216
+    second: ENV_P3_Ash_decor_a_61
+  - first:
+      213: 1372193418534473551
+    second: ENV_P3_Ash_decor_a_62
+  - first:
+      213: -3680074276941783371
+    second: ENV_P3_Ash_decor_a_63
+  - first:
+      213: 6419865769194395250
+    second: ENV_P3_Ash_decor_a_64
+  - first:
+      213: -2532749808005546952
+    second: ENV_P3_Ash_decor_a_65
+  - first:
+      213: -8598075658662081020
+    second: ENV_P3_Ash_decor_a_66
+  - first:
+      213: -5232207224202112931
+    second: ENV_P3_Ash_decor_a_67
+  - first:
+      213: -1291104291297862942
+    second: ENV_P3_Ash_decor_a_68
+  - first:
+      213: -5936941119186598857
+    second: ENV_P3_Ash_decor_a_69
+  - first:
+      213: 4563568766145967749
+    second: ENV_P3_Ash_decor_a_70
+  - first:
+      213: -4755740057660668202
+    second: ENV_P3_Ash_decor_a_71
+  - first:
+      213: 98429159256820983
+    second: ENV_P3_Ash_decor_a_72
+  - first:
+      213: -7002619052020983756
+    second: ENV_P3_Ash_decor_a_73
+  - first:
+      213: -2110726056512934800
+    second: ENV_P3_Ash_decor_a_74
+  - first:
+      213: 5551977262109533780
+    second: ENV_P3_Ash_decor_a_75
+  - first:
+      213: -4186198575845137718
+    second: ENV_P3_Ash_decor_a_76
+  - first:
+      213: -1562916916539303628
+    second: ENV_P3_Ash_decor_a_77
+  - first:
+      213: -5050002318265553056
+    second: ENV_P3_Ash_decor_a_78
+  - first:
+      213: -8359776166602598667
+    second: ENV_P3_Ash_decor_a_79
+  - first:
+      213: -6609196441701205469
+    second: ENV_P3_Ash_decor_a_80
+  - first:
+      213: -5818627235700097192
+    second: ENV_P3_Ash_decor_a_81
+  - first:
+      213: 3665129727054086271
+    second: ENV_P3_Ash_decor_a_82
+  - first:
+      213: -7396339666024625484
+    second: ENV_P3_Ash_decor_a_83
+  - first:
+      213: -8496465118246122197
+    second: ENV_P3_Ash_decor_a_84
+  - first:
+      213: -4767778129208334161
+    second: ENV_P3_Ash_decor_a_85
+  - first:
+      213: 3616012136078637456
+    second: ENV_P3_Ash_decor_a_86
+  - first:
+      213: 1583161495804765754
+    second: ENV_P3_Ash_decor_a_87
+  - first:
+      213: 4120582112816915761
+    second: ENV_P3_Ash_decor_a_88
+  - first:
+      213: 4719927576790990432
+    second: ENV_P3_Ash_decor_a_89
+  - first:
+      213: 7332987891063299835
+    second: ENV_P3_Ash_decor_a_90
+  - first:
+      213: -4436970117289274859
+    second: ENV_P3_Ash_decor_a_91
+  - first:
+      213: -6195607664852128670
+    second: ENV_P3_Ash_decor_a_92
+  - first:
+      213: 863785144240303140
+    second: ENV_P3_Ash_decor_a_93
+  - first:
+      213: -5188478740883071258
+    second: ENV_P3_Ash_decor_a_94
+  - first:
+      213: 8399351417129483197
+    second: ENV_P3_Ash_decor_a_95
+  - first:
+      213: -4266306866863897109
+    second: ENV_P3_Ash_decor_a_96
+  - first:
+      213: -7190830343548928440
+    second: ENV_P3_Ash_decor_a_97
+  - first:
+      213: 6777196996964070020
+    second: ENV_P3_Ash_decor_a_98
+  - first:
+      213: -5457783263520977530
+    second: ENV_P3_Ash_decor_a_99
+  - first:
+      213: -6688367814438913730
+    second: ENV_P3_Ash_decor_a_100
+  - first:
+      213: -1661622748024739086
+    second: ENV_P3_Ash_decor_a_101
+  - first:
+      213: 9028917791105279117
+    second: ENV_P3_Ash_decor_a_102
+  - first:
+      213: 4491949497892264806
+    second: ENV_P3_Ash_decor_a_103
+  - first:
+      213: 2413126870362616094
+    second: ENV_P3_Ash_decor_a_104
+  - first:
+      213: 8993935045465296471
+    second: ENV_P3_Ash_decor_a_105
+  - first:
+      213: 2453712439201765038
+    second: ENV_P3_Ash_decor_a_106
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 1024
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_0
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 346
+        width: 54
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 067030bf0d91b37e0800000000000000
+      internalID: -1784804441967098016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_1
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 380
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 886ed7828a514e460800000000000000
+      internalID: 7269959510460851848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_2
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 365
+        width: 24
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b60b23c8733c90f00800000000000000
+      internalID: 1083611828702064747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_3
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 387
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b6fa6770dba70f70800000000000000
+      internalID: 9153473679498868403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_4
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 350
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd567a70e093c0ed0800000000000000
+      internalID: -2446517765148285477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_5
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 387
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6872e8c247e0ffa80800000000000000
+      internalID: -8431004085287770234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_6
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 388
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37806b73256df87b0800000000000000
+      internalID: -5219717794488776589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_7
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 384
+        width: 24
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 463560f94af2697d0800000000000000
+      internalID: -2912087724959313052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_8
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 373
+        width: 16
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb8ad84dc32f22e50800000000000000
+      internalID: 6783250331851401403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_9
+      rect:
+        serializedVersion: 2
+        x: 711
+        y: 380
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77c0d514f53591000800000000000000
+      internalID: 7128543001382007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_10
+      rect:
+        serializedVersion: 2
+        x: 727
+        y: 380
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41339619a90fb7cb0800000000000000
+      internalID: -4865030425788468460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_11
+      rect:
+        serializedVersion: 2
+        x: 731
+        y: 373
+        width: 28
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e0b0e15b24f8aca0800000000000000
+      internalID: -6005281636204105502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_12
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 376
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aedbd9e57e1c5d70800000000000000
+      internalID: 9033128444381879969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_13
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 357
+        width: 28
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2678263e52134f50800000000000000
+      internalID: 6864350452887615018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_14
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 361
+        width: 20
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59f9a0aa8860c2640800000000000000
+      internalID: 5056423665668366229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_15
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 380
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02ecf2f24817d7ee0800000000000000
+      internalID: -1261727508052586976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_16
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 364
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d837d8a84d23b1dc0800000000000000
+      internalID: -3667281583124155507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_17
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 345
+        width: 21
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 262569ad47eb07310800000000000000
+      internalID: 1400828893204992610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_18
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 368
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f2a099946e026090800000000000000
+      internalID: -8042850159294373132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_19
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 361
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 819c24b7538babe80800000000000000
+      internalID: -8162008834814850792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_20
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 365
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18ed9be2b4e00c940800000000000000
+      internalID: 5314263276366454401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_21
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 349
+        width: 17
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4c8e478f0b13b390800000000000000
+      internalID: -7803863975794406322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_22
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 368
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a235f699472397470800000000000000
+      internalID: 8392794856953434922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_23
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 364
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ac94b12590d31490800000000000000
+      internalID: -7776642792604525403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_24
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 346
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce02b5a5027e63d70800000000000000
+      internalID: 9022653029624258796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_25
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 364
+        width: 20
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af4e0fbd2f967e980800000000000000
+      internalID: -8509716479100263174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_26
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 365
+        width: 29
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73db439824fd582a0800000000000000
+      internalID: -6735732190799938249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_27
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 369
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7111de2542034f5a0800000000000000
+      internalID: -6488508230565818089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_28
+      rect:
+        serializedVersion: 2
+        x: 716
+        y: 334
+        width: 62
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8de71c226d361c230800000000000000
+      internalID: 3657314143758810840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_29
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 338
+        width: 32
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b864dba2f730def0800000000000000
+      internalID: -85506877515601744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_30
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 349
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 978471603c0883760800000000000000
+      internalID: 7437836359711541369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_31
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 131
+        width: 449
+        height: 235
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f51aecdc19c609ce0800000000000000
+      internalID: -1400500110633295521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_32
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 357
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96913638e888aeb20800000000000000
+      internalID: 3164491833852238185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_33
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 353
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e9cc1f4ce9f183f0800000000000000
+      internalID: -900163657162503711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_34
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 342
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1169c2ae0dd80f0b0800000000000000
+      internalID: -5696897600202172911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_35
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 357
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb331d201035d290800000000000000
+      internalID: -7866328328098858051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_36
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 349
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a763496239dfbe090800000000000000
+      internalID: -8004025104271657350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_37
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 350
+        width: 35
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17821530f94c61b80800000000000000
+      internalID: -8424329865715439503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_38
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 342
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fe3a39c14ea8f3c0800000000000000
+      internalID: -4325515844517216523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_39
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 269
+        width: 108
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36ac88e9f57bc0000800000000000000
+      internalID: 3579321030068835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_40
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 323
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbfc950594f446870800000000000000
+      internalID: 8675145958521687995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_41
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 330
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de727b0294800f7b0800000000000000
+      internalID: -5192641260183672851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_42
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 300
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2da63f8a2e4c56920800000000000000
+      internalID: 2983006805978999506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_43
+      rect:
+        serializedVersion: 2
+        x: 731
+        y: 318
+        width: 17
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd8951dcc22ef0b50800000000000000
+      internalID: 6561711864149285083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_44
+      rect:
+        serializedVersion: 2
+        x: 739
+        y: 281
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9a31a5d40e58d770800000000000000
+      internalID: 8635755660339919518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_45
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 296
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 051547f5e04c44fc0800000000000000
+      internalID: -3511466243432099504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_46
+      rect:
+        serializedVersion: 2
+        x: 757
+        y: 284
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69a9d635f67e6ff90800000000000000
+      internalID: -6920089312081110378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_47
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 277
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 782415c57a9d6b400800000000000000
+      internalID: 339698134744646279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_48
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 238
+        width: 39
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0144e7f75f746410800000000000000
+      internalID: 1469439394227437837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_49
+      rect:
+        serializedVersion: 2
+        x: 780
+        y: 250
+        width: 55
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfb05710ac74b9a20800000000000000
+      internalID: 3070126503916538875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_50
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 280
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6e9b1f7fb754ecb0800000000000000
+      internalID: -4835643619906183572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_51
+      rect:
+        serializedVersion: 2
+        x: 807
+        y: 280
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5e1d05a58b422ad0800000000000000
+      internalID: -2728535386861265315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_52
+      rect:
+        serializedVersion: 2
+        x: 715
+        y: 231
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9a56e70b03249a20800000000000000
+      internalID: 3068115776430299804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_53
+      rect:
+        serializedVersion: 2
+        x: 735
+        y: 230
+        width: 43
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5356e2d39e61e2cb0800000000000000
+      internalID: -4886943354640767691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_54
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 253
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f7879ec755b0b800800000000000000
+      internalID: 626199736937318390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_55
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 204
+        width: 47
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29aaee57f66538860800000000000000
+      internalID: 7530958038613535378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_56
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 257
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cd9979360f9c4bb0800000000000000
+      internalID: -4950407041304126010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_57
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 250
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a80817348ca62ee00800000000000000
+      internalID: 1072537069625114762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_58
+      rect:
+        serializedVersion: 2
+        x: 884
+        y: 250
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c7b23675c70a51a0800000000000000
+      internalID: -6820130141026207808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_59
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 227
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9794ae8b1df878b80800000000000000
+      internalID: -8392581249668331143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_60
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 169
+        width: 55
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fdd63aec5cd172c0800000000000000
+      internalID: -4435521866358661648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_61
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 243
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82cae7c2aa57de640800000000000000
+      internalID: 5110870525886770216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_62
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 234
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4f40ead4a20b0310800000000000000
+      internalID: 1372193418534473551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_63
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 234
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5be15d761ffbdecc0800000000000000
+      internalID: -3680074276941783371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_64
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 235
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 276958637e1f71950800000000000000
+      internalID: 6419865769194395250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_65
+      rect:
+        serializedVersion: 2
+        x: 796
+        y: 238
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83cf3ecf77dd9dcd0800000000000000
+      internalID: -2532749808005546952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_66
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 242
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40e83853ebf7da880800000000000000
+      internalID: -8598075658662081020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_67
+      rect:
+        serializedVersion: 2
+        x: 865
+        y: 234
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d50533240477367b0800000000000000
+      internalID: -5232207224202112931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_68
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 235
+        width: 24
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ea5535dc73151ee0800000000000000
+      internalID: -1291104291297862942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_69
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 166
+        width: 91
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7340972e18fbb9da0800000000000000
+      internalID: -5936941119186598857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_70
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 230
+        width: 16
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 586b23e2d9d055f30800000000000000
+      internalID: 4563568766145967749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_71
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 227
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d64a035d97300eb0800000000000000
+      internalID: -4755740057660668202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_72
+      rect:
+        serializedVersion: 2
+        x: 716
+        y: 211
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fc0b018cc0bd5100800000000000000
+      internalID: 98429159256820983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_73
+      rect:
+        serializedVersion: 2
+        x: 731
+        y: 204
+        width: 24
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43818ead213b1de90800000000000000
+      internalID: -7002619052020983756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_74
+      rect:
+        serializedVersion: 2
+        x: 753
+        y: 212
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07ca26fa5d135b2e0800000000000000
+      internalID: -2110726056512934800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_75
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 212
+        width: 24
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 456a51d77e59c0d40800000000000000
+      internalID: 5551977262109533780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_76
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 230
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac2218f1392a7e5c0800000000000000
+      internalID: -4186198575845137718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_77
+      rect:
+        serializedVersion: 2
+        x: 865
+        y: 208
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 439d93858576f4ae0800000000000000
+      internalID: -1562916916539303628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_78
+      rect:
+        serializedVersion: 2
+        x: 884
+        y: 189
+        width: 28
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06fe1e8c5a9cae9b0800000000000000
+      internalID: -5050002318265553056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_79
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 227
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f610e35edb1cfb80800000000000000
+      internalID: -8359776166602598667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_80
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 230
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32abf917ada6744a0800000000000000
+      internalID: -6609196441701205469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_81
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 212
+        width: 11
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85fbea78b55104fa0800000000000000
+      internalID: -5818627235700097192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_82
+      rect:
+        serializedVersion: 2
+        x: 915
+        y: 230
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7088cc61182dd230800000000000000
+      internalID: 3665129727054086271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_83
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 189
+        width: 48
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ba8870e24cea5990800000000000000
+      internalID: -7396339666024625484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_84
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 219
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2d417cbdfd761a80800000000000000
+      internalID: -8496465118246122197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_85
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 215
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa829a06d0375ddb0800000000000000
+      internalID: -4767778129208334161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_86
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 207
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 099f77a11e7ae2230800000000000000
+      internalID: 3616012136078637456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_87
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 196
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a36e4831ef488f510800000000000000
+      internalID: 1583161495804765754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_88
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 170
+        width: 47
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 135e74e899f3f2930800000000000000
+      internalID: 4120582112816915761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_89
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 206
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06e7234bf1d808140800000000000000
+      internalID: 4719927576790990432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_90
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 203
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfe911592a104c560800000000000000
+      internalID: 7332987891063299835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_91
+      rect:
+        serializedVersion: 2
+        x: 754
+        y: 181
+        width: 43
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51213f7bf27bc62c0800000000000000
+      internalID: -4436970117289274859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_92
+      rect:
+        serializedVersion: 2
+        x: 869
+        y: 196
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26c2dc097a7c40aa0800000000000000
+      internalID: -6195607664852128670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_93
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 189
+        width: 23
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42ce3bc1308ccfb00800000000000000
+      internalID: 863785144240303140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_94
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 170
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ee9ffc2312def7b0800000000000000
+      internalID: -5188478740883071258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_95
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 188
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb3da9bc9d709470800000000000000
+      internalID: 8399351417129483197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_96
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 189
+        width: 6
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be584c922880bc4c0800000000000000
+      internalID: -4266306866863897109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_97
+      rect:
+        serializedVersion: 2
+        x: 727
+        y: 185
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84e7aa4b6e9053c90800000000000000
+      internalID: -7190830343548928440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_98
+      rect:
+        serializedVersion: 2
+        x: 762
+        y: 177
+        width: 24
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48233e8f2c07d0e50800000000000000
+      internalID: 6777196996964070020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_99
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 158
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68d82c4d90f0244b0800000000000000
+      internalID: -5457783263520977530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_100
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 158
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e397635c8e42e23a0800000000000000
+      internalID: -6688367814438913730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_101
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 115
+        width: 63
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fae6411aeab0f8e0800000000000000
+      internalID: -1661622748024739086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_102
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 102
+        width: 116
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d84e80dc4e82d4d70800000000000000
+      internalID: 9028917791105279117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_103
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 131
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66bdcdad44c965e30800000000000000
+      internalID: 4491949497892264806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_104
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 116
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e11f9e17a162d7120800000000000000
+      internalID: 2413126870362616094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_105
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 123
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75e45ed9540e0dc70800000000000000
+      internalID: 8993935045465296471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P3_Ash_decor_a_106
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 108
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea6149f86765d0220800000000000000
+      internalID: 2453712439201765038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

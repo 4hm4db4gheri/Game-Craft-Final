@@ -72,8 +72,9 @@ namespace Hollow.Presentation
 
             bool hurt = w.Clock.Tick < p.InvulnerableUntilTick && !p.Dashing;
             bodyRenderer.color = p.Dashing ? dashColor : hurt && (Time.frameCount / 4) % 2 == 0 ? hurtColor : normalColor;
-            if (p.Dead) bodyRenderer.color = Color.gray;
-            if (anim != null) anim.SetState(p.Dead ? "death" : p.Velocity.sqrMagnitude > 0.25f ? "move" : "idle");
+            bool art = anim != null && anim.HasArt;
+            if (p.Dead) bodyRenderer.color = art ? Color.white : Color.gray;
+            if (anim != null) anim.SetState(p.Dead ? "death" : hurt ? "hit" : p.Velocity.sqrMagnitude > 0.25f ? "move" : "idle");
 
             // Dash readiness near the player: shown only while recharging.
             long cooldownTicks = w.Ticks(PlayerStats.DashCooldown(w));

@@ -19,6 +19,8 @@ namespace Hollow.Presentation
         public Tilemap[] Obstacles = new Tilemap[3];
         public Transform[] Props = new Transform[3];
         public Transform[] Decor = new Transform[3];
+        /// <summary>Imported border art around the walls, per phase (visual only; the Walls Tilemap blocks).</summary>
+        public Transform[] Borders = new Transform[3];
         public Vector2Int Size = new(48, 32);
 
         public Transform PlayerStart;
@@ -36,7 +38,7 @@ namespace Hollow.Presentation
 
         public List<SpawnZone> SpawnZones = new();
 
-        /// <summary>Shows the ground, decor, props and obstacle layer of the given phase only.</summary>
+        /// <summary>Shows the ground, decor, props, border and obstacle layer of the given phase only.</summary>
         public void ShowPhase(int phase)
         {
             for (int i = 0; i < 3; i++)
@@ -46,6 +48,7 @@ namespace Hollow.Presentation
                 if (Obstacles.Length > i && Obstacles[i] != null) Obstacles[i].gameObject.SetActive(on);
                 if (Props.Length > i && Props[i] != null) Props[i].gameObject.SetActive(on);
                 if (Decor.Length > i && Decor[i] != null) Decor[i].gameObject.SetActive(on);
+                if (Borders != null && Borders.Length > i && Borders[i] != null) Borders[i].gameObject.SetActive(on);
             }
         }
 

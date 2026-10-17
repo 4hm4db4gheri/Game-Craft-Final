@@ -63,23 +63,23 @@ MonoBehaviour:
     Prefab: {fileID: 5763237062379922141, guid: 92a3c021b08fa5149a081deb3764976b, type: 3}
   Weapons:
   - Id: 0
-    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
-    Color: {r: 0.85, g: 0.87, b: 0.9, a: 1}
-    Size: {x: 0.32, y: 0.1}
+    Sprite: {fileID: 21300000, guid: b7384a3fb141d3e4abde5737da6ba54d, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    Size: {x: 1.2, y: 0.6}
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
-    PivotAtGrip: 0
+    PivotAtGrip: 1
   - Id: 1
-    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
-    Color: {r: 0.55, g: 0.6, b: 0.65, a: 1}
-    Size: {x: 0.45, y: 0.11}
+    Sprite: {fileID: 21300000, guid: 1f7cf400b18144b41aa0237789c23b57, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    Size: {x: 1.8, y: 0.9}
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
-    PivotAtGrip: 0
+    PivotAtGrip: 1
   - Id: 2
-    Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
-    Color: {r: 0.5, g: 0.38, b: 0.28, a: 1}
-    Size: {x: 0.6, y: 0.13}
+    Sprite: {fileID: 21300000, guid: 8a976a06af8d0004a874c6f125778c94, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    Size: {x: 2.4, y: 1.2}
     ProjectileColor: {r: 1, g: 0.95, b: 0.8, a: 1}
-    PivotAtGrip: 0
+    PivotAtGrip: 1
   - Id: 3
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.3, g: 0.3, b: 0.35, a: 1}
@@ -133,5 +133,14 @@ MonoBehaviour:
   EnemyProjectile: {fileID: 5933724752300405815, guid: 425f6cc1a891f5e4eb5ed5e21cf6aed9, type: 3}
   Coin: {fileID: 9064103742896683663, guid: de5eee30b37e4214394eb4958f035707, type: 3}
   Arc: {fileID: 5821435725783849061, guid: c421accd7ae079443bfa7aad96559a5c, type: 3}
+  PlayerBulletArt: {fileID: 21300000, guid: 3821ef82f2c71a4459e6bbac444ba48a, type: 3}
+  PlayerPelletArt: {fileID: 21300000, guid: 2ec95b6f0b680ea42a1a0ba6a797e58f, type: 3}
+  EnemyShotArt:
+  - {fileID: 21300000, guid: 119358560c062ec49a379fd518422003, type: 3}
+  - {fileID: 21300000, guid: fbefda385d611a84e86ca56bcc332822, type: 3}
+  - {fileID: 21300000, guid: baf35190d27fcb5469cef52c3bafca08, type: 3}
+  MuzzleFlashFx: {fileID: 11400000, guid: 67ab99b67e790f644aac13c89dc27497, type: 2}
+  ImpactFx: {fileID: 11400000, guid: 56a0c7d969bf5ed4b8dbf3bb320a5ea5, type: 2}
+  ExplosionFx: {fileID: 11400000, guid: 61210b3632b579a4e8390b4f2e085ed8, type: 2}
   Telegraph: {r: 1, g: 0.29, b: 0.11, a: 1}
   HitFlash: {r: 1, g: 1, b: 1, a: 1}

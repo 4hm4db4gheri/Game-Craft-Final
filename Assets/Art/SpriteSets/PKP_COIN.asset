@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28821693a4694649ae006f66323edd4, type: 3}
+  m_Name: PKP_COIN
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSet
+  FramesPerSecond: 10
+  States:
+  - State: spin
+    Frames:
+    - {fileID: -5237604621595263387, guid: 3c56f0237786c114fb621535b9d39677, type: 3}
+    - {fileID: 5676242692151327255, guid: 3c56f0237786c114fb621535b9d39677, type: 3}
+    - {fileID: -4716786037886230195, guid: 3c56f0237786c114fb621535b9d39677, type: 3}
+    - {fileID: -8476717977871798787, guid: 3c56f0237786c114fb621535b9d39677, type: 3}
+    - {fileID: -6425778782170815685, guid: 3c56f0237786c114fb621535b9d39677, type: 3}
+    - {fileID: 4263158367856297178, guid: 3c56f0237786c114fb621535b9d39677, type: 3}
+    Loop: 1

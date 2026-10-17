@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28821693a4694649ae006f66323edd4, type: 3}
+  m_Name: BOS_B2
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSet
+  FramesPerSecond: 10
+  States:
+  - State: blast
+    Frames:
+    - {fileID: 21300000, guid: 6ab441d896144ca44955d487c28c5bf0, type: 3}
+    Loop: 0
+  - State: burst
+    Frames:
+    - {fileID: 21300000, guid: 79c94e809b448284e8a290c4a2297a97, type: 3}
+    Loop: 0
+  - State: death
+    Frames:
+    - {fileID: 21300000, guid: a10b4e0a1252bd943bd24e83fa8d63dc, type: 3}
+    Loop: 0
+  - State: idle
+    Frames:
+    - {fileID: 21300000, guid: a3c0540df0d2a764ba22ebefdef0cdca, type: 3}
+    Loop: 1
+  - State: move
+    Frames:
+    - {fileID: 21300000, guid: ddbbca2bb7956e64b983684b4c44db52, type: 3}
+    Loop: 1
+  - State: stunned
+    Frames:
+    - {fileID: 21300000, guid: 084da83b72f135d4cbe39ef78b1e1c5e, type: 3}
+    Loop: 0
+  - State: windup_blast
+    Frames:
+    - {fileID: 21300000, guid: a47be9cf463a5ed499c814ea3ca857cb, type: 3}
+    Loop: 0
+  - State: windup_burst
+    Frames:
+    - {fileID: 21300000, guid: f8ef064bfe9b2254cb91f15b6d4141e6, type: 3}
+    Loop: 0

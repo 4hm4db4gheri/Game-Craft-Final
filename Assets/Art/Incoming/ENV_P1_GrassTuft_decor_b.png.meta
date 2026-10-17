@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: da44c601e1deb224ba307e2a9d8425c5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2331518704466878942
+    second: ENV_P1_GrassTuft_decor_b_0
+  - first:
+      213: 6373792240985400126
+    second: ENV_P1_GrassTuft_decor_b_1
+  - first:
+      213: 3673591891085236961
+    second: ENV_P1_GrassTuft_decor_b_2
+  - first:
+      213: -528038767508104752
+    second: ENV_P1_GrassTuft_decor_b_3
+  - first:
+      213: 3778040944294748166
+    second: ENV_P1_GrassTuft_decor_b_4
+  - first:
+      213: 1194044806099449120
+    second: ENV_P1_GrassTuft_decor_b_5
+  - first:
+      213: -4818425268530079907
+    second: ENV_P1_GrassTuft_decor_b_6
+  - first:
+      213: 2385145298582847213
+    second: ENV_P1_GrassTuft_decor_b_7
+  - first:
+      213: 8624216656947437500
+    second: ENV_P1_GrassTuft_decor_b_8
+  - first:
+      213: 3689444829672268169
+    second: ENV_P1_GrassTuft_decor_b_9
+  - first:
+      213: -2771149795678023525
+    second: ENV_P1_GrassTuft_decor_b_10
+  - first:
+      213: 7201910028676080194
+    second: ENV_P1_GrassTuft_decor_b_11
+  - first:
+      213: -3220656275533954324
+    second: ENV_P1_GrassTuft_decor_b_12
+  - first:
+      213: -2456493156129904257
+    second: ENV_P1_GrassTuft_decor_b_13
+  - first:
+      213: 233464822177194249
+    second: ENV_P1_GrassTuft_decor_b_14
+  - first:
+      213: 7656400486485935346
+    second: ENV_P1_GrassTuft_decor_b_15
+  - first:
+      213: 4801287160063456080
+    second: ENV_P1_GrassTuft_decor_b_16
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 1024
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_0
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 219
+        width: 616
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed16de6a8e73b5020800000000000000
+      internalID: 2331518704466878942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_1
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 214
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e33631cf542447850800000000000000
+      internalID: 6373792240985400126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_2
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 135
+        width: 405
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ea14e58c583bf230800000000000000
+      internalID: 3673591891085236961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_3
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 213
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d95b03e9870ca8f0800000000000000
+      internalID: -528038767508104752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_4
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 214
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 600e19fc83c4e6430800000000000000
+      internalID: 3778040944294748166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_5
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 214
+        width: 14
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0253571cc69129010800000000000000
+      internalID: 1194044806099449120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_6
+      rect:
+        serializedVersion: 2
+        x: 665
+        y: 202
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d579f745fb3812db0800000000000000
+      internalID: -4818425268530079907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_7
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 208
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dee39b3130db91120800000000000000
+      internalID: 2385145298582847213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_8
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 201
+        width: 25
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbfdb5f3b5f5fa770800000000000000
+      internalID: 8624216656947437500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_9
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 201
+        width: 18
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 981640b668a833330800000000000000
+      internalID: 3689444829672268169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_10
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 102
+        width: 179
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b90173961f5ea89d0800000000000000
+      internalID: -2771149795678023525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_11
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 195
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 242af83830352f360800000000000000
+      internalID: 7201910028676080194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_12
+      rect:
+        serializedVersion: 2
+        x: 749
+        y: 172
+        width: 7
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce28a216e2eed43d0800000000000000
+      internalID: -3220656275533954324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_13
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 166
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f79e2b35d78c8edd0800000000000000
+      internalID: -2456493156129904257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_14
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 130
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 901eb61d40f6d3300800000000000000
+      internalID: 233464822177194249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_15
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 130
+        width: 36
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f44f175daff04a60800000000000000
+      internalID: 7656400486485935346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ENV_P1_GrassTuft_decor_b_16
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 130
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 053f938db3991a240800000000000000
+      internalID: 4801287160063456080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

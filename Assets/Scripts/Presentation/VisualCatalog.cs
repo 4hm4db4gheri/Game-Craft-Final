@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Hollow.Data;
+using Hollow.Sim;
 using UnityEngine;
 
 namespace Hollow.Presentation
@@ -45,6 +46,23 @@ namespace Hollow.Presentation
         public ProjectileView EnemyProjectile;
         public CoinView Coin;
         public ArcView Arc;
+
+        [Header("Imported art (Hollow > Art > Apply Incoming Art); empty = placeholder")]
+        public Sprite PlayerBulletArt;
+        public Sprite PlayerPelletArt;
+        /// <summary>Enemy shots per phase: quill (animals), bolt (robots), bullet (humans).</summary>
+        public Sprite[] EnemyShotArt = new Sprite[3];
+        public SpriteSet MuzzleFlashFx;
+        public SpriteSet ImpactFx;
+        public SpriteSet ExplosionFx;
+
+        /// <summary>Art for a shot: pellets for weapons with falloff (shotguns), the phase's enemy shot otherwise.</summary>
+        public Sprite ProjectileArt(ProjectileState p, int phase)
+        {
+            if (p.Owner != ProjectileOwner.Enemy) return p.FalloffAtMaxRange < 1f && PlayerPelletArt != null ? PlayerPelletArt : PlayerBulletArt;
+            int i = Mathf.Clamp(phase - 1, 0, 2);
+            return EnemyShotArt != null && EnemyShotArt.Length > i ? EnemyShotArt[i] : null;
+        }
 
         [Header("Reserved readability colours (D14)")]
         public Color Telegraph = new(1f, 0.29f, 0.11f, 1f);

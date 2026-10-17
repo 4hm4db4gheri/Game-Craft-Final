@@ -12,6 +12,14 @@ namespace Hollow.Presentation
         float startTime;
 
         public bool HasArt => set != null && target != null;
+        public SpriteSet Set => set;
+
+        /// <summary>Switches to another look (the Operator in phase two); keeps the current state.</summary>
+        public void UseSet(SpriteSet other)
+        {
+            if (other == null || other == set) return;
+            set = other;
+        }
 
         public void SetState(string state)
         {

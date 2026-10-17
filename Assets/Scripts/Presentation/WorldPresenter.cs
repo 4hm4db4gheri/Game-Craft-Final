@@ -87,7 +87,7 @@ namespace Hollow.Presentation
             {
                 var pool = p.Owner == ProjectileOwner.Enemy ? enemyShots : playerShots;
                 var v = projectiles.GetOrCreate(p.Id, pool, out bool created);
-                if (created) v.Begin(p, ProjectileColor(p), MuzzleOf(w, p));
+                if (created) v.Begin(p, ProjectileColor(p), MuzzleOf(w, p), catalog.ProjectileArt(p, w.Phase));
                 v.Sync(p, alpha);
             }
             projectiles.ReleaseUnseen();

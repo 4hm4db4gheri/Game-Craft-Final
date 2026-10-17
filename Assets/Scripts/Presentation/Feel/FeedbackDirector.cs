@@ -42,13 +42,16 @@ namespace Hollow.Presentation
         /// <summary>Per corpse slot: death launch from → to with a turn, then hold, then fade (v0.19 §19).</summary>
         readonly List<(float Born, Vector3 From, Vector3 To, float Rot0, float Rot1, Color Color)> corpseMotion = new();
         readonly List<(SpriteRenderer R, float Until, float Length)> tracers = new();
+        /// <summary>Imported effect strips (muzzle flash, impact, explosion) playing once.</summary>
+        readonly List<(SpriteRenderer R, SpriteSet Set, float Born)> fxPlays = new();
+        int nextFx;
         int nextTracer;
         readonly List<(TextMeshPro T, float Born, Vector3 From)> numbers = new();
         int nextNumber;
         float numberTokens;
         float lastShotShake = -1f;
         readonly Dictionary<int, (float Sum, Vector2 Pos)> pendingNumbers = new();
-        readonly Dictionary<EnemyId, (Sprite Sprite, Color Color, Vector2 Scale)> corpseLooks = new();
+        readonly Dictionary<EnemyId, (Sprite Sprite, Color Color, Vector2 Scale, bool Art)> corpseLooks = new();
         FeedbackData data;
 
         /// <summary>Player settings (§11): shake 0–1, damage numbers on/off, effect budget 0–2.</summary>
@@ -127,6 +130,7 @@ namespace Hollow.Presentation
             foreach (var d in decals) d.enabled = false;
             foreach (var c in corpses) c.enabled = false;
             foreach (var t in tracers) t.R.enabled = false;
+            foreach (var x in fxPlays) x.R.enabled = false;
             foreach (var n in numbers) n.T.enabled = false;
             sparks.Clear();
         }
@@ -146,7 +150,8 @@ namespace Hollow.Presentation
                         Color c = wv != null ? wv.ProjectileColor : Color.white;
                         Vector2 muzzle = playerView.Muzzle;
                         bool spread = ev.Value > 1;
-                        Flash(muzzle, spread ? 0.75f : 0.5f, c, f.MuzzleFlashTime);
+                        if (!Fx(presenter.Catalog.MuzzleFlashFx, muzzle + ev.Direction.normalized * 0.2f, spread ? 0.75f : 0.55f, ev.Direction))
+                            Flash(muzzle, spread ? 0.75f : 0.5f, c, f.MuzzleFlashTime);
                         Tracer(muzzle, ev.Direction, c, f);
                         Burst(muzzle, ev.Direction, spread ? 50f : 25f, 3, c, 5f);
                         if (Time.unscaledTime - lastShotShake >= f.ShotShakeMinInterval)
@@ -170,7 +175,7 @@ namespace Hollow.Presentation
                     if (presenter.TryProjectileColor(ev.EntityId, out var pc))
                     {
                         Burst(ev.Position, -ev.Direction, 70f, f.ImpactSparks, pc, 4f);
-                        Flash(ev.Position, 0.35f, pc, 0.06f);
+                        if (!Fx(presenter.Catalog.ImpactFx, ev.Position, 0.5f, -ev.Direction)) Flash(ev.Position, 0.35f, pc, 0.06f);
                     }
                     break;
 
@@ -200,7 +205,8 @@ namespace Hollow.Presentation
 
                 case SimEventType.Explosion:
                     Burst(ev.Position, Vector2.right, 360f, f.ExplosionSparks, new Color(1f, 0.7f, 0.35f), ev.Value * 4f);
-                    Flash(ev.Position, ev.Value * 1.6f, new Color(1f, 0.85f, 0.6f), 0.12f);
+                    if (!Fx(presenter.Catalog.ExplosionFx, ev.Position, ev.Value * 2.2f, Vector2.right))
+                        Flash(ev.Position, ev.Value * 1.6f, new Color(1f, 0.85f, 0.6f), 0.12f);
                     Decal(ev.Position, ev.Value * 1.5f, Scorch);
                     Shake(ev.EntityId == BossState.EntityId ? f.ShakeOnBossImpact : f.ShakeOnExplosion, Vector2.zero);
                     break;
@@ -282,6 +288,37 @@ namespace Hollow.Presentation
             flashes[i] = (r, Time.time + length, length);
         }
 
+        /// <summary>Plays an imported effect strip once at a size in units; false when there is no art for it.</summary>
+        bool Fx(SpriteSet set, Vector2 at, float size, Vector2 dir)
+        {
+            var state = set != null ? set.Resolve("burst") : null;
+            if (state == null) return false;
+            const int Pool = 24;
+            if (fxPlays.Count < Pool)
+            {
+                var go = new GameObject("Fx");
+                go.transform.SetParent(transform, false);
+                var added = go.AddComponent<SpriteRenderer>();
+                added.sharedMaterial = unlitMaterial;
+                added.sortingLayerID = SortingLayers.Effects;
+                added.sortingOrder = 20;
+                fxPlays.Add((added, null, 0f));
+            }
+            int i = nextFx;
+            nextFx = (nextFx + 1) % Pool;
+            var r = fxPlays[i].R;
+            var first = state.Frames[0];
+            r.sprite = first;
+            r.color = Color.white;
+            float width = Mathf.Max(0.01f, first.bounds.size.x);
+            r.transform.position = new Vector3(at.x, at.y, 0);
+            r.transform.rotation = Quaternion.Euler(0, 0, dir.sqrMagnitude > 1e-4f ? Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg : 0f);
+            r.transform.localScale = new Vector3(size / width, size / width, 1);
+            r.enabled = true;
+            fxPlays[i] = (r, set, Time.time);
+            return true;
+        }
+
         /// <summary>A short streak from the muzzle along the shot (v0.19 §19), separate from the projectile itself.</summary>
         void Tracer(Vector2 from, Vector2 dir, Color color, FeedbackData f)
         {
@@ -330,7 +367,10 @@ namespace Hollow.Presentation
             {
                 var prefab = presenter.Catalog.EnemyPrefab(type);
                 var main = prefab != null ? prefab.MainRenderer : null;
-                look = main != null ? (main.sprite, main.color, (Vector2)main.transform.lossyScale) : (null, Color.clear, Vector2.one);
+                var anim = prefab != null ? prefab.GetComponent<SpriteSetAnimator>() : null;
+                var death = anim != null && anim.Set != null ? anim.Set.Find("death") : null;
+                look = death != null && main != null ? (death.Frames[^1], Color.white, (Vector2)main.transform.lossyScale, true)
+                    : main != null ? (main.sprite, main.color, (Vector2)main.transform.lossyScale, false) : (null, Color.clear, Vector2.one, false);
                 corpseLooks[type] = look;
             }
             if (look.Sprite == null) return;
@@ -338,17 +378,21 @@ namespace Hollow.Presentation
             var r = corpses[i];
             nextCorpse = (nextCorpse + 1) % corpses.Count;
             r.sprite = look.Sprite;
-            var color = new Color(look.Color.r * 0.45f, look.Color.g * 0.45f, look.Color.b * 0.45f, 1f);
+            // Drawn death art already lies on the ground: slightly darker, facing back along the hit, no turn.
+            float shade = look.Art ? 0.8f : 0.45f;
+            var color = new Color(look.Color.r * shade, look.Color.g * shade, look.Color.b * shade, 1f);
             r.color = color;
+            r.flipX = look.Art && dir.x > 0;
             float side = dir.x < 0 ? 1f : -1f;
             // Death launch (v0.19 §19): visual only, thrown along the killing hit; it blocks nothing and deals no damage.
             Vector2 push = dir.sqrMagnitude > 1e-4f ? dir.normalized * f.DeathLaunchDistance : Vector2.zero;
             var from = new Vector3(at.x, at.y + 0.1f, 0);
             var to = from + (Vector3)push;
-            float rot1 = 90f * side + Random.Range(-12f, 12f); // lying on its side
+            float rot1 = look.Art ? 0f : 90f * side + Random.Range(-12f, 12f); // lying on its side
             r.transform.position = from;
             r.transform.rotation = Quaternion.identity;
-            r.transform.localScale = new Vector3(look.Scale.x * 0.8f, look.Scale.y * 0.8f, 1);
+            float corpseScale = look.Art ? 1f : 0.8f;
+            r.transform.localScale = new Vector3(look.Scale.x * corpseScale, look.Scale.y * corpseScale, 1);
             r.enabled = true;
             corpseMotion[i] = (Time.time, from, to, 0f, rot1, color);
         }
@@ -457,6 +501,15 @@ namespace Hollow.Presentation
                 var c = r.color;
                 c.a = 0.9f * (left / length);
                 r.color = c;
+            }
+            for (int i = 0; i < fxPlays.Count; i++)
+            {
+                var (r, set, born) = fxPlays[i];
+                if (!r.enabled || set == null) continue;
+                var frames = set.Resolve("burst").Frames;
+                int frame = (int)((now - born) * set.FramesPerSecond);
+                if (frame >= frames.Count) { r.enabled = false; continue; }
+                r.sprite = frames[frame];
             }
             if (data != null) AnimateCorpses(now, data);
             float life = data != null ? data.DamageNumberLifetime : 0.6f;

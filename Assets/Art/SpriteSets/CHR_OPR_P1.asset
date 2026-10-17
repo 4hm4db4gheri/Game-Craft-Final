@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28821693a4694649ae006f66323edd4, type: 3}
+  m_Name: CHR_OPR_P1
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSet
+  FramesPerSecond: 10
+  States:
+  - State: attack
+    Frames:
+    - {fileID: 21300000, guid: 43d298955cd940a46b76e92502e32553, type: 3}
+    Loop: 0
+  - State: death
+    Frames:
+    - {fileID: 21300000, guid: 62d34a0619034b64186a9392bd39b51f, type: 3}
+    Loop: 0
+  - State: hit
+    Frames:
+    - {fileID: 21300000, guid: a342865d484000b4b85e2c670589817d, type: 3}
+    Loop: 0
+  - State: idle
+    Frames:
+    - {fileID: 21300000, guid: ae6107a09bffb324189dff5acec1ad44, type: 3}
+    Loop: 1
+  - State: move
+    Frames:
+    - {fileID: 21300000, guid: 4a93e800835e8c745b0aad44d29d6e77, type: 3}
+    Loop: 1

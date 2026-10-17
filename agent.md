@@ -29,11 +29,12 @@
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
 | `Assets/Resources/Localization/fa.json` | همه‌ی متن‌های بازیکن به فارسی (کلید ← متن)، خوانده با `Hollow.UI.Loc` (`Loc.T`/`Loc.F`/`Loc.Weapon`…). متن جدید = کلید جدید در همین فایل؛ تست `LocalizationTests` کلیدهای کد را چک می‌کند |
-| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ حداکثر ۴ ثانیه). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
+| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ حداکثر ۴ ثانیه). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
+
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
-| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
+| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
 | `Assets/Tests/EditMode/` | تست‌های NUnit (۴۳۳ تست، همه پاس) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
@@ -63,7 +64,7 @@
 
 - **GDD v0.19**: همه‌ی بخش‌ها جز موبایل (F13، فقط اگر وقت بماند) انجام شد. با کاربر/تیم: گوش دادن به صداهای سنتزشده‌ی دشمن‌ها، ضبط صداپیشگی طبق `docs/VOICE_LINES.md`، بازبینی متن فارسی و فیلم‌نامه توسط آرتیست، playtest انسانی.
 
-- آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است و زمین، prop، decor و کیوسک فروشگاه را هم پوشش می‌دهد (T16).
+- آرت موج ۱ اعمال شد. هنوز آرت ندارند (placeholder می‌مانند): ۱۸ نوع دشمن (همه جز A1، A2، R1، R2، H2)، باس ۳، propها و decorهای فاز ۲ و propهای Stumps/LogPile/Excavator/LightPost، سلاح‌های BAT/IRF/MSG/HAM/ERF/ESG/EBL، آیتم‌ها جز نارنجک. از آرت موج ۱ هنوز استفاده نمی‌شود: آیکن‌ها (`ICO_*`)، دکمه/پنل/اسلات UI، `PKP_GRN` (رابط با کد ساخته شده و جای آیکن ندارد).
 ---
 
 ## تاریخچه‌ی کارها
@@ -219,3 +220,9 @@
 
 ### 2026-10-17 — کوتاه کردن راهنماها
 - به خواست کاربر راهنماهای چند سلاح، خشاب خالی، جان کم و سکه برای ارتقا حذف شدند. متن اپراتور زخمی حالا می‌گوید خود بازیکن هم در فروشگاه درمان می‌شود. زمان: حداکثر ۴ ثانیه (قبلاً ۷)، حداقل ۰.۸، فاصله‌ی بین دو راهنما ۱.۲ ثانیه. ۴۳۳ تست پاس.
+
+### 2026-10-17 — اعمال آرت موج ۱
+- کاربر پوشه‌ی `Assets/Art Images` (۱۰۴ PNG طبق brief) را اضافه کرد. فایل‌ها به `Assets/Art/Incoming` منتقل شدند، `HANDOFF_wave1.md` و `ASSET_CARDS` به `docs/art/`، و پوشه‌ی `Art Images` حذف شد. سپس `Apply Incoming Art` اجرا شد (۴۱ مجموعه).
+- importer گسترش یافت: حاشیه‌ی آرنا (`ENV_P<n>_BorderH/V_prop`) با `ArenaTools.PlaceBorders` در `ArenaAuthoring.Borders` هر فاز (فقط نمایشی، Walls زیرشان)؛ فاز ۲ تا آمدن آرت خودش زمین و حاشیه‌ی فاز ۳ را می‌گیرد (`StandIn`)؛ decor بدون آرت در فاز دارای زمین آرت پنهان می‌شود؛ گلوله‌ها (`VisualCatalog.PlayerBulletArt/PlayerPelletArt/EnemyShotArt` بر اساس فاز)؛ جلوه‌های muzzle/impact/explosion به‌صورت strip در `FeedbackDirector.Fx`؛ جسد از فریم `death`؛ رتیکل؛ ظاهر فاز ۲ اپراتور (`CompanionView.phaseTwoSet`)؛ حالت `hit` بازیکن و اپراتور.
+- در Play mode فاز ۱ و ۲ و ۳، دو باس، شلیک، جسد و جلوه‌ها دیده شد. اسکرین‌شات: `docs/screenshots/ArtWave1_Phase1.png`، `ArtWave1_Phase3.png`. ۴۳۳ تست پاس.
+- نکته‌ی تست: اجرای تست‌ها با `unity command run_tests --mode EditMode --timeout 600` (بدون `--mode` صفر تست اجرا می‌شود). `eval` طولانی با خطای timeout ۵ ثانیه برمی‌گردد ولی کارش ادامه پیدا می‌کند؛ نتیجه را در console ببین.
