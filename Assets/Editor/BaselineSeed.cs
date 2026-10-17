@@ -148,7 +148,7 @@ namespace Hollow.EditorTools
             // Animals
             list.Add(Melee(EnemyId.A1_RunnerWolf, Faction.Animals, 30, 8, 3, 2, speed: 2.6f, radius: 0.35f, range: 1.0f, windup: 0.35f, recovery: 0.35f, interval: 1.0f, companion: true));
             list.Add(Ranged(EnemyId.A2_QuillShooter, Faction.Animals, 36, 7, 4, 3, speed: 1.7f, radius: 0.35f, range: 8f, windup: 0.55f, recovery: 0.45f, interval: 1.8f, projSpeed: 8f, burst: 1, burstGap: 0f));
-            list.Add(Charger(EnemyId.A3_ChargingBoar, Faction.Animals, 75, 14, 5, 4, speed: 2.1f, radius: 0.55f, trigger: 9f, telegraph: 0.8f, chargeSpeed: 8f, chargeTime: 0.6f, recovery: 1.2f, interval: 3.2f));
+            list.Add(Charger(EnemyId.A3_ChargingBoar, Faction.Animals, 75, 14, 5, 4, speed: 2.1f, radius: 0.55f, trigger: 9f, telegraph: 0.8f, chargeSpeed: 8f, recovery: 1.2f, interval: 3.2f));
             var tortoise = Melee(EnemyId.A4_ArmoredTortoise, Faction.Animals, 100, 10, 6, 5, speed: 1.3f, radius: 0.6f, range: 1.2f, windup: 0.55f, recovery: 0.65f, interval: 1.5f, companion: true);
             tortoise.FrontalArmor = true; tortoise.KnockbackResistance = 0.6f; tortoise.TurnRateDeg = 90; list.Add(tortoise);
             var howler = Base(EnemyId.A5_HowlingWolf, Faction.Animals, EnemyRole.Support, 45, 0, 5, 4, speed: 1.8f, radius: 0.35f);
@@ -164,7 +164,7 @@ namespace Hollow.EditorTools
             // Robots
             list.Add(Machine(Melee(EnemyId.R1_Crawler, Faction.Robots, 55, 12, 4, 3, speed: 2.8f, radius: 0.4f, range: 1.1f, windup: 0.35f, recovery: 0.35f, interval: 1f, companion: true)));
             list.Add(Machine(Ranged(EnemyId.R2_Shooter, Faction.Robots, 65, 10, 5, 4, speed: 2f, radius: 0.4f, range: 10f, windup: 0.5f, recovery: 0.5f, interval: 1.6f, projSpeed: 9f, burst: 1, burstGap: 0f)));
-            list.Add(Machine(Charger(EnemyId.R3_SawCharger, Faction.Robots, 105, 18, 6, 5, speed: 2.3f, radius: 0.45f, trigger: 10f, telegraph: 0.7f, chargeSpeed: 8f, chargeTime: 0.6f, recovery: 1f, interval: 2.8f)));
+            list.Add(Machine(Charger(EnemyId.R3_SawCharger, Faction.Robots, 105, 18, 6, 5, speed: 2.3f, radius: 0.45f, trigger: 10f, telegraph: 0.7f, chargeSpeed: 8f, recovery: 1f, interval: 2.8f)));
             var shieldBot = Machine(Melee(EnemyId.R4_ShieldRobot, Faction.Robots, 150, 14, 7, 6, speed: 1.7f, radius: 0.6f, range: 1.3f, windup: 0.5f, recovery: 0.6f, interval: 1.6f, companion: true));
             shieldBot.FrontalArmor = true; shieldBot.KnockbackResistance = 0.6f; shieldBot.TurnRateDeg = 100; list.Add(shieldBot);
             var repair = Machine(Base(EnemyId.R5_Repair, Faction.Robots, EnemyRole.Support, 75, 0, 6, 5, speed: 1.8f, radius: 0.4f));
@@ -180,7 +180,7 @@ namespace Hollow.EditorTools
             // Humans
             list.Add(Melee(EnemyId.H1_BatonGuard, Faction.Humans, 85, 14, 6, 4, speed: 3f, radius: 0.35f, range: 1.1f, windup: 0.35f, recovery: 0.35f, interval: 0.95f, companion: true));
             list.Add(Ranged(EnemyId.H2_RifleGuard, Faction.Humans, 90, 12, 6, 5, speed: 2.2f, radius: 0.35f, range: 11f, windup: 0.55f, recovery: 0.75f, interval: 1.8f, projSpeed: 10f, burst: 2, burstGap: 0.18f));
-            list.Add(Charger(EnemyId.H3_FastAssaulter, Faction.Humans, 140, 22, 7, 6, speed: 3.4f, radius: 0.35f, trigger: 8f, telegraph: 0.65f, chargeSpeed: 7.5f, chargeTime: 0.6f, recovery: 1f, interval: 2.7f));
+            list.Add(Charger(EnemyId.H3_FastAssaulter, Faction.Humans, 140, 22, 7, 6, speed: 3.4f, radius: 0.35f, trigger: 8f, telegraph: 0.65f, chargeSpeed: 7.5f, recovery: 1f, interval: 2.7f));
             var shieldGuard = Melee(EnemyId.H4_ShieldGuard, Faction.Humans, 200, 16, 8, 7, speed: 1.9f, radius: 0.55f, range: 1.3f, windup: 0.5f, recovery: 0.6f, interval: 1.5f, companion: true);
             shieldGuard.FrontalArmor = true; shieldGuard.KnockbackResistance = 0.6f; shieldGuard.TurnRateDeg = 120; list.Add(shieldGuard);
             var medic = Base(EnemyId.H5_Medic, Faction.Humans, EnemyRole.Support, 100, 0, 7, 6, speed: 2f, radius: 0.35f);
@@ -221,10 +221,10 @@ namespace Hollow.EditorTools
         }
 
         static EnemyData Charger(EnemyId id, Faction f, float hp, float dmg, int xp, int coins, float speed, float radius,
-            float trigger, float telegraph, float chargeSpeed, float chargeTime, float recovery, float interval)
+            float trigger, float telegraph, float chargeSpeed, float recovery, float interval)
         {
             var e = Base(id, f, EnemyRole.Charger, hp, dmg, xp, coins, speed, radius);
-            e.AttackRange = trigger; e.AttackWindup = telegraph; e.ChargeSpeed = chargeSpeed; e.ChargeDuration = chargeTime;
+            e.AttackRange = trigger; e.AttackWindup = telegraph; e.ChargeSpeed = chargeSpeed;
             e.AttackRecovery = recovery; e.AttackInterval = interval; e.KnockbackResistance = 0.4f;
             return e;
         }
@@ -312,7 +312,7 @@ namespace Hollow.EditorTools
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.A2_QuillShooter, 4), (EnemyId.A5_HowlingWolf, 2), (EnemyId.A6_ExplosiveBeetle, 4)) },
                     },
                     MoveSpeed = 2.4f, BodyRadius = 1.4f, AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
-                    ChargeTelegraph = 0.8f, ChargeSpeed = 9, ChargeDuration = 0.7f, ChargeRecovery = 1.2f,
+                    ChargeTelegraph = 0.8f, ChargeSpeed = 9, ChargeRecovery = 1.2f,
                     StrikeWindup = 0.9f, StrikeRadius = 2.8f, StrikeRecovery = 1.3f, AddSpawnGap = 0.5f,
                 },
                 new()

@@ -26,6 +26,7 @@ namespace Hollow.Sim
         public int PatternIndex;
         /// <summary>When the current/last attack began; the next starts AttackInterval later at the earliest (v0.19 §12).</summary>
         public long AttackStartTick;
+        public float ChargeLength;
         public Vector2 AttackDir;
         public Vector2 AttackPoint;
         public float ChargeTravelled;
@@ -159,7 +160,7 @@ namespace Hollow.Sim
                     float moved = Vector2.Distance(from, b.Position);
                     b.ChargeTravelled += moved;
                     if (!b.ChargeHit) b.ChargeHit = HitAlongPath(w, b, from, d.Damage);
-                    if (b.ChargeTravelled >= d.ChargeSpeed * d.ChargeDuration || moved < step * 0.5f)
+                    if (b.ChargeTravelled >= b.ChargeLength || moved < step * 0.5f)
                     {
                         b.Ai = BossAi.ChargeRecover; // the punish window
                         b.AiUntilTick = now + w.Ticks(d.ChargeRecovery);
@@ -229,7 +230,8 @@ namespace Hollow.Sim
                     {
                         b.Ai = BossAi.ChargeWindup;
                         b.AiUntilTick = now + w.Ticks(d.ChargeTelegraph);
-                        Telegraph(w, b, TelegraphShape.Lane, d.ChargeSpeed * d.ChargeDuration, d.ChargeTelegraph);
+                        b.ChargeLength = Mathf.Min(Vector2.Distance(b.Position, player) + d.ChargeOvershoot, d.ChargeMaxDistance);
+                        Telegraph(w, b, TelegraphShape.Lane, b.ChargeLength, d.ChargeTelegraph);
                     }
                     else
                     {

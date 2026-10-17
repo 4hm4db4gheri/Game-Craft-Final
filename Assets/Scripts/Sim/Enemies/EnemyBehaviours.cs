@@ -20,7 +20,8 @@ namespace Hollow.Sim
                     float dist = Vector2.Distance(e.Position, target);
                     if (dist <= d.AttackRange && now >= e.NextAttackTick && w.Arena.LineOfSight(e.Position, target))
                     {
-                        BeginWindup(w, e, d, TelegraphShape.Lane, d.ChargeSpeed * d.ChargeDuration);
+                        e.ChargeLength = dist + d.ChargeOvershoot;
+                        BeginWindup(w, e, d, TelegraphShape.Lane, e.ChargeLength);
                         break;
                     }
                     MoveToward(w, e, d, target);
@@ -47,7 +48,7 @@ namespace Hollow.Sim
                     e.ChargeTravelled += moved;
                     if (!e.ChargeHit) TryChargeHit(w, e, d, from);
                     bool blocked = moved < step * 0.5f;
-                    if (e.ChargeTravelled >= d.ChargeSpeed * d.ChargeDuration || blocked)
+                    if (e.ChargeTravelled >= e.ChargeLength || blocked)
                     {
                         e.Ai = EnemyAi.Recover;
                         e.Velocity = Vector2.zero;

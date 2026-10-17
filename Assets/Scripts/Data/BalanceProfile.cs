@@ -147,7 +147,9 @@ namespace Hollow.Data
         [Gdd("v0.19 §9")] public int BurstCount;
         [Gdd("v0.19 §9"), Unit("s")] public float BurstInterval;
         [Gdd("v0.19 §9"), Unit("u/s")] public float ChargeSpeed;
-        [Gdd("v0.19 §9"), Unit("s")] public float ChargeDuration;
+        /// <summary>D63: the charge runs to the target position recorded at the warning plus this far beyond it,
+        /// so it always passes the player (v0.19 "punish after passing"); speed stays the GDD value.</summary>
+        [Placeholder, Unit("u")] public float ChargeOvershoot = 2f;
         [Gdd("v0.19 §9"), Unit("u")] public float ExplosionRadius;
         [Gdd("v0.19 §9"), Unit("s")] public float FuseTime;
         [Gdd("v0.19 §9"), Unit("u")] public float AuraRadius;
@@ -253,7 +255,10 @@ namespace Hollow.Data
 
         [Gdd("§7"), Unit("s")] public float ChargeTelegraph;
         [Gdd("v0.19 §12"), Unit("u/s")] public float ChargeSpeed;
-        [Gdd("v0.19 §12"), Unit("s")] public float ChargeDuration;
+        /// <summary>D63: like regular chargers, the lane reaches past the recorded player position by this much…</summary>
+        [Placeholder, Unit("u")] public float ChargeOvershoot = 2f;
+        /// <summary>…but never longer than this.</summary>
+        [Placeholder, Unit("u")] public float ChargeMaxDistance = 14f;
         [Gdd("§7"), Unit("s")] public float ChargeRecovery;
         [Gdd("§7"), Unit("s")] public float StrikeWindup;
         [Gdd("v0.19 §12"), Unit("u")] public float StrikeRadius;

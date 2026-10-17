@@ -53,6 +53,8 @@ namespace Hollow.Sim
         public int ShareXp;
         public int ShareCoins;
         public float ChargeTravelled;
+        /// <summary>Length of the marked charge lane (target distance at the warning + overshoot).</summary>
+        public float ChargeLength;
         public bool ChargeHit;
 
         public long SpawnTick;

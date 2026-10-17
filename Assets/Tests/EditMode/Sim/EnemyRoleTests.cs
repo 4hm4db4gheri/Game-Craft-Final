@@ -100,6 +100,26 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(EnemyAi.Recover, boar.Ai, "stops after the charge (punish window)");
         }
 
+        [TestCase(EnemyId.A3_ChargingBoar)]
+        [TestCase(EnemyId.R3_SawCharger)]
+        [TestCase(EnemyId.H3_FastAssaulter)]
+        public void ChargeFromFullReachPassesTheMarkedPlayerPosition(EnemyId id)
+        {
+            var sim = Solo();
+            var w = sim.World;
+            w.Player.InvulnerableUntilTick = long.MaxValue;
+            var d = w.Profile.Enemy(id);
+            var charger = EnemySystem.Spawn(w, id, w.Player.Position + new Vector2(d.AttackRange - 0.2f, 0), warning: false);
+            float startX = charger.Position.x, markedX = w.Player.Position.x;
+            for (int t = 0; t < 60 * 3 && charger.Ai != EnemyAi.Windup; t++) sim.Step(PlayerCommand.None);
+            Assert.AreEqual(EnemyAi.Windup, charger.Ai, "lane marked from full reach");
+            w.Player.Position = w.Player.PrevPosition = w.Player.Position + new Vector2(0, 4); // the player steps out of the lane
+            for (int t = 0; t < 60 * 6 && charger.Ai != EnemyAi.Recover; t++) sim.Step(PlayerCommand.None);
+            Assert.AreEqual(EnemyAi.Recover, charger.Ai);
+            Assert.Less(charger.Position.x, markedX - d.ChargeOvershoot * 0.5f, "D63: the charge runs past where the player stood");
+            Assert.Greater(startX - charger.Position.x, d.AttackRange);
+        }
+
         [Test]
         public void SideStepAvoidsTheCharge()
         {

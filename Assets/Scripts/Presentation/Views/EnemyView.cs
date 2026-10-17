@@ -126,7 +126,7 @@ namespace Hollow.Presentation
                     break;
                 case EnemyRole.Charger:
                     telegraphArc.Hide();
-                    Line(pos, e.AttackDir, (d.ChargeSpeed * d.ChargeDuration), e.Radius * 2f, new Color(c.r, c.g, c.b, c.a * 0.6f));
+                    Line(pos, e.AttackDir, e.ChargeLength, e.Radius * 2f, new Color(c.r, c.g, c.b, c.a * 0.6f));
                     break;
                 case EnemyRole.Explosive:
                     telegraphLine.enabled = false;
