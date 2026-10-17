@@ -114,8 +114,7 @@ namespace Hollow.Game
         {
             if (Sim == null) return;
             W.Profile = profile;
-            arena.ApplyGroundVariation(profile.Atmosphere.GroundVariation);
-            arena.ApplyComposition(profile.Atmosphere.ComposedGround, profile.Atmosphere.ContactShadowStrength);
+            ApplyArenaVisuals(profile.Atmosphere);
             if (!W.Completed) atmosphere.SetPhase(profile.Atmosphere, W.Phase, instant: false);
         }
 
@@ -169,15 +168,37 @@ namespace Hollow.Game
 
         void SetWorld(World world)
         {
+            // A save from an earlier layout may place an actor inside a newly authored landmark.
+            if (world.Arena.CircleOverlaps(world.Player.Position, world.Profile.Player.BodyRadius))
+                world.Player.Position = world.Player.PrevPosition = world.Arena.NearestFree(world.Player.Position, world.Profile.Player.BodyRadius);
+            if (world.Companion.Present && world.Arena.CircleOverlaps(world.Companion.Position, world.Profile.Companion.BodyRadius))
+                world.Companion.Position = world.Companion.PrevPosition = world.Arena.NearestFree(world.Companion.Position, world.Profile.Companion.BodyRadius);
+            foreach (var enemy in world.Enemies)
+                if (world.Arena.CircleOverlaps(enemy.Position, enemy.Radius))
+                    enemy.Position = enemy.PrevPosition = world.Arena.NearestFree(enemy.Position, enemy.Radius);
             Sim = new Simulation(world);
             dialogue.SetSpeakerName("Assistant", Loc.T("ai." + world.Player.Ai)); // the chosen AI speaks under its own name
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
-            arena.ApplyGroundVariation(world.Profile.Atmosphere.GroundVariation);
-            arena.ApplyComposition(world.Profile.Atmosphere.ComposedGround, world.Profile.Atmosphere.ContactShadowStrength);
+            ApplyArenaVisuals(world.Profile.Atmosphere);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
             if (world.Completed) audio.StopMusic(0.1f);
             else audio.PlayMusic(world.Phase);
+        }
+
+        void ApplyArenaVisuals(AtmosphereData settings)
+        {
+            try
+            {
+                arena.BuildLandmarks(layout);
+                arena.ApplyGroundVariation(settings.GroundVariation);
+                arena.ApplyComposition(settings.ComposedGround, settings.ContactShadowStrength);
+            }
+            catch (Exception error)
+            {
+                // Cosmetic asset errors must not strand the session in Loading with world input disabled.
+                Debug.LogWarning("[Hollow] Arena artwork could not be applied; continuing gameplay. " + error.Message);
+            }
         }
 
         /// <summary>Dev tools (stress run): replaces player input with a scripted command for each tick.</summary>

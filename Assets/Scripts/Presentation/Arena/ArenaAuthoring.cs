@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Hollow.Sim;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.Rendering;
 
 namespace Hollow.Presentation
 {
@@ -39,7 +40,51 @@ namespace Hollow.Presentation
         public List<SpawnZone> SpawnZones = new();
         readonly SpriteRenderer[] composedFloors = new SpriteRenderer[3];
         readonly List<Sprite> ownedFloorSprites = new();
+        readonly List<Material> ownedGroundMaterials = new();
         readonly List<(SpriteRenderer Renderer, Transform Anchor, Color Color)> foreground = new();
+        bool landmarksBuilt;
+
+        public void BuildLandmarks(ArenaLayout layout)
+        {
+            if (landmarksBuilt || layout.Landmarks == null) return;
+            landmarksBuilt = true;
+            foreach (var spec in layout.Landmarks)
+            {
+                if (spec.Phase < 1 || spec.Phase > Props.Length || Props[spec.Phase - 1] == null) continue;
+                var texture = Resources.Load<Texture2D>("ArenaArt/Landmarks/ENV_P1_" + spec.Id + "_prop");
+                if (texture == null) { Debug.LogWarning("[Hollow] Missing landmark art: " + spec.Id); continue; }
+                var root = new GameObject(spec.Id);
+                root.transform.SetParent(Props[spec.Phase - 1], false);
+                root.transform.position = (Vector3)(layout.Origin + (Vector2)spec.Cell + new Vector2(spec.Footprint.x * 0.5f, 0));
+                root.AddComponent<SortingGroup>();
+                var prop = root.AddComponent<ArenaProp>();
+                prop.Phase = spec.Phase; prop.PropName = spec.Id; prop.Cell = spec.Cell; prop.Footprint = spec.Footprint;
+                // This box matches the simulation grid footprint, not the roof/smoke above it.
+                for (int y = 0; y < spec.Footprint.y; y++)
+                {
+                    int x = 0;
+                    while (x < spec.Footprint.x)
+                    {
+                        if (!spec.Occupies(x, y)) { x++; continue; }
+                        int first = x++;
+                        while (x < spec.Footprint.x && spec.Occupies(x, y)) x++;
+                        var collider = root.AddComponent<BoxCollider2D>();
+                        collider.offset = new Vector2((first + x - spec.Footprint.x) * 0.5f, y + 0.5f);
+                        collider.size = new Vector2(x - first, 1);
+                    }
+                }
+                var c = spec.ArtCrop;
+                var crop = Rect.MinMaxRect(c.x * texture.width, c.y * texture.height,
+                    Mathf.Min(texture.width, (c.x + c.z) * texture.width), Mathf.Min(texture.height, (c.y + c.w) * texture.height));
+                var sprite = Sprite.Create(texture, crop, new Vector2(0.5f, 0), crop.width / spec.ArtWidth, 0, SpriteMeshType.FullRect);
+                ownedFloorSprites.Add(sprite);
+                var body = new GameObject("Body"); body.transform.SetParent(root.transform, false);
+                body.transform.localPosition = Vector3.down * spec.GroundInset;
+                var renderer = body.AddComponent<SpriteRenderer>(); renderer.sprite = sprite;
+                var groundRenderer = Grounds[spec.Phase - 1].GetComponent<TilemapRenderer>();
+                if (groundRenderer.sharedMaterial != null) renderer.sharedMaterial = groundRenderer.sharedMaterial;
+            }
+        }
 
         /// <summary>Full-arena artwork creates connected paths instead of a repeating carpet of tiles.</summary>
         public void ApplyComposition(bool enabled, float shadowStrength)
@@ -65,6 +110,15 @@ namespace Hollow.Presentation
                         var renderer = go.AddComponent<SpriteRenderer>();
                         renderer.sprite = sprite;
                         if (tiles.sharedMaterial != null) renderer.sharedMaterial = tiles.sharedMaterial;
+                        var template = Resources.Load<Material>("ArenaArt/DetailedGround");
+                        if (template != null && template.shader.isSupported)
+                        {
+                            var material = new Material(template);
+                            var detail = Resources.Load<Texture2D>("ArenaArt/Detail" + asset);
+                            if (detail != null) material.SetTexture("_DetailTex", detail);
+                            renderer.sharedMaterial = material;
+                            ownedGroundMaterials.Add(material);
+                        }
                         renderer.sortingLayerID = tiles.sortingLayerID;
                         renderer.sortingOrder = tiles.sortingOrder;
                         renderer.color = i == 0 ? new Color(0.88f, 0.9f, 0.87f) : i == 2 ? new Color(0.87f, 0.88f, 0.9f) : Color.white;
@@ -123,15 +177,24 @@ namespace Hollow.Presentation
             foreach (var old in body.GetComponentsInChildren<SpriteRenderer>(true))
             {
                 if (material == null) material = old.sharedMaterial;
-                old.enabled = false;
             }
+            crop = ImportedAtlasRect(crop, atlas.width, atlas.height);
             var sprite = Sprite.Create(atlas, crop, new Vector2(0.5f, 0), crop.width / width, 0, SpriteMeshType.FullRect);
+            foreach (var old in body.GetComponentsInChildren<SpriteRenderer>(true)) old.enabled = false;
             ownedFloorSprites.Add(sprite);
             var go = new GameObject("RefinedProp");
             go.transform.SetParent(body, false);
             var renderer = go.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             if (material != null) renderer.sharedMaterial = material;
+        }
+
+        /// <summary>Unity may downscale the atlas for quality/platform settings. Keep crops in source coordinates.</summary>
+        public static Rect ImportedAtlasRect(Rect source, int width, int height)
+        {
+            float sx = width / 2172f, sy = height / 724f;
+            return Rect.MinMaxRect(Mathf.Clamp(source.xMin * sx, 0, width), Mathf.Clamp(source.yMin * sy, 0, height),
+                Mathf.Clamp(source.xMax * sx, 0, width), Mathf.Clamp(source.yMax * sy, 0, height));
         }
 
         /// <summary>Keep the depth overlap while revealing the player behind a tall foreground prop.</summary>
@@ -155,6 +218,7 @@ namespace Hollow.Presentation
         void OnDestroy()
         {
             foreach (var sprite in ownedFloorSprites) if (sprite != null) Destroy(sprite);
+            foreach (var material in ownedGroundMaterials) if (material != null) Destroy(material);
         }
 
         /// <summary>Shows the ground, decor, props, border and obstacle layer of the given phase only.</summary>

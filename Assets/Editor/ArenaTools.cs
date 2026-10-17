@@ -527,6 +527,9 @@ namespace Hollow.EditorTools
                 SpawnZones = new List<SpawnZone>(a.SpawnZones),
             };
             foreach (var shop in a.AllShops()) layout.ShopPositions.Add(shop.position);
+            // Runtime set pieces are authored in the layout file; preserve them when rebaking scene props.
+            if (File.Exists(LayoutPath))
+                layout.Landmarks = ArenaLayoutStore.FromJson(File.ReadAllText(LayoutPath)).Landmarks ?? new List<ArenaLandmark>();
             CollectCells(a.Walls, layout, layout.BaseBlocked);
 
             // Every service station is solid in every phase.
