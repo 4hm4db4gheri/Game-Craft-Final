@@ -29,7 +29,11 @@ namespace Hollow.Presentation
         WeaponVisual shownWeapon;
         SpriteSetAnimator anim;
 
-        void Awake() => anim = GetComponent<SpriteSetAnimator>();
+        void Awake()
+        {
+            anim = GetComponent<SpriteSetAnimator>();
+            if (anim != null) anim.StepMotion = false; // the drone hovers with its own bob
+        }
 
         /// <summary>Tip of the held weapon in world space (muzzle flash position).</summary>
         public Vector2 Muzzle
