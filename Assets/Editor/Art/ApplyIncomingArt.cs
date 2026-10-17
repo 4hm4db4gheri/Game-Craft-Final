@@ -142,6 +142,7 @@ namespace Hollow.EditorTools
                                 wv.Color = Color.white;
                                 wv.Size = held[0].bounds.size;
                                 wv.PivotAtGrip = true;
+                                wv.MuzzleLocal = BarrelTip(held[0]);
                                 EditorUtility.SetDirty(catalog);
                                 applied++;
                             }
@@ -191,6 +192,28 @@ namespace Hollow.EditorTools
                     finally { PrefabUtility.UnloadPrefabContents(root); }
                 }
             }
+        }
+
+        /// <summary>
+        /// Where the drawn barrel ends: the rightmost opaque column of the sprite (weapons point right), at the
+        /// middle of its opaque pixels, in units from the pivot. AI canvases leave empty space past the barrel.
+        /// </summary>
+        static Vector2 BarrelTip(Sprite sprite)
+        {
+            var tex = sprite.texture;
+            var r = sprite.rect;
+            var px = tex.GetPixels32();
+            int w = tex.width;
+            for (int x = (int)r.xMax - 1; x >= (int)r.xMin; x--)
+            {
+                int sum = 0, count = 0;
+                for (int y = (int)r.yMin; y < (int)r.yMax; y++)
+                    if (px[y * w + x].a > 128) { sum += y; count++; }
+                if (count == 0) continue;
+                float tipX = x + 1 - r.xMin, tipY = sum / (float)count - r.yMin;
+                return new Vector2(tipX - sprite.pivot.x, tipY - sprite.pivot.y) / sprite.pixelsPerUnit;
+            }
+            return Vector2.zero;
         }
 
         static void SetEnemyShot(VisualCatalog catalog, int phaseIndex, Sprite sprite)

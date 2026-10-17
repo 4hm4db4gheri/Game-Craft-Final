@@ -30,6 +30,8 @@ namespace Hollow.Presentation
         public Color ProjectileColor = Color.white;
         /// <summary>Imported art has its pivot at the grip; placeholders are centred.</summary>
         public bool PivotAtGrip;
+        /// <summary>Barrel tip in the sprite's own units from its pivot, measured from imported art; zero = unknown.</summary>
+        public Vector2 MuzzleLocal;
     }
 
     /// <summary>

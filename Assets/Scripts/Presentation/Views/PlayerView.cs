@@ -36,6 +36,12 @@ namespace Hollow.Presentation
         {
             get
             {
+                if (shownWeapon != null && shownWeapon.MuzzleLocal != Vector2.zero && weaponRenderer != null)
+                {
+                    var m = shownWeapon.MuzzleLocal;
+                    if (weaponRenderer.flipY) m.y = -m.y;
+                    return weaponRenderer.transform.TransformPoint(m);
+                }
                 float length = shownWeapon != null ? shownWeapon.Size.x * (shownWeapon.PivotAtGrip ? 0.75f : 1f) : 0.45f;
                 return weaponPivot.position + weaponPivot.right * (0.2f + length);
             }

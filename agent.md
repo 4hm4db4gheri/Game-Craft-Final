@@ -226,3 +226,8 @@
 - importer گسترش یافت: حاشیه‌ی آرنا (`ENV_P<n>_BorderH/V_prop`) با `ArenaTools.PlaceBorders` در `ArenaAuthoring.Borders` هر فاز (فقط نمایشی، Walls زیرشان)؛ فاز ۲ تا آمدن آرت خودش زمین و حاشیه‌ی فاز ۳ را می‌گیرد (`StandIn`)؛ decor بدون آرت در فاز دارای زمین آرت پنهان می‌شود؛ گلوله‌ها (`VisualCatalog.PlayerBulletArt/PlayerPelletArt/EnemyShotArt` بر اساس فاز)؛ جلوه‌های muzzle/impact/explosion به‌صورت strip در `FeedbackDirector.Fx`؛ جسد از فریم `death`؛ رتیکل؛ ظاهر فاز ۲ اپراتور (`CompanionView.phaseTwoSet`)؛ حالت `hit` بازیکن و اپراتور.
 - در Play mode فاز ۱ و ۲ و ۳، دو باس، شلیک، جسد و جلوه‌ها دیده شد. اسکرین‌شات: `docs/screenshots/ArtWave1_Phase1.png`، `ArtWave1_Phase3.png`. ۴۳۳ تست پاس.
 - نکته‌ی تست: اجرای تست‌ها با `unity command run_tests --mode EditMode --timeout 600` (بدون `--mode` صفر تست اجرا می‌شود). `eval` طولانی با خطای timeout ۵ ثانیه برمی‌گردد ولی کارش ادامه پیدا می‌کند؛ نتیجه را در console ببین.
+
+### 2026-10-17 — رفع باگ: فاصله‌ی گلوله از سر تفنگ
+- گزارش کاربر: گلوله‌ها دورتر از سر تفنگ ظاهر می‌شوند. علت: `PlayerView.Muzzle` سر لوله را لبه‌ی راست canvas فرض می‌کرد (۷۵٪ عرض از دسته)، ولی در آرت AI تفنگ فقط تا حدود ۵۸–۷۰٪ عرض canvas کشیده شده؛ فاصله ۰.۴۵ تا ۰.۷۷ واحد بود.
+- رفع: `ApplyIncomingArt.BarrelTip` سر لوله را از پیکسل‌های تصویر پیدا می‌کند (راست‌ترین ستون مات) و در `WeaponVisual.MuzzleLocal` ذخیره می‌کند؛ `PlayerView.Muzzle` از آن استفاده می‌کند (با flipY). گلوله، muzzle flash و tracer همه از همین نقطه شروع می‌شوند. سلاح‌های بدون آرت فرمول قبلی را دارند.
+- در Play mode برای تپانچه، SMG و دولول (چپ و راست) فاصله‌ی نقطه‌ی محاسبه‌شده تا سر لوله‌ی کشیده‌شده ۰.۰۱–۰.۰۲ واحد شد. ۴۳۳ تست پاس.

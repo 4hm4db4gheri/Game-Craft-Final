@@ -68,60 +68,70 @@ MonoBehaviour:
     Size: {x: 1.2, y: 0.6}
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 1
+    MuzzleLocal: {x: 0.46757814, y: 0.15175782}
   - Id: 1
     Sprite: {fileID: 21300000, guid: 1f7cf400b18144b41aa0237789c23b57, type: 3}
     Color: {r: 1, g: 1, b: 1, a: 1}
     Size: {x: 1.8, y: 0.9}
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 1
+    MuzzleLocal: {x: 0.5923828, y: 0.114257805}
   - Id: 2
     Sprite: {fileID: 21300000, guid: 8a976a06af8d0004a874c6f125778c94, type: 3}
     Color: {r: 1, g: 1, b: 1, a: 1}
     Size: {x: 2.4, y: 1.2}
     ProjectileColor: {r: 1, g: 0.95, b: 0.8, a: 1}
     PivotAtGrip: 1
+    MuzzleLocal: {x: 1.0898438, y: 0.124218754}
   - Id: 3
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.3, g: 0.3, b: 0.35, a: 1}
     Size: {x: 0.55, y: 0.08}
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 0
+    MuzzleLocal: {x: 0, y: 0}
   - Id: 4
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.45, g: 0.45, b: 0.4, a: 1}
     Size: {x: 0.65, y: 0.13}
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 0
+    MuzzleLocal: {x: 0, y: 0}
   - Id: 5
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.35, g: 0.35, b: 0.4, a: 1}
     Size: {x: 0.6, y: 0.15}
     ProjectileColor: {r: 1, g: 0.95, b: 0.8, a: 1}
     PivotAtGrip: 0
+    MuzzleLocal: {x: 0, y: 0}
   - Id: 6
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.5, g: 0.45, b: 0.4, a: 1}
     Size: {x: 0.65, y: 0.2}
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 0
+    MuzzleLocal: {x: 0, y: 0}
   - Id: 7
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.9, g: 0.95, b: 1, a: 1}
     Size: {x: 0.7, y: 0.12}
     ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
     PivotAtGrip: 0
+    MuzzleLocal: {x: 0, y: 0}
   - Id: 8
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.9, g: 0.95, b: 1, a: 1}
     Size: {x: 0.65, y: 0.16}
     ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
     PivotAtGrip: 0
+    MuzzleLocal: {x: 0, y: 0}
   - Id: 9
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.55, g: 1, b: 1, a: 1}
     Size: {x: 0.7, y: 0.08}
     ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
     PivotAtGrip: 0
+    MuzzleLocal: {x: 0, y: 0}
   Bosses:
   - Id: 0
     Prefab: {fileID: 1321717015412269441, guid: dbf31126bc7d68b46b3a6eb1abe223b9, type: 3}
