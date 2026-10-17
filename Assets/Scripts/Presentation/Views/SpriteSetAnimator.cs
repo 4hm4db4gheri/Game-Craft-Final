@@ -67,7 +67,7 @@ namespace Hollow.Presentation
             if (!HasArt) return;
             var s = set.Resolve(current ?? "idle");
             if (s == null) return;
-            int frame = (int)((Time.time - startTime) * set.FramesPerSecond);
+            int frame = (int)((Time.time - startTime) * s.Rate(set));
             frame = s.Loop ? frame % s.Frames.Count : Mathf.Min(frame, s.Frames.Count - 1);
             target.sprite = s.Frames[frame];
             Step(s.Frames.Count == 1 && current != "death");

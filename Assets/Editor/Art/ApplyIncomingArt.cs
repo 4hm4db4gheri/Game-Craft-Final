@@ -34,6 +34,7 @@ namespace Hollow.EditorTools
         public static Dictionary<string, Dictionary<string, List<Sprite>>> Collect()
         {
             var map = new Dictionary<string, Dictionary<string, List<Sprite>>>();
+            var ranks = new Dictionary<string, int>();
             if (!AssetDatabase.IsValidFolder(ArtRules.IncomingDir)) return map;
             foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { ArtRules.IncomingDir }))
             {
@@ -46,11 +47,21 @@ namespace Hollow.EditorTools
                 if (sprites.Count == 0) continue;
                 if (!map.TryGetValue(key, out var states)) map[key] = states = new Dictionary<string, List<Sprite>>();
                 string state = n.Variant != null ? $"{n.State}_{n.Variant}" : n.State;
-                // An animated strip replaces the single frame of the same state, whichever file is found first.
-                if (!states.TryGetValue(state, out var existing) || sprites.Count > existing.Count) states[state] = sprites;
+                // A hand-drawn sheet beats a generated one (Tools/ArtGen), which beats a single drawn frame.
+                int rank = Rank(path, sprites.Count);
+                string slot = $"{key}/{state}";
+                if (!states.ContainsKey(state) || rank > ranks[slot] || (rank == ranks[slot] && sprites.Count > states[state].Count))
+                {
+                    states[state] = sprites;
+                    ranks[slot] = rank;
+                }
             }
             return map;
         }
+
+        public const string GeneratedDir = ArtRules.IncomingDir + "/Generated";
+
+        public static int Rank(string path, int frames) => frames <= 1 ? 0 : path.StartsWith(GeneratedDir) ? 1 : 2;
 
         static int FrameIndex(string spriteName)
         {
@@ -274,7 +285,13 @@ namespace Hollow.EditorTools
             set.States.Clear();
             set.FramesPerSecond = framesPerSecond;
             foreach (var (state, frames) in states)
-                set.States.Add(new SpriteState { State = state, Frames = new List<Sprite>(frames), Loop = state is "idle" or "move" or "spin" });
+                set.States.Add(new SpriteState
+                {
+                    State = state, Frames = new List<Sprite>(frames),
+                    Loop = state is "idle" or "move" or "spin" or "charge" or "burst" or "stunned",
+                    // Breathing reads calmer than walking: idle plays at 60 % speed.
+                    FramesPerSecond = state == "idle" && frames.Count > 1 ? framesPerSecond * 0.6f : 0f,
+                });
             EditorUtility.SetDirty(set);
             return set;
         }

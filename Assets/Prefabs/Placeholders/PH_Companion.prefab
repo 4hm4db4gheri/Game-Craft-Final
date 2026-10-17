@@ -440,6 +440,7 @@ MonoBehaviour:
   phaseTwoTint: {r: 0.75, g: 0.75, b: 0.75, a: 1}
   phaseTwoScale: 0.92
   phaseTwoSet: {fileID: 11400000, guid: cab2905f2fabf0d418f9ae10c4cc17b9, type: 2}
+  attackPoseTime: 0.3
 --- !u!114 &8103571137173734395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -454,6 +455,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSetAnimator
   set: {fileID: 11400000, guid: 1b48b946b9fc6414fb76e3ed6003fa0b, type: 2}
   target: {fileID: 4003855083447330308}
+  stepMotion: 1
+  strideFraction: 0.35
+  minStepsPerSecond: 1.6
+  maxStepsPerSecond: 7
+  hopFraction: 0.025
+  rockDegrees: 4
+  movingSpeed: 0.3
+  blendRate: 10
 --- !u!1 &5411189484732967721
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,7 +544,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: ae6107a09bffb324189dff5acec1ad44, type: 3}
+  m_Sprite: {fileID: 8793639957104055765, guid: 80eed7c26bb34da49bb2c6adcef493ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -401,6 +401,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSetAnimator
   set: {fileID: 11400000, guid: 99634510c514ece4b8a5dd23cd147732, type: 2}
   target: {fileID: 973415928816306170}
+  stepMotion: 1
+  strideFraction: 0.35
+  minStepsPerSecond: 1.6
+  maxStepsPerSecond: 7
+  hopFraction: 0.025
+  rockDegrees: 4
+  movingSpeed: 0.3
+  blendRate: 10
 --- !u!1 &6466362332420795648
 GameObject:
   m_ObjectHideFlags: 0
@@ -574,7 +582,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 8f116a119930ef24aba6ef5b1bdbc914, type: 3}
+  m_Sprite: {fileID: 8793639957104055765, guid: fa7562e1361b3ed4eb5f24582650087d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

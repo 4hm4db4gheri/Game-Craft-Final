@@ -16,33 +16,75 @@ MonoBehaviour:
   States:
   - State: blast
     Frames:
-    - {fileID: 21300000, guid: 6ab441d896144ca44955d487c28c5bf0, type: 3}
+    - {fileID: -2333823786064682851, guid: 0933699c06b98b74680704118ccb7fde, type: 3}
+    - {fileID: -1336836117218534164, guid: 0933699c06b98b74680704118ccb7fde, type: 3}
+    - {fileID: 4789823921600395768, guid: 0933699c06b98b74680704118ccb7fde, type: 3}
+    - {fileID: -4559260048439676392, guid: 0933699c06b98b74680704118ccb7fde, type: 3}
     Loop: 0
+    FramesPerSecond: 0
   - State: burst
     Frames:
-    - {fileID: 21300000, guid: 79c94e809b448284e8a290c4a2297a97, type: 3}
-    Loop: 0
+    - {fileID: 7515357072684481883, guid: 999d96090da0761469de86e9e8e1bc40, type: 3}
+    - {fileID: -4921743515574907004, guid: 999d96090da0761469de86e9e8e1bc40, type: 3}
+    - {fileID: -3985803507129442065, guid: 999d96090da0761469de86e9e8e1bc40, type: 3}
+    - {fileID: 503023373425029793, guid: 999d96090da0761469de86e9e8e1bc40, type: 3}
+    Loop: 1
+    FramesPerSecond: 0
   - State: death
     Frames:
-    - {fileID: 21300000, guid: a10b4e0a1252bd943bd24e83fa8d63dc, type: 3}
+    - {fileID: -9192638271177797499, guid: 9dcdf9871147128469e1ca11591e4c1d, type: 3}
+    - {fileID: 8559509556701815258, guid: 9dcdf9871147128469e1ca11591e4c1d, type: 3}
+    - {fileID: -5286180679089938723, guid: 9dcdf9871147128469e1ca11591e4c1d, type: 3}
+    - {fileID: -1891855120789479077, guid: 9dcdf9871147128469e1ca11591e4c1d, type: 3}
+    - {fileID: -5582970244224541034, guid: 9dcdf9871147128469e1ca11591e4c1d, type: 3}
+    - {fileID: 830680230883465780, guid: 9dcdf9871147128469e1ca11591e4c1d, type: 3}
     Loop: 0
+    FramesPerSecond: 0
   - State: idle
     Frames:
-    - {fileID: 21300000, guid: a3c0540df0d2a764ba22ebefdef0cdca, type: 3}
+    - {fileID: 8793639957104055765, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
+    - {fileID: 6084859605308855041, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
+    - {fileID: 8603369663158992956, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
+    - {fileID: -5906421172241655209, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
+    - {fileID: 5704420531145803721, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
+    - {fileID: -148617073940163930, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
+    - {fileID: 4729606205655721961, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
+    - {fileID: -2073685336235588006, guid: 6188a491242d64d4c8ef49df513d64d9, type: 3}
     Loop: 1
+    FramesPerSecond: 6
   - State: move
     Frames:
-    - {fileID: 21300000, guid: ddbbca2bb7956e64b983684b4c44db52, type: 3}
+    - {fileID: -3527056022417232336, guid: a71c71bee7752824cab2300f652f9933, type: 3}
+    - {fileID: 1559915471669483522, guid: a71c71bee7752824cab2300f652f9933, type: 3}
+    - {fileID: -2447649416737202741, guid: a71c71bee7752824cab2300f652f9933, type: 3}
+    - {fileID: -6256732298934330293, guid: a71c71bee7752824cab2300f652f9933, type: 3}
+    - {fileID: 1672106482186590498, guid: a71c71bee7752824cab2300f652f9933, type: 3}
+    - {fileID: 1097377042340866633, guid: a71c71bee7752824cab2300f652f9933, type: 3}
     Loop: 1
+    FramesPerSecond: 0
   - State: stunned
     Frames:
-    - {fileID: 21300000, guid: 084da83b72f135d4cbe39ef78b1e1c5e, type: 3}
-    Loop: 0
+    - {fileID: 1799660439864881212, guid: e61a7fb63aad07a43b15d369d75e843f, type: 3}
+    - {fileID: -3373519950653160162, guid: e61a7fb63aad07a43b15d369d75e843f, type: 3}
+    - {fileID: -3316934282925469932, guid: e61a7fb63aad07a43b15d369d75e843f, type: 3}
+    - {fileID: 4313986317484480918, guid: e61a7fb63aad07a43b15d369d75e843f, type: 3}
+    - {fileID: 9131637350334259489, guid: e61a7fb63aad07a43b15d369d75e843f, type: 3}
+    - {fileID: 2070783115961275832, guid: e61a7fb63aad07a43b15d369d75e843f, type: 3}
+    Loop: 1
+    FramesPerSecond: 0
   - State: windup_blast
     Frames:
-    - {fileID: 21300000, guid: a47be9cf463a5ed499c814ea3ca857cb, type: 3}
+    - {fileID: 8609606745640224122, guid: c164639d43af8b146a0286df574ee362, type: 3}
+    - {fileID: 7733931187285762610, guid: c164639d43af8b146a0286df574ee362, type: 3}
+    - {fileID: 7419340534391768396, guid: c164639d43af8b146a0286df574ee362, type: 3}
+    - {fileID: 4340882050670207777, guid: c164639d43af8b146a0286df574ee362, type: 3}
     Loop: 0
+    FramesPerSecond: 0
   - State: windup_burst
     Frames:
-    - {fileID: 21300000, guid: f8ef064bfe9b2254cb91f15b6d4141e6, type: 3}
+    - {fileID: 4046137395737799501, guid: 44c488f7a9fd00a4582c90182ae1225a, type: 3}
+    - {fileID: -1289357399023376178, guid: 44c488f7a9fd00a4582c90182ae1225a, type: 3}
+    - {fileID: -4110685750356495982, guid: 44c488f7a9fd00a4582c90182ae1225a, type: 3}
+    - {fileID: 3298998670104047995, guid: 44c488f7a9fd00a4582c90182ae1225a, type: 3}
     Loop: 0
+    FramesPerSecond: 0

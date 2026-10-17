@@ -18,3 +18,4 @@ MonoBehaviour:
     Frames:
     - {fileID: 21300000, guid: 27b31048c61eec443832c3a2a927684d, type: 3}
     Loop: 0
+    FramesPerSecond: 0

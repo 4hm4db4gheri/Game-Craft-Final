@@ -20,4 +20,5 @@ MonoBehaviour:
     - {fileID: -4921743515574907004, guid: 8d19a96810d07ca478a942c383640aac, type: 3}
     - {fileID: -3985803507129442065, guid: 8d19a96810d07ca478a942c383640aac, type: 3}
     - {fileID: 503023373425029793, guid: 8d19a96810d07ca478a942c383640aac, type: 3}
-    Loop: 0
+    Loop: 1
+    FramesPerSecond: 0

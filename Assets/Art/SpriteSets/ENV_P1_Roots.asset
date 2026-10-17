@@ -18,7 +18,9 @@ MonoBehaviour:
     Frames:
     - {fileID: 21300000, guid: 9e290794d8b69074d8120a71cc6bd840, type: 3}
     Loop: 0
+    FramesPerSecond: 0
   - State: decor_b
     Frames:
     - {fileID: 21300000, guid: 30d0749fe3d64ac4c8a2ed34f8cf474c, type: 3}
     Loop: 0
+    FramesPerSecond: 0

@@ -263,6 +263,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSetAnimator
   set: {fileID: 11400000, guid: 786e96b9da4c3bd42869ae47e335067d, type: 2}
   target: {fileID: 2458708959428569053}
+  stepMotion: 1
+  strideFraction: 0.35
+  minStepsPerSecond: 1.6
+  maxStepsPerSecond: 7
+  hopFraction: 0.025
+  rockDegrees: 4
+  movingSpeed: 0.3
+  blendRate: 10
 --- !u!1 &5430349960626203806
 GameObject:
   m_ObjectHideFlags: 0
