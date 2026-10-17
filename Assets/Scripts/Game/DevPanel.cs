@@ -42,7 +42,7 @@ namespace Hollow.Game
                 if (open) GameApp.Instance.PushModal(); else GameApp.Instance.PopModal();
             }
             var sim = session != null ? session.Sim : null;
-            if (god && sim != null) sim.World.Player.InvulnerableUntilTick = sim.World.Clock.Tick + 2;
+            if (sim != null) sim.World.GodMode = god;
         }
 
         void OnGUI()
@@ -63,7 +63,8 @@ namespace Hollow.Game
             GUILayout.BeginArea(new Rect(area.x + 12, area.y + 12, area.width - 24, area.height - 24));
             scroll = GUILayout.BeginScrollView(scroll);
             GUILayout.Label("DEV PANEL (F10)", labelStyle, GUILayout.Height(42));
-            god = GUILayout.Toggle(god, "God mode (player invulnerable)", toggleStyle, GUILayout.Height(58));
+            god = GUILayout.Toggle(god, "God mode (player + operator invulnerable)", toggleStyle, GUILayout.Height(58));
+            w.GodMode = god;
 
             GUILayout.BeginHorizontal();
             GUILayout.Label($"Phase {phase}", labelStyle, GUILayout.Width(115));

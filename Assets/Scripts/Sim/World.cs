@@ -24,6 +24,8 @@ namespace Hollow.Sim
 
         public PlayerState Player = new();
         public CompanionState Companion = new();
+        /// <summary>Developer-only immunity for the player and operator; never stored in a save.</summary>
+        [JsonIgnore] public bool GodMode;
         public FailureReason Failure;
         public List<EnemyState> Enemies = new();
         public List<ProjectileState> Projectiles = new();

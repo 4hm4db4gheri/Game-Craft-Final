@@ -133,7 +133,7 @@ namespace Hollow.Sim
         public static bool Damage(World w, float amount, Vector2 travelDir)
         {
             var c = w.Companion;
-            if (!Active(w) || amount <= 0) return false;
+            if (!Active(w) || amount <= 0 || w.GodMode) return false;
             c.Health -= amount;
             c.LastHitTick = w.Clock.Tick;
             w.Emit(SimEventType.CompanionHit, CompanionState.EntityId, c.Position, travelDir, amount);

@@ -105,7 +105,7 @@ namespace Hollow.Sim
         public static bool Damage(World w, float amount, Vector2 travelDir)
         {
             var p = w.Player;
-            if (p.Dead || amount <= 0 || PlayerStats.IsInvulnerable(w)) return false;
+            if (p.Dead || amount <= 0 || w.GodMode || PlayerStats.IsInvulnerable(w)) return false;
             p.Health -= amount;
             p.InvulnerableUntilTick = w.Clock.Tick + w.Ticks(w.Profile.Player.PostHitInvulnerability);
             w.Emit(SimEventType.PlayerHit, PlayerState.EntityId, p.Position, travelDir, amount);

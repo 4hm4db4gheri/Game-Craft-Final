@@ -28,6 +28,28 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void GodModeProtectsPlayerAndOperatorAndTurnsOffImmediately()
+        {
+            var w = WithCompanion().World;
+            float playerHealth = w.Player.Health;
+            float operatorHealth = w.Companion.Health;
+            w.GodMode = true;
+
+            Assert.IsFalse(PlayerSystem.Damage(w, 10, Vector2.left));
+            Assert.IsFalse(CompanionSystem.Damage(w, 10, Vector2.left));
+            Assert.AreEqual(playerHealth, w.Player.Health);
+            Assert.AreEqual(operatorHealth, w.Companion.Health);
+            Assert.AreEqual(FailureReason.None, w.Failure);
+            Assert.IsFalse(WorldSerializer.ToJson(w).Contains("GodMode"), "developer mode must not enter saves");
+
+            w.GodMode = false;
+            Assert.IsTrue(PlayerSystem.Damage(w, 10, Vector2.left));
+            Assert.IsTrue(CompanionSystem.Damage(w, 10, Vector2.left));
+            Assert.Less(w.Player.Health, playerHealth);
+            Assert.Less(w.Companion.Health, operatorHealth);
+        }
+
+        [Test]
         public void FollowsWithinALimitedDistance()
         {
             var sim = WithCompanion();
