@@ -29,7 +29,7 @@
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
 | `Assets/Resources/Localization/fa.json` | همه‌ی متن‌های بازیکن به فارسی (کلید ← متن)، خوانده با `Hollow.UI.Loc` (`Loc.T`/`Loc.F`/`Loc.Weapon`…). متن جدید = کلید جدید در همین فایل؛ تست `LocalizationTests` کلیدهای کد را چک می‌کند |
-| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ حداکثر ۴ ثانیه). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
+| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ ۳ ثانیه، بازی در این مدت متوقف است). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
 
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
@@ -249,3 +249,7 @@
 - importer (`ArtRules.Grid`): sheet می‌تواند شبکه باشد (۴ فریم = ۲×۲ مربع، ۶ = ۳×۲ در 3:2، ۸ = ۴×۲) چون ابزارهای تصویر عکس 6:1 نمی‌دهند؛ ترتیب چپ به راست و بالا به پایین؛ strip یک‌ردیفه هنوز کار می‌کند. اگر فایل تک‌فریمی و sheet یک حالت هر دو باشند، sheet انتخاب می‌شود (`ApplyIncomingArt.Collect`).
 - با یک sheet مصنوعی ۳×۲ گرگ بررسی شد (برش، pivot، اندازه‌ی ۲ واحد، انتخاب sheet) و فایل حذف شد. تست‌های `ArtSheetTests`؛ ۴۴۰ تست پاس.
 - باز: همه‌ی sheetها با ۱۰ فریم در ثانیه پخش می‌شوند؛ وقتی sheetها رسیدند شاید idle به سرعت کمتری نیاز داشته باشد.
+
+### 2026-10-17 — راهنما: ۳ ثانیه و توقف بازی
+- به خواست کاربر راهنماهای یک‌باره حالا حداکثر ۳ ثانیه‌اند (قبلاً ۴) و وقتی یکی روی صفحه است بازی متوقف می‌شود: `GameSession` تا وقتی `HintCoach.Showing` است قدم شبیه‌سازی نمی‌زند و با `PushModal/PopModal` ورودی دنیا را نگه می‌دارد (در `OnDestroy` هم آزاد می‌شود). چون بازیکن در این مدت کاری نمی‌تواند بکند، بستن زودتر با «انجام دادن کار» عملاً پیش نمی‌آید؛ راهنما بعد از ۳ ثانیه بسته می‌شود. D75 به‌روز شد.
+- ۴۴۰ تست پاس. در Play mode: با راهنمای سلاح دوم، tick شبیه‌سازی در مدت نمایش ثابت ماند، ورودی دنیا بسته بود و بعد از حدود ۳ ثانیه بازی ادامه پیدا کرد.
