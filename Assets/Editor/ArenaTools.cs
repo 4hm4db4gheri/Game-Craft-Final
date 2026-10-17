@@ -24,6 +24,40 @@ namespace Hollow.EditorTools
         public const string TilesDir = "Assets/Art/Placeholders/Tiles";
         public const string ArtTilesDir = "Assets/Art/Tiles";
         public const string LayoutPath = "Assets/Resources/Arena/ArenaLayout.json";
+        /// <summary>The second service station: a spot free in all three phases, 8 units from the east entrance (T28).</summary>
+        public const string SecondShopName = "ShopStation2";
+        public static readonly Vector2 SecondShopPosition = new(12f, 0.5f);
+
+        /// <summary>T28: adds the second service station (marker and kiosk) to the open Game scene, then bakes.</summary>
+        [MenuItem("Hollow/Arena/Add Second Service Station")]
+        public static string AddSecondShopToOpenScene()
+        {
+            var a = Object.FindAnyObjectByType<ArenaAuthoring>(FindObjectsInactive.Include);
+            if (a == null) return "No ArenaAuthoring in the open scene.";
+            if (a.ExtraShops.Exists(s => s != null)) return "A second station already exists.";
+            var marker = Marker(a.Shop.parent.gameObject, SecondShopName, SecondShopPosition);
+            a.ExtraShops = new List<Transform> { marker };
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Placeholders/PH_ShopStation.prefab");
+            var kiosk = FindKiosk(a.Shop.position);
+            if (prefab != null)
+            {
+                var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, kiosk != null ? kiosk.parent : null);
+                go.name = "PH_ShopStation (2)";
+                go.transform.position = marker.position + Vector3.down * 0.5f;
+            }
+            EditorUtility.SetDirty(a);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(a.gameObject.scene);
+            UnityEditor.SceneManagement.EditorSceneManager.SaveScene(a.gameObject.scene);
+            Bake(a);
+            return $"Second station at {marker.position}; prefab {(prefab != null ? "placed" : "missing")}.";
+        }
+
+        static Transform FindKiosk(Vector3 shop)
+        {
+            foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
+                if (t.name.StartsWith("PH_ShopStation") && Vector2.Distance(t.position, shop) < 1.5f) return t;
+            return null;
+        }
         static readonly Vector2Int ArenaSize = new(48, 32);
 
         enum Shape { Box, Round, Tree, Post }
@@ -183,6 +217,7 @@ namespace Hollow.EditorTools
             a.PlayerStart = Marker(gridGo, "PlayerStart", new Vector2(0, 0));
             a.CompanionStart = Marker(gridGo, "CompanionStart", new Vector2(-1.5f, -0.6f));
             a.Shop = Marker(gridGo, "ShopStation", new Vector2(0, -6.5f));
+            a.ExtraShops = new List<Transform> { Marker(gridGo, SecondShopName, SecondShopPosition) }; // v0.19 §13
             a.ShopFootprint = new Vector2Int(2, 1);
 
             float hx = size.x / 2f, hy = size.y / 2f;
@@ -419,15 +454,19 @@ namespace Hollow.EditorTools
                 ShopPosition = a.Shop.position,
                 SpawnZones = new List<SpawnZone>(a.SpawnZones),
             };
+            foreach (var shop in a.AllShops()) layout.ShopPositions.Add(shop.position);
             CollectCells(a.Walls, layout, layout.BaseBlocked);
 
-            // The shop station is solid in every phase.
-            var shopCell = Vector2Int.FloorToInt((Vector2)a.Shop.position - layout.Origin);
-            for (int dy = 0; dy < a.ShopFootprint.y; dy++)
-            for (int dx = 0; dx < a.ShopFootprint.x; dx++)
+            // Every service station is solid in every phase.
+            foreach (var shop in a.AllShops())
             {
-                int x = shopCell.x - a.ShopFootprint.x / 2 + dx, y = shopCell.y + dy;
-                if (x >= 0 && y >= 0 && x < layout.Width && y < layout.Height) layout.BaseBlocked.Add(layout.CellIndex(x, y));
+                var shopCell = Vector2Int.FloorToInt((Vector2)shop.position - layout.Origin);
+                for (int dy = 0; dy < a.ShopFootprint.y; dy++)
+                for (int dx = 0; dx < a.ShopFootprint.x; dx++)
+                {
+                    int x = shopCell.x - a.ShopFootprint.x / 2 + dx, y = shopCell.y + dy;
+                    if (x >= 0 && y >= 0 && x < layout.Width && y < layout.Height) layout.BaseBlocked.Add(layout.CellIndex(x, y));
+                }
             }
 
             for (int i = 0; i < 3; i++)

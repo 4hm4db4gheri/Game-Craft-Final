@@ -24,7 +24,15 @@ namespace Hollow.Presentation
         public Transform PlayerStart;
         public Transform CompanionStart;
         public Transform Shop;
+        /// <summary>More service stations (v0.19 §13: two by default; count and place are the artist's).</summary>
+        public List<Transform> ExtraShops = new();
         public Vector2Int ShopFootprint = new(2, 1);
+
+        public IEnumerable<Transform> AllShops()
+        {
+            if (Shop != null) yield return Shop;
+            foreach (var s in ExtraShops) if (s != null) yield return s;
+        }
 
         public List<SpawnZone> SpawnZones = new();
 

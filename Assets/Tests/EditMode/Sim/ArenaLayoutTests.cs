@@ -92,7 +92,10 @@ namespace Hollow.Tests.Sim
             var layout = WaveTests.RealArena();
             var g = Grid(phase);
             // The row in front of the shop (where the player stands to use it) and the row below it.
-            foreach (var p in new[] { layout.PlayerStart, layout.CompanionStart, layout.ShopPosition + Vector2.down * 2f })
+            var points = new System.Collections.Generic.List<Vector2> { layout.PlayerStart, layout.CompanionStart };
+            foreach (var shop in layout.Shops) points.Add(shop + Vector2.down * 2f);
+            Assert.AreEqual(2, layout.Shops.Count, "v0.19 §13: two service stations");
+            foreach (var p in points)
             {
                 var c = g.CellOf(p);
                 for (int dy = -1; dy <= 1; dy++)

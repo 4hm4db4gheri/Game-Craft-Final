@@ -305,7 +305,7 @@ namespace Hollow.Game
         {
             menus.Hide();
             var w = W;
-            Vector2 shop = w.Layout.ShopPosition;
+            Vector2 shop = w.Layout.NearestShop(w.Player.Position); // v0.19 §12: the nearest service station
             w.Player.Position = w.Player.PrevPosition = w.Arena.NearestFree(shop + new Vector2(0.8f, 1.6f), w.Profile.Player.BodyRadius);
             if (w.Companion.Present)
                 w.Companion.Position = w.Companion.PrevPosition = w.Arena.NearestFree(shop + new Vector2(-1.4f, 1.6f), w.Profile.Companion.BodyRadius);
@@ -423,7 +423,7 @@ namespace Hollow.Game
 
             // The first purchase is shown, not told: an arrow leads to the shop once the coins are collected.
             bool guideToShop = w.Tutorial == TutorialStage.Purchase && w.Coins.Count == 0 && !w.Shop.Open && playing;
-            hud.SetGuide(guideToShop ? w.Layout.ShopPosition : null, worldCamera);
+            hud.SetGuide(guideToShop ? w.Layout.NearestShop(w.Player.Position) : null, worldCamera);
             string status = TutorialPrompt(w);
             if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;

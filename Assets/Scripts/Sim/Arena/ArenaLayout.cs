@@ -34,7 +34,29 @@ namespace Hollow.Sim
         public List<SpawnZone> SpawnZones = new();
         public Vector2 PlayerStart;
         public Vector2 CompanionStart;
+        /// <summary>First service station (kept for layouts baked before T28).</summary>
         public Vector2 ShopPosition;
+        /// <summary>v0.19 §13: every service station; they share one wallet, ownership and stock.</summary>
+        public List<Vector2> ShopPositions = new();
+
+        /// <summary>The stations (falls back to <see cref="ShopPosition"/> for an old layout).</summary>
+        public List<Vector2> Shops
+        {
+            get
+            {
+                if (ShopPositions.Count == 0) ShopPositions.Add(ShopPosition);
+                return ShopPositions;
+            }
+        }
+
+        public Vector2 NearestShop(Vector2 from)
+        {
+            var shops = Shops;
+            Vector2 best = shops[0];
+            for (int i = 1; i < shops.Count; i++)
+                if ((shops[i] - from).sqrMagnitude < (best - from).sqrMagnitude) best = shops[i];
+            return best;
+        }
 
         public int CellIndex(int x, int y) => y * Width + x;
 

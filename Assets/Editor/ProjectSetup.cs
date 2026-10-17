@@ -115,8 +115,11 @@ namespace Hollow.EditorTools
             cam.gameObject.AddComponent<CinemachineBrain>();
 
             var arena = ArenaTools.BuildWhitebox();
-            var shop = (GameObject)PrefabUtility.InstantiatePrefab(shopPrefab);
-            shop.transform.position = arena.Shop.position + Vector3.down * 0.5f;
+            foreach (var station in arena.AllShops()) // v0.19 §13: every service station gets a kiosk
+            {
+                var shop = (GameObject)PrefabUtility.InstantiatePrefab(shopPrefab);
+                shop.transform.position = station.position + Vector3.down * 0.5f;
+            }
 
             var player = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab);
             var companion = (GameObject)PrefabUtility.InstantiatePrefab(companionPrefab);

@@ -767,6 +767,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3376786295247903785, guid: 343cc5b5e2c14e14e9001b26e20a4b08, type: 3}
   m_PrefabInstance: {fileID: 69377864}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &79863267
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7044138267987792905, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_Name
+      value: PH_ShopStation (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423336609410436150, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6ac55feb719bc4746b79559489284bbb, type: 3}
 --- !u!1001 &90886488
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19485,6 +19542,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 948971089911660493, guid: 20ad9c00516a47a4da5f611d0402d232, type: 3}
   m_PrefabInstance: {fileID: 341210736}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &353480522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 353480523}
+  m_Layer: 0
+  m_Name: ShopStation2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &353480523
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353480522}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 36, y: 16.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1970872650}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &372604662
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -70563,7 +70651,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1750488820}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b9decc42713ceb40aa2265f9051d290, type: 3}
   m_Name: 
@@ -73148,6 +73236,8 @@ MonoBehaviour:
   PlayerStart: {fileID: 1516607203}
   CompanionStart: {fileID: 672201689}
   Shop: {fileID: 2065291921}
+  ExtraShops:
+  - {fileID: 353480523}
   ShopFootprint: {x: 2, y: 1}
   SpawnZones:
   - Side: 0
@@ -73191,6 +73281,7 @@ Transform:
   - {fileID: 1516607203}
   - {fileID: 672201689}
   - {fileID: 2065291921}
+  - {fileID: 353480523}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &1970872651
@@ -75817,3 +75908,4 @@ SceneRoots:
   - {fileID: 966647280}
   - {fileID: 1020988905}
   - {fileID: 1035314270}
+  - {fileID: 79863267}

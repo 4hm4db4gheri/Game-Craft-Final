@@ -59,8 +59,9 @@ namespace Hollow.Sim
             if (s.Open && (!inRange || w.Player.Dashing || w.Player.Dead)) SetOpen(w, false);
         }
 
+        /// <summary>Near any service station (v0.19 §13): each one opens the same shop.</summary>
         public static bool InRange(World w) =>
-            Vector2.Distance(w.Player.Position, w.Layout.ShopPosition) <= w.Profile.Player.ShopInteractRange;
+            Vector2.Distance(w.Player.Position, w.Layout.NearestShop(w.Player.Position)) <= w.Profile.Player.ShopInteractRange;
 
         public static void SetOpen(World w, bool open)
         {

@@ -100,6 +100,27 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void EveryServiceStationOpensTheSameShopWithSharedStock()
+        {
+            var layout = SimTestUtil.OpenArena();
+            layout.ShopPositions = new System.Collections.Generic.List<Vector2> { new(0, -1.5f), new(10, 5) };
+            var sim = SimTestUtil.NewSim(layout);
+            var w = sim.World;
+            w.Progress.Wallet = 1000;
+            for (int i = 0; i < 3; i++) Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.Grenade));
+
+            w.Player.Position = w.Player.PrevPosition = new Vector2(10, 4);
+            Assert.IsTrue(ShopSystem.InRange(w), "the second station is a shop too");
+            sim.Step(new Hollow.Core.Input.PlayerCommand { InteractPressed = true });
+            Assert.IsTrue(w.Shop.Open);
+            Assert.AreEqual(LockReason.OutOfStock, Find(w, OfferKind.BuyItem, item: ItemId.Grenade).Lock, "a second station cannot refresh stock");
+            Assert.AreEqual(1000 - 3 * w.Profile.Item(ItemId.Grenade).Price, w.Progress.Wallet, "one wallet");
+
+            w.Player.Position = w.Player.PrevPosition = new Vector2(5, 2);
+            Assert.IsFalse(ShopSystem.InRange(w));
+        }
+
+        [Test]
         public void CarryLimitBlocksBuying()
         {
             var sim = Rich();
