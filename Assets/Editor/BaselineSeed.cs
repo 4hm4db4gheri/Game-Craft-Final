@@ -145,6 +145,7 @@ namespace Hollow.EditorTools
                 DesaturationPhase1 = 2f, DesaturationPhase2 = 7f, DesaturationPhase3 = 12f,
                 VignettePhase1 = 0.07f, VignettePhase2 = 0.10f, VignettePhase3 = 0.13f,
                 BloomIntensity = 0.18f, BloomThreshold = 1f, GroundVariation = 0.12f,
+                ComposedGround = true, ContactShadowStrength = 0.55f,
             };
 
             p.BuildIndex();

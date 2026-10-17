@@ -115,6 +115,7 @@ namespace Hollow.Game
             if (Sim == null) return;
             W.Profile = profile;
             arena.ApplyGroundVariation(profile.Atmosphere.GroundVariation);
+            arena.ApplyComposition(profile.Atmosphere.ComposedGround, profile.Atmosphere.ContactShadowStrength);
             if (!W.Completed) atmosphere.SetPhase(profile.Atmosphere, W.Phase, instant: false);
         }
 
@@ -173,6 +174,7 @@ namespace Hollow.Game
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
             arena.ApplyGroundVariation(world.Profile.Atmosphere.GroundVariation);
+            arena.ApplyComposition(world.Profile.Atmosphere.ComposedGround, world.Profile.Atmosphere.ContactShadowStrength);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
             if (world.Completed) audio.StopMusic(0.1f);
             else audio.PlayMusic(world.Phase);
@@ -221,6 +223,7 @@ namespace Hollow.Game
             var w = W;
             float alpha = driver.InterpolationAlpha;
             presenter.Sync(w, alpha);
+            arena.SyncForeground(Vector2.Lerp(w.Player.PrevPosition, w.Player.Position, alpha));
             cameraRig.Sync(w, alpha);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
             hud.Sync(w, worldCamera);

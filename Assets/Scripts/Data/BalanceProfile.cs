@@ -533,6 +533,8 @@ namespace Hollow.Data
         [Placeholder] public float BloomIntensity = 0.18f;
         [Placeholder] public float BloomThreshold = 1f;
         [Placeholder] public float GroundVariation = 0.12f;
+        [Placeholder] public bool ComposedGround = true;
+        [Placeholder] public float ContactShadowStrength = 0.55f;
         [Placeholder, Unit("s")] public float PhaseFadeTime;
         /// <summary>The world goes dark during the ending scene.</summary>
         [Placeholder, Unit("s")] public float EndingFadeTime;

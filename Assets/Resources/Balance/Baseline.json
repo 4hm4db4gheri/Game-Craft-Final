@@ -2847,6 +2847,8 @@
     "BloomIntensity": 0.18,
     "BloomThreshold": 1.0,
     "GroundVariation": 0.12,
+    "ComposedGround": true,
+    "ContactShadowStrength": 0.55,
     "PhaseFadeTime": 1.5,
     "EndingFadeTime": 4.0
   }

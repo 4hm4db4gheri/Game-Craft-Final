@@ -37,6 +37,125 @@ namespace Hollow.Presentation
         }
 
         public List<SpawnZone> SpawnZones = new();
+        readonly SpriteRenderer[] composedFloors = new SpriteRenderer[3];
+        readonly List<Sprite> ownedFloorSprites = new();
+        readonly List<(SpriteRenderer Renderer, Transform Anchor, Color Color)> foreground = new();
+
+        /// <summary>Full-arena artwork creates connected paths instead of a repeating carpet of tiles.</summary>
+        public void ApplyComposition(bool enabled, float shadowStrength)
+        {
+            var propAtlas = Resources.Load<Texture2D>("ArenaArt/ForestProps");
+            for (int i = 0; i < Grounds.Length; i++)
+            {
+                var map = Grounds[i];
+                if (map == null) continue;
+                var tiles = map.GetComponent<TilemapRenderer>();
+                if (enabled && composedFloors[i] == null)
+                {
+                    string asset = i == 0 ? "Forest" : "Industry";
+                    var texture = Resources.Load<Texture2D>("ArenaArt/Floor" + asset);
+                    if (texture != null)
+                    {
+                        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+                        ownedFloorSprites.Add(sprite);
+                        var go = new GameObject("Composed arena floor");
+                        go.transform.SetParent(map.transform, false);
+                        go.transform.localPosition = new Vector3(Size.x * 0.5f, Size.y * 0.5f, 0);
+                        go.transform.localScale = new Vector3(Size.x / sprite.bounds.size.x, Size.y / sprite.bounds.size.y, 1);
+                        var renderer = go.AddComponent<SpriteRenderer>();
+                        renderer.sprite = sprite;
+                        if (tiles.sharedMaterial != null) renderer.sharedMaterial = tiles.sharedMaterial;
+                        renderer.sortingLayerID = tiles.sortingLayerID;
+                        renderer.sortingOrder = tiles.sortingOrder;
+                        renderer.color = i == 0 ? new Color(0.88f, 0.9f, 0.87f) : i == 2 ? new Color(0.87f, 0.88f, 0.9f) : Color.white;
+                        composedFloors[i] = renderer;
+                    }
+                }
+                bool useArt = enabled && composedFloors[i] != null;
+                tiles.enabled = !useArt;
+                if (composedFloors[i] != null) composedFloors[i].gameObject.SetActive(useArt);
+            }
+            // Keep the ground contact small; the old tall ovals made props appear to float over black stains.
+            foreach (var phaseProps in Props)
+            {
+                if (phaseProps == null) continue;
+                foreach (var prop in phaseProps.GetComponentsInChildren<ArenaProp>(true))
+                {
+                    ApplyPropArt(prop, propAtlas);
+                    var shadow = prop.transform.Find("Shadow");
+                    if (shadow == null) continue;
+                    shadow.localPosition = new Vector3(0, prop.Footprint.y * 0.22f, 0);
+                    shadow.localScale = new Vector3(prop.Footprint.x * 1.15f, prop.Footprint.y * 0.72f, 1);
+                    var renderer = shadow.GetComponent<SpriteRenderer>();
+                    if (renderer != null) renderer.color = new Color(1, 1, 1, Mathf.Clamp01(shadowStrength));
+                }
+            }
+            if (foreground.Count == 0)
+                foreach (var phaseProps in Props)
+                {
+                    if (phaseProps == null) continue;
+                    foreach (var prop in phaseProps.GetComponentsInChildren<ArenaProp>(true))
+                    {
+                        var body = prop.transform.Find("Body");
+                        if (body == null) continue;
+                        foreach (var renderer in body.GetComponentsInChildren<SpriteRenderer>(true))
+                            if (renderer.enabled && renderer.sprite != null && renderer.bounds.size.y > 1.5f)
+                                foreground.Add((renderer, prop.transform, renderer.color));
+                    }
+                }
+        }
+
+        void ApplyPropArt(ArenaProp prop, Texture2D atlas)
+        {
+            if (atlas == null || prop.Phase != 1) return;
+            var body = prop.transform.Find("Body");
+            if (body == null || body.Find("RefinedProp") != null) return;
+            Rect crop;
+            float width;
+            switch (prop.PropName)
+            {
+                case "Stumps": crop = new Rect(22, 81, 654, 393); width = 1.3f; break;
+                case "LogPile": crop = new Rect(724, 78, 675, 426); width = 2.2f; break;
+                case "Excavator": crop = new Rect(1438, 83, 713, 601); width = 3.6f; break;
+                default: return;
+            }
+            Material material = null;
+            foreach (var old in body.GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                if (material == null) material = old.sharedMaterial;
+                old.enabled = false;
+            }
+            var sprite = Sprite.Create(atlas, crop, new Vector2(0.5f, 0), crop.width / width, 0, SpriteMeshType.FullRect);
+            ownedFloorSprites.Add(sprite);
+            var go = new GameObject("RefinedProp");
+            go.transform.SetParent(body, false);
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            if (material != null) renderer.sharedMaterial = material;
+        }
+
+        /// <summary>Keep the depth overlap while revealing the player behind a tall foreground prop.</summary>
+        public void SyncForeground(Vector2 playerPosition)
+        {
+            foreach (var entry in foreground)
+            {
+                var renderer = entry.Renderer;
+                if (renderer == null || !renderer.gameObject.activeInHierarchy) continue;
+                var bounds = renderer.bounds;
+                Vector2 probe = playerPosition + Vector2.up * 0.55f;
+                bool behind = playerPosition.y > entry.Anchor.position.y &&
+                    probe.x > bounds.min.x - 0.2f && probe.x < bounds.max.x + 0.2f &&
+                    probe.y > bounds.min.y && probe.y < bounds.max.y;
+                var color = entry.Color;
+                color.a = Mathf.MoveTowards(renderer.color.a, entry.Color.a * (behind ? 0.38f : 1f), Time.unscaledDeltaTime * 4f);
+                renderer.color = color;
+            }
+        }
+
+        void OnDestroy()
+        {
+            foreach (var sprite in ownedFloorSprites) if (sprite != null) Destroy(sprite);
+        }
 
         /// <summary>Shows the ground, decor, props, border and obstacle layer of the given phase only.</summary>
         public void ShowPhase(int phase)

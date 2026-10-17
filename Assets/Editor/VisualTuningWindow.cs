@@ -47,6 +47,8 @@ namespace Hollow.EditorTools
             DrawPhase(phase + 1);
             EditorGUILayout.Space(12);
             EditorGUILayout.LabelField("Shared effects", EditorStyles.boldLabel);
+            draft.ComposedGround = EditorGUILayout.Toggle("Composed arena floor", draft.ComposedGround);
+            draft.ContactShadowStrength = EditorGUILayout.Slider("Prop contact shadows", draft.ContactShadowStrength, 0f, 1f);
             draft.BloomIntensity = EditorGUILayout.Slider(new GUIContent("Bloom", "Soft glow on bright sources; keep warning silhouettes sharp."), draft.BloomIntensity, 0f, 1f);
             draft.BloomThreshold = EditorGUILayout.Slider("Bloom threshold", draft.BloomThreshold, 0f, 2f);
             draft.PlayerLightRadius = EditorGUILayout.Slider("Player glow radius", draft.PlayerLightRadius, 2f, 14f);
