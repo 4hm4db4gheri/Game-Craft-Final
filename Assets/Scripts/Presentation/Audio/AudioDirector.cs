@@ -22,6 +22,8 @@ namespace Hollow.Presentation
             public int Priority;
             public float StartedAt;
             public float BaseVolume;
+            /// <summary>The enemy (or boss) that made this sound: its death cancels pending warnings.</summary>
+            public int OwnerId = int.MinValue;
         }
 
         AudioCatalog catalog;
@@ -53,8 +55,9 @@ namespace Hollow.Presentation
         void Init(AudioCatalog c)
         {
             catalog = c != null ? c : ScriptableObject.CreateInstance<AudioCatalog>();
-            CreateVoices(AudioBus.Effects, 18);
-            CreateVoices(AudioBus.Warnings, 6);
+            // v0.19 §20: at most MaxOneShots world sounds, MaxWarnings of them important warnings.
+            CreateVoices(AudioBus.Effects, Mathf.Max(1, catalog.MaxOneShots - catalog.MaxWarnings));
+            CreateVoices(AudioBus.Warnings, Mathf.Max(1, catalog.MaxWarnings));
             CreateVoices(AudioBus.Interface, 4);
             voiceSource = NewSource("VoiceLine", false); // one spoken line at a time (v0.19 §20)
             musicA = NewSource("MusicA", true);
@@ -122,7 +125,9 @@ namespace Hollow.Presentation
 
         // ------------------------------------------------------------------ play
 
-        public void Play(AudioCue cue, Vector2? worldPosition = null, float volumeScale = 1f)
+        public void Play(AudioCue cue, Vector2? worldPosition = null, float volumeScale = 1f) => PlayPitched(cue, worldPosition, 1f, volumeScale);
+
+        void PlayPitched(AudioCue cue, Vector2? worldPosition, float pitch, float volumeScale = 1f)
         {
             var d = catalog.Get(cue);
             float now = Time.unscaledTime;
@@ -139,7 +144,8 @@ namespace Hollow.Presentation
             var s = voice.Source;
             s.Stop();
             s.clip = clip;
-            s.pitch = 1f + Random.Range(-1f, 1f) * (d != null ? d.PitchJitter : 0f);
+            s.pitch = pitch * (1f + Random.Range(-1f, 1f) * (d != null ? d.PitchJitter : 0f));
+            voice.OwnerId = int.MinValue;
             voice.BaseVolume = (d != null ? d.Volume : 0.8f) * volumeScale;
             voice.Priority = d != null ? d.Priority : 50;
             voice.StartedAt = now;
@@ -258,10 +264,157 @@ namespace Hollow.Presentation
             else if (musicA.isPlaying) musicA.volume = target * BusGain(AudioBus.Music);
         }
 
+        // ------------------------------------------------------------------ enemy profiles (v0.19 §20)
+
+        static readonly string[] EnemyKeys = System.Enum.GetNames(typeof(EnemyId));
+        static readonly string[] BossKeys = System.Array.ConvertAll(System.Enum.GetNames(typeof(BossId)), n => "Boss_" + n);
+        readonly Dictionary<string, float> lastEnemySound = new();
+        readonly Dictionary<int, float> nextPresence = new();
+        readonly HashSet<int> detonated = new();
+
+        static string KeyOf(World w, int entityId)
+        {
+            if (entityId == BossState.EntityId) return w.Boss.Active || w.Boss.Dead ? BossKeys[(int)w.Boss.Id] : null;
+            foreach (var e in w.Enemies) if (e.Id == entityId) return EnemyKeys[(int)e.Type];
+            return null;
+        }
+
+        /// <summary>Plays one event group of an enemy type. False when the type has no file for it (a fallback cue plays).</summary>
+        bool PlayEnemy(string key, EnemySound sound, Vector2 position, int ownerId, float volumeScale = 1f)
+        {
+            var profile = catalog.Enemy(key);
+            var def = profile?.Get(sound);
+            if (def == null || def.Clips.Count == 0) return false;
+            float now = Time.unscaledTime;
+            string gapKey = key + (int)sound;
+            float gap = sound == EnemySound.Presence ? catalog.PresenceGap : 0.04f;
+            if (lastEnemySound.TryGetValue(gapKey, out float last) && now - last < gap) return true;
+            lastEnemySound[gapKey] = now;
+
+            bool warning = sound == EnemySound.Warning || sound == EnemySound.AreaWarning;
+            var bus = warning ? AudioBus.Warnings : AudioBus.Effects;
+            int priority = sound switch
+            {
+                EnemySound.Warning or EnemySound.AreaWarning => key.StartsWith("Boss_") ? 100 : 90,
+                EnemySound.Attack => 55, EnemySound.Death => 45, EnemySound.Hit => 30, _ => 15,
+            };
+            var voice = TakeVoice(bus, priority);
+            if (voice == null) return true;
+            var s = voice.Source;
+            s.Stop();
+            s.clip = def.Clips[Random.Range(0, def.Clips.Count)];
+            s.pitch = def.Pitch * (1f + Random.Range(-0.04f, 0.04f));
+            voice.BaseVolume = def.Volume * volumeScale;
+            voice.Priority = priority;
+            voice.StartedAt = now;
+            voice.OwnerId = ownerId;
+            s.panStereo = Pan(position);
+            s.volume = voice.BaseVolume * BusGain(bus);
+            s.Play();
+            return true;
+        }
+
+        /// <summary>v0.19 §20: death or a cancelled attack also cancels that enemy's pending warning sound.</summary>
+        void CancelOwner(int ownerId)
+        {
+            foreach (var v in voices[AudioBus.Warnings])
+                if (v.OwnerId == ownerId && v.Source.isPlaying) v.Source.Stop();
+        }
+
+        /// <summary>
+        /// Presence sounds of visible enemies (steps, servos, breath), in simulation time so they pause with the
+        /// world during XP choices and keep going while shopping. Each type repeats at most every PresenceGap.
+        /// </summary>
+        public void Ambient(World w)
+        {
+            float now = w.Clock.Tick * Hollow.Core.SimClock.Dt;
+            foreach (var e in w.Enemies)
+            {
+                if (!e.IsActive || !OnScreen(e.Position)) continue;
+                string key = EnemyKeys[(int)e.Type];
+                var p = catalog.Enemy(key);
+                if (p == null) continue;
+                if (!nextPresence.TryGetValue(e.Id, out float next)) { nextPresence[e.Id] = now + Random.Range(0.2f, p.PresenceInterval); continue; }
+                if (now < next) continue;
+                nextPresence[e.Id] = now + p.PresenceInterval * Random.Range(0.7f, 1.3f);
+                PlayEnemy(key, EnemySound.Presence, e.Position, e.Id);
+            }
+            var b = w.Boss;
+            if (b.Active && !b.Dead && OnScreen(b.Position))
+            {
+                string key = BossKeys[(int)b.Id];
+                var p = catalog.Enemy(key);
+                if (p != null)
+                {
+                    if (!nextPresence.TryGetValue(BossState.EntityId, out float next)) nextPresence[BossState.EntityId] = now + p.PresenceInterval;
+                    else if (now >= next)
+                    {
+                        nextPresence[BossState.EntityId] = now + p.PresenceInterval * Random.Range(0.8f, 1.2f);
+                        PlayEnemy(key, EnemySound.Presence, b.Position, BossState.EntityId);
+                    }
+                }
+            }
+        }
+
+        /// <summary>Forget per-enemy timers (load, retry, phase change).</summary>
+        public void ResetWorldSounds()
+        {
+            nextPresence.Clear();
+            detonated.Clear();
+            foreach (var v in voices[AudioBus.Warnings]) v.Source.Stop();
+        }
+
         // ------------------------------------------------------------------ simulation events
 
         public void OnSimEvent(World w, in SimEvent ev)
         {
+            switch (ev.Type)
+            {
+                case SimEventType.EnemyTelegraph:
+                {
+                    string key = KeyOf(w, ev.EntityId);
+                    bool area = ev.EntityId == BossState.EntityId && ev.Code == (int)TelegraphShape.Circle;
+                    if (!PlayEnemy(key, area ? EnemySound.AreaWarning : EnemySound.Warning, ev.Position, ev.EntityId))
+                        Play(TelegraphCue(w, ev.EntityId), ev.Position);
+                    return;
+                }
+                case SimEventType.EnemyAttack:
+                {
+                    string key = ev.Code >= 0 ? EnemyKeys[ev.Code] : KeyOf(w, ev.EntityId);
+                    if (ev.Code >= 0 && w.Profile.Enemy((EnemyId)ev.Code).Role == EnemyRole.Explosive) detonated.Add(ev.EntityId);
+                    float scale = OnScreen(ev.Position) ? 1f : 0.5f;
+                    if (!PlayEnemy(key, EnemySound.Attack, ev.Position, ev.EntityId, scale)
+                        && ev.Code >= 0 && w.Profile.Enemy((EnemyId)ev.Code).Role == EnemyRole.Ranged)
+                        Play(AudioCue.EnemyShot, ev.Position, scale);
+                    return;
+                }
+                case SimEventType.EnemyHit:
+                {
+                    // Shared impact layer, pitched per type so each enemy sounds distinct (v0.19 §20).
+                    var cue = IsMetal(w, ev.EntityId) ? AudioCue.ImpactMetal : AudioCue.ImpactFlesh;
+                    var p = catalog.Enemy(KeyOf(w, ev.EntityId));
+                    if (p != null && p.Hit.Clips.Count > 0) PlayEnemy(p.Key, EnemySound.Hit, ev.Position, ev.EntityId);
+                    else PlayPitched(cue, ev.Position, p != null ? p.Hit.Pitch : 1f);
+                    return;
+                }
+                case SimEventType.EnemyDied:
+                {
+                    CancelOwner(ev.EntityId);
+                    nextPresence.Remove(ev.EntityId);
+                    bool blew = detonated.Remove(ev.EntityId); // a successful detonation was already heard
+                    if (blew) return;
+                    if (!PlayEnemy(EnemyKeys[ev.Code], EnemySound.Death, ev.Position, ev.EntityId))
+                    {
+                        var f = w.Profile.Enemy((EnemyId)ev.Code).Faction;
+                        Play(f == Faction.Animals ? AudioCue.DeathAnimal : f == Faction.Robots ? AudioCue.DeathRobot : AudioCue.DeathHuman, ev.Position);
+                    }
+                    return;
+                }
+                case SimEventType.BossDefeated:
+                    CancelOwner(BossState.EntityId);
+                    PlayEnemy(BossKeys[ev.Code], EnemySound.Death, ev.Position, BossState.EntityId);
+                    break;
+            }
             switch (ev.Type)
             {
                 case SimEventType.ShotFired:
@@ -269,21 +422,8 @@ namespace Hollow.Presentation
                     else Play(AudioCue.CompanionShot, ev.Position, 0.7f);
                     break;
                 case SimEventType.MeleeSwing: Play(AudioCue.MeleeSwing, ev.Position); break;
-                case SimEventType.EnemyAttack when ev.Code >= 0 && w.Profile.Enemy((EnemyId)ev.Code).Role == EnemyRole.Ranged:
-                    Play(AudioCue.EnemyShot, ev.Position, OnScreen(ev.Position) ? 1f : 0.5f);
-                    break;
-                case SimEventType.EnemyTelegraph:
-                    Play(TelegraphCue(w, ev.EntityId), ev.Position);
-                    break;
-                case SimEventType.EnemyHit:
-                    Play(IsMetal(w, ev.EntityId) ? AudioCue.ImpactMetal : AudioCue.ImpactFlesh, ev.Position);
-                    break;
                 case SimEventType.ProjectileImpact when ev.Value == 0f:
                     Play(AudioCue.ImpactWall, ev.Position, 0.6f);
-                    break;
-                case SimEventType.EnemyDied:
-                    var f = w.Profile.Enemy((EnemyId)ev.Code).Faction;
-                    Play(f == Faction.Animals ? AudioCue.DeathAnimal : f == Faction.Robots ? AudioCue.DeathRobot : AudioCue.DeathHuman, ev.Position);
                     break;
                 case SimEventType.ReloadStarted: Play(AudioCue.Reload); break;
                 case SimEventType.ReloadFinished: Play(AudioCue.ReloadDone); break;

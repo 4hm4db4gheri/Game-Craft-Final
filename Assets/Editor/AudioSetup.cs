@@ -68,6 +68,42 @@ namespace Hollow.EditorTools
             [AudioCue.MusicPhase3] = (AudioBus.Music, 0.55f, 0f, 100),
         };
 
+        /// <summary>Every enemy type, spawned type and boss has a profile (v0.19 §20: 27 profiles).</summary>
+        public static IEnumerable<string> EnemyProfileKeys()
+        {
+            foreach (var n in System.Enum.GetNames(typeof(Hollow.Data.EnemyId))) yield return n;
+            foreach (var n in System.Enum.GetNames(typeof(Hollow.Data.BossId))) yield return "Boss_" + n;
+        }
+
+        /// <summary>
+        /// Profiles from files named Enemy_&lt;Key&gt;_&lt;Event&gt;[_n] in Assets/Audio (EnemySoundSynth makes them; a
+        /// recorded file with the same name replaces one). Hits reuse the shared impacts at a per-type pitch.
+        /// </summary>
+        static void BuildEnemyProfiles(AudioCatalog catalog, List<(string Name, AudioClip Clip)> clips)
+        {
+            catalog.Enemies.Clear();
+            foreach (var key in EnemyProfileKeys())
+            {
+                bool boss = key.StartsWith("Boss_");
+                var p = new EnemyAudioProfile { Key = key, PresenceInterval = boss ? 2.5f : 3f };
+                foreach (EnemySound ev in System.Enum.GetValues(typeof(EnemySound)))
+                {
+                    var def = p.Get(ev);
+                    string name = $"Enemy_{key}_{ev}";
+                    def.Clips.AddRange(clips.Where(c => c.Name == name || c.Name.StartsWith(name + "_")).OrderBy(c => c.Name).Select(c => c.Clip));
+                    def.Volume = ev switch
+                    {
+                        EnemySound.Presence => 0.25f, EnemySound.Warning => 0.75f, EnemySound.AreaWarning => 0.85f,
+                        EnemySound.Attack => 0.55f, EnemySound.Hit => 0.5f, _ => 0.6f,
+                    };
+                }
+                int h = 17;
+                foreach (char c in key) h = unchecked(h * 31 + c);
+                p.Hit.Pitch = boss ? 0.7f : 0.8f + (System.Math.Abs(h) % 46) / 100f; // 0.80–1.25: each type's impacts differ
+                catalog.Enemies.Add(p);
+            }
+        }
+
         [MenuItem("Hollow/Audio/Rebuild Catalog")]
         public static AudioCatalog BuildCatalog()
         {
@@ -102,6 +138,7 @@ namespace Hollow.EditorTools
                 if (def.Clips.Count == 0) missing.Add(cue);
                 catalog.Cues.Add(def);
             }
+            BuildEnemyProfiles(catalog, clips);
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             Debug.Log($"[Hollow audio] Catalog: {catalog.Cues.Count - missing.Count} cue(s) with files, {missing.Count} silent stub(s): {string.Join(", ", missing)}");

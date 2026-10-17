@@ -49,6 +49,7 @@ namespace Hollow.Presentation
         /// <summary>Drops every entity view (used when the world is replaced by a load or a retry).</summary>
         public void ResetViews()
         {
+            AudioDirector.Instance?.ResetWorldSounds();
             enemies.ReleaseUnseen();
             projectiles.ReleaseUnseen();
             coins.ReleaseUnseen();
@@ -208,6 +209,7 @@ namespace Hollow.Presentation
                 }
             }
             if (feedback != null) feedback.EndFrame(w);
+            if (audio != null) audio.Ambient(w); // presence sounds of visible enemies (v0.19 §20)
         }
 
         ViewPool<EnemyView> PoolFor(EnemyId id)

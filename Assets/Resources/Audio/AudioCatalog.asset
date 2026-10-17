@@ -409,4 +409,821 @@ MonoBehaviour:
     PitchJitter: 0
     Cooldown: 0
     Priority: 100
+  Enemies:
+  - Key: A1_RunnerWolf
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: a5a79a9d43ce7724ba45ee80adbc4871, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 407c570fb0ff8f842b1b65c9eb4a67b9, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 3140df1dfd635c14fb53dc1356016a2a, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.98
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 993a27d6a0345644a97c4c92342af2a3, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: A2_QuillShooter
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: b0ea9321c5b438743a0818ffc3aa54ab, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 7604864b473bea548b38660cbcd1cea3, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 6a35ae79b4d56ff468b7fe315f5a1145, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.16
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: ff6cd53f5f0a8544da006034bc7b9b74, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: A3_ChargingBoar
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 63f152d9871eb3a47bfc92a8f8445f7b, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 88ddab93a1ef96940b678fe338eea738, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: eaeda752f96f7884c804128857b0f32b, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.09
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: f58f719318b3ab14ba6ea93e701e2133, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: A4_ArmoredTortoise
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 2932e47906ca5e746bf309d3c42adcc3, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: b5d2bb158477fa1498ed01d710d82b9a, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 60e7e3897d30788489fa860b86b98a4a, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.22
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 30b13450703b1004493e65b412f8c4e2, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: A5_HowlingWolf
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 12461f43f4561fb4f8c724130ffafe7a, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 9622fb2a0cf86bd42bed04397f27fd06, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: b34c382ff2a5dfb438a6427d02e4d8de, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.24
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 858776e1d9c09a446a4498e35b2f2c97, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: A6_ExplosiveBeetle
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 92e11d99ca940464c96f03f1b2b14109, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: e6ed37e4932686140bc1f8e88fa3f74b, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 64b0b914326c1334fa4e95de211c6c16, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.03
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 365ee3f55424b8640a466de6ea0a49aa, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: A7_MotherSpider
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 2d7dfdbd9692c6f4d88580d4f16c9035, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: bd70261352df6e14db837c40c447595e, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 2e3dfacf6958b4147b27d46763fe9de6, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.98
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: a0ea2019059a5ca44ab31772e26ef41e, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R1_Crawler
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: cbd618e3d6f6c554bb0b19abcac225a5, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: f510a829503af7d4abcdb1f0e15cedeb, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: e6bd7d55195431e458a0144f684f83ff, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.01
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: a065142a49bb75a43b62d36b9519a043, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R2_Shooter
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 8a6098b113e8b7e48a4fd086a589d709, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 1992a9b21167cb842ab4c164fd404556, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: d8457212481ce024da37fa6531b936f4, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.1800001
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 2eaf4e145adb9ab40aacc8a52470f91b, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R3_SawCharger
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: d4acea97e166c774fb92470591380312, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: f8d6382bd82f80e4eab487bee40acc1f, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 178bdc4dbfff3ca46952a74e9e226f66, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.84000003
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: b0878a958431aa4419a0eaa4d260849d, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R4_ShieldRobot
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 68e848ef1685a494cba65293cbeb5444, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 3254106e2fe801747a550d18819b682a, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: d6b0b8650399d3d4c961dcea7d5daa41, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.17
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: ab532b657c365a84182715370e14044d, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R5_Repair
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 59923d762c8568644bd84f85b3d792a6, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 2a994958108fc9c41aa7b4c3a6a7262b, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: fdd116675ee4d0440bd8a9ebc1c52aaf, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: c84a0f0bc5afdd244bb43343ccc4f8d0, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R6_Suicide
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 5674f7623d4a2374a80b4e74f7fc527e, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 4220bfa8532cd924399b2d2a3ca2f6e9, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 149978b6b2e38d643b645e4a56152fa1, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.88
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: d15b046bc9c7680498f76c2ade727e3f, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R7_DroneCarrier
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 4f0986183c1ccf74f837fe5aeccefd0d, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: a47c8ab8b064a974fbc7ac94d9ccf93e, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 202f68d0f193c1d40bf6d1307bd20828, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.09
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 51e498dff7c7101478974d906f0518d1, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H1_BatonGuard
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 17164fbbee6135a4290d4ee52e0e65c6, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: aebfd84b5385a884784aa22a20170573, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 1cd5f9875d08fb7498c8fb90c847a4eb, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.92
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 92556666fd9197649b26243dc257abae, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H2_RifleGuard
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: fc5e09d42bf43b447ae3b89195940b96, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 42115f9b19b16da45a2c9c01095b968d, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: a3b2be2bd6623a24bae60974b2be0650, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.97
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: df1c42279e3ab7841bc13ae548d732a8, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H3_FastAssaulter
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 029b7fc4a21c9204c924799e209658a6, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: d4157e24a0e6ee042b21ab76f9a0ab4b, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 7028661bbf5758549b76cea51a1ef5b4, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.95
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 738a184b8729eb447998982e4bc6cc36, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H4_ShieldGuard
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 4defc5d9e7e5ca3448ad5a00057aa153, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 91b947ddb6b535648b846bbc90574eef, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: d93ee54bd1adb8f419aed6e419622996, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 16d73e8d6b6684646b6069ec88996af2, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H5_Medic
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 08be5413f6600fd4bb16e2ba82bb46b5, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: f6763eb70a8376642a62a926f589e1e3, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 8cdf17ba8b3d35d47a86fb19a1e71d3d, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.91
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 8507719501ae41042a6f3c8a7e8f0fb4, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H6_Grenadier
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: f3545ce1139027347ac77811866fe839, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: cd7ed1c63ac482244942fdb20e4393f2, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: bc74dcfdf679170479b179f20e6989c0, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.97
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 32f6b5b052b3b134b8a187dd5115b488, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H7_Engineer
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 6d58459ef21c9364eae05ebd2de32dc0, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: dce99f873c9ccc84ea910bfbd8828c2c, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 3fdb6a645a904cc4ab1bff2a0e9b6eeb, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.08
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: 2f0c47e32c8c39e4190114ffd17be2ea, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: A7c_Spiderling
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 4a73b707876c75146adf07d60362434e, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 200391576faabb44fbe2387335335155, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: d59e520613706764a91d945d74443683, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 1.08
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: bc06b2636d28fdc4e97dc3d799391206, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: R7c_Drone
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: eba5d37a20865ec4294df7af1b4d9057, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: e9df6ff8f1823204a9b5315e51294382, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: addff0207020f6d4cbea90e2862568b0, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.96000004
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: f8f2454a7d02410439ac450b51b6b0bb, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: H7c_Turret
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: 47274bbc7a9d700408ac850a0c071823, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: c423be8500390144f9d9fa2891cc4b2d, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips: []
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: e1fe5548f2c3ed343ab0ceea99368df2, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.88
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: ce71a9466a8fe284789effa0ffffa984, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 3
+  - Key: Boss_LargeBeast
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: fe9ef33752a472841b24bf33dca5f5a9, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 8140b13ffc14c0b41ad6110b75ce8586, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips:
+      - {fileID: 8300000, guid: 077ddb75464c06a4088a16381592885e, type: 3}
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: ee12673d3eafa6d4eb15a6f52b01e6c9, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.7
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: b02e821b250835f4a9713eabed0de071, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 2.5
+  - Key: Boss_IndustrialRobot
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: bce6020ad7f51ea49aa864e30e4aa2ab, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 72c2386c469e3d240a83f24fdf2df66a, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips:
+      - {fileID: 8300000, guid: c91566ccfce9a464ca5b4cf9c1cfc6e2, type: 3}
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 31dcb209ca9f49b43a6cc75a741b2b0c, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.7
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: f59df2ff8c12b15419aac297e8eaceb4, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 2.5
+  - Key: Boss_FormerCompanion
+    Presence:
+      Clips:
+      - {fileID: 8300000, guid: ac95bb7289ce57647bc11fdc636466d3, type: 3}
+      Volume: 0.25
+      Pitch: 1
+    Warning:
+      Clips:
+      - {fileID: 8300000, guid: 2abc0b7726a877f459cd5829a2c49ae1, type: 3}
+      Volume: 0.75
+      Pitch: 1
+    AreaWarning:
+      Clips:
+      - {fileID: 8300000, guid: 4199a39d59ed4784f93bd618c2e20196, type: 3}
+      Volume: 0.85
+      Pitch: 1
+    Attack:
+      Clips:
+      - {fileID: 8300000, guid: 41ed1d33f7af0144eb07d8dcabcd2f15, type: 3}
+      Volume: 0.55
+      Pitch: 1
+    Hit:
+      Clips: []
+      Volume: 0.5
+      Pitch: 0.7
+    Death:
+      Clips:
+      - {fileID: 8300000, guid: f619f48a7e4628b4491d6ce0708f5bd8, type: 3}
+      Volume: 0.6
+      Pitch: 1
+    PresenceInterval: 2.5
+  MaxOneShots: 24
+  MaxWarnings: 4
+  PresenceGap: 0.15
   DuckLevel: 0.35
