@@ -29,7 +29,7 @@ namespace Hollow.Tests.Sim
         {
             var sim = WithItems();
             var w = sim.World;
-            w.Inventory.MoveToFirst(ItemId.PushPulse);
+            w.Inventory.Selected = ItemId.PushPulse;
             sim.Step(new PlayerCommand { EquipItemPressed = true, AimWorld = AimRight });
             Assert.IsTrue(w.Inventory.Holding);
             Assert.AreEqual(ItemId.PushPulse, w.Inventory.Held);
@@ -44,15 +44,32 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void GCyclesSkippingEmptyAndLockedSlots()
+        public void GSelectsTheNextTypeSkippingEmptyAndLockedOnesWithoutEquipping()
         {
             var sim = WithItems(phase: 1);
             var w = sim.World;
+            Assert.AreEqual(ItemId.Grenade, w.Inventory.Selected, "the first purchase sets the selection");
             w.Inventory.Get(ItemId.Grenade).Count = 0;
             sim.Step(new PlayerCommand { CycleItemPressed = true });
-            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Held, "grenade empty, push pulse next");
+            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Selected, "grenade empty, push pulse next");
+            Assert.IsFalse(w.Inventory.Holding, "G only selects; F equips");
             sim.Step(new PlayerCommand { CycleItemPressed = true });
-            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Held, "mine/EMP/shield are locked in phase 1");
+            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Selected, "mine/EMP/shield are locked in phase 1");
+            sim.Step(new PlayerCommand { EquipItemPressed = true });
+            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Held);
+        }
+
+        [Test]
+        public void UsingTheLastOfATypePassesTheSlotToTheNextType()
+        {
+            var sim = WithItems();
+            var w = sim.World;
+            w.Inventory.Get(ItemId.PushPulse).Count = 1;
+            w.Inventory.Selected = ItemId.PushPulse;
+            sim.Step(new PlayerCommand { EquipItemPressed = true, AimWorld = AimRight });
+            sim.Step(Click);
+            Assert.AreEqual(0, w.Inventory.Count(ItemId.PushPulse));
+            Assert.AreEqual(ItemId.Mine, w.Inventory.Selected);
         }
 
         [TestCase("right click")]
@@ -195,13 +212,15 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void SlotOrderIsSaved()
+        public void TheSelectedTypeIsSaved()
         {
             var sim = WithItems();
             var w = sim.World;
-            w.Inventory.MoveToFirst(ItemId.EmpPulse);
+            ItemSystem.Cycle(w);
+            ItemSystem.Cycle(w);
             var loaded = WorldSerializer.FromJson(WorldSerializer.ToJson(w), w.Profile, w.Layout);
-            Assert.AreEqual(ItemId.EmpPulse, loaded.Inventory.Slots[0].Id);
+            Assert.AreEqual(ItemId.Mine, loaded.Inventory.Selected);
+            Assert.IsTrue(loaded.Inventory.HasSelection);
         }
     }
 }

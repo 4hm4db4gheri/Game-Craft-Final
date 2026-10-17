@@ -8,8 +8,8 @@ namespace Hollow.Sim
     public enum ItemUseResult { Used, NotHolding, Gap, Invalid }
 
     /// <summary>
-    /// Items (GDD §9, §10): F equips the first available item without using it, G cycles available items
-    /// (skipping empty or locked ones), a world click uses the held item and restores the weapon, right click
+    /// Items (GDD v0.19 §8): one selected type. G selects the next type with stock (skipping empty or locked
+    /// ones), F equips the selected item without using it, a world click uses the held item and restores the weapon, right click
     /// or a weapon swap cancels without consuming, an invalid use consumes nothing, and one shared use gap
     /// never blocks weapon swaps or dash. Item damage ignores the general damage skill; grenades and mines
     /// never hurt the player or the companion.
@@ -23,7 +23,7 @@ namespace Hollow.Sim
             var inv = w.Inventory;
             if (w.Player.Dead) { inv.Holding = false; return; }
 
-            if (cmd.EquipItemPressed) EquipFirst(w);
+            if (cmd.EquipItemPressed) EquipSelected(w);
             if (cmd.CycleItemPressed) Cycle(w);
             if (inv.Holding && (cmd.CancelPressed || cmd.SelectWeaponSlot != 0 || cmd.CycleWeapon != 0)) Cancel(w);
             if (inv.Holding && inv.Count(inv.Held) <= 0) Cancel(w);
@@ -41,30 +41,59 @@ namespace Hollow.Sim
         public static bool Available(World w, ItemId id) =>
             w.Inventory.Count(id) > 0 && w.Profile.Item(id).UnlockPhase <= w.Phase;
 
-        public static void EquipFirst(World w)
+        static readonly ItemId[] AllTypes = (ItemId[])System.Enum.GetValues(typeof(ItemId));
+
+        /// <summary>The selected type if it can be used, otherwise the next type that can (null when none).</summary>
+        public static ItemId? Selection(World w)
         {
-            foreach (var s in w.Inventory.Slots)
-                if (Available(w, s.Id)) { Equip(w, s.Id); return; }
+            var inv = w.Inventory;
+            if (inv.HasSelection && Available(w, inv.Selected)) return inv.Selected;
+            int start = inv.HasSelection ? System.Array.IndexOf(AllTypes, inv.Selected) : -1;
+            for (int i = 1; i <= AllTypes.Length; i++)
+            {
+                var id = AllTypes[(start + i) % AllTypes.Length];
+                if (Available(w, id)) return id;
+            }
+            return null;
         }
 
-        /// <summary>Equips without consuming (F, G or clicking the icon).</summary>
+        /// <summary>F: equips the selected type (or the next usable one) without consuming it.</summary>
+        public static bool EquipSelected(World w)
+        {
+            var id = Selection(w);
+            if (id == null) return false;
+            Select(w, id.Value);
+            return Equip(w, id.Value);
+        }
+
+        /// <summary>Equips without consuming (F or clicking the slot).</summary>
         public static bool Equip(World w, ItemId id)
         {
             if (!Available(w, id)) return false;
+            Select(w, id);
             w.Inventory.Holding = true;
             w.Inventory.Held = id;
             return true;
         }
 
+        static void Select(World w, ItemId id)
+        {
+            w.Inventory.HasSelection = true;
+            w.Inventory.Selected = id;
+        }
+
+        /// <summary>G: the next type with stock becomes the selection; a held item follows the selection.</summary>
         public static void Cycle(World w)
         {
-            var slots = w.Inventory.Slots;
-            if (slots.Count == 0) return;
-            int start = w.Inventory.Holding ? slots.FindIndex(s => s.Id == w.Inventory.Held) : -1;
-            for (int i = 1; i <= slots.Count; i++)
+            var inv = w.Inventory;
+            int start = inv.HasSelection ? System.Array.IndexOf(AllTypes, inv.Selected) : -1;
+            for (int i = 1; i <= AllTypes.Length; i++)
             {
-                var s = slots[(start + i + slots.Count) % slots.Count];
-                if (Available(w, s.Id)) { Equip(w, s.Id); return; }
+                var id = AllTypes[(start + i) % AllTypes.Length];
+                if (!Available(w, id)) continue;
+                Select(w, id);
+                if (inv.Holding) inv.Held = id;
+                return;
             }
         }
 
@@ -92,6 +121,7 @@ namespace Hollow.Sim
             w.Progress.ItemsUsed++;
             w.Emit(SimEventType.ItemUsed, PlayerState.EntityId, w.Player.Position, default, 0, (int)inv.Held);
             inv.Holding = false; // the previous weapon comes back
+            if (inv.Count(inv.Held) <= 0 && Selection(w) is ItemId next) Select(w, next); // an empty type passes the slot on
             return ItemUseResult.Used;
         }
 

@@ -19,12 +19,15 @@ namespace Hollow.Sim
     }
 
     /// <summary>
-    /// Five item slots in a player-chosen order (saved, §10), the held (equipped, not yet used) item,
-    /// the shared use gap, the personal shield and placed mines.
+    /// Carried item stacks, the one selected type shown in the HUD slot (v0.19 §8, saved), the held (equipped,
+    /// not yet used) item, the shared use gap, the personal shield and placed mines.
     /// </summary>
     public sealed class InventoryState
     {
         public List<ItemStack> Slots = new();
+        /// <summary>The type F equips; G moves it to the next type with stock. Set by the first purchase.</summary>
+        public bool HasSelection;
+        public ItemId Selected;
 
         public bool Holding;
         public ItemId Held;
@@ -41,15 +44,7 @@ namespace Hollow.Sim
             var s = Get(id);
             if (s == null) Slots.Add(s = new ItemStack { Id = id });
             s.Count += count;
-        }
-
-        /// <summary>Shop action "place item in first slot" for fast F access (§10).</summary>
-        public void MoveToFirst(ItemId id)
-        {
-            var s = Get(id);
-            if (s == null) return;
-            Slots.Remove(s);
-            Slots.Insert(0, s);
+            if (!HasSelection && count > 0) { HasSelection = true; Selected = id; } // the first purchase selects
         }
     }
 }

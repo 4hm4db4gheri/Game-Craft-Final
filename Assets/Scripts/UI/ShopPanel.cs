@@ -24,18 +24,16 @@ namespace Hollow.UI
         readonly List<Button> pageButtons = new();
         readonly List<(Button button, TextMeshProUGUI text, ShopOffer offer)> rows = new();
         Action<ShopOffer> onBuy;
-        Action<ItemId> onFirstSlot;
         int page = 1;
         int shownPage = -1;
         int shownSignature;
 
         public bool Visible => panel.gameObject.activeSelf;
 
-        public void Init(UIRoot uiRoot, Action<ShopOffer> buy, Action<ItemId> firstSlot)
+        public void Init(UIRoot uiRoot, Action<ShopOffer> buy)
         {
             root = uiRoot;
             onBuy = buy;
-            onFirstSlot = firstSlot;
             var t = root.Theme;
             panel = UIFactory.Rect(root.Modal, "Shop", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-30, 70), new Vector2(560, 800));
             UIFactory.Panel(panel, t, null, raycast: true);
@@ -145,16 +143,7 @@ namespace Hollow.UI
             Section(Loc.T("shop.equipment"));
             foreach (var o in offers)
             {
-                if (o.Kind == OfferKind.BuyItem && o.Page == page)
-                {
-                    Row(o, ItemLabel(w, o));
-                    if (w.Inventory.Count(o.Item) > 0)
-                    {
-                        var item = o.Item;
-                        UIFactory.Button(list, "FirstSlot", Loc.T("shop.firstSlot"), t, new Vector2(0, 1), new Vector2(34, -y + 30), new Vector2(52, 26),
-                            () => onFirstSlot?.Invoke(item), out _, 16);
-                    }
-                }
+                if (o.Kind == OfferKind.BuyItem && o.Page == page) Row(o, ItemLabel(w, o));
                 if (o.Kind == OfferKind.HealPlayer || (o.Kind == OfferKind.HealCompanion && o.Lock != LockReason.NoCompanion))
                     Row(o, HealLabel(w, o));
             }

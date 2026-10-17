@@ -19,12 +19,13 @@ namespace Hollow.UI
         TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText;
         UnityEngine.UI.Image companionArrow, guideArrow;
         readonly StringBuilder sb = new(128);
-        readonly UnityEngine.UI.Button[] itemButtons = new UnityEngine.UI.Button[5];
-        readonly TextMeshProUGUI[] itemTexts = new TextMeshProUGUI[5];
-        readonly UnityEngine.UI.Image[] itemFrames = new UnityEngine.UI.Image[5];
-        readonly ItemId[] itemOrder = new ItemId[5];
+        UnityEngine.UI.Button itemButton;
+        TextMeshProUGUI itemText;
+        UnityEngine.UI.Image itemFrame;
+        BarView itemGap;
+        ItemId shownItem;
 
-        /// <summary>Clicking an item icon only equips it (§10).</summary>
+        /// <summary>Clicking the item slot only equips it (v0.19 §8).</summary>
         public System.Action<ItemId> ItemClicked;
 
         public void Init(UIRoot uiRoot)
@@ -56,15 +57,10 @@ namespace Hollow.UI
             var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -175), new Vector2(1200, 90));
             statusText = UIFactory.Text(status, "Text", "", t, 30, TextAlignmentOptions.Center, t.Accent);
 
-            for (int i = 0; i < itemButtons.Length; i++)
-            {
-                int index = i;
-                var b = UIFactory.Button(hud, $"Item{i}", "", t, new Vector2(0.5f, 0), new Vector2(-220 + i * 110, 75), new Vector2(96, 72),
-                    () => ItemClicked?.Invoke(itemOrder[index]), out var label, 18);
-                itemButtons[i] = b;
-                itemTexts[i] = label;
-                itemFrames[i] = b.GetComponent<UnityEngine.UI.Image>();
-            }
+            itemButton = UIFactory.Button(hud, "Item", "", t, new Vector2(0.5f, 0), new Vector2(0, 75), new Vector2(300, 76),
+                () => ItemClicked?.Invoke(shownItem), out itemText, 20);
+            itemFrame = itemButton.GetComponent<UnityEngine.UI.Image>();
+            itemGap = UIFactory.Bar(itemButton.transform, "Gap", t, new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 4), new Vector2(280, 5), t.Accent);
 
             bossBar = UIFactory.Bar(hud, "Boss", t, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -100), new Vector2(900, 22), t.Warning);
             bossText = UIFactory.Text(bossBar.transform, "Name", "", t, 22, TextAlignmentOptions.Center);
@@ -211,35 +207,39 @@ namespace Hollow.UI
             if (!active) sb.Append("</color>");
         }
     
-        static readonly ItemId[] AllItems = (ItemId[])System.Enum.GetValues(typeof(ItemId));
-        readonly int[] itemKeys = { -1, -1, -1, -1, -1 };
+        int itemKey = -1;
 
-        /// <summary>Five slots in the saved order: quantity, selection, lock and the shared use gap (§10).</summary>
+        /// <summary>
+        /// One slot (v0.19 §8): the selected type, its count, how many other types are carried, the G/F hints and
+        /// the shared use gap. Rebuilt only when it changes.
+        /// </summary>
         void SyncItems(World w)
         {
             var inv = w.Inventory;
-            int n = 0;
-            foreach (var s in inv.Slots) if (n < 5) itemOrder[n++] = s.Id;
-            foreach (var id in AllItems) if (n < 5 && inv.Get(id) == null) itemOrder[n++] = id;
-            float gap = Mathf.Clamp01((inv.NextUseTick - w.Clock.Tick) / (float)Mathf.Max(1, w.Ticks(w.Profile.Economy.ItemUseGap)));
-            for (int i = 0; i < 5; i++)
+            var sel = ItemSystem.Selection(w);
+            int others = 0;
+            foreach (var s in inv.Slots) if (s.Count > 0 && (sel == null || s.Id != sel.Value) && ItemSystem.Available(w, s.Id)) others++;
+            int count = sel != null ? inv.Count(sel.Value) : 0;
+            bool held = inv.Holding && sel != null && inv.Held == sel.Value;
+            int key = sel == null ? 0 : ((int)sel.Value + 1) * 100000 + count * 1000 + others * 10 + (held ? 1 : 0);
+            if (key != itemKey)
             {
-                var id = itemOrder[i];
-                var data = w.Profile.Item(id);
-                bool locked = data.UnlockPhase > w.Phase;
-                int count = inv.Count(id);
-                bool held = inv.Holding && inv.Held == id;
-                int key = ((int)id + 1) * 100000 + (locked ? 50000 : 0) + count * 100 + data.Carry * 3 + (i == 0 ? 1 : 0);
-                if (itemKeys[i] != key)
+                itemKey = key;
+                if (sel == null) itemText.text = $"<color=#{DimHex}>{Loc.T("hud.noItem")}</color>";
+                else
                 {
-                    itemKeys[i] = key;
-                    string name = Loc.T("itemShort." + id);
-                    itemTexts[i].text = locked ? $"<color=#{DimHex}>{name}\n<size=14>{Loc.F("hud.itemLocked", data.UnlockPhase)}</size></color>"
-                        : $"<b>{name}</b>\n{count}/{data.Carry}{(i == 0 ? "  <size=13>F</size>" : "")}";
+                    shownItem = sel.Value;
+                    var data = w.Profile.Item(sel.Value);
+                    string more = others > 0 ? "   " + Loc.F("hud.itemOthers", others) : "";
+                    string hint = Loc.T(held ? "hud.itemHeld" : others > 0 ? "hud.itemKeys" : "hud.itemKeyF");
+                    itemText.text = $"<b>{Loc.Item(sel.Value)}</b>  {count}/{data.Carry}{more}\n<size=15><color=#{DimHex}>{hint}</color></size>";
                 }
-                itemButtons[i].interactable = !locked && count > 0;
-                itemFrames[i].color = held ? root.Theme.Accent : gap > 0 && count > 0 ? new Color(1, 1, 1, 0.5f + 0.5f * (1 - gap)) : Color.white;
             }
+            float gap = Mathf.Clamp01((inv.NextUseTick - w.Clock.Tick) / (float)Mathf.Max(1, w.Ticks(w.Profile.Economy.ItemUseGap)));
+            itemGap.gameObject.SetActive(gap > 0);
+            if (gap > 0) itemGap.Set(1f - gap);
+            itemButton.interactable = sel != null;
+            itemFrame.color = held ? root.Theme.Accent : Color.white;
         }
 
         /// <summary>Companion health bar and the screen-edge danger arrow when he is hurt off-screen (§4).</summary>
