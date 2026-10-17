@@ -1,7 +1,8 @@
 # Hollow — Release notes (jam build)
 
-Build: Windows x64 release, clean (output folder deleted first), `Builds/Windows/Hollow.exe` — **Succeeded, 0 errors**, 132.8 MB, 63 s. The 496 build warnings are all third-party: 491 shader warnings from the AI Inference (Sentis) package that came with the template and is not used by the game, 5 from the Editor's account service; none from game code. The dev panel was removed from the release scene at build time (build log: "Release build: removed DevPanel"). A development build (`Builds/WindowsDev`) was used for the stress test.
-Tests: 398 EditMode tests, 398 passed (includes the full-game bot, arena, readability, telemetry, apply-rule and constants-guard tests).
+Build: Windows x64 release, `Builds/Windows/Hollow.exe` — **Succeeded, 0 errors, 1 warning**, 139.7 MB (incremental rebuild after GDD v0.19, T23–T31). The built game was started and ran without errors in `Player.log`; the dev panel is removed from release builds.
+Tests: 424 EditMode tests, 424 passed (includes the full-game bot, localisation, AI selection, gift, item slot, two stations and enemy-audio tests).
+GDD: v0.19 (`docs/GDD_v0.19.md`); what changed and where it is implemented: `docs/GDD_CHANGES_v0.19.md`, decisions D61–D71. Not done: mobile (v0.19 §22, only if time remains). The game is now Persian (RTLTMPro + Vazirmatn); enemy sounds are synthesised placeholders and no voice is recorded yet (`docs/VOICE_LINES.md`).
 Date: 2026-10-17. Machine used for every measurement: i7-8700, GTX 1650 SUPER, 16 GB RAM, Windows 11 Pro.
 
 This document is honest by design (T22): nothing here claims that balance or feel has been validated —

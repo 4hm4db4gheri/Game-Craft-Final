@@ -10,7 +10,7 @@
 ## خلاصه‌ی پروژه
 
 - **نام:** Game Craft Final — بازی **Hollow** (جم دو روزه). شوتر دوبعدی با دید 3/4 از بالا مثل Kill The Crows (نه پیکسل‌آرت)، سه فاز (حیوانات، ربات‌ها، انسان‌ها)، ۵ موج + ۱ باس در هر فاز.
-- **مرجع طراحی:** GDD جدید **v0.19** است: `docs/GDD_v0.19.md` (تبدیل از `Assets/GDD/Hollow_Game_Design_v0.19_EN.docx`). کد هنوز بر اساس v0.12 است (`docs/GDD.md`). فهرست تفاوت‌ها و کارهای لازم در `docs/GDD_CHANGES_v0.19.md`. پرامپت اصلی کاربر شامل تسک‌های T00 تا T22 است؛ وضعیت در `docs/TASKS.md`.
+- **مرجع طراحی:** GDD جدید **v0.19** است: `docs/GDD_v0.19.md` (تبدیل از `Assets/GDD/Hollow_Game_Design_v0.19_EN.docx`). کد حالا بر اساس v0.19 است (به‌جز موبایل)؛ `docs/GDD.md` نسخه‌ی قدیمی v0.12 برای مرجع است. فهرست تفاوت‌ها و وضعیت هر کدام در `docs/GDD_CHANGES_v0.19.md`. پرامپت اصلی کاربر شامل تسک‌های T00 تا T22 است؛ وضعیت در `docs/TASKS.md`.
 - **Unity:** `6000.6.0f1`، URP با Renderer2D (sort axis = Y برای مرتب‌سازی بر اساس پا)، Input System جدید (actionها در کد، `UnityInputSource`)، Cinemachine 6.6 و AI Navigation (کاربر نصب کرده؛ Navigation استفاده نمی‌شود)، Newtonsoft JSON.
 - **git:** شاخه‌ی `main`، یک commit برای هر تسک، بدون push مگر کاربر بخواهد.
 
@@ -33,7 +33,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۱۰ تست، همه پاس) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۲۴ تست، همه پاس) |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
@@ -51,12 +51,12 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۰۲ تست پاس. عددهای بالانس از GDD v0.19 هستند.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۲۴ تست پاس. عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
 - باقی‌مانده: هیچ تسکی از T00–T22 نمانده. کارهای بعدی با طراح/کاربر: اعداد سطح ۲ و ۳ سلاح‌ها، playtest انسانی، آرت AI، گوش دادن به صداها (فهرست در `docs/RELEASE_NOTES.md`).
 ## کارهای باز / ایده‌ها
 
-- **اعمال GDD v0.19**: عددها (سلاح، دشمن، فرزند، باس)، retry با جان پر، falloff و نفوذ گلوله، و جلوه‌های جسد و tracer انجام شد. هنوز مانده: فارسی‌سازی و RTL، انتخاب ۴ AI، هدیه‌ی rifle، یک اسلات آیتم، دو ایستگاه خدمات، فیلم‌نامه‌ی جدید، تنظیمات voice و زیرنویس، صدای هر دشمن. فهرست در `docs/GDD_CHANGES_v0.19.md`.
+- **GDD v0.19**: همه‌ی بخش‌ها جز موبایل (F13، فقط اگر وقت بماند) انجام شد. با کاربر/تیم: گوش دادن به صداهای سنتزشده‌ی دشمن‌ها، ضبط صداپیشگی طبق `docs/VOICE_LINES.md`، بازبینی متن فارسی و فیلم‌نامه توسط آرتیست، playtest انسانی.
 
 - آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است و زمین، prop، decor و کیوسک فروشگاه را هم پوشش می‌دهد (T16).
 ---
