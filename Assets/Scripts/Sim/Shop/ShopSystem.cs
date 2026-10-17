@@ -46,8 +46,8 @@ namespace Hollow.Sim
     }
 
     /// <summary>
-    /// The live world-station shop (§11): never pauses combat, one-click purchases with no confirmation,
-    /// failed purchases spend nothing, stock refreshes once per wave or boss preparation only.
+    /// The world-station shop: automatically available throughout the timed safe interval. The stations
+    /// remain in the arena, but normal waves and boss fights do not allow shopping.
     /// </summary>
     public static class ShopSystem
     {
@@ -60,6 +60,19 @@ namespace Hollow.Sim
         public static void Step(World w, in PlayerCommand cmd)
         {
             var s = w.Shop;
+            if (w.Waves.Kind == EncounterKind.SafeInterval)
+            {
+                if (!s.Open) SetOpen(w, true);
+                return; // movement, dash and E never close the timed shop
+            }
+            bool tutorialShopping = w.Waves.Kind == EncounterKind.Wave &&
+                (w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade);
+            if ((w.Waves.Kind == EncounterKind.Wave && !tutorialShopping) ||
+                w.Waves.Kind == EncounterKind.Boss || w.Waves.Kind == EncounterKind.PhaseComplete)
+            {
+                if (s.Open) SetOpen(w, false);
+                return;
+            }
             bool inRange = InRange(w);
             if (cmd.InteractPressed && (inRange || s.Open)) SetOpen(w, !s.Open);
             if (s.Open && (!inRange || w.Player.Dashing || w.Player.Dead)) SetOpen(w, false);

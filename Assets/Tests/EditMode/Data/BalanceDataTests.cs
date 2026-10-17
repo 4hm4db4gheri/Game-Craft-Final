@@ -41,6 +41,18 @@ namespace Hollow.Tests.Data
         }
 
         [Test]
+        public void RevisionFourGetsTheNewShoppingInterval()
+        {
+            var baseline = TestData.Baseline();
+            var older = BalanceJson.Clone(baseline);
+            older.Revision = 4;
+            older.Spawning.SafeIntervalSeconds = 8f;
+            BalanceProfileStore.AddCompanionRegeneration(older, baseline);
+            Assert.AreEqual(15f, older.Spawning.SafeIntervalSeconds);
+            Assert.AreEqual(baseline.Revision, older.Revision);
+        }
+
+        [Test]
         public void BaselineHasNoValidationErrors()
         {
             var errors = BalanceValidator.Validate(TestData.Baseline()).Where(i => i.Severity == IssueSeverity.Error).ToList();

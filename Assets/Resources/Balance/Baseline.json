@@ -1,6 +1,6 @@
 {
   "Schema": 1,
-  "Revision": 4,
+  "Revision": 5,
   "Name": "Baseline (GDD v0.19)",
   "Player": {
     "MaxHealth": 100.0,
@@ -96,7 +96,7 @@
     "SupportExplosiveSeparation": 8.0,
     "MinDistancePlayerBodyWidths": 4.0,
     "MinDistanceCompanionBodyWidths": 3.0,
-    "SafeIntervalSeconds": 8.0,
+    "SafeIntervalSeconds": 15.0,
     "NoSafePointRetryDelay": 0.25,
     "TutorialFirstGroupCount": 4,
     "ChildSpawnBackAngle": 140.0,

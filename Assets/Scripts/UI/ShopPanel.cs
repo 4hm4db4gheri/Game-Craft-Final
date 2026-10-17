@@ -11,8 +11,8 @@ using UnityEngine.UI;
 namespace Hollow.UI
 {
     /// <summary>
-    /// Narrow live shop panel (§11): shows everything unlocked through the current phase.
-    /// The world keeps running and WASD still moves. One click buys; disabled rows say why.
+    /// Shop panel: shows everything unlocked through the current phase.
+    /// It opens automatically between waves; one click buys and disabled rows say why.
     /// </summary>
     public sealed class ShopPanel : MonoBehaviour
     {
@@ -76,8 +76,11 @@ namespace Hollow.UI
             else UpdateRows(w, offers);
             shownSignature = signature;
 
+            string hint = w.Waves.Kind == EncounterKind.SafeInterval
+                ? Loc.F("shop.safeHint", Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)))
+                : Loc.T("shop.hint");
             header.text = $"<b>{Loc.T("shop.title")}</b>   <color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Coin)}>{Loc.F("common.coins", w.Progress.Wallet)}</color>\n" +
-                          $"<size=18><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{Loc.T("shop.hint")}</color></size>";
+                          $"<size=18><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{hint}</color></size>";
         }
 
         static int Signature(World w, List<ShopOffer> offers)

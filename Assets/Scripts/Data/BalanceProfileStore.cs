@@ -51,6 +51,8 @@ namespace Hollow.Data
                     phaseTwo.DamageTakenMultiplier = baseline.CompanionFor(2).DamageTakenMultiplier;
                 }
             }
+            if (profile.Revision < 5)
+                profile.Spawning.SafeIntervalSeconds = baseline.Spawning.SafeIntervalSeconds;
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;

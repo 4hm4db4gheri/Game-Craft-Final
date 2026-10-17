@@ -39,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 4, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 5, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -79,7 +79,7 @@ namespace Hollow.EditorTools
                 BatchShares = new List<float> { 0.3f, 0.3f, 0.4f }, NextBatchAtCapFraction = 0.5f, SupportCap = 2,
                 SpawnWarning = 1, NewTypeReadTime = 4, SupportExplosiveSeparation = 8,
                 MinDistancePlayerBodyWidths = 4, MinDistanceCompanionBodyWidths = 3,
-                SafeIntervalSeconds = 8, NoSafePointRetryDelay = 0.25f, TutorialFirstGroupCount = 4,
+                SafeIntervalSeconds = 15, NoSafePointRetryDelay = 0.25f, TutorialFirstGroupCount = 4,
             };
 
             p.Waves = Waves();

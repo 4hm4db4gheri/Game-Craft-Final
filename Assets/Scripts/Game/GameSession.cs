@@ -290,8 +290,7 @@ namespace Hollow.Game
         void OnConfirm()
         {
             var w = W;
-            if (w.Waves.Kind == EncounterKind.SafeInterval) WaveSystem.SkipSafeInterval(w);
-            else if (w.Waves.Kind == EncounterKind.BossPrep && w.Narrative.PreparingAtShop) BeginBossEntrance();
+            if (w.Waves.Kind == EncounterKind.BossPrep && w.Narrative.PreparingAtShop) BeginBossEntrance();
         }
 
         // ---------------------------------------------------------------- boss preparation, transitions, ending
@@ -475,14 +474,16 @@ namespace Hollow.Game
                 hud.SetGuideUi(shopPanel.TutorialBuyButton(w));
             else hud.SetGuide(guide, worldCamera);
             string status = playing ? TutorialPrompt(w) : null; // no hints over scenes and menus
-            if (status == null && !w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
+            if (status == null && !w.Shop.Open && ShopSystem.InRange(w) && playing &&
+                (w.Tutorial == TutorialStage.Purchase || w.Waves.Kind == EncounterKind.BossPrep))
+                status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
             hud.SetStatus(hints.Showing ? null : status); // a hint card says it better; the line returns afterwards
         }
 
         void OnShopBuy(ShopOffer offer)
         {
-            if (app.States.Current != GameState.Playing) return;
+            if (app.States.Current != GameState.Playing || !W.Shop.Open) return;
             bool bought = ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item, offer.Slot);
             audio.Play(bought ? AudioCue.Purchase : AudioCue.Denied);
             if (bought && offer.Kind == OfferKind.BuyWeapon) BarkOnce("FirstPurchase");

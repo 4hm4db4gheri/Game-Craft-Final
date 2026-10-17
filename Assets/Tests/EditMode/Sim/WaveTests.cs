@@ -56,10 +56,14 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(8, w.Progress.Wallet);
             Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg));
             Assert.AreEqual(TutorialStage.Grenade, w.Tutorial);
+            var practice = w.Enemies.Single(e => e.Id == w.TutorialGrenadeEnemyId);
             sim.Run(60, PlayerCommand.None);
-            Assert.AreEqual(0, w.Enemies.Count, "the next group waits for a grenade throw");
+            Assert.AreEqual(1, w.Enemies.Count, "only the frozen practice target is present");
             Assert.IsTrue(ItemSystem.EquipSelected(w));
+            w.Player.Aim = practice.Position;
             Assert.AreEqual(ItemUseResult.Used, ItemSystem.Use(w));
+            Assert.AreEqual(TutorialStage.GrenadeThrown, w.Tutorial);
+            sim.Run(60, PlayerCommand.None);
             Assert.AreEqual(TutorialStage.SecondGroup, w.Tutorial);
 
             for (int t = 0; t < 60 * 60 && w.Waves.Kind == EncounterKind.Wave; t++)
@@ -158,7 +162,7 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void SafeIntervalFreezesActiveTimeAndEnterSkipsIt()
+        public void SafeIntervalFreezesActiveTimeAndCanBeSkippedByTestHarness()
         {
             var sim = Game();
             var w = sim.World;
@@ -173,6 +177,37 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(EncounterKind.Wave, w.Waves.Kind);
             Assert.AreEqual(3, w.Waves.Wave);
             Assert.IsFalse(w.SafeInterval);
+        }
+
+        [Test]
+        public void FifteenSecondShopOpensAutomaticallyClosesForWaveAndKeepsPurchasesOnRetry()
+        {
+            var sim = Game();
+            var w = sim.World;
+            WaveSystem.StartWave(w, 2);
+            w.Waves.Queue.Clear();
+            w.Projectiles.Add(new ProjectileState { Owner = ProjectileOwner.Enemy });
+            w.Projectiles.Add(new ProjectileState { Owner = ProjectileOwner.Player });
+            w.Hazards.Add(new HazardState { Owner = HazardOwner.Enemy });
+            w.Hazards.Add(new HazardState { Owner = HazardOwner.Player, DetonateTick = long.MaxValue });
+            sim.Step(PlayerCommand.None);
+            Assert.AreEqual(EncounterKind.SafeInterval, w.Waves.Kind);
+            Assert.IsTrue(w.Shop.Open);
+            Assert.IsFalse(w.Projectiles.Any(p => p.Owner == ProjectileOwner.Enemy));
+            Assert.IsFalse(w.Hazards.Any(h => h.Owner == HazardOwner.Enemy));
+            Assert.AreEqual(w.Ticks(15), w.Waves.SafeIntervalEndTick);
+            w.Progress.Wallet = 1000;
+            Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.DoubleBarrel));
+            sim.Step(new PlayerCommand { Move = Vector2.right, DashPressed = true, InteractPressed = true });
+            Assert.IsTrue(w.Shop.Open, "E, dash and movement cannot close the timed shop");
+            int remaining = (int)(w.Waves.SafeIntervalEndTick - w.Clock.Tick);
+            sim.Run(remaining, PlayerCommand.None);
+            Assert.AreEqual(EncounterKind.SafeInterval, w.Waves.Kind);
+            sim.Step(PlayerCommand.None);
+            Assert.AreEqual(EncounterKind.Wave, w.Waves.Kind);
+            Assert.AreEqual(3, w.Waves.Wave);
+            Assert.IsFalse(w.Shop.Open);
+            Assert.IsTrue(Checkpoints.Restore(w).Player.Loadout.Owns(WeaponId.DoubleBarrel));
         }
 
         [Test]
@@ -209,7 +244,13 @@ namespace Hollow.Tests.Sim
                 if (ticks % 2 == 0) KillActive(w, 45);
                 foreach (var c in w.Coins.ToList()) CoinSystem.Collect(w, c);
                 if (w.Tutorial == TutorialStage.Purchase) ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg);
-                if (w.Tutorial == TutorialStage.Grenade) { ItemSystem.EquipSelected(w); ItemSystem.Use(w); }
+                if (w.Tutorial == TutorialStage.Grenade)
+                {
+                    var practice = w.Enemies.Find(e => e.Id == w.TutorialGrenadeEnemyId);
+                    if (practice != null) w.Player.Aim = practice.Position;
+                    ItemSystem.EquipSelected(w);
+                    ItemSystem.Use(w);
+                }
                 while (w.Progress.Pending != null) XpSystem.Choose(w, w.Progress.Pending.Options[0]);
                 wavesDone += w.Events.Count(e => e.Type == SimEventType.WaveCompleted);
                 w.Events.Clear();
