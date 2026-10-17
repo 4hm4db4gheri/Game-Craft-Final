@@ -12,10 +12,10 @@ namespace Hollow.Game
         public static AudioDirector Attach()
         {
             var audio = AudioDirector.Ensure();
-            audio.SetVolumes(GameSettings.MusicVolume, GameSettings.EffectsVolume);
+            audio.SetVolumes(GameSettings.MusicVolume, GameSettings.EffectsVolume, GameSettings.VoiceVolume);
             if (attached) return audio;
             attached = true;
-            GameSettings.Changed += () => audio.SetVolumes(GameSettings.MusicVolume, GameSettings.EffectsVolume);
+            GameSettings.Changed += () => audio.SetVolumes(GameSettings.MusicVolume, GameSettings.EffectsVolume, GameSettings.VoiceVolume);
             UIFactory.ButtonClicked += () => audio.Play(AudioCue.UiClick);
             return audio;
         }

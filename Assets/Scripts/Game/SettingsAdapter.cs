@@ -8,6 +8,8 @@ namespace Hollow.Game
     {
         public float MusicVolume { get => GameSettings.MusicVolume; set => GameSettings.MusicVolume = value; }
         public float EffectsVolume { get => GameSettings.EffectsVolume; set => GameSettings.EffectsVolume = value; }
+        public float VoiceVolume { get => GameSettings.VoiceVolume; set => GameSettings.VoiceVolume = value; }
+        public bool Subtitles { get => GameSettings.Subtitles; set => GameSettings.Subtitles = value; }
         public float ShakeIntensity { get => GameSettings.ShakeIntensity; set => GameSettings.ShakeIntensity = value; }
         public bool Fullscreen { get => GameSettings.Fullscreen; set => GameSettings.Fullscreen = value; }
         public bool DamageNumbers { get => GameSettings.DamageNumbers; set => GameSettings.DamageNumbers = value; }

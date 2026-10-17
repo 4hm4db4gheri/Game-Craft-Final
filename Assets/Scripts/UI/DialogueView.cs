@@ -54,6 +54,13 @@ namespace Hollow.UI
         Action onDone;
         float barkEnds;
         string barkNext;
+
+        /// <summary>v0.19 §15: subtitles can be turned off (spoken lines still play).</summary>
+        public bool SubtitlesOn = true;
+        /// <summary>A line starts: its id is "&lt;scene&gt;_&lt;n&gt;" or "bark_&lt;id&gt;" (voice file names, docs/VOICE_LINES.md).</summary>
+        public event Action<string> LineStarted;
+        /// <summary>The scene ended or was skipped: stop any spoken line.</summary>
+        public event Action LinesStopped;
         readonly Dictionary<string, float> barkTimes = new();
         readonly Dictionary<string, string> speakerNames = new();
 
@@ -111,9 +118,10 @@ namespace Hollow.UI
                 Finish();
                 return;
             }
-            box.gameObject.SetActive(true);
+            box.gameObject.SetActive(SubtitlesOn);
             var l = current.Lines[index];
             line.text = Format(l.Speaker, l.Text);
+            LineStarted?.Invoke($"{current.Id}_{index + 1}");
             lineEnds = Time.unscaledTime + Mathf.Max(0.5f, l.Seconds);
         }
 
@@ -124,6 +132,7 @@ namespace Hollow.UI
 
         void Finish()
         {
+            LinesStopped?.Invoke();
             current = null;
             sceneLayer.gameObject.SetActive(false);
             var cb = onDone;
@@ -137,7 +146,8 @@ namespace Hollow.UI
             if (b == null) return;
             if (b.Cooldown > 0 && barkTimes.TryGetValue(id, out float last) && Time.unscaledTime - last < b.Cooldown) return;
             barkTimes[id] = Time.unscaledTime;
-            bark.text = Format(b.Speaker, b.Text);
+            bark.text = SubtitlesOn ? Format(b.Speaker, b.Text) : "";
+            LineStarted?.Invoke("bark_" + id);
             barkEnds = Time.unscaledTime + b.Seconds;
             barkNext = b.Next;
         }
@@ -153,8 +163,9 @@ namespace Hollow.UI
 
         void Update()
         {
-            if (bark != null && Time.unscaledTime > barkEnds && bark.text.Length > 0)
+            if (bark != null && Time.unscaledTime > barkEnds && barkEnds > 0)
             {
+                barkEnds = 0;
                 bark.text = "";
                 if (!string.IsNullOrEmpty(barkNext)) { var next = barkNext; barkNext = null; ShowBark(next); }
             }

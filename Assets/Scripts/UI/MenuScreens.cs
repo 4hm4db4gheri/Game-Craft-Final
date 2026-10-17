@@ -15,6 +15,8 @@ namespace Hollow.UI
     {
         float MusicVolume { get; set; }
         float EffectsVolume { get; set; }
+        float VoiceVolume { get; set; }
+        bool Subtitles { get; set; }
         float ShakeIntensity { get; set; }
         bool Fullscreen { get; set; }
         bool DamageNumbers { get; set; }
@@ -202,11 +204,14 @@ namespace Hollow.UI
 
         public void ShowSettings(ISettingsModel s, Action back)
         {
-            var box = Begin(Loc.T("menu.settings"), null, 0.7f, 760, 760);
-            float y = -170;
+            var box = Begin(Loc.T("menu.settings"), null, 0.7f, 760, 920);
+            float y = -160;
             Slider(box, Loc.T("settings.music"), s.MusicVolume, v => s.MusicVolume = v, ref y);
             Slider(box, Loc.T("settings.effects"), s.EffectsVolume, v => s.EffectsVolume = v, ref y);
+            Slider(box, Loc.T("settings.voice"), s.VoiceVolume, v => s.VoiceVolume = v, ref y);
             Slider(box, Loc.T("settings.shake"), s.ShakeIntensity, v => s.ShakeIntensity = v, ref y);
+            y -= 24; // sliders are top-anchored rows, buttons are centred: keep them apart
+            Toggle(box, Loc.T("settings.subtitles"), s.Subtitles, v => s.Subtitles = v, ref y);
             Toggle(box, Loc.T("settings.fullscreen"), s.Fullscreen, v => s.Fullscreen = v, ref y);
             Toggle(box, Loc.T("settings.damageNumbers"), s.DamageNumbers, v => s.DamageNumbers = v, ref y);
             string[] budgets = { Loc.T("settings.budgetLow"), Loc.T("settings.budgetMedium"), Loc.T("settings.budgetHigh") };

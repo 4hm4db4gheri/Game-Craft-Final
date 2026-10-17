@@ -56,6 +56,7 @@ namespace Hollow.Presentation
             CreateVoices(AudioBus.Effects, 18);
             CreateVoices(AudioBus.Warnings, 6);
             CreateVoices(AudioBus.Interface, 4);
+            voiceSource = NewSource("VoiceLine", false); // one spoken line at a time (v0.19 §20)
             musicA = NewSource("MusicA", true);
             musicB = NewSource("MusicB", true);
 
@@ -86,11 +87,37 @@ namespace Hollow.Presentation
             return s;
         }
 
-        /// <summary>Settings volumes (§11), 0–1.</summary>
-        public void SetVolumes(float music, float effects)
+        /// <summary>Settings volumes (§11, v0.19 §15), 0–1.</summary>
+        public void SetVolumes(float music, float effects, float voice)
         {
             musicVolume = Mathf.Clamp01(music);
             effectsVolume = Mathf.Clamp01(effects);
+            voiceVolume = Mathf.Clamp01(voice);
+            if (voiceSource != null) voiceSource.volume = voiceVolume;
+        }
+
+        float voiceVolume = 1f;
+        AudioSource voiceSource;
+
+        /// <summary>
+        /// Plays the recorded line <c>Resources/Audio/Voice/&lt;lineId&gt;</c> if it exists (the list of ids is in
+        /// docs/VOICE_LINES.md). Lines without a file are silent: the subtitle carries them.
+        /// </summary>
+        public bool PlayVoiceLine(string lineId)
+        {
+            var clip = Resources.Load<AudioClip>("Audio/Voice/" + lineId);
+            if (clip == null || voiceSource == null) return false;
+            voiceSource.Stop();
+            voiceSource.clip = clip;
+            voiceSource.volume = voiceVolume;
+            voiceSource.Play();
+            return true;
+        }
+
+        /// <summary>Skipping a scene or a cancelled line stops its audio at once.</summary>
+        public void StopVoice()
+        {
+            if (voiceSource != null) voiceSource.Stop();
         }
 
         // ------------------------------------------------------------------ play

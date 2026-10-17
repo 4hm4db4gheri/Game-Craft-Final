@@ -28,7 +28,7 @@ namespace Hollow.Presentation
     }
 
     /// <summary>Mixing buses. Warnings are never ducked, so telegraph sounds always cut through (T19).</summary>
-    public enum AudioBus { Music, Effects, Warnings, Interface }
+    public enum AudioBus { Music, Effects, Warnings, Interface, Voice }
 
     [Serializable]
     public sealed class CueDef

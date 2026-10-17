@@ -68,6 +68,9 @@ namespace Hollow.Game
             menus.Init(ui);
             dialogue = ui.gameObject.AddComponent<DialogueView>();
             dialogue.Init(ui, DialogueData.Load());
+            dialogue.SubtitlesOn = GameSettings.Subtitles;
+            dialogue.LineStarted += id => audio.PlayVoiceLine(id);
+            dialogue.LinesStopped += () => audio.StopVoice();
             ending = ui.gameObject.AddComponent<EndingScreen>();
             ending.Init(ui);
 
@@ -94,7 +97,11 @@ namespace Hollow.Game
         }
 
         /// <summary>Live tuning: the next step already reads the new numbers.</summary>
-        void ApplyFeelSettings() => feedback.Configure(GameSettings.ShakeIntensity, GameSettings.DamageNumbers, GameSettings.EffectBudget);
+        void ApplyFeelSettings()
+        {
+            feedback.Configure(GameSettings.ShakeIntensity, GameSettings.DamageNumbers, GameSettings.EffectBudget);
+            dialogue.SubtitlesOn = GameSettings.Subtitles;
+        }
 
         void OnBalanceApplied(BalanceProfile profile)
         {
