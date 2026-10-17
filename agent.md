@@ -40,6 +40,7 @@
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
+| `Assets/Editor/VisualTuningWindow.cs` + `docs/VISUAL_DEPTH_PASS.md` | داشبورد `Hollow > Visual Tuning` برای رنگ نور، افکت‌های دوربین و تنوع روشنایی زمین در هر فاز؛ روش تست و محدودیت آرت در سند |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
@@ -57,6 +58,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- پاس عمق بصری D76 برای اسکرین‌شات‌های پنج‌گانه: تنظیم مستقل رنگ نور/کنتراست/کاهش اشباع/تیرگی لبه‌ها برای هر فاز، Bloom ملایم دوربین دنیا، نور موضعی کیوسک‌ها و تنوع نرم روشنایی زمین. داشبورد `Hollow > Visual Tuning` با Apply در Play Mode و Save/Reset افزوده شد؛ بررسی تصویری در Play Mode هنوز لازم است. تغییرات `.meta` آرت که پیش از این تسک موجود بودند متعلق به این کار نیستند و دست نخورده‌اند.
 
 - انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۴۵ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
@@ -263,3 +266,8 @@
 - در Play mode دیده شد: گرگ‌ها move/windup/recover، اپراتور idle/move/attack، بازیکن idle/hit/death با فریم‌های ساخته‌شده پخش می‌شوند. ۴۴۵ تست پاس (۵ تست جدید در `ArtSheetTests`). تصویر: `docs/screenshots/ArtAnimated_Walks.png`.
 - محدودیت: حرکت‌ها از خم کردن یک تصویر ساخته شده‌اند؛ پای دوپاها در هر قدم جابه‌جا نمی‌شود (هر حلقه یک قدم)، و حالت حمله‌ی اپراتور فاز ۲ فقط لگد سلاح است. حجم sheetها حدود ۳۶ مگابایت (LFS).
 - نکته‌ی تست: `capture_game_view --save_path X` فایل را در `Assets/X` می‌گذارد؛ بعد از برداشتن، پوشه و meta آن را پاک کن.
+
+### 2026-10-17 — پاس عمق بصری و داشبورد نور
+- پنج تصویر کاربر با مرجع v0.19 و نمونه‌های Kill the Crows، Hades و The Ascent بررسی شد. تکرار کاشی زمین، لکه‌های تیره، رنگ نزدیک فازها و placeholderهای صنعتی مسائل اصلی‌اند؛ اولویت این پاس عمق بصری همراه با خوانایی نبرد است.
+- `AtmosphereData` و seed/JSON بالانس با رنگ نور، کنتراست، کاهش اشباع، vignette سه فاز، Bloom و تنوع روشنایی زمین گسترش یافت. `ArenaAtmosphere` حجم post-process دنیا و نور فیروزه‌ای کیوسک‌ها را می‌سازد؛ `ArenaAuthoring` نویز نرم غیرتکراری روی زمین می‌گذارد؛ `GameSession` این‌ها را هنگام شروع/بارگذاری/Apply زنده به‌روزرسانی می‌کند. `VisualTuningWindow` و راهنمای `docs/VISUAL_DEPTH_PASS.md` افزوده شد. برای جلوگیری از حذف shaderهای Volume ساخته‌شده در اجرا، حذف variantهای استفاده‌نشدهٔ Post Processing در تنظیمات URP خاموش شد. تصمیم D76.
+- اسمبلی‌های Data/Presentation/Game/Editor/Tests.EditMode با کامپایلر Unity کامپایل شدند؛ JSON و بازه‌های تنظیم معتبرند. Test Runner به‌دلیل باز بودن پروژه در Editor از CLI اجرا نشد و بازبینی دیداری Play Mode باقی است. فایل‌های `.meta` آرت موجود پیش از این تسک در commit این کار وارد نمی‌شوند.

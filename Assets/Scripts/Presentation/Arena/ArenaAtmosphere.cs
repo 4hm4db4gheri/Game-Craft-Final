@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Hollow.Data;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Hollow.Presentation
@@ -18,6 +19,11 @@ namespace Hollow.Presentation
         [SerializeField] int fogPatches = 14;
 
         Light2D global, playerLight;
+        Volume postVolume;
+        VolumeProfile postProfile;
+        Bloom bloom;
+        Vignette vignette;
+        ColorAdjustments grading;
         readonly List<(Light2D Light, float Intensity)> propLights = new();
         readonly List<SpriteRenderer> fog = new();
         readonly List<Vector2> fogDrift = new();
@@ -54,7 +60,56 @@ namespace Hollow.Presentation
         {
             // Lamps and lit machines on props: they go dark with the world in the ending.
             foreach (var l in FindObjectsByType<Light2D>(FindObjectsInactive.Include))
-                if (l != global && l != playerLight) propLights.Add((l, l.intensity));
+            {
+                if (l == global || l == playerLight) continue;
+                bool known = false;
+                foreach (var entry in propLights) if (entry.Light == l) { known = true; break; }
+                if (!known) propLights.Add((l, l.intensity));
+            }
+        }
+
+        /// <summary>A small cyan pool grounds each service terminal in the arena.</summary>
+        public void AddShopLights(ArenaAuthoring arena)
+        {
+            if (arena == null) return;
+            foreach (var station in arena.AllShops())
+            {
+                var light = NewLight("Shop Screen Glow", Light2D.LightType.Point);
+                light.transform.position = station.position + Vector3.up * 0.8f;
+                light.color = new Color(0.24f, 0.88f, 0.95f);
+                light.intensity = 0.42f;
+                light.pointLightInnerRadius = 0.5f;
+                light.pointLightOuterRadius = 3.2f;
+                light.falloffIntensity = 0.65f;
+                propLights.Add((light, light.intensity));
+            }
+        }
+
+        /// <summary>Attach a world-only URP volume. The overlay HUD stays crisp.</summary>
+        public void BindCamera(Camera camera)
+        {
+            if (camera == null || postVolume != null) return;
+            var cameraData = camera.GetComponent<UniversalAdditionalCameraData>();
+            if (cameraData == null) cameraData = camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
+            cameraData.renderPostProcessing = true;
+            cameraData.volumeLayerMask = 1 << gameObject.layer;
+
+            postProfile = ScriptableObject.CreateInstance<VolumeProfile>();
+            bloom = postProfile.Add<Bloom>(true);
+            vignette = postProfile.Add<Vignette>(true);
+            grading = postProfile.Add<ColorAdjustments>(true);
+            var go = new GameObject("World Post Processing");
+            go.layer = gameObject.layer;
+            go.transform.SetParent(transform, false);
+            postVolume = go.AddComponent<Volume>();
+            postVolume.isGlobal = true;
+            postVolume.priority = 10f;
+            postVolume.sharedProfile = postProfile;
+        }
+
+        void OnDestroy()
+        {
+            if (postProfile != null) Destroy(postProfile);
         }
 
         Light2D NewLight(string name, Light2D.LightType type)
@@ -72,6 +127,16 @@ namespace Hollow.Presentation
         /// <summary>Moves toward the look of <paramref name="phase"/>; instantly after a load or a scene change.</summary>
         public void SetPhase(AtmosphereData a, int phase, bool instant)
         {
+            if (global != null && ColorUtility.TryParseHtmlString(a.LightColor(phase), out var tint)) global.color = tint;
+            if (postVolume != null)
+            {
+                bloom.intensity.Override(Mathf.Clamp(a.BloomIntensity, 0f, 1f));
+                bloom.threshold.Override(Mathf.Clamp(a.BloomThreshold, 0f, 2f));
+                vignette.intensity.Override(Mathf.Clamp(a.Vignette(phase), 0f, 0.3f));
+                vignette.smoothness.Override(0.45f);
+                grading.contrast.Override(Mathf.Clamp(a.Contrast(phase), -20f, 25f));
+                grading.saturation.Override(-Mathf.Clamp(a.Desaturation(phase), 0f, 30f));
+            }
             // The glow grows as the phase gets darker (none at full light, full at half light or less).
             float glow = a.PlayerLightIntensity * Mathf.Clamp01((1f - a.Light(phase)) * 2f);
             StartFade(a.Light(phase), glow, a.Fog(phase), 1f, instant ? 0f : a.PhaseFadeTime);

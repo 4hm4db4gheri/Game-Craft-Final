@@ -55,6 +55,8 @@ namespace Hollow.Game
             // Played directly (Editor tests, stress runs): saves go to a separate folder, never the player's slots.
             if (app.EnterGameDirectly()) SlotStore.RootOverride = System.IO.Path.Combine(Application.persistentDataPath, "dev_saves");
             app.WorldCamera = worldCamera;
+            atmosphere.BindCamera(worldCamera);
+            atmosphere.AddShopLights(arena);
             layout = ArenaLayoutStore.LoadFromResources();
 
             hud = ui.gameObject.AddComponent<HudView>();
@@ -112,6 +114,7 @@ namespace Hollow.Game
         {
             if (Sim == null) return;
             W.Profile = profile;
+            arena.ApplyGroundVariation(profile.Atmosphere.GroundVariation);
             if (!W.Completed) atmosphere.SetPhase(profile.Atmosphere, W.Phase, instant: false);
         }
 
@@ -169,6 +172,7 @@ namespace Hollow.Game
             dialogue.SetSpeakerName("Assistant", Loc.T("ai." + world.Player.Ai)); // the chosen AI speaks under its own name
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
+            arena.ApplyGroundVariation(world.Profile.Atmosphere.GroundVariation);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
             if (world.Completed) audio.StopMusic(0.1f);
             else audio.PlayMusic(world.Phase);
