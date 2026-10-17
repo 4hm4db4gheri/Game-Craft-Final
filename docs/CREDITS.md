@@ -11,7 +11,13 @@ Sound effects and music are listed in the Audio section below.
 
 Enemy sounds in `Assets/Audio/Enemies/` (111 files, T31) are synthesised in the project by `Assets/Editor/EnemySoundSynth.cs` (no third-party material); they are placeholders for the audio owner.
 
-All other visuals in the project are generated placeholders (simple shapes made by `Assets/Editor/PlaceholderArt.cs`), not downloaded assets.
+## Visuals
+
+| File(s) | Title | Author | Source | Licence | Date added | Used for |
+|---|---|---|---|---|---|---|
+| `ArtSource/Kenney_BackgroundElementsRedux/` (mountains, hills, hillsLarge, cloudLayerB1, cloudLayer2, groundLayer1, treePine, treeDead, tree, treeLong, bush1, bushAlt1, moonFull, fenceIron; `License.txt`) | Background Elements Redux | Kenney (www.kenney.nl) | https://opengameart.org/content/background-elements-redux (`Background Elements Redux.zip`, 1 MB) | CC0 1.0 (checked on the page and in `License.txt`) | 2026-10-17, with the user's approval | Main-menu parallax: recoloured to grey silhouettes and combined by `Assets/Editor/Art/MenuArt.cs` into `Assets/Art/Menu/` (Moon, Mountains, Clouds, CloudsThin, HillsFar, HillsNear). Source files sit outside `Assets` so they are not imported or built. |
+
+The other menu layers (sky, stars, factory skyline, pylons, fog, smoke, glow, AI helper, vignette) are drawn by `MenuArt.cs`. All other visuals in the project are generated placeholders (simple shapes made by `Assets/Editor/PlaceholderArt.cs`), not downloaded assets.
 
 ## Audio (T19)
 

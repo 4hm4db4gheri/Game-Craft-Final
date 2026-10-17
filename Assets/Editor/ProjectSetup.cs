@@ -91,7 +91,8 @@ namespace Hollow.EditorTools
         public static void BuildMainMenuScene()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            CreateCamera("MenuCamera");
+            var cam = CreateCamera("MenuCamera");
+            MenuBackdropBuilder.Build(cam);
             var uiRoot = new GameObject("UI").AddComponent<Hollow.UI.UIRoot>();
             Wire(uiRoot, ("theme", LoadOrCreateTheme()));
             var menu = new GameObject("MainMenu").AddComponent<MainMenuController>();

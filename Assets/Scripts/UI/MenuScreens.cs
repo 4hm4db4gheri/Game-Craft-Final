@@ -72,8 +72,15 @@ namespace Hollow.UI
 
         public void ShowMain(Action newGame, Action continueGame, bool anySave, Action settings, Action controls, Action quit)
         {
-            var box = Begin(Loc.T("menu.title"), Loc.T("menu.tagline"), 0.35f);
-            float y = -230;
+            // The parallax backdrop stays in view: no dimmer, a translucent column on the right (Persian reads from the right).
+            Hide();
+            content = UIFactory.Stretch(layer, "Screen");
+            var box = UIFactory.Rect(content, "Column", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-110, -10), new Vector2(560, 840));
+            UIFactory.Panel(box, root.Theme, new Color(0.03f, 0.03f, 0.06f, 0.5f), raycast: true);
+            var head = UIFactory.Rect(box, "Title", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(520, 190));
+            UIFactory.Text(head, "T", $"<b><cspace=0.18em>{Loc.T("menu.title")}</cspace></b>\n<size=24><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{Loc.T("menu.tagline")}</color></size>",
+                root.Theme, 92, TextAlignmentOptions.Top);
+            float y = -260;
             Btn(box, Loc.T("menu.newGame"), y, newGame); y -= 80;
             Btn(box, Loc.T("menu.continue"), y, continueGame, anySave); y -= 80;
             Btn(box, Loc.T("menu.settings"), y, settings); y -= 80;

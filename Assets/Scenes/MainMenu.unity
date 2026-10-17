@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &512446357
+--- !u!1 &1515008307
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,53 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 512446359}
-  - component: {fileID: 512446358}
+  - component: {fileID: 1515008309}
+  - component: {fileID: 1515008308}
+  m_Layer: 0
+  m_Name: UI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1515008308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515008307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ba8f5f13499f54f8eba851011f9172, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Hollow.UI::Hollow.UI.UIRoot
+  theme: {fileID: 11400000, guid: 00142d6495a2e8a4a99ac2994aad367c, type: 2}
+--- !u!4 &1515008309
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515008307}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1528102155
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1528102157}
+  - component: {fileID: 1528102156}
   m_Layer: 0
   m_Name: MenuCamera
   m_TagString: MainCamera
@@ -136,13 +181,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!20 &512446358
+--- !u!20 &1528102156
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 512446357}
+  m_GameObject: {fileID: 1528102155}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -187,13 +232,13 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &512446359
+--- !u!4 &1528102157
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 512446357}
+  m_GameObject: {fileID: 1528102155}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
@@ -202,7 +247,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1333249594
+--- !u!1 &1692944988
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -210,35 +255,353 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1333249596}
-  - component: {fileID: 1333249595}
+  - component: {fileID: 1692944990}
+  - component: {fileID: 1692944989}
   m_Layer: 0
-  m_Name: UI
+  m_Name: Backdrop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1333249595
+--- !u!114 &1692944989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333249594}
+  m_GameObject: {fileID: 1692944988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0ba8f5f13499f54f8eba851011f9172, type: 3}
+  m_Script: {fileID: 11500000, guid: 7934893a9b511684c93bf03d92086109, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Hollow.UI::Hollow.UI.UIRoot
-  theme: {fileID: 11400000, guid: 00142d6495a2e8a4a99ac2994aad367c, type: 2}
---- !u!4 &1333249596
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.Menu.MenuBackdrop
+  view: {fileID: 1528102156}
+  material: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  layers:
+  - Name: Sky
+    Sprite: {fileID: 21300000, guid: 363c8ea93f0254144b28a010fcf9e07d, type: 3}
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+    Depth: 0
+    Position: {x: 0, y: 0}
+    Height: 1
+    Scroll: 0
+    Tiled: 1
+    FillScreen: 1
+    Order: -100
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Stars
+    Sprite: {fileID: 21300000, guid: 89098eae4ca500c469e47b58d45e6af7, type: 3}
+    Tint: {r: 1, g: 0.95, b: 0.9, a: 0.9}
+    Depth: 0.02
+    Position: {x: 0, y: -1}
+    Height: 8.6
+    Scroll: 0.03
+    Tiled: 1
+    FillScreen: 0
+    Order: -97
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0.2
+    PulseSpeed: 0.6
+  - Name: MoonGlow
+    Sprite: {fileID: 21300000, guid: c9e2b2b9b6141814289902efda0bf79e, type: 3}
+    Tint: {r: 1, g: 0.78, b: 0.6, a: 0.16}
+    Depth: 0.04
+    Position: {x: -3.5, y: 4.6}
+    Height: 7
+    Scroll: 0
+    Tiled: 0
+    FillScreen: 0
+    Order: -96
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Moon
+    Sprite: {fileID: 21300000, guid: 4d5e65ec3fc2e014cae80f785dd4d4a2, type: 3}
+    Tint: {r: 1, g: 0.94, b: 0.82, a: 1}
+    Depth: 0.04
+    Position: {x: -3.5, y: 4.6}
+    Height: 1.6
+    Scroll: 0
+    Tiled: 0
+    FillScreen: 0
+    Order: -95
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: SunsetGlow
+    Sprite: {fileID: 21300000, guid: c9e2b2b9b6141814289902efda0bf79e, type: 3}
+    Tint: {r: 1, g: 0.52, b: 0.3, a: 0.22}
+    Depth: 0.05
+    Position: {x: 4, y: -3.8}
+    Height: 17
+    Scroll: 0
+    Tiled: 0
+    FillScreen: 0
+    Order: -94
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Mountains
+    Sprite: {fileID: 21300000, guid: b6564af833084a24598bcf3867559006, type: 3}
+    Tint: {r: 0.36, g: 0.22, b: 0.36, a: 1}
+    Depth: 0.07
+    Position: {x: 0, y: -5}
+    Height: 5.2
+    Scroll: 0.06
+    Tiled: 1
+    FillScreen: 0
+    Order: -90
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: CloudsThin
+    Sprite: {fileID: 21300000, guid: e6151545ec46dc54fa316d27b22f9206, type: 3}
+    Tint: {r: 0.9, g: 0.5, b: 0.5, a: 0.14}
+    Depth: 0.09
+    Position: {x: 0, y: 2}
+    Height: 4
+    Scroll: 0.18
+    Tiled: 1
+    FillScreen: 0
+    Order: -89
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Clouds
+    Sprite: {fileID: 21300000, guid: 4e291653aed332c48bd2ffb52ce78d9a, type: 3}
+    Tint: {r: 0.62, g: 0.3, b: 0.36, a: 0.42}
+    Depth: 0.1
+    Position: {x: 0, y: -2.2}
+    Height: 5
+    Scroll: 0.12
+    Tiled: 1
+    FillScreen: 0
+    Order: -88
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Factory
+    Sprite: {fileID: 21300000, guid: f2c1411bbc4280448b7d7dc89df36a5e, type: 3}
+    Tint: {r: 0.2, g: 0.13, b: 0.22, a: 1}
+    Depth: 0.14
+    Position: {x: 0, y: -6.6}
+    Height: 10
+    Scroll: 0.22
+    Tiled: 1
+    FillScreen: 0
+    Order: -85
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Fog
+    Sprite: {fileID: 21300000, guid: e6b89d2024fbbab48a0d05ecb35a12d5, type: 3}
+    Tint: {r: 0.95, g: 0.5, b: 0.42, a: 0.26}
+    Depth: 0.2
+    Position: {x: 0, y: -4.6}
+    Height: 3
+    Scroll: 0.35
+    Tiled: 1
+    FillScreen: 0
+    Order: -82
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: HillsFar
+    Sprite: {fileID: 21300000, guid: 55cf513964550fd4a911bfde5bf5944c, type: 3}
+    Tint: {r: 0.09, g: 0.08, b: 0.13, a: 1}
+    Depth: 0.28
+    Position: {x: 0, y: -8.7}
+    Height: 6.9375
+    Scroll: 0.4
+    Tiled: 1
+    FillScreen: 0
+    Order: -80
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Pylons
+    Sprite: {fileID: 21300000, guid: ecce825b476502f458f519a7fc0b73c6, type: 3}
+    Tint: {r: 0.05, g: 0.045, b: 0.07, a: 1}
+    Depth: 0.4
+    Position: {x: 0, y: -7.6}
+    Height: 8.5
+    Scroll: 0.55
+    Tiled: 1
+    FillScreen: 0
+    Order: -75
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: HillsNear
+    Sprite: {fileID: 21300000, guid: bc85153e1770d9d4fa40664786bf43da, type: 3}
+    Tint: {r: 0.025, g: 0.025, b: 0.04, a: 1}
+    Depth: 0.6
+    Position: {x: 0, y: -9.2}
+    Height: 7.4865
+    Scroll: 0.8
+    Tiled: 1
+    FillScreen: 0
+    Order: -70
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: AiGlow
+    Sprite: {fileID: 21300000, guid: c9e2b2b9b6141814289902efda0bf79e, type: 3}
+    Tint: {r: 0.4, g: 0.95, b: 1, a: 0.24}
+    Depth: 0.45
+    Position: {x: -7.6, y: 1.9}
+    Height: 6
+    Scroll: 0
+    Tiled: 0
+    FillScreen: 0
+    Order: -62
+    Bob: 0.22
+    BobSpeed: 1.3
+    Pulse: 0.35
+    PulseSpeed: 2
+  - Name: AiShell
+    Sprite: {fileID: 21300000, guid: 0a9f7a37f8b5db9498f08bfccbec09a0, type: 3}
+    Tint: {r: 0.62, g: 0.66, b: 0.74, a: 1}
+    Depth: 0.45
+    Position: {x: -7.6, y: 1.9}
+    Height: 2.4
+    Scroll: 0
+    Tiled: 0
+    FillScreen: 0
+    Order: -61
+    Bob: 0.22
+    BobSpeed: 1.3
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: AiCore
+    Sprite: {fileID: 21300000, guid: 4dd576cd7e3b2e9488e86e4c2f00f2c7, type: 3}
+    Tint: {r: 0.5, g: 0.97, b: 1, a: 1}
+    Depth: 0.45
+    Position: {x: -7.6, y: 1.86}
+    Height: 1.32
+    Scroll: 0
+    Tiled: 0
+    FillScreen: 0
+    Order: -60
+    Bob: 0.22
+    BobSpeed: 1.3
+    Pulse: 0.2
+    PulseSpeed: 2
+  - Name: LowFog
+    Sprite: {fileID: 21300000, guid: e6b89d2024fbbab48a0d05ecb35a12d5, type: 3}
+    Tint: {r: 0.45, g: 0.28, b: 0.34, a: 0.2}
+    Depth: 0.8
+    Position: {x: 0, y: -8.6}
+    Height: 3.2
+    Scroll: 0.6
+    Tiled: 1
+    FillScreen: 0
+    Order: -50
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  - Name: Vignette
+    Sprite: {fileID: 21300000, guid: e94d770f6c9ea2b40ac8d58e0dbb7ec7, type: 3}
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+    Depth: 0
+    Position: {x: 0, y: 0}
+    Height: 1
+    Scroll: 0
+    Tiled: 1
+    FillScreen: 1
+    Order: -40
+    Bob: 0
+    BobSpeed: 1
+    Pulse: 0
+    PulseSpeed: 1
+  pointerShift: 1.1
+  pointerSmoothing: 2.5
+  factoryLayer: Factory
+  smokePoints:
+  - {x: 0.044661663, y: 0.7017511}
+  - {x: 0.06552664, y: 0.70936286}
+  - {x: 0.08494352, y: 0.67975175}
+  - {x: 0.24940997, y: 0.5719321}
+  - {x: 0.78650767, y: 0.78108877}
+  - {x: 0.8042353, y: 0.6356026}
+  - {x: 0.831972, y: 0.7913027}
+  lightPoints:
+  - {x: 0.044661663, y: 0.6767511}
+  - {x: 0.06552664, y: 0.6843629}
+  - {x: 0.08494352, y: 0.6547518}
+  - {x: 0.49717885, y: 0.7941472}
+  - {x: 0.691609, y: 0.75572824}
+  - {x: 0.78650767, y: 0.7560888}
+  - {x: 0.8042353, y: 0.61060256}
+  - {x: 0.831972, y: 0.7663027}
+  windowPoints:
+  - {x: 0.094941184, y: 0.24687742}
+  - {x: 0.16757911, y: 0.2810691}
+  - {x: 0.1592204, y: 0.26845807}
+  - {x: 0.19340059, y: 0.22900021}
+  - {x: 0.21533686, y: 0.26775566}
+  - {x: 0.22976094, y: 0.2349621}
+  - {x: 0.23233196, y: 0.2509943}
+  - {x: 0.34079427, y: 0.24660829}
+  - {x: 0.30413324, y: 0.3219445}
+  - {x: 0.3516925, y: 0.3070106}
+  - {x: 0.3818318, y: 0.27663097}
+  - {x: 0.39696205, y: 0.35980868}
+  - {x: 0.4268123, y: 0.30104113}
+  - {x: 0.4588466, y: 0.262668}
+  - {x: 0.5149063, y: 0.3664368}
+  - {x: 0.489194, y: 0.36807227}
+  - {x: 0.49726292, y: 0.24063928}
+  - {x: 0.63696516, y: 0.24053608}
+  - {x: 0.72926164, y: 0.31457734}
+  - {x: 0.68718284, y: 0.3353554}
+  - {x: 0.6752078, y: 0.23075528}
+  - {x: 0.76311404, y: 0.26495177}
+  - {x: 0.8527911, y: 0.31091246}
+  - {x: 0.9351545, y: 0.23974393}
+  - {x: 0.93444955, y: 0.25146124}
+  - {x: 1.0105668, y: 0.27478185}
+  - {x: 1.0272691, y: 0.31908575}
+  - {x: 0.70101553, y: 0.347306}
+  - {x: 0.6862114, y: 0.36834022}
+  - {x: 0.69622, y: 0.3952999}
+  - {x: 0.7073978, y: 0.32594693}
+  - {x: 0.689552, y: 0.33143824}
+  - {x: 0.67905897, y: 0.30045694}
+  smokeSprite: {fileID: 21300000, guid: df6aede65c5acab40be15cfe26ca62fc, type: 3}
+  dotSprite: {fileID: 21300000, guid: 96325938a0ea12445b8c13b72c0cdab4, type: 3}
+  glowSprite: {fileID: 21300000, guid: c9e2b2b9b6141814289902efda0bf79e, type: 3}
+  smokeColor: {r: 0.32, g: 0.26, b: 0.32, a: 0.45}
+  lightColor: {r: 1, g: 0.25, b: 0.2, a: 1}
+  windowColor: {r: 1, g: 0.74, b: 0.36, a: 0.9}
+  emberCount: 36
+  emberColor: {r: 1, g: 0.62, b: 0.32, a: 0.8}
+  emberDepth: 0.65
+  emberOrder: -55
+--- !u!4 &1692944990
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333249594}
+  m_GameObject: {fileID: 1692944988}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -247,7 +610,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1524309957
+--- !u!1 &2036791533
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -255,8 +618,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1524309959}
-  - component: {fileID: 1524309958}
+  - component: {fileID: 2036791535}
+  - component: {fileID: 2036791534}
   m_Layer: 0
   m_Name: MainMenu
   m_TagString: Untagged
@@ -264,26 +627,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1524309958
+--- !u!114 &2036791534
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1524309957}
+  m_GameObject: {fileID: 2036791533}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 920eadeec261fe34098fb55a3f786b1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Hollow.Game::Hollow.Game.MainMenuController
-  ui: {fileID: 1333249595}
---- !u!4 &1524309959
+  ui: {fileID: 1515008308}
+--- !u!4 &2036791535
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1524309957}
+  m_GameObject: {fileID: 2036791533}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -296,6 +659,7 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 512446359}
-  - {fileID: 1333249596}
-  - {fileID: 1524309959}
+  - {fileID: 1528102157}
+  - {fileID: 1692944990}
+  - {fileID: 1515008309}
+  - {fileID: 2036791535}
