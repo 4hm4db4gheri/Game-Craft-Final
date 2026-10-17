@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Hollow.Sim
 {
-    public enum BossAi { Rest, ChargeWindup, Charging, ChargeRecover, StrikeWindup, StrikeRecover, BurstWarning, Bursting, BurstRecover, BlastWarning }
+    public enum BossAi { Rest, ChargeWindup, Charging, ChargeRecover, StrikeWindup, StrikeRecover, BurstWarning, Bursting, BurstRecover, BlastWarning, BlastRecover }
 
     public sealed class BossState
     {
@@ -24,6 +24,8 @@ namespace Hollow.Sim
         public BossAi Ai;
         public long AiUntilTick;
         public int PatternIndex;
+        /// <summary>When the current/last attack began; the next starts AttackInterval later at the earliest (v0.19 §12).</summary>
+        public long AttackStartTick;
         public Vector2 AttackDir;
         public Vector2 AttackPoint;
         public float ChargeTravelled;
@@ -69,7 +71,7 @@ namespace Hollow.Sim
             b.Health = b.MaxHealth = d.Health;
             b.Facing = Vector2.down;
             b.Ai = BossAi.Rest;
-            b.AiUntilTick = w.Clock.Tick + w.Ticks(d.RestTime);
+            b.AiUntilTick = w.Clock.Tick + w.Ticks(d.FirstAttackDelay);
             b.PatternIndex = 0;
             b.FiredThresholds.Clear();
             b.AddQueue.Clear();
@@ -157,7 +159,7 @@ namespace Hollow.Sim
                     float moved = Vector2.Distance(from, b.Position);
                     b.ChargeTravelled += moved;
                     if (!b.ChargeHit) b.ChargeHit = HitAlongPath(w, b, from, d.Damage);
-                    if (b.ChargeTravelled >= d.ChargeDistance || moved < step * 0.5f)
+                    if (b.ChargeTravelled >= d.ChargeSpeed * d.ChargeDuration || moved < step * 0.5f)
                     {
                         b.Ai = BossAi.ChargeRecover; // the punish window
                         b.AiUntilTick = now + w.Ticks(d.ChargeRecovery);
@@ -167,6 +169,7 @@ namespace Hollow.Sim
                 case BossAi.ChargeRecover:
                 case BossAi.StrikeRecover:
                 case BossAi.BurstRecover:
+                case BossAi.BlastRecover:
                     if (now >= b.AiUntilTick) Rest(w, b, d);
                     break;
 
@@ -204,7 +207,7 @@ namespace Hollow.Sim
                     break;
 
                 case BossAi.BlastWarning:
-                    if (now >= b.AiUntilTick) Rest(w, b, d);
+                    if (now >= b.AiUntilTick) { b.Ai = BossAi.BlastRecover; b.AiUntilTick = now + w.Ticks(d.BlastRecovery); }
                     break;
             }
         }
@@ -216,6 +219,7 @@ namespace Hollow.Sim
             b.AttackPoint = player;
             b.AttackDir = SimMath.SafeNormal(player - b.Position, b.Facing);
             b.Facing = b.AttackDir;
+            b.AttackStartTick = now;
             int pattern = b.PatternIndex++ % 2;
             switch (d.Id)
             {
@@ -225,7 +229,7 @@ namespace Hollow.Sim
                     {
                         b.Ai = BossAi.ChargeWindup;
                         b.AiUntilTick = now + w.Ticks(d.ChargeTelegraph);
-                        Telegraph(w, b, TelegraphShape.Lane, d.ChargeDistance, d.ChargeTelegraph);
+                        Telegraph(w, b, TelegraphShape.Lane, d.ChargeSpeed * d.ChargeDuration, d.ChargeTelegraph);
                     }
                     else
                     {
@@ -267,8 +271,8 @@ namespace Hollow.Sim
         static void Rest(World w, BossState b, BossData d)
         {
             b.Ai = BossAi.Rest;
-            float rest = d.RestTime * (LowHealth(b, d) ? d.LowHealthRestMultiplier : 1f);
-            b.AiUntilTick = w.Clock.Tick + w.Ticks(rest);
+            float interval = LowHealth(b, d) ? d.LowHealthAttackInterval : d.AttackInterval;
+            b.AiUntilTick = System.Math.Max(w.Clock.Tick, b.AttackStartTick + w.Ticks(interval));
         }
 
         static void Move(World w, BossState b, BossData d, Vector2 target)

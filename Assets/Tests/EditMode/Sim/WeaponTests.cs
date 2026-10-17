@@ -136,8 +136,10 @@ namespace Hollow.Tests.Sim
 
             float pellet = 9f;
             float near = NearAndFar(1.0f);
+            float mid = NearAndFar(3.3f); // hits the body edge at ~2.95, before half range (3.5): still full (v0.19 §6)
             float far = NearAndFar(7.2f); // pellets meet the body edge just inside the 7-unit range
-            Assert.Greater(near, pellet * 0.9f);
+            Assert.AreEqual(pellet, near, 1e-3f);
+            Assert.AreEqual(pellet, mid, 1e-3f);
             Assert.AreEqual(pellet * 0.5f, far, pellet * 0.06f);
         }
 
@@ -160,6 +162,8 @@ namespace Hollow.Tests.Sim
             Assert.Less(a.Health, 1000f);
             Assert.Less(b.Health, 1000f);
             Assert.AreEqual(1000f, c.Health);
+            float retained = w.Profile.Combat.PierceDamageRetained;
+            Assert.AreEqual((1000f - a.Health) * retained, 1000f - b.Health, 1e-3f, "the target behind takes 75% of what remains (v0.19 §6)");
         }
 
         [Test]

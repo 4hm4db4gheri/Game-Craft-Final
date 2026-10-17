@@ -151,7 +151,8 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(FailureReason.None, restored.Failure);
             Assert.AreEqual(500, restored.Progress.Wallet, "purchase undone");
             Assert.IsFalse(restored.Player.Loadout.Owns(WeaponId.DoubleBarrel));
-            Assert.AreEqual(64f, restored.Player.Health, "pre-wave health kept");
+            Assert.AreEqual(PlayerStats.MaxHealth(restored), restored.Player.Health, "v0.19 §16: a retry fills health to the current maximum");
+            Assert.AreEqual(restored.Companion.MaxHealth, restored.Companion.Health);
             Assert.AreEqual(2, restored.Waves.Wave);
             Assert.AreEqual(0, restored.Waves.SpawnedTotal, "the wave restarts");
             Assert.AreEqual(1, restored.Retries);

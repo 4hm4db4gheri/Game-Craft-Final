@@ -37,8 +37,8 @@ there has been **no human playtest** and no measurement on another machine.
 ## What is placeholder
 
 - **All visuals** are generated shapes (`PH_*` prefabs) waiting for the AI art; the importer swaps them in.
-- **Weapon levels 2 and 3** use my placeholder numbers (`Approved = false`): they are sold only in the Editor
-  and development builds. Level-1 values are the GDD's provisional numbers.
+- **Weapon levels 1–3** now use the designer's GDD v0.19 values and are all approved (sold in release
+  builds). Enemy timing, children, bosses and effect caps also follow v0.19 (D61, D62); still not playtested.
 - Every number marked `[Placeholder]` in `BalanceProfile` (feel, atmosphere, AI tuning, item details) is my
   reasonable default, not a designed value.
 - Sound choices were made by file name and length, not by listening.

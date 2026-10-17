@@ -81,8 +81,9 @@ namespace Hollow.Sim
     }
 
     /// <summary>
-    /// Death checkpoints (§12): captured at each wave start and boss start; restoring keeps pre-wave health,
-    /// XP, money, purchases and equipment and undoes everything from the failed attempt.
+    /// Death checkpoints (§12): captured at each wave start and boss start; restoring keeps pre-wave XP, money,
+    /// purchases and equipment and undoes everything from the failed attempt. Player and companion health are
+    /// filled to their current maximum so a retry never starts at critically low health (v0.19 §16).
     /// </summary>
     public static class Checkpoints
     {
@@ -98,6 +99,8 @@ namespace Hollow.Sim
             var restored = WorldSerializer.FromJson(w.CheckpointJson, w.Profile, w.Layout);
             restored.CheckpointJson = w.CheckpointJson;
             restored.Retries = w.Retries + 1;
+            restored.Player.Health = PlayerStats.MaxHealth(restored);
+            if (restored.Companion.Present && !restored.Companion.Dead) restored.Companion.Health = restored.Companion.MaxHealth;
             return restored;
         }
     }

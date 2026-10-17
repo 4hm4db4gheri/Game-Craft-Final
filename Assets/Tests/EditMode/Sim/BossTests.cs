@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Hollow.Core.Input;
 using Hollow.Data;
@@ -211,6 +212,28 @@ namespace Hollow.Tests.Sim
             }
             Assert.AreEqual(BossAi.Charging, w.Boss.Ai);
             Assert.IsTrue(lane);
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void AttacksStartNoMoreOftenThanTheMinimumInterval(int phase)
+        {
+            var sim = Fight(phase);
+            var w = sim.World;
+            var d = w.Profile.Boss(phase);
+            w.Player.Position = w.Boss.Position + new Vector2(0, -4);
+            var starts = new List<long>();
+            long last = -1;
+            for (int t = 0; t < 60 * 30 && starts.Count < 5; t++)
+            {
+                sim.Step(PlayerCommand.None);
+                KillAdds(w);
+                if (w.Boss.AttackStartTick != last) { last = w.Boss.AttackStartTick; starts.Add(last); }
+            }
+            Assert.GreaterOrEqual(starts.Count, 4);
+            for (int i = 2; i < starts.Count; i++) // the first entry is the encounter start
+                Assert.AreEqual(w.Ticks(d.AttackInterval), starts[i] - starts[i - 1], "v0.19 §12 minimum start interval");
         }
 
         [Test]

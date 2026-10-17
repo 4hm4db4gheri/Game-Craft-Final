@@ -172,23 +172,49 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void RepairIsLimitedPerHealer()
+        public void RepairHealsAShareOfMaxHealthWithinOneSharedBudgetPerTarget()
         {
             var sim = Solo();
             var w = sim.World;
             w.Player.Position = w.Player.PrevPosition = new Vector2(-15, -15);
             w.Player.InvulnerableUntilTick = long.MaxValue;
-            var repair = EnemySystem.Spawn(w, EnemyId.R5_Repair, new Vector2(10, 10), warning: false);
+            var first = EnemySystem.Spawn(w, EnemyId.R5_Repair, new Vector2(10, 10), warning: false);
+            var second = EnemySystem.Spawn(w, EnemyId.R5_Repair, new Vector2(10, 11), warning: false);
             var tank = w.AddEnemy(EnemyId.R4_ShieldRobot, new Vector2(11, 10), health: 1000);
             tank.Health = 1;
             tank.StunnedUntilTick = long.MaxValue;
-            sim.Run(60 * 60, PlayerCommand.None);
             var d = w.Profile.Enemy(EnemyId.R5_Repair);
-            Assert.AreEqual(1 + d.HealTotalCap, tank.Health, 1e-3f);
-            Assert.AreEqual(d.HealTotalCap, repair.HealGiven, 1e-3f);
+
+            for (int t = 0; t < 60 * 10 && tank.HealReceived <= 0; t++) sim.Step(PlayerCommand.None);
+            Assert.AreEqual(d.HealFraction * tank.MaxHealth, Mathf.Max(first.HealGiven, second.HealGiven), 1e-3f, "one use heals a share of the target's maximum");
+
+            sim.Run(60 * 60, PlayerCommand.None);
+            Assert.AreEqual(1 + d.HealBudgetFraction * tank.MaxHealth, tank.Health, 1e-3f, "two healers share one budget");
+            Assert.AreEqual(tank.HealReceived, first.HealGiven + second.HealGiven, 1e-3f);
         }
 
         // ---------------------------------------------------------------- grenadier
+
+        [Test]
+        public void AttackIntervalIsMeasuredFromWindupStartToWindupStart()
+        {
+            var sim = Solo();
+            var w = sim.World;
+            w.Player.InvulnerableUntilTick = long.MaxValue;
+            var wolf = EnemySystem.Spawn(w, EnemyId.A1_RunnerWolf, w.Player.Position + new Vector2(1.2f, 0), warning: false);
+            var d = w.Profile.Enemy(EnemyId.A1_RunnerWolf);
+            var starts = new List<long>();
+            var last = wolf.Ai;
+            for (int t = 0; t < 60 * 5 && starts.Count < 3; t++)
+            {
+                sim.Step(PlayerCommand.None);
+                if (wolf.Ai == EnemyAi.Windup && last != EnemyAi.Windup) starts.Add(w.Clock.Tick);
+                last = wolf.Ai;
+            }
+            Assert.AreEqual(3, starts.Count);
+            for (int i = 1; i < starts.Count; i++)
+                Assert.AreEqual(w.Ticks(d.AttackInterval), starts[i] - starts[i - 1], 1, "v0.19 §9: interval includes windup and recovery");
+        }
 
         [Test]
         public void GrenadierMarksTheZoneAndTheExplosiveIsDelayed()
@@ -203,7 +229,7 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(1, w.Hazards.Count);
             Assert.AreEqual(zone, w.Hazards[0].Position);
             Assert.AreEqual(100f, w.Player.Health, "delayed: no damage yet");
-            sim.Run(30, SimTestUtil.Move(Vector2.down));
+            sim.Run(45, SimTestUtil.Move(Vector2.down));
             sim.Run(60, PlayerCommand.None);
             Assert.AreEqual(100f, w.Player.Health, "leaving the marked zone avoids the blast");
             Assert.AreEqual(0, w.Hazards.Count);

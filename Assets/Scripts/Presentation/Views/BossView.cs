@@ -40,7 +40,7 @@ namespace Hollow.Presentation
             {
                 BossAi.ChargeWindup => "windup_charge", BossAi.Charging => "charge", BossAi.ChargeRecover => "recover",
                 BossAi.StrikeWindup => "windup_strike", BossAi.StrikeRecover => "strike",
-                BossAi.BurstWarning => "windup_burst", BossAi.Bursting => "burst", BossAi.BurstRecover => "recover",
+                BossAi.BurstWarning => "windup_burst", BossAi.Bursting => "burst", BossAi.BurstRecover => "recover", BossAi.BlastRecover => "recover",
                 BossAi.BlastWarning => b.Id == BossId.FormerCompanion ? "throw" : "blast",
                 _ => w.Clock.Tick < b.StunnedUntilTick ? "stunned" : "move",
             });
@@ -55,10 +55,10 @@ namespace Hollow.Presentation
                     var c = Tint(telegraph, Progress(left, d.ChargeTelegraph, w));
                     laneLine.enabled = true;
                     var t = laneLine.transform;
-                    t.position = new Vector3(pos.x, pos.y, 0) + (Vector3)(b.AttackDir * d.ChargeDistance * 0.5f);
+                    t.position = new Vector3(pos.x, pos.y, 0) + (Vector3)(b.AttackDir * (d.ChargeSpeed * d.ChargeDuration) * 0.5f);
                     t.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(b.AttackDir.y, b.AttackDir.x) * Mathf.Rad2Deg);
                     var size = laneLine.sprite.bounds.size;
-                    t.localScale = new Vector3(d.ChargeDistance / size.x, b.Radius * 2f / size.y, 1);
+                    t.localScale = new Vector3((d.ChargeSpeed * d.ChargeDuration) / size.x, b.Radius * 2f / size.y, 1);
                     laneLine.color = new Color(c.r, c.g, c.b, c.a * 0.55f);
                     break;
                 }

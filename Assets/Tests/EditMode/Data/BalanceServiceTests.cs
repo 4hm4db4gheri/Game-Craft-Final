@@ -15,7 +15,7 @@ namespace Hollow.Tests.Data
             Assert.AreEqual(5f, s.Live.Player.MoveSpeed);
             Assert.IsTrue(s.Apply());
             Assert.AreEqual(7f, s.Live.Player.MoveSpeed);
-            Assert.AreEqual(2, s.Live.Revision);
+            Assert.AreEqual(TestData.Baseline().Revision + 1, s.Live.Revision);
         }
 
         [Test]

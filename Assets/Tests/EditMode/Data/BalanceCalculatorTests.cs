@@ -43,7 +43,7 @@ namespace Hollow.Tests.Data
 
         [TestCase(1, 100, 100)]
         [TestCase(2, 180, 180)]
-        [TestCase(3, 260, 260)]
+        [TestCase(3, 80, 260)] // v0.19: human boss pool 356 XP, adds 276 (baton guards give 6)
         public void BossOwnShareIsPoolMinusAdds(int phase, int xp, int coins)
         {
             var t = BalanceCalculator.Phases(TestData.Baseline()).Single(x => x.Phase == phase);

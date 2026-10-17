@@ -20,7 +20,7 @@ namespace Hollow.Sim
                     float dist = Vector2.Distance(e.Position, target);
                     if (dist <= d.AttackRange && now >= e.NextAttackTick && w.Arena.LineOfSight(e.Position, target))
                     {
-                        BeginWindup(w, e, d, TelegraphShape.Lane, d.ChargeDistance);
+                        BeginWindup(w, e, d, TelegraphShape.Lane, d.ChargeSpeed * d.ChargeDuration);
                         break;
                     }
                     MoveToward(w, e, d, target);
@@ -47,12 +47,12 @@ namespace Hollow.Sim
                     e.ChargeTravelled += moved;
                     if (!e.ChargeHit) TryChargeHit(w, e, d, from);
                     bool blocked = moved < step * 0.5f;
-                    if (e.ChargeTravelled >= d.ChargeDistance || blocked)
+                    if (e.ChargeTravelled >= d.ChargeSpeed * d.ChargeDuration || blocked)
                     {
                         e.Ai = EnemyAi.Recover;
                         e.Velocity = Vector2.zero;
                         e.AiUntilTick = now + w.Ticks(d.AttackRecovery);
-                        e.NextAttackTick = now + w.Ticks(d.AttackCooldown);
+                        e.NextAttackTick = e.AttackStartTick + w.Ticks(d.AttackInterval);
                     }
                     break;
                 }
@@ -162,7 +162,7 @@ namespace Hollow.Sim
                         w.Emit(SimEventType.EnemyAttack, e.Id, e.Position, e.AttackDir, 1, (int)e.Type);
                         e.Ai = EnemyAi.Recover;
                         e.AiUntilTick = now + w.Ticks(d.AttackRecovery);
-                        e.NextAttackTick = now + w.Ticks(d.AttackCooldown);
+                        e.NextAttackTick = e.AttackStartTick + w.Ticks(d.AttackInterval);
                     }
                     break;
                 case EnemyAi.Recover:
@@ -181,7 +181,7 @@ namespace Hollow.Sim
         {
             StayWithAllies(w, e, d);
             long now = w.Clock.Tick;
-            if (d.HealAmount > 0) StepHealer(w, e, d, now);
+            if (d.HealFraction > 0) StepHealer(w, e, d, now);
             else StepHowler(w, e, d, now);
         }
 
@@ -199,25 +199,30 @@ namespace Hollow.Sim
                 }
                 w.Emit(SimEventType.EnemyAttack, e.Id, e.Position, Vector2.zero, 0, (int)e.Type);
                 e.Ai = EnemyAi.Chase;
-                e.NextAttackTick = now + w.Ticks(d.AttackCooldown);
+                e.NextAttackTick = e.AttackStartTick + w.Ticks(d.AttackInterval);
                 return;
             }
             if (now >= e.NextAttackTick && AnyAllyNear(w, e, d))
             {
                 e.Ai = EnemyAi.Windup;
+                e.AttackStartTick = now;
                 e.AiUntilTick = now + w.Ticks(d.AttackWindup);
                 w.Emit(SimEventType.EnemyTelegraph, e.Id, e.Position, Vector2.right * d.AuraRadius, d.AttackWindup, (int)TelegraphShape.Circle);
             }
         }
 
-        /// <summary>Repairs/heals the most damaged nearby ally, limited per healer (and for bosses, §7).</summary>
+        /// <summary>
+        /// Repairs/heals the most damaged nearby ally by a share of its maximum health (v0.19 §9). Each target has
+        /// one healing budget per encounter shared by every healer, so two healers cannot reset it; the boss uses
+        /// its own cap (BossSystem.Heal).
+        /// </summary>
         static void StepHealer(World w, EnemyState e, EnemyData d, long now)
         {
-            if (now < e.NextAttackTick || e.HealGiven >= d.HealTotalCap) return;
+            if (now < e.NextAttackTick) return;
             var boss = w.Boss;
             if (boss.Active && !boss.Dead && boss.Health < boss.MaxHealth && Vector2.Distance(boss.Position, e.Position) <= d.AuraRadius + boss.Radius)
             {
-                float healed = BossSystem.Heal(w, Mathf.Min(d.HealAmount, d.HealTotalCap - e.HealGiven));
+                float healed = BossSystem.Heal(w, d.HealFraction * boss.MaxHealth);
                 if (healed > 0)
                 {
                     e.HealGiven += healed;
@@ -227,25 +232,20 @@ namespace Hollow.Sim
                 }
             }
             EnemyState best = null;
-            float bestMissing = 0;
+            float bestAmount = 0;
             foreach (var o in w.Enemies)
             {
                 if (!o.IsActive || o == e || Vector2.Distance(o.Position, e.Position) > d.AuraRadius) continue;
-                float missing = o.MaxHealth - o.Health;
-                if (missing > bestMissing) { bestMissing = missing; best = o; }
+                float amount = Mathf.Min(d.HealFraction * o.MaxHealth, o.MaxHealth - o.Health, d.HealBudgetFraction * o.MaxHealth - o.HealReceived);
+                if (amount > bestAmount) { bestAmount = amount; best = o; }
             }
             if (best == null) return;
-            float amount = Mathf.Min(d.HealAmount, bestMissing, d.HealTotalCap - e.HealGiven);
-            amount = BossHealLimit(w, best, amount);
-            if (amount <= 0) return;
-            best.Health += amount;
-            e.HealGiven += amount;
+            best.Health += bestAmount;
+            best.HealReceived += bestAmount;
+            e.HealGiven += bestAmount;
             e.NextAttackTick = now + w.Ticks(d.HealInterval);
-            w.Emit(SimEventType.EnemyHealed, best.Id, best.Position, e.Position - best.Position, amount, e.Id);
+            w.Emit(SimEventType.EnemyHealed, best.Id, best.Position, e.Position - best.Position, bestAmount, e.Id);
         }
-
-        /// <summary>Hook for the boss healing cap (T13); regular enemies have no extra limit.</summary>
-        static float BossHealLimit(World w, EnemyState target, float amount) => amount;
 
         static bool AnyAllyNear(World w, EnemyState e, EnemyData d)
         {

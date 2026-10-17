@@ -100,9 +100,9 @@ namespace Hollow.Sim
                 {
                     p.HitIds.Add(BossState.EntityId);
                     Vector2 hitPos = Vector2.Lerp(from, to, tb);
-                    float falloff = Mathf.Lerp(1f, p.FalloffAtMaxRange, Mathf.Clamp01(Vector2.Distance(p.Origin, hitPos) / Mathf.Max(0.01f, p.Range)));
-                    BossSystem.Damage(w, p.Damage * falloff, p.Owner == ProjectileOwner.Companion ? DamageSource.Companion : DamageSource.Weapon, p.Velocity.normalized);
+                    BossSystem.Damage(w, p.Damage * Falloff(w, p, hitPos), p.Owner == ProjectileOwner.Companion ? DamageSource.Companion : DamageSource.Weapon, p.Velocity.normalized);
                     w.Emit(SimEventType.ProjectileImpact, p.Id, hitPos, p.Velocity.normalized, 1);
+                    p.Damage *= w.Profile.Combat.PierceDamageRetained;
                     if (--p.TargetsLeft <= 0) { p.Position = hitPos; p.Alive = false; return; }
                 }
             }
@@ -110,12 +110,11 @@ namespace Hollow.Sim
             foreach (var (t, e) in Hits)
             {
                 Vector2 hitPos = Vector2.Lerp(from, to, t);
-                float distance = Vector2.Distance(p.Origin, hitPos);
-                float falloff = Mathf.Lerp(1f, p.FalloffAtMaxRange, Mathf.Clamp01(distance / Mathf.Max(0.01f, p.Range)));
                 p.HitIds.Add(e.Id);
                 var source = p.Owner == ProjectileOwner.Companion ? DamageSource.Companion : DamageSource.Weapon;
-                Combat.DamageEnemy(w, e, p.Damage * falloff, source, p.Velocity.normalized, p.IgnoresArmor);
+                Combat.DamageEnemy(w, e, p.Damage * Falloff(w, p, hitPos), source, p.Velocity.normalized, p.IgnoresArmor);
                 w.Emit(SimEventType.ProjectileImpact, p.Id, hitPos, p.Velocity.normalized, 1);
+                p.Damage *= w.Profile.Combat.PierceDamageRetained; // each later target takes 75% of what remains (v0.19 §6)
                 p.TargetsLeft--;
                 if (p.TargetsLeft <= 0)
                 {
@@ -124,6 +123,15 @@ namespace Hollow.Sim
                     return;
                 }
             }
+        }
+
+        /// <summary>v0.19 §6: full damage up to FalloffStartFraction of the range, then linear down to FalloffAtMaxRange.</summary>
+        public static float Falloff(World w, ProjectileState p, Vector2 hitPos)
+        {
+            float t = Mathf.Clamp01(Vector2.Distance(p.Origin, hitPos) / Mathf.Max(0.01f, p.Range));
+            float start = w.Profile.Combat.FalloffStartFraction;
+            if (t <= start) return 1f;
+            return Mathf.Lerp(1f, p.FalloffAtMaxRange, (t - start) / Mathf.Max(0.01f, 1f - start));
         }
 
         static void Kill(World w, ProjectileState p, bool impact = true)

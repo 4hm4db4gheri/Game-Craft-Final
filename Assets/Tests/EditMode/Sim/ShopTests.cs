@@ -68,6 +68,7 @@ namespace Hollow.Tests.Sim
             var sim = Rich();
             var w = sim.World;
             ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg);
+            w.Profile.Weapon(WeaponId.LightSmg).Levels[1].Approved = false; // every v0.19 level is defined; simulate one that is not
             bool saved = ShopSystem.DevBuild;
             try
             {

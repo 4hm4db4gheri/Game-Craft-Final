@@ -134,26 +134,31 @@ namespace Hollow.Data
         [Gdd("§5")] public int Xp;
         [Gdd("§5")] public int Coins;
 
-        [Placeholder, Unit("u/s")] public float MoveSpeed;
+        [Gdd("v0.19 §9"), Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u")] public float BodyRadius;
-        [Placeholder, Unit("u")] public float AttackRange;
-        [Placeholder, Unit("s")] public float AttackWindup;
-        [Placeholder, Unit("s")] public float AttackRecovery;
-        [Placeholder, Unit("s")] public float AttackCooldown;
-        [Placeholder, Unit("u/s")] public float ProjectileSpeed;
+        /// <summary>v0.19 §9 "Reach": melee reach, ranged firing range, or the distance at which a charger commits.</summary>
+        [Gdd("v0.19 §9"), Unit("u")] public float AttackRange;
+        [Gdd("v0.19 §9"), Unit("s")] public float AttackWindup;
+        [Gdd("v0.19 §9"), Unit("s")] public float AttackRecovery;
+        /// <summary>v0.19 §9: minimum time from one windup start to the next (includes windup and recovery).</summary>
+        [Gdd("v0.19 §9"), Unit("s")] public float AttackInterval;
+        [Gdd("v0.19 §9"), Unit("u/s")] public float ProjectileSpeed;
         [Placeholder, Unit("u")] public float ProjectileRange;
-        [Placeholder] public int BurstCount;
-        [Placeholder, Unit("s")] public float BurstInterval;
-        [Placeholder, Unit("u/s")] public float ChargeSpeed;
-        [Placeholder, Unit("u")] public float ChargeDistance;
-        [Placeholder, Unit("u")] public float ExplosionRadius;
-        [Placeholder, Unit("s")] public float FuseTime;
-        [Placeholder, Unit("u")] public float AuraRadius;
+        [Gdd("v0.19 §9")] public int BurstCount;
+        [Gdd("v0.19 §9"), Unit("s")] public float BurstInterval;
+        [Gdd("v0.19 §9"), Unit("u/s")] public float ChargeSpeed;
+        [Gdd("v0.19 §9"), Unit("s")] public float ChargeDuration;
+        [Gdd("v0.19 §9"), Unit("u")] public float ExplosionRadius;
+        [Gdd("v0.19 §9"), Unit("s")] public float FuseTime;
+        [Gdd("v0.19 §9"), Unit("u")] public float AuraRadius;
         [Gdd("§5")] public float AuraSpeedBonus;
-        [Placeholder, Unit("s")] public float AuraDuration;
-        [Placeholder] public float HealAmount;
-        [Placeholder, Unit("s")] public float HealInterval;
-        [Placeholder] public float HealTotalCap;
+        [Gdd("v0.19 §9"), Unit("s")] public float AuraDuration;
+        /// <summary>v0.19 §9: each heal restores this share of the target's maximum health.</summary>
+        [Gdd("v0.19 §9")] public float HealFraction;
+        [Gdd("v0.19 §9"), Unit("s")] public float HealInterval;
+        /// <summary>v0.19 §9: total healing one target may receive per encounter, as a share of its maximum health,
+        /// shared by every healer (bosses use BossData.HealCapFraction instead).</summary>
+        [Gdd("v0.19 §9")] public float HealBudgetFraction;
         [Placeholder] public float KnockbackResistance;
         /// <summary>How fast the enemy can turn; slow turners (frontal armour) can be flanked.</summary>
         [Placeholder, Unit("deg/s")] public float TurnRateDeg;
@@ -239,36 +244,42 @@ namespace Hollow.Data
 
         [Placeholder, Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u")] public float BodyRadius;
-        [Placeholder, Unit("s")] public float RestTime;
+        /// <summary>v0.19 §12: minimum time between the starts of two attacks; warnings are never shortened.</summary>
+        [Gdd("v0.19 §12"), Unit("s")] public float AttackInterval;
+        /// <summary>Delay before the first attack after the entrance (the opening adds arrive first).</summary>
+        [Placeholder, Unit("s")] public float FirstAttackDelay = 1f;
         [Gdd("§7")] public float LowHealthFraction;
-        [Placeholder] public float LowHealthRestMultiplier;
+        [Gdd("v0.19 §12"), Unit("s")] public float LowHealthAttackInterval;
 
         [Gdd("§7"), Unit("s")] public float ChargeTelegraph;
-        [Placeholder, Unit("u/s")] public float ChargeSpeed;
-        [Placeholder, Unit("u")] public float ChargeDistance;
+        [Gdd("v0.19 §12"), Unit("u/s")] public float ChargeSpeed;
+        [Gdd("v0.19 §12"), Unit("s")] public float ChargeDuration;
         [Gdd("§7"), Unit("s")] public float ChargeRecovery;
         [Gdd("§7"), Unit("s")] public float StrikeWindup;
-        [Placeholder, Unit("u")] public float StrikeRadius;
+        [Gdd("v0.19 §12"), Unit("u")] public float StrikeRadius;
         /// <summary>The area strike is chosen when the player is within StrikeRadius × this.</summary>
         [Placeholder] public float StrikeTriggerFactor = 1.5f;
         /// <summary>The boss stops approaching this far beyond its own radius.</summary>
         [Placeholder, Unit("u")] public float ApproachStopDistance = 1.5f;
-        [Placeholder, Unit("s")] public float StrikeRecovery;
+        [Gdd("v0.19 §12"), Unit("s")] public float StrikeRecovery;
 
         [Gdd("§7"), Unit("s")] public float BurstWarning;
         [Gdd("§7"), Unit("s")] public float BurstDuration;
         [Gdd("§7"), Unit("s")] public float BurstRecovery;
-        [Placeholder, Unit("s")] public float BurstShotInterval;
+        [Gdd("v0.19 §12"), Unit("s")] public float BurstShotInterval;
         [Placeholder, Unit("deg")] public float BurstSpread;
-        [Placeholder, Unit("u/s")] public float ProjectileSpeed;
+        [Gdd("v0.19 §12"), Unit("u/s")] public float ProjectileSpeed;
+        /// <summary>Time from marking the blast zone to the explosion (for the former companion: throw delay + fuse).</summary>
         [Gdd("§7"), Unit("s")] public float BlastWarning;
         /// <summary>Thrown blasts (former companion) fly for BlastWarning × this before the zone shows its full danger.</summary>
         [Placeholder] public float BlastFlightFraction = 0.6f;
-        [Placeholder, Unit("u")] public float BlastRadius;
+        [Gdd("v0.19 §12"), Unit("u")] public float BlastRadius;
         [Placeholder, Unit("u")] public float BlastThrowRange;
+        /// <summary>The boss stays in place this long after its blast goes off.</summary>
+        [Gdd("v0.19 §12"), Unit("s")] public float BlastRecovery;
 
         [Gdd("§7")] public float HealCapFraction;
-        [Placeholder] public float BurstShotDamage;
+        [Gdd("v0.19 §12")] public float BurstShotDamage;
         [Placeholder, Unit("u")] public float ProjectileRange;
         [Placeholder, Unit("active s")] public float AddSpawnGap;
         /// <summary>EMP affects this boss (machine body or machine equipment, §7/§9).</summary>
@@ -296,6 +307,10 @@ namespace Hollow.Data
         [Placeholder, Unit("u")] public float PlayerProjectileRadius;
         /// <summary>Ranged enemies stop approaching once within this fraction of their attack range.</summary>
         [Placeholder] public float RangedHoldFraction;
+        /// <summary>v0.19 §6: weapons with falloff deal full damage up to this share of their range, then fall linearly.</summary>
+        [Gdd("v0.19 §6")] public float FalloffStartFraction = 0.5f;
+        /// <summary>v0.19 §6: each target after the first in a pierce receives this share of the remaining damage.</summary>
+        [Gdd("v0.19 §6")] public float PierceDamageRetained = 0.75f;
         /// <summary>D21: unapproved (placeholder) weapon levels can be bought in editor/dev builds only.</summary>
         public bool DevBuildsSellUnapprovedLevels;
     }
@@ -416,13 +431,21 @@ namespace Hollow.Data
         [Placeholder] public bool DamageNumbersDefaultOn;
         [Placeholder, Unit("/s")] public int DamageNumbersMaxPerSecond;
         [Placeholder] public int MaxParticles;
-        [Placeholder] public int MaxDecals;
-        [Placeholder] public int MaxCorpses;
+        [Gdd("v0.19 §19")] public int MaxDecals;
+        [Gdd("v0.19 §19")] public int MaxCorpses;
         [Placeholder] public float ShakeOnBossDefeated;
         /// <summary>Shots in quick succession (SMG) shake at most this often, so shake never builds up.</summary>
         [Placeholder, Unit("s")] public float ShotShakeMinInterval;
         [Placeholder, Unit("s")] public float ShakeDuration;
-        [Placeholder, Unit("s")] public float MuzzleFlashTime;
+        [Gdd("v0.19 §19"), Unit("s")] public float MuzzleFlashTime;
+        [Gdd("v0.19 §19"), Unit("s")] public float TracerTime = 0.06f;
+        [Placeholder, Unit("u")] public float TracerLength = 1.6f;
+        [Placeholder, Unit("u")] public float TracerWidth = 0.08f;
+        /// <summary>v0.19 §19: corpses are thrown along the killing hit (visual only), then lie still, then fade.</summary>
+        [Gdd("v0.19 §19"), Unit("s")] public float DeathLaunchTime = 0.25f;
+        [Placeholder, Unit("u")] public float DeathLaunchDistance = 0.7f;
+        [Gdd("v0.19 §19"), Unit("s")] public float CorpseHoldTime = 6f;
+        [Gdd("v0.19 §19"), Unit("s")] public float CorpseFadeTime = 1f;
         [Placeholder] public int ImpactSparks;
         [Placeholder] public int DeathSparks;
         [Placeholder] public int ExplosionSparks;

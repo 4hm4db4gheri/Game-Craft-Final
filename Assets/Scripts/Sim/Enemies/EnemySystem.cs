@@ -155,7 +155,7 @@ namespace Hollow.Sim
             if (hit) DamageTarget(w, e, d.Damage);
             e.Ai = EnemyAi.Recover;
             e.AiUntilTick = now + w.Ticks(d.AttackRecovery);
-            e.NextAttackTick = now + w.Ticks(d.AttackCooldown);
+            e.NextAttackTick = e.AttackStartTick + w.Ticks(d.AttackInterval);
         }
 
         // ---------------------------------------------------------------- ranged
@@ -205,7 +205,7 @@ namespace Hollow.Sim
                     {
                         e.Ai = EnemyAi.Recover;
                         e.AiUntilTick = now + w.Ticks(d.AttackRecovery);
-                        e.NextAttackTick = now + w.Ticks(d.AttackCooldown);
+                        e.NextAttackTick = e.AttackStartTick + w.Ticks(d.AttackInterval);
                     }
                     break;
 
@@ -248,6 +248,7 @@ namespace Hollow.Sim
         static void BeginWindup(World w, EnemyState e, EnemyData d, TelegraphShape shape, float length)
         {
             e.Ai = EnemyAi.Windup;
+            e.AttackStartTick = w.Clock.Tick;
             e.AiUntilTick = w.Clock.Tick + w.Ticks(d.AttackWindup);
             e.AttackPoint = TargetPosition(w, e);
             e.AttackDir = SimMath.SafeNormal(e.AttackPoint - e.Position, e.Facing);

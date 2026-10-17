@@ -39,6 +39,10 @@ namespace Hollow.Presentation
         int nextFlash;
         readonly List<SpriteRenderer> decals = new(), corpses = new();
         int nextDecal, nextCorpse;
+        /// <summary>Per corpse slot: death launch from → to with a turn, then hold, then fade (v0.19 §19).</summary>
+        readonly List<(float Born, Vector3 From, Vector3 To, float Rot0, float Rot1, Color Color)> corpseMotion = new();
+        readonly List<(SpriteRenderer R, float Until, float Length)> tracers = new();
+        int nextTracer;
         readonly List<(TextMeshPro T, float Born, Vector3 From)> numbers = new();
         int nextNumber;
         float numberTokens;
@@ -97,6 +101,8 @@ namespace Hollow.Presentation
             main.maxParticles = Mathf.Max(16, Mathf.RoundToInt(f.MaxParticles * scale));
             Resize(decals, Mathf.RoundToInt(f.MaxDecals * scale), "Decal", -95);
             Resize(corpses, Mathf.RoundToInt(f.MaxCorpses * scale), "Corpse", -60);
+            while (corpseMotion.Count > corpses.Count) corpseMotion.RemoveAt(corpseMotion.Count - 1);
+            while (corpseMotion.Count < corpses.Count) corpseMotion.Add(default);
             nextDecal %= Mathf.Max(1, decals.Count);
             nextCorpse %= Mathf.Max(1, corpses.Count);
         }
@@ -120,6 +126,7 @@ namespace Hollow.Presentation
         {
             foreach (var d in decals) d.enabled = false;
             foreach (var c in corpses) c.enabled = false;
+            foreach (var t in tracers) t.R.enabled = false;
             foreach (var n in numbers) n.T.enabled = false;
             sparks.Clear();
         }
@@ -140,6 +147,7 @@ namespace Hollow.Presentation
                         Vector2 muzzle = playerView.Muzzle;
                         bool spread = ev.Value > 1;
                         Flash(muzzle, spread ? 0.75f : 0.5f, c, f.MuzzleFlashTime);
+                        Tracer(muzzle, ev.Direction, c, f);
                         Burst(muzzle, ev.Direction, spread ? 50f : 25f, 3, c, 5f);
                         if (Time.unscaledTime - lastShotShake >= f.ShotShakeMinInterval)
                         {
@@ -186,7 +194,7 @@ namespace Hollow.Presentation
                     Burst(ev.Position + Vector2.up * 0.4f, ev.Direction, 180f, f.DeathSparks, SparkColor(d.Faction), 6f);
                     if (d.Role == EnemyRole.Explosive) break; // its explosion leaves the scorch mark
                     Decal(ev.Position + Random.insideUnitCircle * 0.2f, d.BodyRadius * 2.6f, d.Faction == Faction.Robots ? Oil : Blood);
-                    Corpse(type, ev.Position, ev.Direction);
+                    Corpse(type, ev.Position, ev.Direction, f);
                     break;
                 }
 
@@ -274,6 +282,34 @@ namespace Hollow.Presentation
             flashes[i] = (r, Time.time + length, length);
         }
 
+        /// <summary>A short streak from the muzzle along the shot (v0.19 §19), separate from the projectile itself.</summary>
+        void Tracer(Vector2 from, Vector2 dir, Color color, FeedbackData f)
+        {
+            if (f.TracerTime <= 0f || dir.sqrMagnitude < 1e-4f) return;
+            const int Pool = 16;
+            if (tracers.Count < Pool)
+            {
+                var go = new GameObject("Tracer");
+                go.transform.SetParent(transform, false);
+                var added = go.AddComponent<SpriteRenderer>();
+                added.sprite = glowSprite;
+                added.sharedMaterial = unlitMaterial;
+                added.sortingLayerID = SortingLayers.Effects;
+                added.sortingOrder = 15;
+                tracers.Add((added, 0, 0));
+            }
+            int i = nextTracer;
+            nextTracer = (nextTracer + 1) % Pool;
+            var r = tracers[i].R;
+            Vector2 n = dir.normalized;
+            r.transform.position = (Vector3)(from + n * (f.TracerLength * 0.5f));
+            r.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(n.y, n.x) * Mathf.Rad2Deg);
+            r.transform.localScale = new Vector3(f.TracerLength, f.TracerWidth, 1);
+            r.color = new Color(Mathf.Min(1f, color.r + 0.4f), Mathf.Min(1f, color.g + 0.4f), Mathf.Min(1f, color.b + 0.4f), 0.9f);
+            r.enabled = true;
+            tracers[i] = (r, Time.time + f.TracerTime, f.TracerTime);
+        }
+
         void Decal(Vector2 at, float size, Color color)
         {
             if (decals.Count == 0) return;
@@ -287,7 +323,7 @@ namespace Hollow.Presentation
             r.enabled = true;
         }
 
-        void Corpse(EnemyId type, Vector2 at, Vector2 dir)
+        void Corpse(EnemyId type, Vector2 at, Vector2 dir, FeedbackData f)
         {
             if (corpses.Count == 0) return;
             if (!corpseLooks.TryGetValue(type, out var look))
@@ -298,15 +334,23 @@ namespace Hollow.Presentation
                 corpseLooks[type] = look;
             }
             if (look.Sprite == null) return;
-            var r = corpses[nextCorpse];
+            int i = nextCorpse;
+            var r = corpses[i];
             nextCorpse = (nextCorpse + 1) % corpses.Count;
             r.sprite = look.Sprite;
-            r.color = new Color(look.Color.r * 0.45f, look.Color.g * 0.45f, look.Color.b * 0.45f, 1f);
+            var color = new Color(look.Color.r * 0.45f, look.Color.g * 0.45f, look.Color.b * 0.45f, 1f);
+            r.color = color;
             float side = dir.x < 0 ? 1f : -1f;
-            r.transform.position = new Vector3(at.x, at.y + 0.1f, 0);
-            r.transform.rotation = Quaternion.Euler(0, 0, 90f * side + Random.Range(-12f, 12f)); // lying on its side
+            // Death launch (v0.19 §19): visual only, thrown along the killing hit; it blocks nothing and deals no damage.
+            Vector2 push = dir.sqrMagnitude > 1e-4f ? dir.normalized * f.DeathLaunchDistance : Vector2.zero;
+            var from = new Vector3(at.x, at.y + 0.1f, 0);
+            var to = from + (Vector3)push;
+            float rot1 = 90f * side + Random.Range(-12f, 12f); // lying on its side
+            r.transform.position = from;
+            r.transform.rotation = Quaternion.identity;
             r.transform.localScale = new Vector3(look.Scale.x * 0.8f, look.Scale.y * 0.8f, 1);
             r.enabled = true;
+            corpseMotion[i] = (Time.time, from, to, 0f, rot1, color);
         }
 
         void Number(Vector2 at, float amount, int maxOnScreen)
@@ -336,6 +380,36 @@ namespace Hollow.Presentation
             var from = new Vector3(at.x + Random.Range(-0.25f, 0.25f), at.y + 1.3f, 0);
             n.transform.position = from;
             numbers[i] = (n, Time.time, from);
+        }
+
+        void AnimateCorpses(float now, FeedbackData f)
+        {
+            for (int i = 0; i < corpses.Count && i < corpseMotion.Count; i++)
+            {
+                var r = corpses[i];
+                if (!r.enabled) continue;
+                var m = corpseMotion[i];
+                float age = now - m.Born;
+                if (age < f.DeathLaunchTime)
+                {
+                    float k = age / Mathf.Max(0.01f, f.DeathLaunchTime);
+                    float ease = 1f - (1f - k) * (1f - k);
+                    r.transform.position = Vector3.Lerp(m.From, m.To, ease);
+                    r.transform.rotation = Quaternion.Euler(0, 0, Mathf.Lerp(m.Rot0, m.Rot1, ease));
+                    continue;
+                }
+                float fadeStart = f.DeathLaunchTime + f.CorpseHoldTime;
+                if (age < fadeStart)
+                {
+                    if (r.transform.position != m.To) { r.transform.position = m.To; r.transform.rotation = Quaternion.Euler(0, 0, m.Rot1); }
+                    continue;
+                }
+                float fade = (age - fadeStart) / Mathf.Max(0.01f, f.CorpseFadeTime);
+                if (fade >= 1f) { r.enabled = false; continue; }
+                var c = m.Color;
+                c.a = 1f - fade;
+                r.color = c;
+            }
         }
 
         void Shake(float amount, Vector2 dir)
@@ -373,6 +447,17 @@ namespace Hollow.Presentation
                 c.a = 0.9f * (left / length);
                 r.color = c;
             }
+            for (int i = 0; i < tracers.Count; i++)
+            {
+                var (r, until, length) = tracers[i];
+                if (!r.enabled) continue;
+                float left = until - now;
+                if (left <= 0f) { r.enabled = false; continue; }
+                var c = r.color;
+                c.a = 0.9f * (left / length);
+                r.color = c;
+            }
+            if (data != null) AnimateCorpses(now, data);
             float life = data != null ? data.DamageNumberLifetime : 0.6f;
             for (int i = 0; i < numbers.Count; i++)
             {

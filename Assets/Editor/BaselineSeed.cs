@@ -7,8 +7,9 @@ using UnityEngine;
 namespace Hollow.EditorTools
 {
     /// <summary>
-    /// DATA SEED, not gameplay code: writes the first version of the balance profile from the GDD v0.12 tables
-    /// (provisional values) plus programmer placeholders where the GDD has no number (D24, D21).
+    /// DATA SEED, not gameplay code: writes the balance profile from the GDD tables (v0.12, updated to v0.19 for
+    /// weapon levels, enemy timing and roles, children, bosses and effects) plus programmer placeholders where the
+    /// GDD has no number (D24, D21).
     /// After seeding, Assets/Resources/Balance/Baseline.json is the single source of truth and is edited
     /// with the balance panel; this seed only runs again through an explicit, confirmed menu command.
     /// </summary>
@@ -38,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 1, Name = "Baseline (GDD v0.12)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 2, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -46,7 +47,7 @@ namespace Hollow.EditorTools
                 MaxHealth = 100, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
                 DashDistance = 3, DashDuration = 0.18f, DashCooldown = 2.5f, DashDamage = 50,
                 PostHitInvulnerability = 0.5f, BodyRadius = 0.35f, MagnetRadius = 1,
-                CoinPullSpeed = 9, ShopInteractRange = 2, CrowdPushShare = 0.3f,
+                CoinPullSpeed = 9, ShopInteractRange = 2.2f, CrowdPushShare = 0.3f,
             };
 
             p.Companion = new CompanionData
@@ -117,7 +118,7 @@ namespace Hollow.EditorTools
             {
                 ShakeOnShot = 0.04f, ShakeOnPlayerHit = 0.25f, ShakeOnExplosion = 0.35f, ShakeOnBossImpact = 0.5f,
                 HitFlashDuration = 0.08f, HitKnockback = 0.12f, DamageNumbersDefaultOn = true, DamageNumbersMaxPerSecond = 40,
-                MaxParticles = 1500, MaxDecals = 300, MaxCorpses = 150,
+                MaxParticles = 1500, MaxDecals = 20, MaxCorpses = 30,
                 ShakeOnBossDefeated = 0.7f, ShotShakeMinInterval = 0.08f, ShakeDuration = 0.18f, MuzzleFlashTime = 0.05f,
                 ImpactSparks = 5, DeathSparks = 14, ExplosionSparks = 24, DamageNumberLifetime = 0.65f, MaxDamageNumbersOnScreen = 40,
                 HitSquash = 0.14f, BudgetLowScale = 0.3f, BudgetMediumScale = 0.6f,
@@ -137,57 +138,60 @@ namespace Hollow.EditorTools
         static SkillData Skill(SkillId id, string name, params float[] ranks) =>
             new() { Id = id, DisplayName = name, Ranks = new List<float>(ranks) };
 
-        // ---------------- Enemies (§5 health/damage/XP/coins; everything else placeholder) ----------------
+        // ---------------- Enemies (§5 health/damage/coins; v0.19 §9 XP, speed, reach, interval, windup, recovery,
+        // shot speed, role parameters and children). Body radius and child recovery remain placeholders. ----------------
 
         static List<EnemyData> Enemies()
         {
             var list = new List<EnemyData>();
 
             // Animals
-            list.Add(Melee(EnemyId.A1_RunnerWolf, Faction.Animals, 30, 8, 3, 2, speed: 3.6f, radius: 0.35f, range: 0.9f, windup: 0.35f, recovery: 0.5f, cooldown: 1.0f, companion: true));
-            list.Add(Ranged(EnemyId.A2_QuillShooter, Faction.Animals, 36, 7, 4, 3, speed: 2.6f, radius: 0.35f, range: 7f, windup: 0.6f, recovery: 0.6f, cooldown: 2.2f, projSpeed: 9f, burst: 1, burstGap: 0f));
-            list.Add(Charger(EnemyId.A3_ChargingBoar, Faction.Animals, 75, 14, 5, 4, speed: 2.8f, radius: 0.55f, trigger: 6f, telegraph: 0.8f, chargeSpeed: 11f, chargeDist: 7f, recovery: 1.0f, cooldown: 3f));
-            var tortoise = Melee(EnemyId.A4_ArmoredTortoise, Faction.Animals, 100, 10, 6, 5, speed: 1.8f, radius: 0.6f, range: 1.1f, windup: 0.6f, recovery: 0.8f, cooldown: 1.6f, companion: true);
+            list.Add(Melee(EnemyId.A1_RunnerWolf, Faction.Animals, 30, 8, 3, 2, speed: 2.6f, radius: 0.35f, range: 1.0f, windup: 0.35f, recovery: 0.35f, interval: 1.0f, companion: true));
+            list.Add(Ranged(EnemyId.A2_QuillShooter, Faction.Animals, 36, 7, 4, 3, speed: 1.7f, radius: 0.35f, range: 8f, windup: 0.55f, recovery: 0.45f, interval: 1.8f, projSpeed: 8f, burst: 1, burstGap: 0f));
+            list.Add(Charger(EnemyId.A3_ChargingBoar, Faction.Animals, 75, 14, 5, 4, speed: 2.1f, radius: 0.55f, trigger: 9f, telegraph: 0.8f, chargeSpeed: 8f, chargeTime: 0.6f, recovery: 1.2f, interval: 3.2f));
+            var tortoise = Melee(EnemyId.A4_ArmoredTortoise, Faction.Animals, 100, 10, 6, 5, speed: 1.3f, radius: 0.6f, range: 1.2f, windup: 0.55f, recovery: 0.65f, interval: 1.5f, companion: true);
             tortoise.FrontalArmor = true; tortoise.KnockbackResistance = 0.6f; tortoise.TurnRateDeg = 90; list.Add(tortoise);
-            var howler = Base(EnemyId.A5_HowlingWolf, Faction.Animals, EnemyRole.Support, 45, 0, 5, 4, speed: 3.0f, radius: 0.35f);
-            howler.AttackWindup = 0.8f; howler.AttackCooldown = 4f; howler.AuraRadius = 4f; howler.AuraSpeedBonus = 0.15f; howler.AuraDuration = 4.5f;
+            var howler = Base(EnemyId.A5_HowlingWolf, Faction.Animals, EnemyRole.Support, 45, 0, 5, 4, speed: 1.8f, radius: 0.35f);
+            howler.AttackRange = 5f; howler.AttackWindup = 0.7f; howler.AttackRecovery = 0.8f; howler.AttackInterval = 4f;
+            howler.AuraRadius = 5f; howler.AuraSpeedBonus = 0.15f; howler.AuraDuration = 3f;
             howler.CountsAsSupport = true; list.Add(howler);
-            list.Add(Exploder(EnemyId.A6_ExplosiveBeetle, Faction.Animals, 25, 18, 4, 3, speed: 3.2f, radius: 0.3f, trigger: 1.4f, fuse: 1.0f, blast: 1.8f));
-            var spider = Melee(EnemyId.A7_MotherSpider, Faction.Animals, 110, 10, 10, 8, speed: 1.9f, radius: 0.55f, range: 1.1f, windup: 0.5f, recovery: 0.7f, cooldown: 1.8f, companion: false);
+            list.Add(Exploder(EnemyId.A6_ExplosiveBeetle, Faction.Animals, 25, 18, 4, 3, speed: 2.9f, radius: 0.3f, trigger: 1.5f, fuse: 0.8f, blast: 2f));
+            var spider = Melee(EnemyId.A7_MotherSpider, Faction.Animals, 110, 10, 10, 8, speed: 1.4f, radius: 0.55f, range: 1.1f, windup: 0.6f, recovery: 0.6f, interval: 2.2f, companion: false);
             Producer(spider, EnemyId.A7c_Spiderling, max: 2, delay: 4, xpShare: 2, coinShare: 1); list.Add(spider);
-            var spiderling = Melee(EnemyId.A7c_Spiderling, Faction.Animals, 14, 4, 0, 0, speed: 3.4f, radius: 0.22f, range: 0.7f, windup: 0.3f, recovery: 0.5f, cooldown: 1.0f, companion: true);
+            var spiderling = Melee(EnemyId.A7c_Spiderling, Faction.Animals, 16, 5, 0, 0, speed: 3.4f, radius: 0.22f, range: 0.9f, windup: 0.3f, recovery: 0.5f, interval: 1.1f, companion: true);
             spiderling.IsChild = true; list.Add(spiderling);
 
             // Robots
-            list.Add(Machine(Melee(EnemyId.R1_Crawler, Faction.Robots, 55, 12, 4, 3, speed: 3.0f, radius: 0.4f, range: 1.0f, windup: 0.4f, recovery: 0.6f, cooldown: 1.1f, companion: true)));
-            list.Add(Machine(Ranged(EnemyId.R2_Shooter, Faction.Robots, 65, 10, 5, 4, speed: 2.2f, radius: 0.4f, range: 8f, windup: 0.7f, recovery: 0.9f, cooldown: 2.4f, projSpeed: 11f, burst: 1, burstGap: 0f)));
-            list.Add(Machine(Charger(EnemyId.R3_SawCharger, Faction.Robots, 105, 18, 6, 5, speed: 3.0f, radius: 0.45f, trigger: 6f, telegraph: 0.7f, chargeSpeed: 12f, chargeDist: 7f, recovery: 1.0f, cooldown: 3f)));
-            var shieldBot = Machine(Melee(EnemyId.R4_ShieldRobot, Faction.Robots, 150, 14, 7, 6, speed: 1.9f, radius: 0.6f, range: 1.2f, windup: 0.6f, recovery: 0.8f, cooldown: 1.6f, companion: true));
+            list.Add(Machine(Melee(EnemyId.R1_Crawler, Faction.Robots, 55, 12, 4, 3, speed: 2.8f, radius: 0.4f, range: 1.1f, windup: 0.35f, recovery: 0.35f, interval: 1f, companion: true)));
+            list.Add(Machine(Ranged(EnemyId.R2_Shooter, Faction.Robots, 65, 10, 5, 4, speed: 2f, radius: 0.4f, range: 10f, windup: 0.5f, recovery: 0.5f, interval: 1.6f, projSpeed: 9f, burst: 1, burstGap: 0f)));
+            list.Add(Machine(Charger(EnemyId.R3_SawCharger, Faction.Robots, 105, 18, 6, 5, speed: 2.3f, radius: 0.45f, trigger: 10f, telegraph: 0.7f, chargeSpeed: 8f, chargeTime: 0.6f, recovery: 1f, interval: 2.8f)));
+            var shieldBot = Machine(Melee(EnemyId.R4_ShieldRobot, Faction.Robots, 150, 14, 7, 6, speed: 1.7f, radius: 0.6f, range: 1.3f, windup: 0.5f, recovery: 0.6f, interval: 1.6f, companion: true));
             shieldBot.FrontalArmor = true; shieldBot.KnockbackResistance = 0.6f; shieldBot.TurnRateDeg = 100; list.Add(shieldBot);
-            var repair = Machine(Base(EnemyId.R5_Repair, Faction.Robots, EnemyRole.Support, 75, 0, 6, 5, speed: 2.6f, radius: 0.4f));
-            repair.HealAmount = 12; repair.HealInterval = 2f; repair.AuraRadius = 4f; repair.HealTotalCap = 60; repair.AttackWindup = 0.5f;
-            repair.CountsAsSupport = true; list.Add(repair);
-            list.Add(Machine(Exploder(EnemyId.R6_Suicide, Faction.Robots, 40, 24, 5, 4, speed: 3.4f, radius: 0.35f, trigger: 1.4f, fuse: 1.5f, blast: 2.0f)));
-            var carrier = Machine(Melee(EnemyId.R7_DroneCarrier, Faction.Robots, 180, 12, 12, 10, speed: 1.7f, radius: 0.65f, range: 1.3f, windup: 0.6f, recovery: 0.9f, cooldown: 2.0f, companion: false));
+            var repair = Machine(Base(EnemyId.R5_Repair, Faction.Robots, EnemyRole.Support, 75, 0, 6, 5, speed: 1.8f, radius: 0.4f));
+            Healer(repair, radius: 5f, interval: 3f, windup: 0.65f, recovery: 0.7f); list.Add(repair);
+            list.Add(Machine(Exploder(EnemyId.R6_Suicide, Faction.Robots, 40, 24, 5, 4, speed: 3.1f, radius: 0.35f, trigger: 1.7f, fuse: 0.9f, blast: 2.4f)));
+            var carrier = Machine(Melee(EnemyId.R7_DroneCarrier, Faction.Robots, 180, 12, 12, 10, speed: 1.5f, radius: 0.65f, range: 1.2f, windup: 0.65f, recovery: 0.7f, interval: 2f, companion: false));
             carrier.KnockbackResistance = 0.7f;
             Producer(carrier, EnemyId.R7c_Drone, max: 3, delay: 5, xpShare: 2, coinShare: 2); list.Add(carrier);
-            var drone = Machine(Ranged(EnemyId.R7c_Drone, Faction.Robots, 20, 5, 0, 0, speed: 3.6f, radius: 0.25f, range: 5f, windup: 0.5f, recovery: 0.6f, cooldown: 2.0f, projSpeed: 10f, burst: 1, burstGap: 0f));
+            // v0.19: the drone is a melee child (shot speed 0).
+            var drone = Machine(Melee(EnemyId.R7c_Drone, Faction.Robots, 28, 7, 0, 0, speed: 3.5f, radius: 0.25f, range: 1f, windup: 0.35f, recovery: 0.6f, interval: 1.2f, companion: true));
             drone.IsChild = true; list.Add(drone);
 
             // Humans
-            list.Add(Melee(EnemyId.H1_BatonGuard, Faction.Humans, 85, 14, 5, 4, speed: 3.1f, radius: 0.35f, range: 1.1f, windup: 0.45f, recovery: 0.5f, cooldown: 1.1f, companion: true));
-            list.Add(Ranged(EnemyId.H2_RifleGuard, Faction.Humans, 90, 12, 6, 5, speed: 2.6f, radius: 0.35f, range: 9f, windup: 0.6f, recovery: 1.0f, cooldown: 2.6f, projSpeed: 14f, burst: 3, burstGap: 0.12f));
-            list.Add(Charger(EnemyId.H3_FastAssaulter, Faction.Humans, 140, 22, 7, 6, speed: 3.3f, radius: 0.35f, trigger: 5.5f, telegraph: 0.6f, chargeSpeed: 12f, chargeDist: 6f, recovery: 0.8f, cooldown: 2.5f));
-            var shieldGuard = Melee(EnemyId.H4_ShieldGuard, Faction.Humans, 200, 16, 8, 7, speed: 2.2f, radius: 0.55f, range: 1.2f, windup: 0.55f, recovery: 0.7f, cooldown: 1.5f, companion: true);
+            list.Add(Melee(EnemyId.H1_BatonGuard, Faction.Humans, 85, 14, 6, 4, speed: 3f, radius: 0.35f, range: 1.1f, windup: 0.35f, recovery: 0.35f, interval: 0.95f, companion: true));
+            list.Add(Ranged(EnemyId.H2_RifleGuard, Faction.Humans, 90, 12, 6, 5, speed: 2.2f, radius: 0.35f, range: 11f, windup: 0.55f, recovery: 0.75f, interval: 1.8f, projSpeed: 10f, burst: 2, burstGap: 0.18f));
+            list.Add(Charger(EnemyId.H3_FastAssaulter, Faction.Humans, 140, 22, 7, 6, speed: 3.4f, radius: 0.35f, trigger: 8f, telegraph: 0.65f, chargeSpeed: 7.5f, chargeTime: 0.6f, recovery: 1f, interval: 2.7f));
+            var shieldGuard = Melee(EnemyId.H4_ShieldGuard, Faction.Humans, 200, 16, 8, 7, speed: 1.9f, radius: 0.55f, range: 1.3f, windup: 0.5f, recovery: 0.6f, interval: 1.5f, companion: true);
             shieldGuard.FrontalArmor = true; shieldGuard.KnockbackResistance = 0.6f; shieldGuard.TurnRateDeg = 120; list.Add(shieldGuard);
-            var medic = Base(EnemyId.H5_Medic, Faction.Humans, EnemyRole.Support, 100, 0, 7, 6, speed: 2.8f, radius: 0.35f);
-            medic.HealAmount = 15; medic.HealInterval = 2.5f; medic.AuraRadius = 4.5f; medic.HealTotalCap = 75; medic.AttackWindup = 0.5f;
-            medic.CountsAsSupport = true; list.Add(medic);
-            var grenadier = Ranged(EnemyId.H6_Grenadier, Faction.Humans, 110, 20, 6, 5, speed: 2.4f, radius: 0.35f, range: 8f, windup: 0.8f, recovery: 1.0f, cooldown: 3.2f, projSpeed: 9f, burst: 1, burstGap: 0f);
-            grenadier.FuseTime = 1.0f; grenadier.ExplosionRadius = 1.8f; list.Add(grenadier);
-            var engineer = Base(EnemyId.H7_Engineer, Faction.Humans, EnemyRole.Producer, 220, 0, 14, 12, speed: 2.3f, radius: 0.45f);
+            var medic = Base(EnemyId.H5_Medic, Faction.Humans, EnemyRole.Support, 100, 0, 7, 6, speed: 2f, radius: 0.35f);
+            Healer(medic, radius: 5f, interval: 3.5f, windup: 0.7f, recovery: 0.8f); list.Add(medic);
+            // Shot speed is the throw speed of the marked grenade (v0.19 lists 0: an ability); placeholder for the flight.
+            var grenadier = Ranged(EnemyId.H6_Grenadier, Faction.Humans, 110, 20, 6, 5, speed: 2.1f, radius: 0.35f, range: 10f, windup: 0.7f, recovery: 0.8f, interval: 3.5f, projSpeed: 9f, burst: 1, burstGap: 0f);
+            grenadier.FuseTime = 1.1f; grenadier.ExplosionRadius = 2.4f; list.Add(grenadier);
+            var engineer = Base(EnemyId.H7_Engineer, Faction.Humans, EnemyRole.Producer, 220, 0, 14, 12, speed: 1.8f, radius: 0.45f);
+            engineer.AttackRange = 1.1f; engineer.AttackWindup = 0.6f; engineer.AttackRecovery = 0.6f; engineer.AttackInterval = 2f;
             Producer(engineer, EnemyId.H7c_Turret, max: 1, delay: 3, xpShare: 4, coinShare: 3); list.Add(engineer);
-            var turret = Machine(Ranged(EnemyId.H7c_Turret, Faction.Humans, 120, 8, 0, 0, speed: 0f, radius: 0.45f, range: 8.5f, windup: 0.7f, recovery: 1.2f, cooldown: 2.2f, projSpeed: 13f, burst: 3, burstGap: 0.15f));
+            var turret = Machine(Ranged(EnemyId.H7c_Turret, Faction.Humans, 70, 8, 0, 0, speed: 0f, radius: 0.45f, range: 9f, windup: 0.45f, recovery: 0.6f, interval: 1.3f, projSpeed: 9f, burst: 1, burstGap: 0f));
             turret.IsChild = true; turret.KnockbackResistance = 1f; list.Add(turret);
 
             return list;
@@ -198,30 +202,30 @@ namespace Hollow.EditorTools
                 TurnRateDeg = 720, KeepAwayDistance = role == EnemyRole.Support || role == EnemyRole.Producer ? 5f : 0f };
 
         static EnemyData Melee(EnemyId id, Faction f, float hp, float dmg, int xp, int coins, float speed, float radius,
-            float range, float windup, float recovery, float cooldown, bool companion)
+            float range, float windup, float recovery, float interval, bool companion)
         {
             var e = Base(id, f, EnemyRole.Melee, hp, dmg, xp, coins, speed, radius);
-            e.AttackRange = range; e.AttackWindup = windup; e.AttackRecovery = recovery; e.AttackCooldown = cooldown;
+            e.AttackRange = range; e.AttackWindup = windup; e.AttackRecovery = recovery; e.AttackInterval = interval;
             e.CanTargetCompanion = companion;
             return e;
         }
 
         static EnemyData Ranged(EnemyId id, Faction f, float hp, float dmg, int xp, int coins, float speed, float radius,
-            float range, float windup, float recovery, float cooldown, float projSpeed, int burst, float burstGap)
+            float range, float windup, float recovery, float interval, float projSpeed, int burst, float burstGap)
         {
             var e = Base(id, f, EnemyRole.Ranged, hp, dmg, xp, coins, speed, radius);
-            e.AttackRange = range; e.AttackWindup = windup; e.AttackRecovery = recovery; e.AttackCooldown = cooldown;
+            e.AttackRange = range; e.AttackWindup = windup; e.AttackRecovery = recovery; e.AttackInterval = interval;
             e.ProjectileSpeed = projSpeed; e.ProjectileRange = range + 2f; e.BurstCount = burst; e.BurstInterval = burstGap;
             e.CountsAsRanged = true; e.CanTargetCompanion = true;
             return e;
         }
 
         static EnemyData Charger(EnemyId id, Faction f, float hp, float dmg, int xp, int coins, float speed, float radius,
-            float trigger, float telegraph, float chargeSpeed, float chargeDist, float recovery, float cooldown)
+            float trigger, float telegraph, float chargeSpeed, float chargeTime, float recovery, float interval)
         {
             var e = Base(id, f, EnemyRole.Charger, hp, dmg, xp, coins, speed, radius);
-            e.AttackRange = trigger; e.AttackWindup = telegraph; e.ChargeSpeed = chargeSpeed; e.ChargeDistance = chargeDist;
-            e.AttackRecovery = recovery; e.AttackCooldown = cooldown; e.KnockbackResistance = 0.4f;
+            e.AttackRange = trigger; e.AttackWindup = telegraph; e.ChargeSpeed = chargeSpeed; e.ChargeDuration = chargeTime;
+            e.AttackRecovery = recovery; e.AttackInterval = interval; e.KnockbackResistance = 0.4f;
             return e;
         }
 
@@ -229,9 +233,18 @@ namespace Hollow.EditorTools
             float trigger, float fuse, float blast)
         {
             var e = Base(id, f, EnemyRole.Explosive, hp, dmg, xp, coins, speed, radius);
-            e.AttackRange = trigger; e.FuseTime = fuse; e.ExplosionRadius = blast; e.AttackWindup = fuse;
+            e.AttackRange = trigger; e.FuseTime = fuse; e.ExplosionRadius = blast; e.AttackWindup = fuse; e.AttackInterval = 1f;
             e.CountsAsExplosive = true;
             return e;
+        }
+
+        /// <summary>v0.19 §9 repair/medic: radius 5, 8% of the target's maximum per use, 25% budget per target.</summary>
+        static void Healer(EnemyData e, float radius, float interval, float windup, float recovery)
+        {
+            e.AttackRange = radius; e.AuraRadius = radius; e.HealInterval = interval; e.AttackInterval = interval;
+            e.AttackWindup = windup; e.AttackRecovery = recovery;
+            e.HealFraction = 0.08f; e.HealBudgetFraction = 0.25f;
+            e.CountsAsSupport = true;
         }
 
         static EnemyData Machine(EnemyData e) { e.IsMachine = true; return e; }
@@ -291,44 +304,45 @@ namespace Hollow.EditorTools
             {
                 new()
                 {
-                    Id = BossId.LargeBeast, Phase = 1, Health = 2200, Damage = 20, ActiveCap = 18, RewardXp = 210, RewardCoins = 180,
+                    Id = BossId.LargeBeast, Phase = 1, Health = 2600, Damage = 20, ActiveCap = 18, RewardXp = 210, RewardCoins = 180,
                     OpeningAdds = Adds((EnemyId.A1_RunnerWolf, 8), (EnemyId.A2_QuillShooter, 4)),
                     Thresholds = new List<BossThreshold>
                     {
                         new() { HealthFraction = 0.65f, Adds = Adds((EnemyId.A1_RunnerWolf, 6), (EnemyId.A3_ChargingBoar, 2)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.A2_QuillShooter, 4), (EnemyId.A5_HowlingWolf, 2), (EnemyId.A6_ExplosiveBeetle, 4)) },
                     },
-                    MoveSpeed = 2.4f, BodyRadius = 1.4f, RestTime = 1.0f, LowHealthFraction = 0.35f, LowHealthRestMultiplier = 0.7f,
-                    ChargeTelegraph = 0.8f, ChargeSpeed = 13, ChargeDistance = 10, ChargeRecovery = 1.2f,
-                    StrikeWindup = 0.9f, StrikeRadius = 3, StrikeRecovery = 1.0f, AddSpawnGap = 0.5f,
+                    MoveSpeed = 2.4f, BodyRadius = 1.4f, AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
+                    ChargeTelegraph = 0.8f, ChargeSpeed = 9, ChargeDuration = 0.7f, ChargeRecovery = 1.2f,
+                    StrikeWindup = 0.9f, StrikeRadius = 2.8f, StrikeRecovery = 1.3f, AddSpawnGap = 0.5f,
                 },
                 new()
                 {
-                    Id = BossId.IndustrialRobot, Phase = 2, Health = 5000, Damage = 28, ActiveCap = 26, RewardXp = 358, RewardCoins = 324, IsMachine = true,
+                    Id = BossId.IndustrialRobot, Phase = 2, Health = 6500, Damage = 28, ActiveCap = 26, RewardXp = 358, RewardCoins = 324, IsMachine = true,
                     OpeningAdds = Adds((EnemyId.R1_Crawler, 6), (EnemyId.R2_Shooter, 4)),
                     Thresholds = new List<BossThreshold>
                     {
                         new() { HealthFraction = 0.7f, Adds = Adds((EnemyId.R2_Shooter, 4), (EnemyId.R3_SawCharger, 4), (EnemyId.R5_Repair, 2)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.R3_SawCharger, 4), (EnemyId.R6_Suicide, 6), (EnemyId.R7_DroneCarrier, 2)) },
                     },
-                    MoveSpeed = 1.8f, BodyRadius = 1.6f, RestTime = 1.0f, LowHealthFraction = 0.35f, LowHealthRestMultiplier = 0.75f,
-                    BurstWarning = 0.7f, BurstDuration = 1.2f, BurstRecovery = 1.3f, BurstShotInterval = 0.1f, BurstSpread = 30, ProjectileSpeed = 13,
-                    BlastWarning = 1.0f, BlastRadius = 3, BlastThrowRange = 9, HealCapFraction = 0.1f,
-                    BurstShotDamage = 8, ProjectileRange = 16, AddSpawnGap = 0.45f, EmpAffects = true,
+                    MoveSpeed = 1.8f, BodyRadius = 1.6f, AttackInterval = 4f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3.5f,
+                    BurstWarning = 0.7f, BurstDuration = 1.2f, BurstRecovery = 1.3f, BurstShotInterval = 0.3f, BurstSpread = 30, ProjectileSpeed = 10,
+                    BlastWarning = 1.0f, BlastRadius = 3, BlastThrowRange = 9, BlastRecovery = 1.5f, HealCapFraction = 0.1f,
+                    BurstShotDamage = 28, ProjectileRange = 16, AddSpawnGap = 0.45f, EmpAffects = true,
                 },
                 new()
                 {
-                    Id = BossId.FormerCompanion, Phase = 3, Health = 7000, Damage = 32, ActiveCap = 34, RewardXp = 528, RewardCoins = 486,
+                    // Burst: three shots 0.2 apart (duration 0.6). Grenade: thrown 0.6 after marking, one-second fuse → 1.6 marked.
+                    Id = BossId.FormerCompanion, Phase = 3, Health = 11000, Damage = 32, ActiveCap = 34, RewardXp = 356, RewardCoins = 486,
                     OpeningAdds = Adds((EnemyId.H1_BatonGuard, 8), (EnemyId.H2_RifleGuard, 6)),
                     Thresholds = new List<BossThreshold>
                     {
                         new() { HealthFraction = 0.7f, Adds = Adds((EnemyId.H2_RifleGuard, 6), (EnemyId.H5_Medic, 2), (EnemyId.H6_Grenadier, 4)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.H3_FastAssaulter, 6), (EnemyId.H4_ShieldGuard, 6), (EnemyId.H7_Engineer, 2)) },
                     },
-                    MoveSpeed = 2.2f, BodyRadius = 0.9f, RestTime = 1.0f, LowHealthFraction = 0.35f, LowHealthRestMultiplier = 0.75f,
-                    BurstWarning = 0.7f, BurstDuration = 1.0f, BurstRecovery = 1.2f, BurstShotInterval = 0.12f, BurstSpread = 20, ProjectileSpeed = 14,
-                    BlastWarning = 1.0f, BlastRadius = 2.2f, BlastThrowRange = 9, HealCapFraction = 0.1f,
-                    BurstShotDamage = 7, ProjectileRange = 15, AddSpawnGap = 0.4f, EmpAffects = true,
+                    MoveSpeed = 2.2f, BodyRadius = 0.9f, AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
+                    BurstWarning = 0.7f, BurstDuration = 0.6f, BurstRecovery = 1.2f, BurstShotInterval = 0.2f, BurstSpread = 20, ProjectileSpeed = 11,
+                    BlastWarning = 1.6f, BlastFlightFraction = 0.5f, BlastRadius = 2.6f, BlastThrowRange = 9, BlastRecovery = 0f, HealCapFraction = 0.1f,
+                    BurstShotDamage = 32, ProjectileRange = 15, AddSpawnGap = 0.4f, EmpAffects = true,
                 },
             };
         }
@@ -340,52 +354,54 @@ namespace Hollow.EditorTools
             return list;
         }
 
-        // ---------------- Weapons (§8). Level 1 = GDD; levels 2–3 = placeholders (approved=false, D21) ----------------
+        // ---------------- Weapons (v0.19 §6: every level designer-defined). Projectile speed 60 direct, 45 shotgun. ----------------
+        // Level 1 cost is the purchase price; level 2/3 costs are the sequential upgrade prices.
 
         static List<WeaponData> Weapons()
         {
+            const float Direct = 60, Shot = 45, Fall = 0.5f;
             return new List<WeaponData>
             {
                 Gun(WeaponId.Pistol, "Pistol", WeaponFamily.Sidearm, 0, reloadSurvivesDash: true,
-                    G(1, true, 0, 18, 3, 1, 2, 8, 0.9f, 14, 1, 30, 1),
-                    G(2, false, 25, 22, 3, 1, 2, 10, 0.9f, 14, 1, 30, 1),
-                    G(3, false, 50, 26, 3.5f, 1, 2, 12, 0.8f, 14, 1, 30, 1)),
+                    G(1, true, 0, 18, 3, 1, 2, 8, 0.9f, 14, 1, Direct, 1),
+                    G(2, true, 25, 23, 3.3f, 1, 1.6f, 10, 0.85f, 15, 1, Direct, 1),
+                    G(3, true, 50, 30, 3.5f, 1, 1.3f, 12, 0.8f, 16, 1, Direct, 1)),
                 Gun(WeaponId.LightSmg, "Light SMG", WeaponFamily.Direct, 1, false,
-                    G(1, true, 80, 12, 9, 1, 8, 24, 1.2f, 10, 1, 28, 1),
-                    G(2, false, 60, 14, 9, 1, 8, 30, 1.2f, 10, 1, 28, 1),
-                    G(3, false, 120, 16, 10, 1, 7, 36, 1.2f, 10, 1, 28, 1)),
+                    G(1, true, 80, 12, 9, 1, 8, 24, 1.2f, 10, 1, Direct, 1),
+                    G(2, true, 60, 15, 9.5f, 1, 7, 30, 1.1f, 10.5f, 1, Direct, 1),
+                    G(3, true, 120, 18, 10, 1, 6, 36, 1f, 11, 1, Direct, 1)),
                 Gun(WeaponId.DoubleBarrel, "Double-barrel shotgun", WeaponFamily.Spread, 1, false,
-                    G(1, true, 120, 9, 1.5f, 8, 28, 4, 1.6f, 7, 1, 24, 0.5f),
-                    G(2, false, 90, 11, 1.5f, 8, 28, 4, 1.4f, 7, 1, 24, 0.5f),
-                    G(3, false, 180, 13, 1.7f, 10, 28, 4, 1.4f, 7.5f, 1, 24, 0.5f)),
+                    G(1, true, 120, 9, 1.5f, 8, 28, 4, 1.6f, 7, 1, Shot, Fall),
+                    G(2, true, 90, 11, 1.6f, 8, 27, 6, 1.5f, 7.5f, 1, Shot, Fall),
+                    G(3, true, 180, 12, 1.7f, 10, 26, 6, 1.4f, 8, 1, Shot, Fall)),
                 Melee(WeaponId.Baton, "Baton", 1,
                     M(1, true, 90, 50, 2.2f, 1.7f, 100, 0.8f),
-                    M(2, false, 60, 62, 2.2f, 1.7f, 110, 0.8f),
-                    M(3, false, 120, 75, 2.5f, 1.9f, 110, 0.8f)),
+                    M(2, true, 60, 65, 2.35f, 1.85f, 110, 1f),
+                    M(3, true, 120, 80, 2.5f, 2f, 120, 1.2f)),
                 Gun(WeaponId.IndustrialRifle, "Industrial rifle", WeaponFamily.Direct, 2, false,
-                    G(1, true, 260, 28, 7, 1, 3, 24, 1.4f, 16, 1, 34, 1),
-                    G(2, false, 130, 33, 7, 1, 3, 30, 1.4f, 16, 1, 34, 1),
-                    G(3, false, 240, 38, 8, 1, 3, 30, 1.25f, 16, 1, 34, 1)),
+                    G(1, true, 260, 28, 7, 1, 3, 24, 1.4f, 16, 1, Direct, 1),
+                    G(2, true, 130, 34, 7.2f, 1, 2.5f, 30, 1.3f, 17, 1, Direct, 1),
+                    G(3, true, 240, 40, 7.5f, 1, 2, 36, 1.2f, 18, 1, Direct, 1)),
                 Gun(WeaponId.MagazineShotgun, "Magazine shotgun", WeaponFamily.Spread, 2, false,
-                    G(1, true, 320, 18, 1.8f, 7, 26, 8, 1.8f, 8, 1, 24, 0.5f),
-                    G(2, false, 160, 21, 1.8f, 7, 26, 10, 1.8f, 8, 1, 24, 0.5f),
-                    G(3, false, 280, 24, 2.1f, 8, 26, 10, 1.8f, 8, 1, 24, 0.5f)),
+                    G(1, true, 320, 18, 1.8f, 7, 26, 8, 1.8f, 8, 1, Shot, Fall),
+                    G(2, true, 160, 20, 1.9f, 8, 25, 10, 1.7f, 8.5f, 1, Shot, Fall),
+                    G(3, true, 280, 23, 2f, 9, 24, 12, 1.6f, 9, 1, Shot, Fall)),
                 Melee(WeaponId.IndustrialHammer, "Industrial hammer", 2,
                     M(1, true, 280, 125, 1.2f, 2f, 120, 1.4f),
-                    M(2, false, 140, 150, 1.2f, 2f, 120, 1.6f),
-                    M(3, false, 250, 180, 1.35f, 2.2f, 120, 1.6f)),
+                    M(2, true, 140, 155, 1.3f, 2.15f, 130, 1.6f),
+                    M(3, true, 250, 190, 1.35f, 2.3f, 140, 1.8f)),
                 Gun(WeaponId.EnergyRifle, "Energy rifle", WeaponFamily.Direct, 3, false,
-                    G(1, true, 650, 48, 8, 1, 2, 28, 1.5f, 18, 2, 40, 1),
-                    G(2, false, 280, 56, 8, 1, 2, 34, 1.5f, 18, 2, 40, 1),
-                    G(3, false, 450, 64, 9, 1, 2, 34, 1.5f, 18, 3, 40, 1)),
+                    G(1, true, 650, 48, 8, 1, 2, 28, 1.5f, 18, 2, Direct, 1),
+                    G(2, true, 280, 55, 8.5f, 1, 1.7f, 32, 1.4f, 19, 2, Direct, 1),
+                    G(3, true, 450, 62, 9, 1, 1.4f, 36, 1.3f, 20, 3, Direct, 1)),
                 Gun(WeaponId.EnergyShotgun, "Energy shotgun", WeaponFamily.Spread, 3, false,
-                    G(1, true, 750, 24, 2, 8, 30, 8, 1.8f, 9, 2, 28, 0.5f),
-                    G(2, false, 330, 28, 2, 8, 30, 10, 1.8f, 9, 2, 28, 0.5f),
-                    G(3, false, 520, 32, 2.3f, 10, 30, 10, 1.8f, 9, 2, 28, 0.5f)),
+                    G(1, true, 750, 24, 2, 8, 30, 8, 1.8f, 9, 2, Shot, Fall),
+                    G(2, true, 330, 27, 2.1f, 9, 29, 10, 1.65f, 9.5f, 2, Shot, Fall),
+                    G(3, true, 520, 31, 2.2f, 10, 28, 12, 1.55f, 10, 2, Shot, Fall)),
                 Melee(WeaponId.EnergyBlade, "Energy blade", 3,
                     M(1, true, 680, 180, 1.8f, 2.3f, 150, 0.6f),
-                    M(2, false, 300, 210, 1.8f, 2.3f, 160, 0.6f),
-                    M(3, false, 480, 245, 2f, 2.5f, 160, 0.6f)),
+                    M(2, true, 300, 210, 1.95f, 2.45f, 165, 0.75f),
+                    M(3, true, 480, 245, 2.1f, 2.6f, 180, 0.9f)),
             };
         }
 

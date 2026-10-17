@@ -24,6 +24,8 @@ namespace Hollow.Sim
         public EnemyAi Ai;
         public long AiUntilTick;
         public long NextAttackTick;
+        /// <summary>When the current/last windup began; the next one may start AttackInterval later (v0.19 §9).</summary>
+        public long AttackStartTick;
         public Vector2 AttackDir;
         public Vector2 AttackPoint;
         public TargetKind Target;
@@ -37,6 +39,8 @@ namespace Hollow.Sim
         public long SpeedBoostUntilTick;
 
         public float HealGiven;
+        /// <summary>Healing this enemy has received this encounter, from every healer together (v0.19 §9).</summary>
+        public float HealReceived;
         public int ChildrenProduced;
         public long NextProduceTick;
         public int ParentId;

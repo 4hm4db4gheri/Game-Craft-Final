@@ -10,14 +10,14 @@
 ## خلاصه‌ی پروژه
 
 - **نام:** Game Craft Final — بازی **Hollow** (جم دو روزه). شوتر دوبعدی با دید 3/4 از بالا مثل Kill The Crows (نه پیکسل‌آرت)، سه فاز (حیوانات، ربات‌ها، انسان‌ها)، ۵ موج + ۱ باس در هر فاز.
-- **مرجع طراحی:** `docs/GDD.md` (تبدیل‌شده از `Assets/GDD/Hollow_Game_Design_EN.docx` نسخه‌ی 0.12). پرامپت اصلی کاربر شامل تسک‌های T00 تا T22 است؛ وضعیت در `docs/TASKS.md`.
+- **مرجع طراحی:** GDD جدید **v0.19** است: `docs/GDD_v0.19.md` (تبدیل از `Assets/GDD/Hollow_Game_Design_v0.19_EN.docx`). کد هنوز بر اساس v0.12 است (`docs/GDD.md`). فهرست تفاوت‌ها و کارهای لازم در `docs/GDD_CHANGES_v0.19.md`. پرامپت اصلی کاربر شامل تسک‌های T00 تا T22 است؛ وضعیت در `docs/TASKS.md`.
 - **Unity:** `6000.6.0f1`، URP با Renderer2D (sort axis = Y برای مرتب‌سازی بر اساس پا)، Input System جدید (actionها در کد، `UnityInputSource`)، Cinemachine 6.6 و AI Navigation (کاربر نصب کرده؛ Navigation استفاده نمی‌شود)، Newtonsoft JSON.
 - **git:** شاخه‌ی `main`، یک commit برای هر تسک، بدون push مگر کاربر بخواهد.
 
 ## معماری (خلاصه)
 
 - گیم‌پلی یک **شبیه‌سازی C# خالص** است (`Hollow.Sim`) با تیک ثابت ۶۰ هرتز؛ MonoBehaviourها فقط رندر می‌کنند و ورودی می‌دهند (D40–D47 در `docs/DECISIONS.md`).
-- **همه‌ی اعداد گیم‌پلی** در `Assets/Resources/Balance/Baseline.json` هستند (کلاس‌ها در `Assets/Scripts/Data/BalanceProfile.cs`). هیچ عدد گیم‌پلی در کد نباشد. `Assets/Editor/BaselineSeed.cs` فقط seed اولیه است و Baseline.json را بازنویسی می‌کند (با تأیید).
+- **همه‌ی اعداد گیم‌پلی** در `Assets/Resources/Balance/Baseline.json` هستند (کلاس‌ها در `Assets/Scripts/Data/BalanceProfile.cs`). هیچ عدد گیم‌پلی در کد نباشد. `Assets/Editor/BaselineSeed.cs` seed است و Baseline.json را بازنویسی می‌کند (با تأیید). از v0.19 عددها اول در seed عوض می‌شوند و بعد با `BaselineSeed.Write()` نوشته می‌شوند (قبلش seed و JSON مقایسه شدند و یکسان بودند).
 - **پنل بالانس:** Editor: منوی `Hollow > Balance Panel` (Ctrl+Shift+B). داخل بازی: F9 (در Editor و development build). `BalanceService` = draft/live/apply/undo/reset group.
 
 ## ساختار پروژه
@@ -31,7 +31,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۳۸۷ تست، همه پاس) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۰۲ تست، همه پاس) |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
@@ -49,10 +49,12 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۳۷۱ تست پاس.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۰۲ تست پاس. عددهای بالانس از GDD v0.19 هستند.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
 - باقی‌مانده: هیچ تسکی از T00–T22 نمانده. کارهای بعدی با طراح/کاربر: اعداد سطح ۲ و ۳ سلاح‌ها، playtest انسانی، آرت AI، گوش دادن به صداها (فهرست در `docs/RELEASE_NOTES.md`).
 ## کارهای باز / ایده‌ها
+
+- **اعمال GDD v0.19**: عددها (سلاح، دشمن، فرزند، باس)، retry با جان پر، falloff و نفوذ گلوله، و جلوه‌های جسد و tracer انجام شد. هنوز مانده: فارسی‌سازی و RTL، انتخاب ۴ AI، هدیه‌ی rifle، یک اسلات آیتم، دو ایستگاه خدمات، فیلم‌نامه‌ی جدید، تنظیمات voice و زیرنویس، صدای هر دشمن. فهرست در `docs/GDD_CHANGES_v0.19.md`.
 
 - آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است و زمین، prop، decor و کیوسک فروشگاه را هم پوشش می‌دهد (T16).
 ---
@@ -152,3 +154,13 @@
 - مشکل: هسته‌ی گلوله در prefab با فاصله‌ی ۰.۳۵ «بالا»ی محلی قرار داشت و با جهت گلوله می‌چرخید؛ رو به چپ این فاصله به پایین برمی‌گشت و گلوله زیر بازیکن دیده می‌شد.
 - رفع (فقط نمایش، شبیه‌سازی دست نخورد): `ProjectileView` ارتفاع را در جهت بالای صفحه اضافه می‌کند؛ گلوله‌ی بازیکن و Operator از سر سلاح شروع می‌شود و در ۰.۱ ثانیه روی خط واقعی‌اش می‌نشیند؛ تفنگ بازیکن در همان جهت شبیه‌سازی نشانه می‌رود (`PlayerView`)؛ `CompanionView.Muzzle`.
 
+### 2026-10-17 — بررسی GDD v0.19
+- کاربر GDD را به v0.19 به‌روز کرد (فایل docx قبلی حذف شد). تبدیل به `docs/GDD_v0.19.md` و مقایسه با v0.12 و با کد و Baseline.json.
+- گزارش: `docs/GDD_CHANGES_v0.19.md`. هیچ کدی تغییر نکرد. `docs/GDD.md` (v0.12) فعلاً برای مرجع نگه داشته شد.
+
+### 2026-10-17 — اعمال عددهای GDD v0.19 و تغییرهای کوچک
+- seed و `Baseline.json`: هر ۳۰ سطح سلاح طبق v0.19 (همه approved)، سرعت گلوله 60 و 45، جدول زمان‌بندی ۲۱ دشمن، XP نگهبان باتوم 6، نقش‌ها (howler 5/3s، heal 8٪ با بودجه‌ی 25٪، شعاع انفجار)، فرزندها (پهپاد نزدیک‌زن 28HP، برجک 70HP)، باس‌ها (2600/6500/11000، XP انسان 356، الگوها)، فروشگاه 2.2.
+- معنای فیلدها: `AttackInterval` شروع‌تاشروع، `ChargeDuration`، `HealFraction`/`HealBudgetFraction` (بودجه‌ی مشترک هر هدف، `EnemyState.HealReceived`)، باس `AttackInterval`/`LowHealthAttackInterval`/`FirstAttackDelay`/`BlastRecovery`.
+- retry جان بازیکن و همراه را پر می‌کند؛ falloff شاتگان از نصف برد شروع می‌شود؛ نفوذ 75٪ آسیب باقی‌مانده را به هدف بعدی می‌دهد.
+- جلوه‌ها: پرتاب جسد 0.25s، ماندن 6s، محو 1s، سقف 30 جسد و 20 لکه، tracer 0.06s (tracer در Play mode دیده نشد؛ فقط کامپایل و تست).
+- تصمیم‌ها D61، D62. ۴۰۲ تست پاس (۴ تست جدید). Play mode: کشتن دشمن، جسد و retry بدون خطا.
