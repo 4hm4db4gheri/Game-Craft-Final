@@ -175,6 +175,7 @@ namespace Hollow.EditorTools
             var arena = UnityEngine.Object.FindAnyObjectByType<ArenaAuthoring>(FindObjectsInactive.Include);
             if (arena == null) { Debug.Log("[Hollow art] Ground art found; open the Game scene and apply again (or rebuild the scene) to paint it."); return; }
             ArenaTools.PaintGround(arena);
+            ArenaTools.FlattenDecor(arena);
             ArenaTools.PlaceBorders(arena);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(arena.gameObject.scene);
             UnityEditor.SceneManagement.EditorSceneManager.SaveScene(arena.gameObject.scene);

@@ -7,10 +7,10 @@ this again gives the same result. Fixes:
   * Explosion strip: frames 2-6 are cut by the cell edge and the tail is empty: frames fit the cell, edges fade,
     and the last frames fade out the smoke.
   * Muzzle flash / impact frames touching the cell edge: edges fade.
-  * Seams where border panels repeat (P1 BorderH and BorderV, P3 BorderV) and the P1 ground: made to wrap.
+  * Seams where border panels repeat (P1 BorderH and BorderV, P3 BorderV): made to wrap (the P1 ground: ground34.py).
   * Coin, lock and infinity icons (blurry upscales) and the four button states (four sizes): redrawn cleanly.
 
-Run:  python Tools/ArtGen/fix_art.py      then  python Tools/ArtGen/animate.py
+Run:  python Tools/ArtGen/fix_art.py, then ground34.py, then animate.py
 """
 import math
 import os
@@ -24,7 +24,7 @@ FIXED = [
     "BOS_B2_IndustrialRobot_burst", "BOS_B2_IndustrialRobot_windup_blast", "BOS_B2_IndustrialRobot_blast",
     "ENM_A2_QuillShooter_attack",
     "FX_GEN_Explosion_burst_f8", "FX_GEN_MuzzleFlash_burst_f3", "FX_GEN_Impact_burst_f4",
-    "ENV_P1_BorderH_prop", "ENV_P1_BorderV_prop", "ENV_P3_BorderV_prop", "ENV_P1_Ground_ground",
+    "ENV_P1_BorderH_prop", "ENV_P1_BorderV_prop", "ENV_P3_BorderV_prop",
     "ICO_GEN_Coin_icon", "ICO_GEN_Lock_icon", "ICO_GEN_Infinity_icon",
     "UI_GEN_Button_ui_normal", "UI_GEN_Button_ui_hover", "UI_GEN_Button_ui_pressed", "UI_GEN_Button_ui_disabled",
 ]
@@ -191,7 +191,6 @@ def fix_seams():
     thorns = thorns.crop((0, 150, thorns.width, 1000)).resize(thorns.size, Image.LANCZOS)
     save(wrap(thorns, horizontal=False, vertical=True, band=0.12), "ENV_P1_BorderV_prop")
     save(fence_column(), "ENV_P3_BorderV_prop")
-    save(wrap(original("ENV_P1_Ground_ground"), horizontal=True, vertical=True, band=0.08), "ENV_P1_Ground_ground")
 
 
 # ---- redrawn UI --------------------------------------------------------------------------------------------

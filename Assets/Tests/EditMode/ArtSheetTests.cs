@@ -51,5 +51,21 @@ namespace Hollow.Tests
             Assert.AreEqual(6f, new Hollow.Presentation.SpriteState { FramesPerSecond = 6 }.Rate(set));
             UnityEngine.Object.DestroyImmediate(set);
         }
+
+        /// <summary>3/4 ground: one seamless sprite at 128 px per unit, drawn tiled over the arena (no grid of cells).</summary>
+        [Test]
+        public void GroundArtIsOneTiledSpriteAt128PixelsPerUnit()
+        {
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets("_Ground_ground t:Texture2D", new[] { ArtRules.IncomingDir }))
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var imp = (UnityEditor.TextureImporter)UnityEditor.AssetImporter.GetAtPath(path);
+                Assert.AreEqual(UnityEditor.SpriteImportMode.Single, imp.spriteImportMode, path);
+                Assert.AreEqual(ArtRules.GroundPixelsPerUnit, imp.spritePixelsPerUnit, path);
+                var settings = new UnityEditor.TextureImporterSettings();
+                imp.ReadTextureSettings(settings);
+                Assert.AreEqual(UnityEngine.SpriteMeshType.FullRect, settings.spriteMeshType, path);
+            }
+        }
     }
 }

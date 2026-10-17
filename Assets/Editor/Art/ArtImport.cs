@@ -72,7 +72,11 @@ namespace Hollow.EditorTools
             ["Kiosk"] = 3, ["BorderH"] = 4, ["BorderV"] = 1,
         };
 
-        public static float GroundUnits = 8f;
+        /// <summary>
+        /// Ground textures are 128 px per unit, so the image size is the area it covers (the brief's 1024 px = 8 × 8
+        /// units; Tools/ArtGen/ground34.py writes 3072 px = 24 × 24). They are drawn as one tiled sprite.
+        /// </summary>
+        public const float GroundPixelsPerUnit = 128f;
 
         /// <summary>Width of one frame in game units (null = keep default scale, e.g. UI).</summary>
         public static float? FrameWidthUnits(ArtName n)
@@ -83,7 +87,6 @@ namespace Hollow.EditorTools
                 case "PRJ":
                     return Lengths.TryGetValue(n.Key, out float len) ? len * 2f : 1f;
                 case "ENV":
-                    if (n.State == "ground") return GroundUnits;
                     if (n.State == "decor") return 1f;
                     return PropCells.TryGetValue(n.Name, out float cell) ? cell : 2f;
                 case "ICO":
@@ -149,11 +152,13 @@ namespace Hollow.EditorTools
             imp.textureCompression = TextureImporterCompression.CompressedHQ;
             imp.maxTextureSize = 4096;
 
-            int frames = n.State == "ground" ? 64 : n.Frames;
-            var (cols, rows) = n.State == "ground" ? (1, 1) : ArtRules.Grid(frames, w, h);
+            bool ground = n.State == "ground";
+            int frames = ground ? 1 : n.Frames;
+            var (cols, rows) = ArtRules.Grid(frames, w, h);
             float frameWidthPx = w / (float)cols;
             float? units = ArtRules.FrameWidthUnits(n);
-            imp.spritePixelsPerUnit = units.HasValue ? frameWidthPx / units.Value : 100f;
+            imp.spritePixelsPerUnit = ground ? ArtRules.GroundPixelsPerUnit : units.HasValue ? frameWidthPx / units.Value : 100f;
+            if (ground) imp.wrapMode = TextureWrapMode.Repeat;
 
             var pivot = ArtRules.Pivot(n);
             if (frames <= 1)
@@ -163,28 +168,19 @@ namespace Hollow.EditorTools
                 imp.ReadTextureSettings(settings);
                 settings.spriteAlignment = (int)SpriteAlignment.Custom;
                 settings.spritePivot = pivot;
+                // A seamless ground is drawn as one tiled sprite over the whole arena (ArenaTools.PaintGround).
+                if (ground) settings.spriteMeshType = SpriteMeshType.FullRect;
                 imp.SetTextureSettings(settings);
                 return;
             }
 
             imp.spriteImportMode = SpriteImportMode.Multiple;
             var rects = new List<SpriteRect>();
-            if (n.State == "ground")
+            float fw = w / (float)cols, fh = h / (float)rows;
+            for (int i = 0; i < frames; i++)
             {
-                // A seamless 8 × 8-unit texture becomes 64 one-unit tiles.
-                float tw = w / 8f, th = h / 8f;
-                for (int y = 0; y < 8; y++)
-                for (int x = 0; x < 8; x++)
-                    rects.Add(Rect($"{n.Name}_{x}_{y}", new Rect(x * tw, y * th, tw, th), new Vector2(0.5f, 0.5f)));
-            }
-            else
-            {
-                float fw = w / (float)cols, fh = h / (float)rows;
-                for (int i = 0; i < frames; i++)
-                {
-                    int col = i % cols, row = i / cols; // row 0 is the top row; texture y starts at the bottom
-                    rects.Add(Rect($"{n.State}_{i}", new Rect(col * fw, h - (row + 1) * fh, fw, fh), pivot));
-                }
+                int col = i % cols, row = i / cols; // row 0 is the top row; texture y starts at the bottom
+                rects.Add(Rect($"{n.State}_{i}", new Rect(col * fw, h - (row + 1) * fh, fw, fh), pivot));
             }
             var factory = new UnityEditor.U2D.Sprites.SpriteDataProviderFactories();
             factory.Init();

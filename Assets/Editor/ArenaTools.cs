@@ -22,7 +22,13 @@ namespace Hollow.EditorTools
     public static class ArenaTools
     {
         public const string TilesDir = "Assets/Art/Placeholders/Tiles";
-        public const string ArtTilesDir = "Assets/Art/Tiles";
+        /// <summary>
+        /// 3/4 view: the camera looks down at about 55°, so things lying flat on the ground look shorter than they are
+        /// wide. Ground art (Tools/ArtGen/ground34.py uses the same number) and flat decals are drawn at this height.
+        /// </summary>
+        public const float GroundSquash = 0.75f;
+        const string GroundArtName = "GroundArt";
+        const string EdgeShadeName = "EdgeShade";
         public const string LayoutPath = "Assets/Resources/Arena/ArenaLayout.json";
         /// <summary>The second service station: a spot free in all three phases, 8 units from the east entrance (T28).</summary>
         public const string SecondShopName = "ShopStation2";
@@ -246,7 +252,8 @@ namespace Hollow.EditorTools
             {
                 var map = a.Grounds[i];
                 map.ClearAllTiles();
-                var art = GroundArtTiles(i + 1) ?? GroundArtTiles(StandIn(i + 1));
+                var art = GroundArtSprite(i + 1) ?? GroundArtSprite(StandIn(i + 1));
+                SetGroundArt(a, map, art);
                 var g = Grounds[i];
                 var baseTiles = new Tile[3];
                 for (int k = 0; k < 3; k++)
@@ -256,7 +263,7 @@ namespace Hollow.EditorTools
                 for (int x = 0; x < a.Size.x; x++)
                 {
                     var cell = new Vector3Int(x, y, 0);
-                    map.SetTile(cell, art != null ? art[x % 8, y % 8] : baseTiles[rng.Next(3)]);
+                    if (art == null) map.SetTile(cell, baseTiles[rng.Next(3)]);
                 }
 
                 var old = map.transform.Find("PlaceholderPatches");
@@ -330,8 +337,42 @@ namespace Hollow.EditorTools
                         Border(parent, "Right", v, o + new Vector2(w - v.bounds.size.x, y0), -5);
                     }
                 }
+                EdgeShade(parent, a);
                 parent.gameObject.SetActive(a.Props[i] == null || a.Props[i].gameObject.activeSelf);
             }
+        }
+
+        /// <summary>
+        /// 3/4 depth: the walls stand up, so the ground right under them is in their shade. A soft dark band runs
+        /// along the inside of the wall ring, deepest under the north wall (its face is the tall one we see).
+        /// Drawn over ground and decor, under shadows, props and characters.
+        /// </summary>
+        static void EdgeShade(Transform parent, ArenaAuthoring a)
+        {
+            var sprite = PlaceholderArt.Load("PH_EdgeShade");
+            if (sprite == null) { PlaceholderArt.GenerateAll(); sprite = PlaceholderArt.Load("PH_EdgeShade"); }
+            if (sprite == null) return;
+            var root = new GameObject(EdgeShadeName).transform;
+            root.SetParent(parent, false);
+            Vector2 o = a.Grid.transform.position;
+            float w = a.Size.x, h = a.Size.y, len = sprite.bounds.size.y, thin = sprite.bounds.size.x;
+            void Band(string name, Vector2 centre, float along, float depth, float angle, float alpha)
+            {
+                var go = new GameObject(name);
+                go.transform.SetParent(root, false);
+                go.transform.position = centre;
+                go.transform.rotation = Quaternion.Euler(0, 0, angle);
+                go.transform.localScale = new Vector3(along / thin, depth / len, 1);
+                var r = go.AddComponent<SpriteRenderer>();
+                r.sprite = sprite;
+                r.color = new Color(1, 1, 1, alpha);
+                r.sortingOrder = -50;
+            }
+            const float north = 2.4f, side = 0.9f, south = 0.5f;
+            Band("North", o + new Vector2(w / 2, h - 1 - north / 2), w - 2, north, 0, 0.7f);
+            Band("West", o + new Vector2(1 + side / 2, h / 2), h - 2, side, 90, 0.45f);
+            Band("East", o + new Vector2(w - 1 - side / 2, h / 2), h - 2, side, -90, 0.45f);
+            Band("South", o + new Vector2(w / 2, 1 + south / 2), w - 2, south, 180, 0.35f);
         }
 
         static void Border(Transform parent, string side, Sprite sprite, Vector2 bottomLeft, int order)
@@ -355,25 +396,62 @@ namespace Hollow.EditorTools
             return null;
         }
 
-        /// <summary>Tiles cut from an imported ground texture, or null when there is none.</summary>
-        static Tile[,] GroundArtTiles(int phase)
+        /// <summary>An imported ground texture (one seamless sprite, 128 px per unit), or null when there is none.</summary>
+        static Sprite GroundArtSprite(int phase)
         {
             if (!AssetDatabase.IsValidFolder(ArtRules.IncomingDir)) return null;
             foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { ArtRules.IncomingDir }))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (!ArtName.TryParse(path, out var n) || n.Category != "ENV" || n.Id != $"P{phase}" || n.State != "ground") continue;
-                var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToDictionary(s => s.name);
-                var tiles = new Tile[8, 8];
-                for (int y = 0; y < 8; y++)
-                for (int x = 0; x < 8; x++)
-                {
-                    if (!sprites.TryGetValue($"{n.Name}_{x}_{y}", out var s)) return null;
-                    tiles[x, y] = LoadOrCreateTile(ArtTilesDir, $"ENV_P{phase}_{n.Name}_{x}_{y}", s, Color.white);
-                }
-                return tiles;
+                var sprite = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().FirstOrDefault();
+                if (sprite != null) return sprite;
             }
             return null;
+        }
+
+        /// <summary>The ground art as one sprite tiled over the whole arena (no grid of cells, no 8-unit repeat).</summary>
+        static void SetGroundArt(ArenaAuthoring a, Tilemap map, Sprite art)
+        {
+            var old = map.transform.Find(GroundArtName);
+            if (art == null) { if (old != null) Object.DestroyImmediate(old.gameObject); return; }
+            var go = old != null ? old.gameObject : new GameObject(GroundArtName);
+            go.transform.SetParent(map.transform, false);
+            go.transform.localPosition = new Vector3(a.Size.x / 2f, a.Size.y / 2f, 0);
+            var r = go.GetComponent<SpriteRenderer>();
+            if (r == null) r = go.AddComponent<SpriteRenderer>();
+            r.sprite = art;
+            r.drawMode = SpriteDrawMode.Tiled;
+            r.tileMode = SpriteTileMode.Continuous;
+            r.size = a.Size;
+            r.sortingOrder = map.GetComponent<TilemapRenderer>().sortingOrder;
+        }
+
+        /// <summary>
+        /// Lays walk-over decals flat on the 3/4 ground: their spin goes on the art child and the decal itself is
+        /// drawn GroundSquash tall, so a rotated crack still looks like it lies on the floor. Upright decor (grass
+        /// tufts, never spun) is left alone. Safe to run again.
+        /// </summary>
+        public static int FlattenDecor(ArenaAuthoring a)
+        {
+            int changed = 0;
+            foreach (var parent in a.Decor)
+            {
+                if (parent == null) continue;
+                foreach (Transform t in parent)
+                {
+                    float spin = t.localEulerAngles.z;
+                    if (Mathf.Approximately(spin, 0f)) continue;
+                    var body = t.Find("Body");
+                    if (body == null) continue;
+                    body.localRotation = Quaternion.Euler(0, 0, spin);
+                    t.localRotation = Quaternion.identity;
+                    var sc = t.localScale;
+                    t.localScale = new Vector3(sc.x, Mathf.Abs(sc.x) * GroundSquash, 1);
+                    changed++;
+                }
+            }
+            return changed;
         }
 
         static void ScatterDecor(ArenaAuthoring a, Dictionary<(int, string), GameObject> prefabs)
@@ -403,6 +481,7 @@ namespace Hollow.EditorTools
                         go.transform.localScale = new Vector3(rng.Next(2) == 0 ? s : -s, s, 1);
                     }
             }
+            FlattenDecor(a);
         }
 
         // ------------------------------------------------------------------ prefabs

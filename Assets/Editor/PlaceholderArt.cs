@@ -26,7 +26,10 @@ namespace Hollow.EditorTools
             Write("PH_Capsule", 128, 256, (u, v) => Capsule(u, v));
             Write("PH_Triangle", 128, 128, (u, v) => Triangle(u, v));
             Write("PH_Diamond", 128, 128, (u, v) => Mathf.Clamp01((0.48f - (Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f))) * 64f));
-            Write("PH_Shadow", 128, 64, (u, v) => SoftEllipse(u, v) * 0.55f, black: true);
+            // Contact shadow: a dense core with a short soft edge so characters and props sit on the 3/4 ground.
+            Write("PH_Shadow", 128, 64, (u, v) => Mathf.Clamp01(SoftEllipse(u, v) * 1.5f) * 0.7f, black: true);
+            // Shade under the arena walls: dark at the top edge, gone at the bottom (rotated per wall).
+            Write("PH_EdgeShade", 16, 128, (u, v) => Mathf.SmoothStep(0f, 1f, v) * v, black: true);
             Write("PH_SoftGlow", 128, 128, (u, v) => Mathf.Pow(Mathf.Clamp01(1f - Vector2.Distance(new Vector2(u, v), new Vector2(.5f, .5f)) * 2f), 2f));
             Write("PH_Reticle", 128, 128, (u, v) => Reticle(u, v));
             Write("PH_Bar", 64, 16, (u, v) => 1f);
