@@ -13,10 +13,20 @@ namespace Hollow.EditorTools
     /// <summary>
     /// Reproducible project setup: scenes, build list, 2D renderer sorting. Safe to run again.
     /// </summary>
+    [InitializeOnLoad]
     public static class ProjectSetup
     {
         const string ScenesDir = "Assets/Scenes";
         const string RendererPath = "Assets/Settings/Renderer2D.asset";
+
+        static ProjectSetup()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                var menu = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath(SceneNames.MainMenu));
+                if (menu != null) EditorSceneManager.playModeStartScene = menu;
+            };
+        }
 
         public static string ScenePath(string name) => $"{ScenesDir}/{name}.unity";
 

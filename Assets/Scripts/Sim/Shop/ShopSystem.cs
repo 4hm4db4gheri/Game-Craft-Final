@@ -29,7 +29,7 @@ namespace Hollow.Sim
         public bool Enabled => Lock == LockReason.None;
     }
 
-    public enum TutorialStage { None, FirstGroup, Purchase, SecondGroup, Grenade }
+    public enum TutorialStage { None, FirstGroup, Purchase, SecondGroup, Grenade, GrenadeThrown }
 
     /// <summary>Shop state that must survive a save (open flag, price snapshot, per-encounter stock).</summary>
     public sealed class ShopState
@@ -209,6 +209,7 @@ namespace Hollow.Sim
             if (!offer.Enabled) return false;
 
             w.Progress.Wallet -= offer.Price;
+            bool tutorialWeaponBought = false;
             switch (kind)
             {
                 case OfferKind.BuyWeapon:
@@ -217,6 +218,8 @@ namespace Hollow.Sim
                     {
                         w.Inventory.Add(ItemId.Grenade, 1); // one free practice throw before the next group
                         w.Tutorial = TutorialStage.Grenade;
+                        EnsureGrenadeTarget(w);
+                        tutorialWeaponBought = true;
                     }
                     break;
                 case OfferKind.EquipWeapon:
@@ -244,7 +247,24 @@ namespace Hollow.Sim
             if (w.Shop.FirstPurchaseTick < 0) w.Shop.FirstPurchaseTick = w.Clock.Tick;
             int id = kind == OfferKind.BuyItem ? (int)item : (int)weapon;
             w.Emit(SimEventType.Purchased, id, w.Player.Position, new Vector2(offer.Level, 0), offer.Price, (int)kind);
+            if (tutorialWeaponBought) Checkpoints.Capture(w); // retry keeps the mandatory purchase and practice grenade
             return true;
+        }
+
+        public static void EnsureGrenadeTarget(World w)
+        {
+            if (w.TutorialGrenadeEnemyId != 0) return;
+            var enemyType = EnemyId.A1_RunnerWolf;
+            float radius = w.Profile.Enemy(enemyType).BodyRadius;
+            var position = w.Arena.NearestFree(w.Player.Position + Vector2.right * 3.5f, radius);
+            foreach (var direction in new[] { Vector2.right, Vector2.up, Vector2.left, Vector2.down })
+            {
+                var candidate = w.Arena.NearestFree(w.Player.Position + direction * 3.5f, radius);
+                if (!w.Arena.LineOfSight(w.Player.Position, candidate)) continue;
+                position = candidate;
+                break;
+            }
+            w.TutorialGrenadeEnemyId = EnemySystem.Spawn(w, enemyType, position, warning: false).Id;
         }
 
         static bool Matches(in ShopOffer o, WeaponId weapon, ItemId item, int slot) => o.Kind switch

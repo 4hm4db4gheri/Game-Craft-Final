@@ -44,6 +44,10 @@ namespace Hollow.Game
         string lastSavedHash;
         string flashMessage;
         float flashUntil;
+        float nextOperatorBubbleAt;
+        float operatorBubbleUntil;
+        string operatorBubbleLine;
+        int lastOperatorBubble = -1;
 
         public Simulation Sim { get; private set; }
         World W => Sim.World;
@@ -164,6 +168,8 @@ namespace Hollow.Game
         void SetWorld(World world)
         {
             Sim = new Simulation(world);
+            operatorBubbleUntil = 0;
+            nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(18f, 28f);
             dialogue.SetSpeakerName("Assistant", Loc.T("ai." + world.Player.Ai)); // the chosen AI speaks under its own name
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
@@ -222,7 +228,8 @@ namespace Hollow.Game
             SyncEncounter(w);
             SyncBarks(w);
             // One-time hints wait for calm moments: not over menus, scenes, the open shop, a failure or the first tutorial steps.
-            bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade;
+            bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase ||
+                w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown;
             hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy);
             if (telemetry != null)
             {
@@ -257,7 +264,7 @@ namespace Hollow.Game
         {
             var ws = w.Waves;
             int secondsLeft = ws.Kind == EncounterKind.SafeInterval ? Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)) : 0;
-            long key = ((long)ws.Kind * 8 + w.Phase) * 1024 + secondsLeft;
+            long key = (((long)ws.Kind * 8 + w.Phase) * 1024 + secondsLeft) * 32 + ws.Wave;
             if (key != lastTopKey) { lastTopKey = key; hud.SetTop(TopLine(w)); } // rebuilt only when it changes (T21)
             var b = w.Boss;
             hud.SetBoss(b.Active ? BossName(b.Id) : null, b.Active ? b.Health / b.MaxHealth : 0);
@@ -270,11 +277,11 @@ namespace Hollow.Game
             string place = Loc.T("area." + w.Phase);
             return w.Waves.Kind switch
             {
-                EncounterKind.SafeInterval => Loc.F("top.areaSafe", place, Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))),
+                EncounterKind.SafeInterval => Loc.F("top.areaSafe", place, Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)), w.Waves.Wave),
                 EncounterKind.BossPrep => Loc.F("top.areaBossPrep", place),
                 EncounterKind.Boss => Loc.F("top.areaBoss", place),
                 EncounterKind.PhaseComplete => Loc.F("top.areaWon", place),
-                _ => place,
+                _ => Loc.F("top.areaWave", place, w.Waves.Wave),
             };
         }
 
@@ -428,7 +435,9 @@ namespace Hollow.Game
             TutorialStage.FirstGroup => Loc.T("tutorial.move"),
             TutorialStage.Purchase => w.Coins.Count > 0 ? Loc.T("tutorial.coins")
                 : w.Shop.Open ? Loc.F("tutorial.clickBuy", Loc.F("shop.buy", TutorialWeaponName(w))) : Loc.F("tutorial.followArrow", TutorialWeaponName(w)),
-            TutorialStage.Grenade => Loc.T(w.Shop.Open ? "tutorial.closeShop" : w.Inventory.Holding ? "tutorial.throwGrenade" : "tutorial.equipGrenade"),
+            TutorialStage.Grenade => Loc.T(w.Shop.Open ? "tutorial.closeShop" : !w.Inventory.Holding ? "tutorial.equipGrenade" :
+                w.Inventory.GrenadeChargeStarted ? "tutorial.releaseGrenade" : "tutorial.throwGrenade"),
+            TutorialStage.GrenadeThrown => Loc.T("tutorial.waitGrenade"),
             // A bought weapon goes to slot 2; the pistol stays in hand until the player switches.
             TutorialStage.SecondGroup when w.Player.Loadout.ActiveId != w.Profile.Economy.TutorialWeapon && w.Player.Loadout.Owns(w.Profile.Economy.TutorialWeapon)
                 => Loc.F("tutorial.press2", TutorialWeaponName(w)),
@@ -459,7 +468,12 @@ namespace Hollow.Game
                     guide = coin.Position;
                 }
             }
-            hud.SetGuide(guide, worldCamera);
+            if ((w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown) && !w.Shop.Open && playing)
+                foreach (var enemy in w.Enemies)
+                    if (enemy.Id == w.TutorialGrenadeEnemyId && enemy.Alive) { guide = enemy.Position; break; }
+            if (w.Tutorial == TutorialStage.Purchase && w.Shop.Open && playing)
+                hud.SetGuideUi(shopPanel.TutorialBuyButton(w));
+            else hud.SetGuide(guide, worldCamera);
             string status = playing ? TutorialPrompt(w) : null; // no hints over scenes and menus
             if (status == null && !w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
@@ -477,7 +491,20 @@ namespace Hollow.Game
         /// <summary>Optional incidental lines (v0.19 §17); warnings never depend on them.</summary>
         void SyncBarks(World w)
         {
-            if (app.States.Current != GameState.Playing || !w.Companion.Present) return;
+            bool allowed = app.States.Current == GameState.Playing && w.Companion.Present && !w.Companion.Dead &&
+                !dialogue.Playing && !w.Shop.Open && w.Tutorial != TutorialStage.FirstGroup &&
+                w.Tutorial != TutorialStage.Purchase && w.Tutorial != TutorialStage.Grenade && w.Tutorial != TutorialStage.GrenadeThrown;
+            hud.SetOperatorBubble(allowed && Time.unscaledTime < operatorBubbleUntil ? operatorBubbleLine : null, w.Companion.Position, worldCamera);
+            if (!allowed) return;
+            if (Time.unscaledTime >= nextOperatorBubbleAt)
+            {
+                int pick = UnityEngine.Random.Range(0, 7);
+                if (pick == lastOperatorBubble) pick = (pick + 1) % 7;
+                lastOperatorBubble = pick;
+                operatorBubbleLine = Loc.T("operator.idle" + (pick + 1));
+                operatorBubbleUntil = Time.unscaledTime + 3.5f;
+                nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(28f, 44f);
+            }
             foreach (var e in w.Events)
                 if (e.Type == SimEventType.CompanionHit) { dialogue.ShowBark("CompanionWarning"); break; } // its own cooldown
         }
@@ -523,7 +550,7 @@ namespace Hollow.Game
         }
 
         void ShowPauseMenu(string status = null) =>
-            menus.ShowPause(ClosePause, () => { SaveNow(); ShowPauseMenu(flashMessage); }, CanSave(), () => ShowSlotLoad(fromFailure: false),
+            menus.ShowPause(ClosePause, () => { SaveNow(); ShowPauseMenu(flashMessage); }, CanSave(),
                 () => menus.ShowSettings(settings, () => ShowPauseMenu()), () => menus.ShowControls(() => ShowPauseMenu()), ExitToMenu, status);
 
         void ClosePause()

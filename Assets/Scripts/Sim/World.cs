@@ -35,6 +35,7 @@ namespace Hollow.Sim
         public InventoryState Inventory = new();
         public ShopState Shop = new();
         public TutorialStage Tutorial;
+        public int TutorialGrenadeEnemyId;
         public WaveState Waves = new();
         public BossState Boss = new();
         public NarrativeState Narrative = new();

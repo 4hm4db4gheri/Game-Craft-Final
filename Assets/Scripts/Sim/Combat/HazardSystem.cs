@@ -82,6 +82,11 @@ namespace Hollow.Sim
                 if (!e.Alive || Vector2.Distance(e.Position, h.Position) > h.Radius + e.Radius) continue;
                 Combat.DamageEnemy(w, e, h.Damage, DamageSource.Explosion, SimMath.SafeNormal(e.Position - h.Position, Vector2.up));
             }
+            if (w.Tutorial == TutorialStage.GrenadeThrown)
+            {
+                w.Inventory.Add(ItemId.Grenade, 1);
+                w.Tutorial = TutorialStage.Grenade;
+            }
         }
     }
 }

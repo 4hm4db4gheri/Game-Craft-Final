@@ -23,6 +23,10 @@ namespace Hollow.Sim
         public static float DamageEnemy(World w, EnemyState e, float amount, DamageSource source, Vector2 travelDir, bool ignoresArmor = false)
         {
             if (!e.Alive || amount <= 0) return 0;
+            if (e.Id == w.TutorialGrenadeEnemyId && w.Tutorial == TutorialStage.Grenade && source != DamageSource.Explosion) return 0;
+            if (e.Id == w.TutorialGrenadeEnemyId && w.Tutorial == TutorialStage.GrenadeThrown && source != DamageSource.Explosion) return 0;
+            if (e.Id == w.TutorialGrenadeEnemyId && w.Tutorial == TutorialStage.GrenadeThrown)
+                amount = Mathf.Max(amount, e.Health);
             float dealt = amount * ArmorMultiplier(w, e, travelDir, ignoresArmor);
             // Attacking an enemy draws it away from the companion (§4).
             if (source == DamageSource.Weapon || source == DamageSource.Melee || source == DamageSource.Dash) e.Target = TargetKind.Player;
@@ -34,6 +38,16 @@ namespace Hollow.Sim
                 e.Alive = false;
                 w.Emit(SimEventType.EnemyDied, e.Id, e.Position, travelDir, 0, (int)e.Type);
                 Rewards.OnEnemyKilled(w, e);
+                if (e.Id == w.TutorialGrenadeEnemyId && w.Tutorial == TutorialStage.GrenadeThrown)
+                    w.Tutorial = TutorialStage.SecondGroup;
+                if (source == DamageSource.Dash && w.Phase >= 2 && w.Player.SkillRank(Hollow.Data.SkillId.DashMine) > 0)
+                {
+                    int rank = w.Player.SkillRank(Hollow.Data.SkillId.DashMine);
+                    var skill = w.Profile.Skill(Hollow.Data.SkillId.DashMine);
+                    float damage = skill.Ranks[Mathf.Min(rank, skill.Ranks.Count) - 1];
+                    HazardSystem.Create(w, HazardOwner.Player, e.Position, e.Position,
+                        w.Profile.Player.DashMineRadius, damage, w.Profile.Player.DashMineDelay);
+                }
             }
             else if (source == DamageSource.Weapon || source == DamageSource.Companion)
             {

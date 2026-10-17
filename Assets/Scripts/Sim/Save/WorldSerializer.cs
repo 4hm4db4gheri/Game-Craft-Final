@@ -31,6 +31,12 @@ namespace Hollow.Sim
         public static World FromJson(string json, BalanceProfile profile, ArenaLayout layout)
         {
             var w = JsonConvert.DeserializeObject<World>(json, Settings) ?? throw new FormatException("Empty world data.");
+            if (w.Player.SkillRanks == null) w.Player.SkillRanks = new int[Enum.GetValues(typeof(SkillId)).Length];
+            else if (w.Player.SkillRanks.Length < Enum.GetValues(typeof(SkillId)).Length)
+                Array.Resize(ref w.Player.SkillRanks, Enum.GetValues(typeof(SkillId)).Length);
+            var loadout = w.Player.Loadout;
+            if (loadout.Reloading && loadout.ReloadStartAmmo == 0 && loadout.Active != null && loadout.Active.Ammo > 0)
+                loadout.ReloadStartAmmo = loadout.Active.Ammo; // saves written before round-by-round reload
             w.Bind(profile, layout);
             return w;
         }

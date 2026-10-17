@@ -176,11 +176,38 @@ namespace Hollow.Tests.Sim
             ItemSystem.Equip(w, ItemId.Grenade);
             w.Drain();
             sim.Step(Click);
+            Assert.AreEqual(2, w.Inventory.Count(ItemId.Grenade), "holding the button previews the landing point");
+            sim.Step(new PlayerCommand { FireReleased = true, AimWorld = AimRight });
             sim.Run(70, Idle);
             float blast = w.Drain().Where(e => e.Type == SimEventType.EnemyHit && e.Code == (int)DamageSource.Explosion).Sum(e => e.Value);
             Assert.AreEqual(w.Profile.Item(ItemId.Grenade).Damage, blast, 1e-3f, "raw item damage, no skill bonus");
             Assert.AreEqual(100f, w.Player.Health);
             Assert.AreEqual(140f, w.Companion.Health);
+        }
+
+        [Test]
+        public void TutorialGrenadeWaitsForReleaseAndThenKillsTheFrozenTarget()
+        {
+            var sim = SimTestUtil.NewSim();
+            var w = sim.World;
+            w.Tutorial = TutorialStage.Purchase;
+            w.Progress.Wallet = w.Profile.Economy.TutorialWeaponPrice;
+            Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyWeapon, w.Profile.Economy.TutorialWeapon));
+            var retry = Checkpoints.Restore(w);
+            Assert.IsTrue(retry.Player.Loadout.Owns(w.Profile.Economy.TutorialWeapon));
+            Assert.AreEqual(TutorialStage.Grenade, retry.Tutorial);
+            var target = w.Enemies.Single(e => e.Id == w.TutorialGrenadeEnemyId);
+            Vector2 position = target.Position;
+            ItemSystem.EquipSelected(w);
+            sim.Step(new PlayerCommand { FirePressed = true, FireHeld = true, AimWorld = position });
+            Assert.AreEqual(TutorialStage.Grenade, w.Tutorial);
+            Assert.AreEqual(position, target.Position, "combat is frozen during the lesson");
+            Assert.AreEqual(1, w.Inventory.Count(ItemId.Grenade));
+            sim.Step(new PlayerCommand { FireReleased = true, AimWorld = position });
+            Assert.AreEqual(TutorialStage.GrenadeThrown, w.Tutorial);
+            sim.Run(70, new PlayerCommand { AimWorld = position });
+            Assert.IsFalse(target.Alive);
+            Assert.AreEqual(TutorialStage.SecondGroup, w.Tutorial);
         }
 
         [Test]

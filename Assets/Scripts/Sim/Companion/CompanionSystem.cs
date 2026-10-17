@@ -111,6 +111,7 @@ namespace Hollow.Sim
             foreach (var e in w.Enemies)
             {
                 if (!e.IsActive) continue;
+                if (e.Id == w.TutorialGrenadeEnemyId && (w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown)) continue;
                 float d = Vector2.Distance(c.Position, e.Position);
                 if (d < bestDist && w.Arena.LineOfSight(c.Position, e.Position)) { best = e; bestDist = d; }
             }
@@ -137,7 +138,7 @@ namespace Hollow.Sim
         {
             var c = w.Companion;
             if (!Active(w) || amount <= 0 || w.GodMode) return false;
-            c.Health -= amount;
+            c.Health -= amount * (w.Profile.CompanionFor(w.Phase)?.DamageTakenMultiplier ?? 1f);
             c.LastHitTick = w.Clock.Tick;
             w.Emit(SimEventType.CompanionHit, CompanionState.EntityId, c.Position, travelDir, amount);
             if (c.Health <= 0)

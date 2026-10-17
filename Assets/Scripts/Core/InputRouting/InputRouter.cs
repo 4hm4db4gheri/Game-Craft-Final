@@ -30,6 +30,7 @@ namespace Hollow.Core.Input
         /// <summary>Feed one rendered frame of input.</summary>
         public void Sample(in RawInputSample s)
         {
+            bool fireReleased = lastFireHeld && !s.FireHeld && !fireLatched && !s.PointerOverUI;
             lastFireHeld = s.FireHeld;
 
             if (s.FireDown && (s.PointerOverUI || !worldAcceptsInput))
@@ -47,6 +48,7 @@ namespace Hollow.Core.Input
             pending.AimWorld = s.AimWorld;
             pending.FireHeld = s.FireHeld && !fireLatched;
             pending.FirePressed |= s.FireDown && !fireLatched;
+            pending.FireReleased |= fireReleased;
 
             bool overUI = s.PointerOverUI;
             pending.CancelPressed |= s.CancelDown && !overUI;
@@ -66,6 +68,7 @@ namespace Hollow.Core.Input
         {
             var cmd = pending;
             pending.FirePressed = false;
+            pending.FireReleased = false;
             pending.CancelPressed = false;
             pending.DashPressed = false;
             pending.ReloadPressed = false;

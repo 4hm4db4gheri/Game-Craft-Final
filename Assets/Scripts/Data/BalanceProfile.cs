@@ -88,6 +88,8 @@ namespace Hollow.Data
     public sealed class PlayerData
     {
         [Gdd("§4")] public float MaxHealth;
+        [Placeholder, Unit("s")] public float RegenerationDelay;
+        [Placeholder, Unit("HP/s")] public float RegenerationRate;
         [Gdd("§4"), Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u/s²")] public float Acceleration;
         [Placeholder, Unit("u/s²")] public float Deceleration;
@@ -95,6 +97,8 @@ namespace Hollow.Data
         [Gdd("§4"), Unit("s")] public float DashDuration;
         [Gdd("§4"), Unit("s")] public float DashCooldown;
         [Gdd("§4")] public float DashDamage;
+        [Placeholder, Unit("s")] public float DashMineDelay;
+        [Placeholder, Unit("u")] public float DashMineRadius;
         [Gdd("§4"), Unit("s")] public float PostHitInvulnerability;
         [Gdd("§4"), Unit("u")] public float BodyRadius;
         [Gdd("§4"), Unit("u")] public float MagnetRadius;
@@ -136,6 +140,7 @@ namespace Hollow.Data
     {
         public int Phase;
         [Gdd("§4")] public float MaxHealth;
+        [Placeholder] public float DamageTakenMultiplier = 1f;
         [Gdd("§4")] public float ShotDamage;
         [Gdd("§4"), Unit("s")] public float ShotInterval;
     }

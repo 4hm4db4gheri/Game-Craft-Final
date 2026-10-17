@@ -14,6 +14,7 @@ namespace Hollow.Core.Input
         public Vector2 AimWorld;      // world-space point under the cursor
         public bool FireHeld;
         public bool FirePressed;
+        public bool FireReleased;
         public bool CancelPressed;    // right click
         public bool DashPressed;
         public bool ReloadPressed;

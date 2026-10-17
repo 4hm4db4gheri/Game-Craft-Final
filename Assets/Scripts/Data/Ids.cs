@@ -33,5 +33,5 @@ namespace Hollow.Data
 
     public enum ItemId { Grenade, PushPulse, Mine, EmpPulse, PersonalShield }
 
-    public enum SkillId { WeaponDamage, MoveSpeed, ReloadMultiplier, DashCooldown, DashDamage, MaxHealth, MagnetRadius }
+    public enum SkillId { WeaponDamage, MoveSpeed, ReloadMultiplier, DashCooldown, DashDamage, MaxHealth, MagnetRadius, DashMine }
 }

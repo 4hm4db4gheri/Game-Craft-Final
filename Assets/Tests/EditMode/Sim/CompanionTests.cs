@@ -50,6 +50,55 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void PlayerRecoversOnlyAfterConfiguredNoHitDelay()
+        {
+            var sim = WithCompanion();
+            var w = sim.World;
+            w.Profile.Player.RegenerationDelay = 1f;
+            w.Profile.Player.RegenerationRate = 12f;
+            Assert.IsTrue(PlayerSystem.Damage(w, 20, Vector2.left));
+            sim.Run(30, PlayerCommand.None);
+            Assert.AreEqual(80f, w.Player.Health, 0.01f);
+            sim.Run(60, PlayerCommand.None);
+            Assert.Greater(w.Player.Health, 80f);
+            Assert.LessOrEqual(w.Player.Health, 100f);
+        }
+
+        [Test]
+        public void IndustrialOperatorTakesReducedDamage()
+        {
+            var w = WithCompanion().World;
+            w.Phase = 2;
+            CompanionSystem.SpawnForPhase(w, w.Companion.Position);
+            float before = w.Companion.Health;
+            CompanionSystem.Damage(w, 100, Vector2.left);
+            Assert.AreEqual(before - 35f, w.Companion.Health, 0.01f);
+        }
+
+        [Test]
+        public void DashKillMineOnlyUnlocksFromIndustrialPhase()
+        {
+            var sim = SimTestUtil.NewSim();
+            var w = sim.World;
+            w.Player.SkillRanks[(int)SkillId.DashMine] = 1;
+            var first = w.AddEnemy(EnemyId.A1_RunnerWolf, new Vector2(1, 0), 5);
+            sim.Step(new PlayerCommand { DashPressed = true, Move = Vector2.right });
+            sim.Run(12, PlayerCommand.None);
+            Assert.IsFalse(first.Alive);
+            Assert.IsEmpty(w.Hazards);
+
+            w.Phase = 2;
+            w.Player.Position = Vector2.zero;
+            w.Player.DashReadyTick = 0;
+            var second = w.AddEnemy(EnemyId.R1_Crawler, new Vector2(1, 0), 5);
+            sim.Step(new PlayerCommand { DashPressed = true, Move = Vector2.right });
+            sim.Run(12, PlayerCommand.None);
+            Assert.IsFalse(second.Alive);
+            Assert.AreEqual(1, w.Hazards.Count);
+            Assert.AreEqual(40f, w.Hazards[0].Damage);
+        }
+
+        [Test]
         public void FollowsWithinALimitedDistance()
         {
             var sim = WithCompanion();

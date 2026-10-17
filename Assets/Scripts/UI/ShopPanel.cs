@@ -37,6 +37,14 @@ namespace Hollow.UI
 
         public bool Visible => panel.gameObject.activeSelf;
 
+        public RectTransform TutorialBuyButton(World w)
+        {
+            foreach (var row in rows)
+                if (row.Offer.Kind == OfferKind.BuyWeapon && row.Offer.Weapon == w.Profile.Economy.TutorialWeapon)
+                    return (RectTransform)row.Button.transform;
+            return null;
+        }
+
         public void Init(UIRoot uiRoot, Action<ShopOffer> buy)
         {
             root = uiRoot;
