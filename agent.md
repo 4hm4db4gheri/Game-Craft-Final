@@ -35,7 +35,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۳۳ تست، همه پاس) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۴۰ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
@@ -43,7 +43,7 @@
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
 | `Assets/Scripts/Sim/Telemetry/` | `RunTelemetry`: لاگ هر بازی (Observed جدا از Calculated)؛ فایل در `persistentDataPath/telemetry` توسط `Game/TelemetryFile.cs` |
-| `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
+| `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `ART_ANIMATION_BRIEF.md` (پرامپت انیمیشن موج ۲ از روی فریم‌های موجود)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
 
@@ -57,7 +57,7 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۳۳ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۴۰ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
 - باقی‌مانده: هیچ تسکی از T00–T22 نمانده. کارهای بعدی با طراح/کاربر: اعداد سطح ۲ و ۳ سلاح‌ها، playtest انسانی، آرت AI، گوش دادن به صداها (فهرست در `docs/RELEASE_NOTES.md`).
 ## کارهای باز / ایده‌ها
@@ -243,3 +243,9 @@
 - گزارش کاربر: گلوله‌ها دورتر از سر تفنگ ظاهر می‌شوند. علت: `PlayerView.Muzzle` سر لوله را لبه‌ی راست canvas فرض می‌کرد (۷۵٪ عرض از دسته)، ولی در آرت AI تفنگ فقط تا حدود ۵۸–۷۰٪ عرض canvas کشیده شده؛ فاصله ۰.۴۵ تا ۰.۷۷ واحد بود.
 - رفع: `ApplyIncomingArt.BarrelTip` سر لوله را از پیکسل‌های تصویر پیدا می‌کند (راست‌ترین ستون مات) و در `WeaponVisual.MuzzleLocal` ذخیره می‌کند؛ `PlayerView.Muzzle` از آن استفاده می‌کند (با flipY). گلوله، muzzle flash و tracer همه از همین نقطه شروع می‌شوند. سلاح‌های بدون آرت فرمول قبلی را دارند.
 - در Play mode برای تپانچه، SMG و دولول (چپ و راست) فاصله‌ی نقطه‌ی محاسبه‌شده تا سر لوله‌ی کشیده‌شده ۰.۰۱–۰.۰۲ واحد شد. ۴۳۳ تست پاس.
+
+### 2026-10-17 — پرامپت انیمیشن آرت (موج ۲) و sheet شبکه‌ای
+- `docs/ART_ANIMATION_BRIEF.md`: یک addendum که بعد از master brief چسبانده می‌شود؛ فریم موجود به‌عنوان reference ضمیمه می‌شود و برای هر حالت حرکت فریم‌به‌فریم نوشته شده (اولویت A: move گرگ، جوجه‌تیغی، Crawler، Shooter، نگهبان، اپراتور و move باس ۱؛ attack اپراتور). اشاره به آن در `ART_MASTER_BRIEF.md`.
+- importer (`ArtRules.Grid`): sheet می‌تواند شبکه باشد (۴ فریم = ۲×۲ مربع، ۶ = ۳×۲ در 3:2، ۸ = ۴×۲) چون ابزارهای تصویر عکس 6:1 نمی‌دهند؛ ترتیب چپ به راست و بالا به پایین؛ strip یک‌ردیفه هنوز کار می‌کند. اگر فایل تک‌فریمی و sheet یک حالت هر دو باشند، sheet انتخاب می‌شود (`ApplyIncomingArt.Collect`).
+- با یک sheet مصنوعی ۳×۲ گرگ بررسی شد (برش، pivot، اندازه‌ی ۲ واحد، انتخاب sheet) و فایل حذف شد. تست‌های `ArtSheetTests`؛ ۴۴۰ تست پاس.
+- باز: همه‌ی sheetها با ۱۰ فریم در ثانیه پخش می‌شوند؛ وقتی sheetها رسیدند شاید idle به سرعت کمتری نیاز داشته باشد.

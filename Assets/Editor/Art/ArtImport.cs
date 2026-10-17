@@ -103,13 +103,34 @@ namespace Hollow.EditorTools
             _ => new Vector2(0.5f, 0.5f),
         };
 
+        /// <summary>
+        /// Layout of an animation sheet of square cells: one row (a strip), or a grid read left to right, top to
+        /// bottom when the image tool cannot make a very wide image (6 frames as 3 × 2 in a 3:2 image). The grid
+        /// is the smallest one whose shape matches the image; unused cells at the end stay empty.
+        /// </summary>
+        public static (int cols, int rows) Grid(int frames, int width, int height)
+        {
+            if (frames <= 1 || height <= 0) return (1, 1);
+            float aspect = width / (float)height;
+            (int cols, int rows) best = (frames, 1);
+            float bestError = Mathf.Abs(Mathf.Log(aspect / frames));
+            for (int rows = 2; rows <= frames; rows++)
+            {
+                int cols = (frames + rows - 1) / rows;
+                if ((cols * rows) - frames >= cols) continue; // a whole empty row
+                float error = Mathf.Abs(Mathf.Log(aspect * rows / cols));
+                if (error < bestError - 0.01f) { best = (cols, rows); bestError = error; }
+            }
+            return best;
+        }
+
         /// <summary>Effects on black are blended additively: black becomes transparent.</summary>
         public static bool BlackIsTransparent(ArtName n) => n.Category == "FX" && n.Id == "GEN";
     }
 
     /// <summary>
     /// Configures every file dropped in Assets/Art/Incoming from its name: sprite import, pixels per unit so the
-    /// cell matches its game size, pivot (feet for characters, grip for weapons), frame slicing for strips,
+    /// cell matches its game size, pivot (feet for characters, grip for weapons), frame slicing for strips and grids,
     /// and removal of a flat magenta (#FF00FF) or black (effects) background.
     /// </summary>
     public sealed class ArtImportPostprocessor : AssetPostprocessor
@@ -129,7 +150,8 @@ namespace Hollow.EditorTools
             imp.maxTextureSize = 4096;
 
             int frames = n.State == "ground" ? 64 : n.Frames;
-            float frameWidthPx = n.State == "ground" ? w : w / (float)frames;
+            var (cols, rows) = n.State == "ground" ? (1, 1) : ArtRules.Grid(frames, w, h);
+            float frameWidthPx = w / (float)cols;
             float? units = ArtRules.FrameWidthUnits(n);
             imp.spritePixelsPerUnit = units.HasValue ? frameWidthPx / units.Value : 100f;
 
@@ -157,8 +179,12 @@ namespace Hollow.EditorTools
             }
             else
             {
-                float fw = w / (float)frames;
-                for (int i = 0; i < frames; i++) rects.Add(Rect($"{n.State}_{i}", new Rect(i * fw, 0, fw, h), pivot));
+                float fw = w / (float)cols, fh = h / (float)rows;
+                for (int i = 0; i < frames; i++)
+                {
+                    int col = i % cols, row = i / cols; // row 0 is the top row; texture y starts at the bottom
+                    rects.Add(Rect($"{n.State}_{i}", new Rect(col * fw, h - (row + 1) * fh, fw, fh), pivot));
+                }
             }
             var factory = new UnityEditor.U2D.Sprites.SpriteDataProviderFactories();
             factory.Init();

@@ -46,7 +46,8 @@ namespace Hollow.EditorTools
                 if (sprites.Count == 0) continue;
                 if (!map.TryGetValue(key, out var states)) map[key] = states = new Dictionary<string, List<Sprite>>();
                 string state = n.Variant != null ? $"{n.State}_{n.Variant}" : n.State;
-                states[state] = sprites;
+                // An animated strip replaces the single frame of the same state, whichever file is found first.
+                if (!states.TryGetValue(state, out var existing) || sprites.Count > existing.Count) states[state] = sprites;
             }
             return map;
         }
