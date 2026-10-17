@@ -19,6 +19,10 @@ namespace Hollow.Game
 
         public static ulong? FixedSeed;
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => FixedSeed = null;
+
         bool open;
         bool god;
         int phase = 1, wave = 1;

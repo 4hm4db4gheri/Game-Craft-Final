@@ -42,11 +42,18 @@ namespace Hollow.Presentation
         /// <summary>Every cue played since start (checks that each cue is reachable in game).</summary>
         public readonly HashSet<AudioCue> Played = new();
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => Instance = null;
+
         public static AudioDirector Ensure()
         {
             if (Instance != null) return Instance;
             var go = new GameObject("AudioDirector");
             DontDestroyOnLoad(go);
+            // The game's one listener lives here, so every scene can be heard (the scene cameras are built
+            // in code without one). Sounds are 2D and panned by hand, so where it sits does not matter.
+            if (FindObjectsByType<AudioListener>().Length == 0) go.AddComponent<AudioListener>();
             Instance = go.AddComponent<AudioDirector>();
             Instance.Init(Resources.Load<AudioCatalog>(AudioCatalog.ResourcePath));
             return Instance;

@@ -48,6 +48,8 @@
 - کار با ادیتور باز از طریق `unity command ... --project-path` (اسکریپت‌های کمکی در scratchpad: compile/tests). Play mode در Editor حتی بدون فوکوس اجرا می‌شود (`runInBackground` فقط در Editor).
 - اگر فایل جدیدی در یک پوشه‌ی تازه ساختی و Unity آن را کامپایل نکرد، پوشه را با `AssetDatabase.MoveAsset` جابه‌جا کن (مشکل کش؛ اتفاق افتاد).
 - `Library/`، `Temp/`، `Logs/`، `UserSettings/`، `Builds/` تولیدی‌اند.
+- **Enter Play Mode بدون Domain Reload است** (`EditorSettings`). هر فیلد یا event استاتیک قابل‌تغییر باید یک متد `[RuntimeInitializeOnLoadMethod(SubsystemRegistration)]` برای reset داشته باشد؛ وگرنه از اجرای قبلی می‌ماند (D72). هیچ‌وقت شیء Unity را در closure یک event استاتیک نگه ندار.
+- صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
 
@@ -197,3 +199,6 @@
 
 ### 2026-10-17 — T31: صدای هر دشمن
 - ۲۷ پروفایل صدا (`AudioCatalog.Enemies`) با حضور، هشدار، حمله، ضربه و مرگ؛ باس‌ها هشدار جدا برای حمله‌ی ناحیه‌ای. ۱۱۱ فایل WAV سنتزشده با `Hollow > Audio > Generate Enemy Sounds` در `Assets/Audio/Enemies` (جایگزین‌پذیر با فایل هم‌نام). سقف ۲۴ صدا، ۴ هشدار هم‌زمان، فاصله‌ی ۰.۱۵ حضور. تست‌های `EnemyAudioTests`. تصمیم D71. هنوز کسی به صداها گوش نداده.
+
+### 2026-10-17 — رفع باگ: دکمه‌های بی‌اثر و نبودن صدا
+- هیچ صحنه‌ای AudioListener نداشت (از اول پروژه)؛ حالا روی `AudioDirector`. Domain Reload خاموش است و handler صدای کلیک به AudioDirector نابودشده از اجرای قبلی اشاره می‌کرد و قبل از عمل دکمه exception می‌داد. همه‌ی استاتیک‌ها reset می‌شوند و صدای کلیک دیگر عمل دکمه را قطع نمی‌کند. تست `UIButtonTests`. در دو اجرای پشت‌سرهم بررسی شد. تصمیم D72.

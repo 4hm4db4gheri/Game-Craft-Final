@@ -51,6 +51,10 @@ namespace Hollow.Sim
     {
         public static bool DevBuild = Application.isEditor || Debug.isDebugBuild;
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => DevBuild = Application.isEditor || Debug.isDebugBuild;
+
         public static void Step(World w, in PlayerCommand cmd)
         {
             var s = w.Shop;

@@ -22,6 +22,10 @@ namespace Hollow.Sim
         /// <summary>Tests point this at a temporary folder.</summary>
         public static string RootOverride;
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => RootOverride = null; // a direct Game-scene session must not redirect the next menu session
+
         public static string Root => RootOverride ?? Path.Combine(Application.persistentDataPath, "saves");
         public static string PathOf(int slot) => Path.Combine(Root, $"slot{slot}.json");
         public static bool Exists(int slot) => File.Exists(PathOf(slot));

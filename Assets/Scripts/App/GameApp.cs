@@ -25,6 +25,10 @@ namespace Hollow.App
     {
         public static GameApp Instance { get; private set; }
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => Instance = null;
+
         public GameStateMachine States { get; private set; }
         public InputRouter Router { get; private set; }
         public UnityInputSource InputSource { get; private set; }

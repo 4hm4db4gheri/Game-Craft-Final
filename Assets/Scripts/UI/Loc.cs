@@ -29,6 +29,10 @@ namespace Hollow.UI
             }
         }
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => table = null;
+
         /// <summary>For tests and the editor: use this table instead of the resource.</summary>
         public static void Override(Dictionary<string, string> strings) => table = strings;
 

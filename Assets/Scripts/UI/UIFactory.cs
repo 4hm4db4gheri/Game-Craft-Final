@@ -92,7 +92,13 @@ namespace Hollow.UI
             colors.disabledColor = theme.ButtonDisabled;
             colors.colorMultiplier = 1;
             b.colors = colors;
-            b.onClick.AddListener(() => { ButtonClicked?.Invoke(); onClick(); });
+            b.onClick.AddListener(() =>
+            {
+                // The click sound is feedback only: a failing listener must never swallow the button's action.
+                try { ButtonClicked?.Invoke(); }
+                catch (Exception e) { Debug.LogException(e); }
+                onClick();
+            });
             text = Text(rt, "Label", label, theme, fontSize > 0 ? fontSize : theme.BaseFontSize, TextAlignmentOptions.Center);
             text.margin = new Vector4(10, 6, 10, 6);
             return b;
@@ -120,6 +126,14 @@ namespace Hollow.UI
         }
 
         static Sprite white, triangle;
+
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics()
+        {
+            ButtonClicked = null;
+            white = triangle = null;
+        }
 
         /// <summary>An upward-pointing arrow head drawn as an image (the Persian font has no ▲ glyph).</summary>
         public static Image Triangle(RectTransform parent, Color color)

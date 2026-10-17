@@ -10,6 +10,10 @@ namespace Hollow.Presentation
         static bool loaded;
         static readonly string[] Cache = new string[1000];
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() { font = null; loaded = false; }
+
         public static TMP_FontAsset Font
         {
             get

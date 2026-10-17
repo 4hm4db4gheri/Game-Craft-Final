@@ -16,6 +16,10 @@ namespace Hollow.App
         /// <summary>Raised after any setting changes, so the game applies it at once (shake, effects, volume).</summary>
         public static event Action Changed;
 
+        /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => Changed = null;
+
         public static float MusicVolume { get => PlayerPrefs.GetFloat(KMusic, 0.7f); set { PlayerPrefs.SetFloat(KMusic, Mathf.Clamp01(value)); Changed?.Invoke(); } }
         public static float EffectsVolume { get => PlayerPrefs.GetFloat(KEffects, 0.8f); set { PlayerPrefs.SetFloat(KEffects, Mathf.Clamp01(value)); Changed?.Invoke(); } }
         public static float VoiceVolume { get => PlayerPrefs.GetFloat(KVoice, 0.9f); set { PlayerPrefs.SetFloat(KVoice, Mathf.Clamp01(value)); Changed?.Invoke(); } }
