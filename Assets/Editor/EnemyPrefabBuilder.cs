@@ -244,7 +244,8 @@ namespace Hollow.EditorTools
         {
             var root = new GameObject(name);
             var view = root.AddComponent<ProjectileView>();
-            var core = PrefabBuilder.AddSprite(root.transform, "Core", "PH_Capsule", Color.white, new Vector3(0, 0.35f, 0), Vector3.one, 300);
+            // Centred on the root: the view lifts the shot to body height in world space (it must not rotate with the shot).
+            var core = PrefabBuilder.AddSprite(root.transform, "Core", "PH_Capsule", Color.white, Vector3.zero, Vector3.one, 300);
             core.transform.localRotation = Quaternion.Euler(0, 0, 90);
             core.transform.localScale = new Vector3(size.y / 1f, size.x / 2f, 1);
             TrailRenderer tr = null;

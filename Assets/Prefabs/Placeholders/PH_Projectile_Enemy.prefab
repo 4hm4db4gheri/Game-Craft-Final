@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 2694701985294746983}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.14, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -259,3 +259,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.ProjectileView
   core: {fileID: 934474736910558358}
   trail: {fileID: 3961079420877908890}
+  height: 0.35
+  muzzleBlend: 0.1

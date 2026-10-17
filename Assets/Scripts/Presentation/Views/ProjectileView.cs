@@ -3,17 +3,34 @@ using UnityEngine;
 
 namespace Hollow.Presentation
 {
+    /// <summary>
+    /// Draws one projectile. The simulation moves shots along the ground; the view lifts them to body height
+    /// (always straight up on screen, never rotated with the shot) and lets a shot start at the gun's muzzle,
+    /// blending onto its true line within a moment. Purely visual: hits are decided by the simulation.
+    /// </summary>
     public sealed class ProjectileView : MonoBehaviour
     {
         [SerializeField] SpriteRenderer core;
         [SerializeField] TrailRenderer trail;
+        /// <summary>How far above its ground position a shot is drawn (3/4 view: shots fly at body height).</summary>
+        [SerializeField] float height = 0.35f;
+        /// <summary>Seconds over which a shot moves from the muzzle onto its drawn line.</summary>
+        [SerializeField] float muzzleBlend = 0.1f;
+
+        Vector2 muzzleOffset;
+        float bornAt;
 
         public Color Color { get; private set; }
 
-        public void Begin(ProjectileState p, Color color)
+        /// <param name="muzzle">Where the shot leaves the weapon on screen, when known (player and companion).</param>
+        public void Begin(ProjectileState p, Color color, Vector2? muzzle = null)
         {
             Color = color;
-            transform.position = new Vector3(p.Position.x, p.Position.y, 0);
+            bornAt = Time.time;
+            Vector2 line = p.Origin + Vector2.up * height;
+            muzzleOffset = muzzle.HasValue ? muzzle.Value - line : Vector2.zero;
+            Place(p.Position, 1f);
+            Rotate(p);
             if (core != null) core.color = color;
             if (trail != null)
             {
@@ -26,7 +43,19 @@ namespace Hollow.Presentation
         public void Sync(ProjectileState p, float alpha)
         {
             Vector2 pos = Vector2.Lerp(p.PrevPosition, p.Position, alpha);
-            transform.position = new Vector3(pos.x, pos.y, 0);
+            float t = muzzleBlend > 0f ? Mathf.Clamp01((Time.time - bornAt) / muzzleBlend) : 1f;
+            Place(pos, 1f - t);
+            Rotate(p);
+        }
+
+        void Place(Vector2 groundPos, float muzzleWeight)
+        {
+            Vector2 drawn = groundPos + Vector2.up * height + muzzleOffset * muzzleWeight;
+            transform.position = new Vector3(drawn.x, drawn.y, 0);
+        }
+
+        void Rotate(ProjectileState p)
+        {
             float a = Mathf.Atan2(p.Velocity.y, p.Velocity.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, a);
         }

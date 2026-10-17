@@ -86,7 +86,7 @@ namespace Hollow.Presentation
             {
                 var pool = p.Owner == ProjectileOwner.Enemy ? enemyShots : playerShots;
                 var v = projectiles.GetOrCreate(p.Id, pool, out bool created);
-                if (created) v.Begin(p, ProjectileColor(p));
+                if (created) v.Begin(p, ProjectileColor(p), MuzzleOf(w, p));
                 v.Sync(p, alpha);
             }
             projectiles.ReleaseUnseen();
@@ -219,6 +219,14 @@ namespace Hollow.Presentation
             }
             return pool;
         }
+
+        /// <summary>Where a new shot leaves its weapon on screen; enemy shots start at their body.</summary>
+        Vector2? MuzzleOf(World w, ProjectileState p) => p.Owner switch
+        {
+            ProjectileOwner.Player => playerView.Muzzle,
+            ProjectileOwner.Companion when companionView != null => companionView.Muzzle(p.Velocity),
+            _ => null,
+        };
 
         Color ProjectileColor(ProjectileState p)
         {

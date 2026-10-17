@@ -61,7 +61,8 @@ namespace Hollow.Presentation
             float speed01 = Mathf.Clamp01(p.Velocity.magnitude / Mathf.Max(0.01f, w.Profile.Player.MoveSpeed));
             body.localRotation = Quaternion.Euler(0, 0, -Mathf.Sign(p.Velocity.x) * leanDegrees * speed01);
 
-            Vector2 aimDir = p.Aim - (pos + Vector2.up * floatHeight);
+            // Same direction the simulation fires in (from the player's ground position), so shots leave along the barrel.
+            Vector2 aimDir = p.Aim - pos;
             float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
             weaponPivot.localPosition = body.localPosition;
             // Reloading tilts the weapon down; purely visual, never delays input (§4).

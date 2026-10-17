@@ -15,6 +15,10 @@ namespace Hollow.Presentation
         [SerializeField] Color phaseTwoTint = new(0.75f, 0.75f, 0.75f, 1f);
         [SerializeField] float phaseTwoScale = 0.92f;
 
+        /// <summary>Tip of the Operator's rifle on screen (the rifle sits at hip height in front of the body).</summary>
+        public Vector2 Muzzle(Vector2 shotDirection) =>
+            body != null ? (Vector2)body.TransformPoint(new Vector3(0.55f, 0.95f, 0)) : (Vector2)transform.position + Vector2.up * 0.95f + shotDirection.normalized * 0.5f;
+
         Color[] baseColors;
         SpriteSetAnimator anim;
         float flashUntil;
