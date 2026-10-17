@@ -134,7 +134,8 @@ namespace Hollow.Presentation
                     if (countdown != null)
                     {
                         countdown.enabled = true;
-                        countdown.text = Mathf.CeilToInt(left * Core.SimClock.Dt).ToString();
+                        countdown.text = PersianText.Number(Mathf.CeilToInt(left * Core.SimClock.Dt));
+                        if (PersianText.Font != null && countdown.font != PersianText.Font) countdown.font = PersianText.Font;
                         countdown.color = color;
                     }
                     break;

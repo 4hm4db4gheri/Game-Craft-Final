@@ -66,7 +66,7 @@ namespace Hollow.UI
             title = UIFactory.Text(titleRt, "T", "", t, 72, TextAlignmentOptions.Center);
             box = UIFactory.Rect(sceneLayer, "Box", new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 200), new Vector2(1300, 190));
             UIFactory.Panel(box, t);
-            line = UIFactory.Text(box, "Line", "", t, 34, TextAlignmentOptions.MidlineLeft);
+            line = UIFactory.Text(box, "Line", "", t, 34, TextAlignmentOptions.MidlineRight);
             line.margin = new Vector4(30, 10, 30, 10);
             var hintRt = UIFactory.Rect(sceneLayer, "Hint", new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 318), new Vector2(1300, 40));
             hint = UIFactory.Text(hintRt, "H", "", t, 20, TextAlignmentOptions.Center, t.TextDim);
@@ -90,7 +90,7 @@ namespace Hollow.UI
             index = -1;
             title.text = scene.Title ?? "";
             sceneLayer.gameObject.SetActive(true);
-            hint.text = canSkip ? "Enter / click: next      Esc: skip" : "Enter / click: next";
+            hint.text = Loc.T(canSkip ? "dialogue.hintSkip" : "dialogue.hint");
             Next();
         }
 

@@ -28,10 +28,12 @@
 | `Assets/Scripts/Core/` | `Hollow.Core`: state machine، `SimClock`/تایمرها، `SimDriver`، `SimRandom`، `InputRouting/` (InputRouter، PlayerCommand) |
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
+| `Assets/Resources/Localization/fa.json` | همه‌ی متن‌های بازیکن به فارسی (کلید ← متن)، خوانده با `Hollow.UI.Loc` (`Loc.T`/`Loc.F`/`Loc.Weapon`…). متن جدید = کلید جدید در همین فایل؛ تست `LocalizationTests` کلیدهای کد را چک می‌کند |
+| `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۰۲ تست، همه پاس) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۱۰ تست، همه پاس) |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
@@ -164,3 +166,11 @@
 - retry جان بازیکن و همراه را پر می‌کند؛ falloff شاتگان از نصف برد شروع می‌شود؛ نفوذ 75٪ آسیب باقی‌مانده را به هدف بعدی می‌دهد.
 - جلوه‌ها: پرتاب جسد 0.25s، ماندن 6s، محو 1s، سقف 30 جسد و 20 لکه، tracer 0.06s (tracer در Play mode دیده نشد؛ فقط کامپایل و تست).
 - تصمیم‌ها D61، D62. ۴۰۲ تست پاس (۴ تست جدید). Play mode: کشتن دشمن، جسد و retry بدون خطا.
+
+### 2026-10-17 — T23: charger
+- charger و charge باس با سرعت GDD کل خط هشدار را تا جای ثبت‌شده‌ی بازیکن + ۲ واحد می‌رود (D63). commit `18c30c1`.
+
+### 2026-10-17 — T24: رابط فارسی
+- RTLTMPro نسخه‌ی v4.0.0 (فقط اسکریپت‌ها و Ranges) در `Assets/Plugins/RTLTMPro`؛ اصلاح Unity 6 در 3D و اصلاح ترتیب ارقام با جداکننده در `LigatureFixer`. وزیرمتن از پوشه‌ی فونت skill فارسی.
+- ۱۹۲ متن در `fa.json`؛ همه‌ی منوها، HUD، فروشگاه، کارت XP، شکست، پایان، راهنما و نوار بالا فارسی شد. تاریخ ذخیره شمسی. عدد آسیب و شمارش معکوس با رقم فارسی. فلش‌های HUD تصویر شدند.
+- تست‌های `LocalizationTests`. در Play mode منو، کنترل‌ها، جایگاه‌ها، HUD، فروشگاه و کارت XP با اسکرین‌شات دیده شد. دیالوگ‌ها هنوز انگلیسی‌اند (T29). پنل‌های توسعه انگلیسی می‌مانند. تصمیم D64.

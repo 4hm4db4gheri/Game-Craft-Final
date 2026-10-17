@@ -44,7 +44,7 @@ namespace Hollow.UI
             for (int i = 1; i <= 3; i++)
             {
                 int p = i;
-                var b = UIFactory.Button(panel, $"Page{i}", $"Phase {i}", t, new Vector2(0.5f, 1), new Vector2(-170 + (i - 1) * 170, -105),
+                var b = UIFactory.Button(panel, $"Page{i}", Loc.F("shop.page", i), t, new Vector2(0.5f, 1), new Vector2(-170 + (i - 1) * 170, -105),
                     new Vector2(160, 44), () => { page = p; shownPage = -1; }, out _, 22);
                 pageButtons.Add(b);
             }
@@ -71,8 +71,8 @@ namespace Hollow.UI
             shownPage = page;
             shownSignature = signature;
 
-            header.text = $"<b>SHOP</b>   <color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Coin)}>{w.Progress.Wallet} ¢</color>\n" +
-                          $"<size=18><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>The world keeps moving. E, dash or walking away closes.</color></size>";
+            header.text = $"<b>{Loc.T("shop.title")}</b>   <color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Coin)}>{Loc.F("common.coins", w.Progress.Wallet)}</color>\n" +
+                          $"<size=18><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{Loc.T("shop.hint")}</color></size>";
             for (int i = 0; i < pageButtons.Count; i++)
                 pageButtons[i].GetComponentInChildren<TextMeshProUGUI>().fontStyle = i + 1 == page ? FontStyles.Bold | FontStyles.Underline : FontStyles.Normal;
         }
@@ -121,28 +121,28 @@ namespace Hollow.UI
             void Section(string title)
             {
                 var rt = UIFactory.Rect(list, title, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -y), new Vector2(520, 26));
-                UIFactory.Text(rt, "T", $"<b>{title}</b>", t, 19, TextAlignmentOptions.MidlineLeft, t.Accent);
+                UIFactory.Text(rt, "T", $"<b>{title}</b>", t, 19, TextAlignmentOptions.MidlineRight, t.Accent);
                 y += 28;
             }
 
-            void Row(ShopOffer o, string label)
+            void Row(ShopOffer o, string label, float height = 52)
             {
-                var b = UIFactory.Button(list, "Row", label, t, new Vector2(0.5f, 1), new Vector2(0, -y - 27), new Vector2(520, 52),
+                var b = UIFactory.Button(list, "Row", label, t, new Vector2(0.5f, 1), new Vector2(0, -y - height * 0.5f - 1), new Vector2(520, height),
                     () => onBuy?.Invoke(o), out var text, 17);
-                text.alignment = TextAlignmentOptions.MidlineLeft;
+                text.alignment = TextAlignmentOptions.MidlineRight;
                 b.interactable = o.Enabled;
                 rows.Add((b, text, o));
-                y += 56;
+                y += height + 4;
             }
 
-            Section("Weapons");
+            Section(Loc.T("shop.weapons"));
             foreach (var o in offers)
                 if (o.Page == page && (o.Kind == OfferKind.BuyWeapon || o.Kind == OfferKind.EquipWeapon))
                     Row(o, WeaponLabel(w, o));
-            Section("Upgrades");
+            Section(Loc.T("shop.upgrades"));
             foreach (var o in offers)
-                if (o.Page == page && o.Kind == OfferKind.UpgradeWeapon) Row(o, UpgradeLabel(w, o));
-            Section("Equipment and healing");
+                if (o.Page == page && o.Kind == OfferKind.UpgradeWeapon) Row(o, UpgradeLabel(w, o), 74); // the change list can take two lines
+            Section(Loc.T("shop.equipment"));
             foreach (var o in offers)
             {
                 if (o.Kind == OfferKind.BuyItem && o.Page == page)
@@ -151,7 +151,7 @@ namespace Hollow.UI
                     if (w.Inventory.Count(o.Item) > 0)
                     {
                         var item = o.Item;
-                        UIFactory.Button(list, "FirstSlot", "1st", t, new Vector2(1, 1), new Vector2(-34, -y + 30), new Vector2(52, 26),
+                        UIFactory.Button(list, "FirstSlot", Loc.T("shop.firstSlot"), t, new Vector2(0, 1), new Vector2(34, -y + 30), new Vector2(52, 26),
                             () => onFirstSlot?.Invoke(item), out _, 16);
                     }
                 }
@@ -164,7 +164,7 @@ namespace Hollow.UI
 
         string Tail(ShopOffer o)
         {
-            string price = o.Price > 0 ? $"<color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Coin)}>{o.Price} ¢</color>" : "free";
+            string price = o.Price > 0 ? $"<color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Coin)}>{Loc.F("common.coins", o.Price)}</color>" : Loc.T("shop.free");
             return o.Lock == LockReason.None ? price : $"{price}  <color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Warning)}>{LockText(o.Lock)}</color>";
         }
 
@@ -172,24 +172,24 @@ namespace Hollow.UI
         {
             var wd = w.Profile.Weapon(o.Weapon);
             var l = wd.Levels[0];
-            string verb = o.Kind == OfferKind.EquipWeapon ? "Equip" : "Buy";
-            return $"<b>{verb} {wd.DisplayName}</b>   {Tail(o)}\n<size=16>{Stats(wd, l)}</size>";
+            string title = Loc.F(o.Kind == OfferKind.EquipWeapon ? "shop.equip" : "shop.buy", Loc.Weapon(wd.Id));
+            return $"<b>{title}</b>   {Tail(o)}\n<size=16>{Stats(wd, l)}</size>";
         }
 
         string UpgradeLabel(World w, ShopOffer o)
         {
             var wd = w.Profile.Weapon(o.Weapon);
-            if (o.Lock == LockReason.MaxLevel) return $"<b>{wd.DisplayName}</b>  Lv{o.Level} (max)";
+            if (o.Lock == LockReason.MaxLevel) return $"<b>{Loc.Weapon(wd.Id)}</b>  {Loc.F("shop.maxLevel", o.Level)}";
             var cur = wd.Levels[o.Level - 2];
             var next = wd.Levels[o.Level - 1];
-            string tag = next.Approved ? "" : " <size=16>(placeholder values)</size>";
-            return $"<b>{wd.DisplayName} Lv{o.Level - 1} → {o.Level}</b>{tag}   {Tail(o)}\n<size=16>{Diff(wd, cur, next)}</size>";
+            string tag = next.Approved ? "" : $" <size=16>{Loc.T("shop.placeholder")}</size>";
+            return $"<b>{Loc.F("shop.upgrade", Loc.Weapon(wd.Id), o.Level - 1, o.Level)}</b>{tag}   {Tail(o)}\n<size=15>{Diff(wd, cur, next)}</size>";
         }
 
         string ItemLabel(World w, ShopOffer o)
         {
             var item = w.Profile.Item(o.Item);
-            return $"<b>{item.DisplayName}</b>  ({w.Inventory.Count(o.Item)}/{item.Carry}, stock {o.StockLeft})   {Tail(o)}\n<size=16>{ItemEffect(item)}</size>";
+            return $"<b>{Loc.Item(item.Id)}</b>  · {Loc.F("shop.carry", w.Inventory.Count(o.Item), item.Carry, o.StockLeft)}   {Tail(o)}\n<size=16>{ItemEffect(item)}</size>";
         }
 
         string HealLabel(World w, ShopOffer o)
@@ -197,34 +197,34 @@ namespace Hollow.UI
             var eco = w.Profile.Economy;
             bool player = o.Kind == OfferKind.HealPlayer;
             float amount = player ? eco.PlayerHealAmount : eco.CompanionHealAmount;
-            return $"<b>Repair {(player ? "yourself" : "the Operator")}</b>  +{amount:0}   {Tail(o)}\n<size=16>{Mathf.Max(0, o.StockLeft)} left this encounter</size>";
+            return $"<b>{Loc.T(player ? "shop.healSelf" : "shop.healCompanion")}</b>  +{amount:0}   {Tail(o)}\n<size=16>{Loc.F("shop.usesLeft", Mathf.Max(0, o.StockLeft))}</size>";
         }
 
         static string Stats(WeaponData wd, WeaponLevel l) => wd.Kind == WeaponKind.Melee
-            ? $"Dmg {F(l.Damage)} · {F(l.Rate)}/s · reach {F(l.Range)} · arc {F(l.ArcDeg)}°"
-            : $"Dmg {F(l.Damage)}{(l.ProjectileCount > 1 ? $"×{l.ProjectileCount}" : "")} · {F(l.Rate)}/s · mag {l.Magazine} · reload {F(l.ReloadTime)}s · range {F(l.Range)}";
+            ? Loc.F("stats.melee", F(l.Damage), F(l.Rate), F(l.Range), F(l.ArcDeg))
+            : Loc.F("stats.gun", l.ProjectileCount > 1 ? $"{l.ProjectileCount}×{F(l.Damage)}" : F(l.Damage), F(l.Rate), l.Magazine, F(l.ReloadTime), F(l.Range));
 
         static string Diff(WeaponData wd, WeaponLevel a, WeaponLevel b)
         {
             var sb = new StringBuilder();
-            void C(string name, float x, float y) { if (!Mathf.Approximately(x, y)) sb.Append($"{name} {F(x)}→{F(y)}  "); }
-            C("Dmg", a.Damage, b.Damage); C("Rate", a.Rate, b.Rate);
+            void C(string key, float x, float y) { if (!Mathf.Approximately(x, y)) sb.Append(Loc.F("stats.change", Loc.T("stat." + key), F(x), F(y))).Append("   "); }
+            C("damage", a.Damage, b.Damage); C("rate", a.Rate, b.Rate);
             if (wd.Kind == WeaponKind.Gun)
             {
-                C("Pellets", a.ProjectileCount, b.ProjectileCount); C("Mag", a.Magazine, b.Magazine); C("Reload", a.ReloadTime, b.ReloadTime);
-                C("Range", a.Range, b.Range); C("Spread", a.SpreadDeg, b.SpreadDeg); C("Targets", a.Targets, b.Targets);
+                C("pellets", a.ProjectileCount, b.ProjectileCount); C("magazine", a.Magazine, b.Magazine); C("reload", a.ReloadTime, b.ReloadTime);
+                C("range", a.Range, b.Range); C("spread", a.SpreadDeg, b.SpreadDeg); C("targets", a.Targets, b.Targets);
             }
-            else { C("Reach", a.Range, b.Range); C("Arc", a.ArcDeg, b.ArcDeg); C("Knockback", a.Knockback, b.Knockback); }
-            return sb.Length > 0 ? sb.ToString() : "no stat change";
+            else { C("reach", a.Range, b.Range); C("arc", a.ArcDeg, b.ArcDeg); C("knockback", a.Knockback, b.Knockback); }
+            return sb.Length > 0 ? sb.ToString() : Loc.T("stats.noChange");
         }
 
         static string ItemEffect(ItemData i) => i.Id switch
         {
-            ItemId.Grenade => $"{F(i.Damage)} dmg · radius {F(i.Radius)} · fuse {F(i.FuseTime)}s",
-            ItemId.PushPulse => $"push {F(i.Knockback)} · radius {F(i.Radius)} · no damage",
-            ItemId.Mine => $"{F(i.Damage)} dmg · radius {F(i.Radius)} · max {i.MaxActivePerPhase} active",
-            ItemId.EmpPulse => $"stun machines {F(i.StunRegular)}s · radius {F(i.Radius)}",
-            ItemId.PersonalShield => $"{F(i.Duration)}s invulnerable",
+            ItemId.Grenade => Loc.F("itemFx.grenade", F(i.Damage), F(i.Radius), F(i.FuseTime)),
+            ItemId.PushPulse => Loc.F("itemFx.push", F(i.Knockback), F(i.Radius)),
+            ItemId.Mine => Loc.F("itemFx.mine", F(i.Damage), F(i.Radius), i.MaxActivePerPhase),
+            ItemId.EmpPulse => Loc.F("itemFx.emp", F(i.StunRegular), F(i.Radius)),
+            ItemId.PersonalShield => Loc.F("itemFx.shield", F(i.Duration)),
             _ => "",
         };
 
@@ -232,18 +232,8 @@ namespace Hollow.UI
 
         public static string LockText(LockReason r) => r switch
         {
-            LockReason.NotEnoughCoins => "not enough coins",
-            LockReason.OutOfStock => "out of stock",
-            LockReason.CarryFull => "carrying the maximum",
-            LockReason.MaxLevel => "max level",
-            LockReason.LevelNotDefined => "level not defined yet",
-            LockReason.FullHealth => "health is full",
-            LockReason.NoUsesLeft => "no uses left this encounter",
-            LockReason.TutorialPurchaseFirst => "buy the SMG first",
-            LockReason.NotUnlocked => "unlocks in a later phase",
-            LockReason.NoCompanion => "no companion",
-            LockReason.AlreadyEquipped => "equipped",
-            _ => "",
+            LockReason.None => "",
+            _ => Loc.T("lock." + r),
         };
 
         void Update()

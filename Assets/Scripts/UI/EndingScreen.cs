@@ -77,13 +77,13 @@ namespace Hollow.UI
             }
             else black.color = Color.black;
 
-            won.text = "<b>You won.</b>";
+            won.text = $"<b>{Loc.T("ending.won")}</b>";
             jingle?.Invoke();
             yield return new WaitForSecondsRealtime(montage ? 2.5f : 0.3f);
             stats.text = statistics;
             var t = root.Theme;
-            UIFactory.Button(buttons, "Menu", "Main menu", t, new Vector2(0.5f, 0.5f), new Vector2(-170, 0), new Vector2(300, 64), mainMenu, out _);
-            UIFactory.Button(buttons, "New", "New game", t, new Vector2(0.5f, 0.5f), new Vector2(170, 0), new Vector2(300, 64), newGame, out _);
+            UIFactory.Button(buttons, "Menu", Loc.T("common.mainMenu"), t, new Vector2(0.5f, 0.5f), new Vector2(170, 0), new Vector2(300, 64), mainMenu, out _);
+            UIFactory.Button(buttons, "New", Loc.T("menu.newGame"), t, new Vector2(0.5f, 0.5f), new Vector2(-170, 0), new Vector2(300, 64), newGame, out _);
         }
     }
 }

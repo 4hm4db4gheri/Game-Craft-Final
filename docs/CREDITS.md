@@ -6,6 +6,8 @@ Sound effects and music are listed in the Audio section below.
 | File(s) | Title | Author | Source | Licence | Date added | Used for |
 |---|---|---|---|---|---|---|
 | `Assets/TextMesh Pro/` (LiberationSans.ttf, SDF font assets, shaders, settings) | TMP Essential Resources (ships with Unity's uGUI 2.6 package) | Unity Technologies; Liberation Sans font by Red Hat / Pascal Ascolese (Ascender Corp.) | Unity package `com.unity.ugui` → `Package Resources/TMP Essential Resources.unitypackage` | Unity Companion License (TMP resources); SIL Open Font License 1.1 for Liberation Sans (`LiberationSans - OFL.txt` included) | 2026-10-16 | Default UI font until a final font is chosen |
+| `Assets/Fonts/Vazirmatn/Vazirmatn-Regular.ttf`, `Vazirmatn-Bold.ttf`; generated `Assets/Resources/Fonts/Vazirmatn SDF.asset` | Vazirmatn | Saber Rastikerdar and contributors | https://github.com/rastikerdar/vazirmatn (bundled copy in the persian-writing skill) | SIL Open Font License 1.1 (`LICENSE.txt` beside the fonts) | 2026-10-17 | Persian UI, subtitles and world-space numbers (T24) |
+| `Assets/Plugins/RTLTMPro/` (Scripts, Ranges) | RTLTMPro v4.0.0 | Mohamad Narimani and contributors | https://github.com/pnarimani/RTLTMPro (tag v4.0.0, user's choice) | MIT (`LICENSE.txt` included) | 2026-10-17 | Right-to-left Persian text in TextMeshPro. Local changes: Unity 6 define in `RTLTextMeshPro3D.cs`; digits keep their separators in `LigatureFixer.cs` (D64). The repo's Segoe UI fonts and demo scenes were not copied. |
 
 All other visuals in the project are generated placeholders (simple shapes made by `Assets/Editor/PlaceholderArt.cs`), not downloaded assets.
 

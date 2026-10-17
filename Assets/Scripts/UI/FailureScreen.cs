@@ -21,9 +21,9 @@ namespace Hollow.UI
             text = UIFactory.Text(panel, "Reason", "", t, 44, TextAlignmentOptions.Center);
             text.rectTransform.offsetMin = new Vector2(0, 200);
             var center = new Vector2(0.5f, 0.5f);
-            UIFactory.Button(panel, "Retry", "Retry wave", t, center, new Vector2(0, -60), new Vector2(360, 70), () => retry?.Invoke(), out _);
-            UIFactory.Button(panel, "Load", "Load", t, center, new Vector2(0, -150), new Vector2(360, 70), () => load?.Invoke(), out _);
-            UIFactory.Button(panel, "Menu", "Main menu", t, center, new Vector2(0, -240), new Vector2(360, 70), () => menu?.Invoke(), out _);
+            UIFactory.Button(panel, "Retry", Loc.T("failure.retry"), t, center, new Vector2(0, -60), new Vector2(360, 70), () => retry?.Invoke(), out _);
+            UIFactory.Button(panel, "Load", Loc.T("slots.load"), t, center, new Vector2(0, -150), new Vector2(360, 70), () => load?.Invoke(), out _);
+            UIFactory.Button(panel, "Menu", Loc.T("common.mainMenu"), t, center, new Vector2(0, -240), new Vector2(360, 70), () => menu?.Invoke(), out _);
             panel.gameObject.SetActive(false);
         }
 
@@ -31,8 +31,8 @@ namespace Hollow.UI
         {
             text.text = reason switch
             {
-                FailureReason.CompanionDied => "<b>The Operator is down.</b>\n<size=28>Your companion died. Protect him: watch the arrow and the marker above his head.</size>",
-                _ => "<b>Assistant offline.</b>\n<size=28>You were destroyed.</size>",
+                FailureReason.CompanionDied => $"<b>{Loc.T("failure.companionTitle")}</b>\n<size=28>{Loc.T("failure.companionBody")}</size>",
+                _ => $"<b>{Loc.T("failure.playerTitle")}</b>\n<size=28>{Loc.T("failure.playerBody")}</size>",
             };
             panel.gameObject.SetActive(true);
         }

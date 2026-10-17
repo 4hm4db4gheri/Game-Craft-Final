@@ -38,7 +38,7 @@ namespace Hollow.UI
             foreach (var c in cards) Destroy(c);
             cards.Clear();
             var theme = root.Theme;
-            title.text = $"<b>UPGRADE</b>\n<size=26><color=#{ColorUtility.ToHtmlStringRGB(theme.TextDim)}>The world is paused. Choose one.</color></size>";
+            title.text = $"<b>{Loc.T("xp.title")}</b>\n<size=26><color=#{ColorUtility.ToHtmlStringRGB(theme.TextDim)}>{Loc.T("xp.subtitle")}</color></size>";
 
             int n = card.Options.Count;
             float width = 420, gap = 40;
@@ -50,9 +50,9 @@ namespace Hollow.UI
                 int rank = w.Player.SkillRank(id);
                 var (before, after) = XpSystem.Preview(w, id);
                 string label =
-                    $"<size=34><b>{skill.DisplayName}</b></size>\n" +
-                    $"<size=24><color=#{ColorUtility.ToHtmlStringRGB(theme.TextDim)}>Rank {rank} → {rank + 1} of {skill.Ranks.Count}</color></size>\n\n" +
-                    $"<size=40>{Format(id, before)}  <color=#{ColorUtility.ToHtmlStringRGB(theme.Accent)}>→  {Format(id, after)}</color></size>";
+                    $"<size=34><b>{Loc.Skill(id)}</b></size>\n" +
+                    $"<size=24><color=#{ColorUtility.ToHtmlStringRGB(theme.TextDim)}>{Loc.F("xp.rank", rank, rank + 1, skill.Ranks.Count)}</color></size>\n\n" +
+                    $"<size=40>{Loc.F("xp.change", Format(id, before), $"<color=#{ColorUtility.ToHtmlStringRGB(theme.Accent)}>{Format(id, after)}</color>")}</size>";
                 var b = UIFactory.Button(panel, $"Card{i}", label, theme, new Vector2(0.5f, 0.5f), new Vector2(start + i * (width + gap), -40),
                     new Vector2(width, 360), () => onChoose(id), out _);
                 cards.Add(b.gameObject);
@@ -70,10 +70,10 @@ namespace Hollow.UI
         public static string Format(SkillId id, float v) => id switch
         {
             SkillId.WeaponDamage => $"{v * 100f:0}%",
-            SkillId.ReloadMultiplier => $"×{v.ToString("0.00", Inv)} reload time",
-            SkillId.DashCooldown => $"{v.ToString("0.##", Inv)} s",
-            SkillId.MoveSpeed => $"{v.ToString("0.0", Inv)} u/s",
-            SkillId.MagnetRadius => $"{v.ToString("0.0", Inv)} u",
+            SkillId.ReloadMultiplier => Loc.F("xp.reload", v.ToString("0.00", Inv)),
+            SkillId.DashCooldown => Loc.F("unit.seconds", v.ToString("0.##", Inv)),
+            SkillId.MoveSpeed => Loc.F("unit.speed", v.ToString("0.0", Inv)),
+            SkillId.MagnetRadius => Loc.F("unit.distance", v.ToString("0.0", Inv)),
             _ => v.ToString("0", Inv),
         };
     }

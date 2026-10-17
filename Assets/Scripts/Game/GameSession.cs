@@ -142,7 +142,7 @@ namespace Hollow.Game
             catch (Exception e)
             {
                 Debug.LogError($"[Hollow] Load of slot {slot} failed: {e}");
-                menus.ShowConfirm("Load failed", $"Slot {slot} could not be read.\n{e.Message}", ("Main menu", () =>
+                menus.ShowConfirm(Loc.T("load.failedTitle"), Loc.F("load.failedBody", slot, e.Message), (Loc.T("common.mainMenu"), () =>
                 {
                     app.States.Transition(GameState.MainMenu);
                     UnityEngine.SceneManagement.SceneManager.LoadScene(SceneNames.MainMenu);
@@ -254,20 +254,15 @@ namespace Hollow.Game
             var ws = w.Waves;
             return ws.Kind switch
             {
-                EncounterKind.SafeInterval => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} cleared — next wave in {Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))} s  (Enter: start now)",
-                EncounterKind.BossPrep => $"Phase {w.Phase} · boss encounter ready — shop, then press Enter when ready",
-                EncounterKind.Boss => $"Phase {w.Phase} · boss encounter · Enemies {WaveSystem.AliveCount(w)}",
-                EncounterKind.PhaseComplete => $"Phase {w.Phase} · encounter won",
-                _ => $"Phase {w.Phase} · Wave {ws.Wave}/{WaveSystem.WaveCount(w)} · Enemies {WaveSystem.AliveCount(w)}",
+                EncounterKind.SafeInterval => Loc.F("top.safe", w.Phase, ws.Wave, WaveSystem.WaveCount(w), Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))),
+                EncounterKind.BossPrep => Loc.F("top.bossPrep", w.Phase),
+                EncounterKind.Boss => Loc.F("top.boss", w.Phase, WaveSystem.AliveCount(w)),
+                EncounterKind.PhaseComplete => Loc.F("top.won", w.Phase),
+                _ => Loc.F("top.wave", w.Phase, ws.Wave, WaveSystem.WaveCount(w), WaveSystem.AliveCount(w)),
             };
         }
 
-        static string BossName(BossId id) => id switch
-        {
-            BossId.LargeBeast => "The large beast",
-            BossId.IndustrialRobot => "The industrial robot",
-            _ => "The Operator (body and equipment)",
-        };
+        static string BossName(BossId id) => Loc.Boss(id);
 
         void OnConfirm()
         {
@@ -301,9 +296,9 @@ namespace Hollow.Game
         }
 
         void ShowBossPrompt() =>
-            menus.ShowConfirm("The boss encounter is ready.", "Visit the shop first?",
-                ("Visit the shop", VisitShopBeforeBoss),
-                ("Start the encounter", () => { menus.Hide(); BeginBossEntrance(); }));
+            menus.ShowConfirm(Loc.T("bossPrep.title"), Loc.T("bossPrep.body"),
+                (Loc.T("bossPrep.shop"), VisitShopBeforeBoss),
+                (Loc.T("bossPrep.start"), () => { menus.Hide(); BeginBossEntrance(); }));
 
         /// <summary>Places the player and companion safely beside the shop; shopping is calm until Ready (§7).</summary>
         void VisitShopBeforeBoss()
@@ -372,10 +367,12 @@ namespace Hollow.Game
         {
             var t = TimeSpan.FromSeconds(w.Clock.Seconds);
             var weapons = new System.Text.StringBuilder();
-            foreach (var o in w.Player.Loadout.Owned) weapons.Append($"{w.Profile.Weapon(o.Id).DisplayName} Lv{o.Level}  ");
-            return $"Playtime {(int)t.TotalMinutes}:{t.Seconds:00}   ·   Enemies removed {w.Progress.Kills}   ·   Retries {w.Retries}\n" +
-                   $"Coins generated {w.Progress.CoinsGenerated}, collected {w.Progress.CoinsCollected}   ·   XP {w.Progress.TotalXp}   ·   Items used {w.Progress.ItemsUsed}\n" +
-                   $"Skills: {string.Join(", ", w.Progress.ChosenSkills)}\nWeapons: {weapons}";
+            foreach (var o in w.Player.Loadout.Owned) weapons.Append(Loc.F("results.weapon", Loc.Weapon(o.Id), o.Level)).Append("   ");
+            var skills = new System.Collections.Generic.List<string>();
+            foreach (var s in w.Progress.ChosenSkills) skills.Add(Loc.Skill(s));
+            return Loc.F("results.line1", $"{(int)t.TotalMinutes}:{t.Seconds:00}", w.Progress.Kills, w.Retries) + "\n" +
+                   Loc.F("results.line2", w.Progress.CoinsGenerated, w.Progress.CoinsCollected, w.Progress.TotalXp, w.Progress.ItemsUsed) + "\n" +
+                   Loc.F("results.skills", string.Join("، ", skills)) + "\n" + Loc.F("results.weapons", weapons);
         }
 
         void PlayScene(string id, Action done)
@@ -385,16 +382,16 @@ namespace Hollow.Game
             if (!canSkip) seen.Add(id);
             dialogue.PlayScene(id, canSkip, done);
         }
-        static string TutorialWeaponName(World w) => w.Profile.Weapon(w.Profile.Economy.TutorialWeapon).DisplayName;
+        static string TutorialWeaponName(World w) => Loc.Weapon(w.Profile.Economy.TutorialWeapon);
 
         static string TutorialPrompt(World w) => w.Tutorial switch
         {
-            TutorialStage.FirstGroup => "WASD to move · aim with the mouse · hold left click to fire · Space to dash",
-            TutorialStage.Purchase => w.Coins.Count > 0 ? "Collect the coins they dropped"
-                : w.Shop.Open ? $"Click \"Buy {TutorialWeaponName(w)}\" in the shop" : "Follow the arrow to the shop and buy the SMG",
+            TutorialStage.FirstGroup => Loc.T("tutorial.move"),
+            TutorialStage.Purchase => w.Coins.Count > 0 ? Loc.T("tutorial.coins")
+                : w.Shop.Open ? Loc.F("tutorial.clickBuy", Loc.F("shop.buy", TutorialWeaponName(w))) : Loc.F("tutorial.followArrow", TutorialWeaponName(w)),
             // A bought weapon goes to slot 2; the pistol stays in hand until the player switches.
             TutorialStage.SecondGroup when w.Player.Loadout.ActiveId != w.Profile.Economy.TutorialWeapon && w.Player.Loadout.Owns(w.Profile.Economy.TutorialWeapon)
-                => $"Press 2 to use the {TutorialWeaponName(w)}",
+                => Loc.F("tutorial.press2", TutorialWeaponName(w)),
             _ => null,
         };
 
@@ -410,7 +407,7 @@ namespace Hollow.Game
             bool guideToShop = w.Tutorial == TutorialStage.Purchase && w.Coins.Count == 0 && !w.Shop.Open && playing;
             hud.SetGuide(guideToShop ? w.Layout.ShopPosition : null, worldCamera);
             string status = TutorialPrompt(w);
-            if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = "Press E to open the shop";
+            if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
             hud.SetStatus(status);
         }
@@ -475,9 +472,9 @@ namespace Hollow.Game
             if (result.Ok)
             {
                 lastSavedHash = WorldSerializer.Hash(W);
-                if (!quiet) Flash($"Saved to slot {app.ActiveSlot}.");
+                if (!quiet) Flash(Loc.F("save.ok", app.ActiveSlot));
             }
-            else Flash($"SAVE FAILED: {result.Error}");
+            else Flash(Loc.F("save.failed", result.Error));
         }
 
         void Flash(string message)
@@ -497,10 +494,10 @@ namespace Hollow.Game
         {
             bool unsaved = lastSavedHash != WorldSerializer.Hash(W);
             if (!unsaved) { app.GoToMainMenu(); return; }
-            menus.ShowConfirm("Unsaved progress", "Leave the game?",
-                ("Save and exit", () => { SaveNow(); app.GoToMainMenu(); }),
-                ("Exit without saving", () => app.GoToMainMenu()),
-                ("Cancel", () => ShowPauseMenu()));
+            menus.ShowConfirm(Loc.T("exit.title"), Loc.T("exit.body"),
+                (Loc.T("exit.save"), () => { SaveNow(); app.GoToMainMenu(); }),
+                (Loc.T("exit.noSave"), () => app.GoToMainMenu()),
+                (Loc.T("common.cancel"), () => ShowPauseMenu()));
         }
 
         // ---------------------------------------------------------------- failure

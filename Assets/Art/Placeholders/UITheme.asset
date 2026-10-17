@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c30da2017ccde846b041ca0385a050e, type: 3}
   m_Name: UITheme
   m_EditorClassIdentifier: Hollow.UI::Hollow.UI.UITheme
-  Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  Font: {fileID: 11400000, guid: efdb8f331827c294e9d0b2c6abdd57c7, type: 2}
   Panel: {fileID: 0}
   Button: {fileID: 0}
   Bar: {fileID: 0}

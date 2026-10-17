@@ -16,7 +16,8 @@ namespace Hollow.UI
         UIRoot root;
         BarView health, companion, xp, reload, bossBar;
         TextMeshProUGUI bossText;
-        TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText, companionArrow, guideArrow;
+        TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText;
+        UnityEngine.UI.Image companionArrow, guideArrow;
         readonly StringBuilder sb = new(128);
         readonly UnityEngine.UI.Button[] itemButtons = new UnityEngine.UI.Button[5];
         readonly TextMeshProUGUI[] itemTexts = new TextMeshProUGUI[5];
@@ -71,11 +72,11 @@ namespace Hollow.UI
             bossBar.gameObject.SetActive(false);
 
             var arrow = UIFactory.Rect(hud, "CompanionArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
-            companionArrow = UIFactory.Text(arrow, "Glyph", "▲", t, 48, TextAlignmentOptions.Center, t.Warning);
+            companionArrow = UIFactory.Triangle(arrow, t.Warning);
             arrow.gameObject.SetActive(false);
 
             var guide = UIFactory.Rect(hud, "GuideArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
-            guideArrow = UIFactory.Text(guide, "Glyph", "▲", t, 48, TextAlignmentOptions.Center, t.Accent);
+            guideArrow = UIFactory.Triangle(guide, t.Accent);
             guide.gameObject.SetActive(false);
         }
 
@@ -179,12 +180,12 @@ namespace Hollow.UI
                 lastXpToward = w.Progress.XpTowardNext;
                 lastXpNext = next;
                 lastXpTotal = w.Progress.TotalXp;
-                xpText.text = maxed ? $"XP {w.Progress.TotalXp}" : $"XP {w.Progress.XpTowardNext} / {next}";
+                xpText.text = maxed ? Loc.F("hud.xpTotal", w.Progress.TotalXp) : Loc.F("hud.xp", w.Progress.XpTowardNext, next);
             }
             if (w.Progress.Wallet != lastWallet)
             {
                 lastWallet = w.Progress.Wallet;
-                walletText.text = $"{w.Progress.Wallet} ¢";
+                walletText.text = Loc.F("common.coins", w.Progress.Wallet);
             }
         }
 
@@ -204,13 +205,12 @@ namespace Hollow.UI
             var data = w.Profile.Weapon(id);
             var level = WeaponSystem.LevelData(w, o);
             if (!active) sb.Append("<color=#").Append(DimHex).Append('>');
-            sb.Append($"[{key}] {data.DisplayName} Lv{o.Level}   ");
-            if (data.Kind == WeaponKind.Gun) sb.Append($"{o.Ammo}/{level.Magazine} | ∞");
-            else sb.Append("melee");
+            sb.Append(Loc.F("hud.weapon", key, Loc.Weapon(id), o.Level)).Append("   ");
+            if (data.Kind == WeaponKind.Gun) sb.Append(Loc.F("hud.ammo", o.Ammo, level.Magazine));
+            else sb.Append(Loc.T("hud.melee"));
             if (!active) sb.Append("</color>");
         }
     
-        static readonly string[] ItemLetters = { "GRN", "PSH", "MIN", "EMP", "SHD" };
         static readonly ItemId[] AllItems = (ItemId[])System.Enum.GetValues(typeof(ItemId));
         readonly int[] itemKeys = { -1, -1, -1, -1, -1 };
 
@@ -233,8 +233,9 @@ namespace Hollow.UI
                 if (itemKeys[i] != key)
                 {
                     itemKeys[i] = key;
-                    itemTexts[i].text = locked ? $"<color=#{DimHex}>{ItemLetters[(int)id]}\n<size=14>phase {data.UnlockPhase}</size></color>"
-                        : $"<b>{ItemLetters[(int)id]}</b>\n{count}/{data.Carry}{(i == 0 ? "  <size=13>[F]</size>" : "")}";
+                    string name = Loc.T("itemShort." + id);
+                    itemTexts[i].text = locked ? $"<color=#{DimHex}>{name}\n<size=14>{Loc.F("hud.itemLocked", data.UnlockPhase)}</size></color>"
+                        : $"<b>{name}</b>\n{count}/{data.Carry}{(i == 0 ? "  <size=13>F</size>" : "")}";
                 }
                 itemButtons[i].interactable = !locked && count > 0;
                 itemFrames[i].color = held ? root.Theme.Accent : gap > 0 && count > 0 ? new Color(1, 1, 1, 0.5f + 0.5f * (1 - gap)) : Color.white;
@@ -249,7 +250,7 @@ namespace Hollow.UI
             var arrowRt = (RectTransform)companionArrow.transform.parent;
             if (!c.Present) { arrowRt.gameObject.SetActive(false); return; }
             companion.Set(c.Health / Mathf.Max(1f, c.MaxHealth));
-            companionText.text = $"Operator {Mathf.CeilToInt(c.Health)}";
+            companionText.text = Loc.F("hud.companion", Mathf.CeilToInt(c.Health));
 
             float since = (w.Clock.Tick - c.LastHitTick) * Hollow.Core.SimClock.Dt;
             bool recentlyHit = !c.Dead && since < w.Profile.Companion.DangerIndicatorTime;

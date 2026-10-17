@@ -185,7 +185,8 @@ namespace Hollow.EditorTools
                 theme = ScriptableObject.CreateInstance<Hollow.UI.UITheme>();
                 AssetDatabase.CreateAsset(theme, ThemePath);
             }
-            if (theme.Font == null) theme.Font = AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>(DefaultFontPath);
+            if (theme.Font == null) theme.Font = AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>(PersianFont.AssetPath) // D64
+                                         ?? AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>(DefaultFontPath);
             EditorUtility.SetDirty(theme);
             AssetDatabase.SaveAssets();
             return theme;

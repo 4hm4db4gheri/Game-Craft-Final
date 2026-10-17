@@ -361,6 +361,7 @@ namespace Hollow.Presentation
                 var go = new GameObject("DamageNumber");
                 go.transform.SetParent(transform, false);
                 var t = go.AddComponent<TextMeshPro>();
+                if (PersianText.Font != null) t.font = PersianText.Font;
                 t.fontSize = 3.2f;
                 t.alignment = TextAlignmentOptions.Center;
                 t.textWrappingMode = TextWrappingModes.NoWrap;
@@ -374,7 +375,7 @@ namespace Hollow.Presentation
             int i = nextNumber % numbers.Count;
             nextNumber = (i + 1) % Mathf.Max(1, maxOnScreen);
             var n = numbers[i].T;
-            n.text = Mathf.RoundToInt(amount).ToString();
+            n.text = PersianText.Number(Mathf.RoundToInt(amount));
             n.color = new Color(1f, 0.96f, 0.9f, 1f);
             n.enabled = true;
             var from = new Vector3(at.x + Random.Range(-0.25f, 0.25f), at.y + 1.3f, 0);

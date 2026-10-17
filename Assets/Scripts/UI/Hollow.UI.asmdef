@@ -7,7 +7,8 @@
         "Hollow.Sim",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "RTLTMPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

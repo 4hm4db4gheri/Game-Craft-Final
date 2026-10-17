@@ -42,20 +42,38 @@ namespace Hollow.UI
             return img;
         }
 
+        /// <summary>
+        /// Every UI text is a right-to-left Persian text (RTLTMPro: letter joining, Persian digits, rich-text tags).
+        /// Left-aligned layouts are mirrored to the right edge, where Persian lines start.
+        /// </summary>
         public static TextMeshProUGUI Text(Transform parent, string name, string text, UITheme theme, float size,
             TextAlignmentOptions align, Color? color = null)
         {
             var rt = Stretch(parent, name);
-            var t = rt.gameObject.AddComponent<TextMeshProUGUI>();
+            var t = rt.gameObject.AddComponent<RTLTMPro.RTLTextMeshPro>();
+            t.Farsi = true;
+            t.FixTags = true;
+            t.ForceFix = true;
             if (theme.Font != null) t.font = theme.Font;
             t.text = text;
             t.fontSize = size;
-            t.alignment = align;
+            t.alignment = Mirror(align);
             t.color = color ?? theme.Text;
             t.raycastTarget = false;
             t.textWrappingMode = TextWrappingModes.Normal;
             return t;
         }
+
+        public static TextAlignmentOptions Mirror(TextAlignmentOptions a) => a switch
+        {
+            TextAlignmentOptions.TopLeft => TextAlignmentOptions.TopRight,
+            TextAlignmentOptions.Left => TextAlignmentOptions.Right,
+            TextAlignmentOptions.MidlineLeft => TextAlignmentOptions.MidlineRight,
+            TextAlignmentOptions.BottomLeft => TextAlignmentOptions.BottomRight,
+            TextAlignmentOptions.BaselineLeft => TextAlignmentOptions.BaselineRight,
+            TextAlignmentOptions.CaplineLeft => TextAlignmentOptions.CaplineRight,
+            _ => a,
+        };
 
         public static Button Button(Transform parent, string name, string label, UITheme theme, Vector2 anchor, Vector2 pos, Vector2 size,
             Action onClick, out TextMeshProUGUI text, float fontSize = 0)
@@ -101,7 +119,39 @@ namespace Hollow.UI
             return bar;
         }
 
-        static Sprite white;
+        static Sprite white, triangle;
+
+        /// <summary>An upward-pointing arrow head drawn as an image (the Persian font has no ▲ glyph).</summary>
+        public static Image Triangle(RectTransform parent, Color color)
+        {
+            var rt = Stretch(parent, "Arrow");
+            rt.offsetMin = new Vector2(8, 10);
+            rt.offsetMax = new Vector2(-8, -10);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = TriangleSprite();
+            img.color = color;
+            img.raycastTarget = false;
+            return img;
+        }
+
+        static Sprite TriangleSprite()
+        {
+            if (triangle != null) return triangle;
+            const int size = 64;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            var px = new Color32[size * size];
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    float half = (size - y) * 0.5f; // apex at the top
+                    float d = Mathf.Min(x - (size * 0.5f - half), (size * 0.5f + half) - x, y);
+                    px[y * size + x] = new Color32(255, 255, 255, (byte)(Mathf.Clamp01(d) * 255));
+                }
+            tex.SetPixels32(px);
+            tex.Apply();
+            triangle = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
+            return triangle;
+        }
 
         /// <summary>Filled images need a sprite; a generated 4×4 white one is enough.</summary>
         public static Sprite WhiteSprite()
