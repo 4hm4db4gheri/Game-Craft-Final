@@ -153,6 +153,7 @@ namespace Hollow.Game
         void SetWorld(World world)
         {
             Sim = new Simulation(world);
+            dialogue.SetSpeakerName("Assistant", Loc.T("ai." + world.Player.Ai)); // the chosen AI speaks under its own name
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
@@ -208,6 +209,7 @@ namespace Hollow.Game
             hud.Sync(w, worldCamera);
             SyncShop(w);
             SyncEncounter(w);
+            SyncBarks(w);
             if (telemetry != null)
             {
                 telemetry.Observe(w);
@@ -341,9 +343,14 @@ namespace Hollow.Game
                 presenter.ResetViews();
                 arena.ShowPhase(W.Phase);
                 if (giftNow && W.Narrative.GiftReceived) { OfferGift(); return; }
-                app.States.Transition(GameState.Playing);
-                if (W.Phase == 3) dialogue.ShowBark("Phase3Start");
+                ResumeAfterTransition();
             });
+        }
+
+        void ResumeAfterTransition()
+        {
+            app.States.Transition(GameState.Playing);
+            if (W.Phase == 2) BarkOnce("Phase2Supervise"); // "I will supervise." / "No need."
         }
 
         /// <summary>v0.19 §5: in safety, Equip or Store the donated weapon. Nothing is spent either way.</summary>
@@ -357,9 +364,9 @@ namespace Hollow.Game
                     WeaponSystem.EquipPrimary(W, gift);
                     Checkpoints.Capture(W); // still the wave start: a retry keeps the choice
                     menus.Hide();
-                    app.States.Transition(GameState.Playing);
+                    ResumeAfterTransition();
                 }),
-                (Loc.T("gift.store"), () => { menus.Hide(); app.States.Transition(GameState.Playing); }));
+                (Loc.T("gift.store"), () => { menus.Hide(); ResumeAfterTransition(); }));
         }
 
         void EndGame()
@@ -424,7 +431,7 @@ namespace Hollow.Game
             // The first purchase is shown, not told: an arrow leads to the shop once the coins are collected.
             bool guideToShop = w.Tutorial == TutorialStage.Purchase && w.Coins.Count == 0 && !w.Shop.Open && playing;
             hud.SetGuide(guideToShop ? w.Layout.NearestShop(w.Player.Position) : null, worldCamera);
-            string status = TutorialPrompt(w);
+            string status = playing ? TutorialPrompt(w) : null; // no hints over scenes and menus
             if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
             hud.SetStatus(status);
@@ -433,7 +440,25 @@ namespace Hollow.Game
         void OnShopBuy(ShopOffer offer)
         {
             if (app.States.Current != GameState.Playing) return;
-            audio.Play(ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item) ? AudioCue.Purchase : AudioCue.Denied);
+            bool bought = ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item);
+            audio.Play(bought ? AudioCue.Purchase : AudioCue.Denied);
+            if (bought && offer.Kind == OfferKind.BuyWeapon) BarkOnce("FirstPurchase");
+        }
+
+        /// <summary>Optional incidental lines (v0.19 §17); warnings never depend on them.</summary>
+        void SyncBarks(World w)
+        {
+            if (app.States.Current != GameState.Playing || !w.Companion.Present) return;
+            foreach (var e in w.Events)
+                if (e.Type == SimEventType.CompanionHit) { dialogue.ShowBark("CompanionWarning"); break; } // its own cooldown
+        }
+
+        void BarkOnce(string id)
+        {
+            string key = "bark:" + id;
+            if (W.Narrative.SeenScenes.Contains(key)) return;
+            W.Narrative.SeenScenes.Add(key);
+            dialogue.ShowBark(id);
         }
 
         // ---------------------------------------------------------------- XP choice (world fully paused)

@@ -19,6 +19,7 @@ namespace Hollow.EditorTools
         public const string AssetPath = "Assets/Resources/Fonts/Vazirmatn SDF.asset";
         const string FallbackPath = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset";
         const string StringsPath = "Assets/Resources/Localization/fa.json";
+        const string DialoguePath = "Assets/Resources/Narrative/Dialogue.json";
 
         [MenuItem("Hollow/UI/Build Persian Font")]
         public static void BuildMenu() => Debug.Log("[Hollow] " + Build());
@@ -72,8 +73,9 @@ namespace Hollow.EditorTools
             Range(0x200C, 0x200C); Range(0x00AB, 0x00AB); Range(0x00BB, 0x00BB); Range(0x00D7, 0x00D7);
             Range(0x00B0, 0x00B0); Range(0x00B7, 0x00B7); Range(0x221E, 0x221E); // °, ·, ∞
             foreach (char c in PresentationForms()) set.Add(c);
-            if (File.Exists(StringsPath))
-                foreach (char c in File.ReadAllText(StringsPath)) if (c >= 0x20) set.Add(c);
+            foreach (var path in new[] { StringsPath, DialoguePath })
+                if (File.Exists(path))
+                    foreach (char c in File.ReadAllText(path)) if (c >= 0x20) set.Add(c);
             var sb = new StringBuilder();
             foreach (char c in set) sb.Append(c);
             return sb.ToString();

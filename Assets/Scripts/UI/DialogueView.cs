@@ -14,8 +14,9 @@ namespace Hollow.UI
     [Serializable]
     public sealed class DialogueScene { public string Id; public string Title; public List<DialogueLine> Lines = new(); }
 
+    /// <summary>A short line during play. Next chains a reply; Cooldown limits how often it can repeat (seconds).</summary>
     [Serializable]
-    public sealed class DialogueBark { public string Id; public string Speaker; public string Text; public float Seconds; }
+    public sealed class DialogueBark { public string Id; public string Speaker; public string Text; public float Seconds; public string Next; public float Cooldown; }
 
     /// <summary>Narrative data (Resources/Narrative/Dialogue.json): text, speakers and durations, editable without code.</summary>
     [Serializable]
@@ -52,6 +53,12 @@ namespace Hollow.UI
         bool skippable;
         Action onDone;
         float barkEnds;
+        string barkNext;
+        readonly Dictionary<string, float> barkTimes = new();
+        readonly Dictionary<string, string> speakerNames = new();
+
+        /// <summary>Overrides a speaker's shown name (the assistant speaks under the chosen AI's name, v0.19 §3).</summary>
+        public void SetSpeakerName(string speakerId, string name) => speakerNames[speakerId] = name;
 
         public bool Playing => current != null;
 
@@ -128,21 +135,29 @@ namespace Hollow.UI
         {
             var b = data.Bark(id);
             if (b == null) return;
+            if (b.Cooldown > 0 && barkTimes.TryGetValue(id, out float last) && Time.unscaledTime - last < b.Cooldown) return;
+            barkTimes[id] = Time.unscaledTime;
             bark.text = Format(b.Speaker, b.Text);
             barkEnds = Time.unscaledTime + b.Seconds;
+            barkNext = b.Next;
         }
 
         string Format(string speakerId, string text)
         {
             var s = data.Speaker(speakerId);
-            string name = s != null && !string.IsNullOrEmpty(s.Name) ? $"<color={s.Color}><b>{s.Name}</b></color>   " : "";
+            string shown = s == null ? null : speakerNames.TryGetValue(s.Id, out var over) ? over : s.Name;
+            string name = s != null && !string.IsNullOrEmpty(shown) ? $"<color={s.Color}><b>{shown}:</b></color>  " : "";
             string body = s != null && string.IsNullOrEmpty(s.Name) ? $"<color={s.Color}><i>{text}</i></color>" : text;
             return name + body;
         }
 
         void Update()
         {
-            if (bark != null && Time.unscaledTime > barkEnds) bark.text = "";
+            if (bark != null && Time.unscaledTime > barkEnds && bark.text.Length > 0)
+            {
+                bark.text = "";
+                if (!string.IsNullOrEmpty(barkNext)) { var next = barkNext; barkNext = null; ShowBark(next); }
+            }
             if (current == null) return;
             if (Time.unscaledTime >= lineEnds) Next();
         }

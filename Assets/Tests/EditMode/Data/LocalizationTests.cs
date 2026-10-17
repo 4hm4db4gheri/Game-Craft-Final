@@ -16,6 +16,7 @@ namespace Hollow.Tests.Data
     public class LocalizationTests
     {
         const string StringsPath = "Assets/Resources/Localization/fa.json";
+        const string DialoguePath = "Assets/Resources/Narrative/Dialogue.json";
 
         static IEnumerable<string> CodeKeys()
         {
@@ -63,9 +64,12 @@ namespace Hollow.Tests.Data
         [Test]
         public void TextsUsePersianLettersNotArabicOnes()
         {
-            string text = File.ReadAllText(StringsPath);
-            Assert.IsFalse(text.Contains('ي'), "Arabic yeh (U+064A): use ی (U+06CC)");
-            Assert.IsFalse(text.Contains('ك'), "Arabic kaf (U+0643): use ک (U+06A9)");
+            foreach (var path in new[] { StringsPath, DialoguePath })
+            {
+                string text = File.ReadAllText(path);
+                Assert.IsFalse(text.Contains('ي'), path + ": Arabic yeh (U+064A): use ی (U+06CC)");
+                Assert.IsFalse(text.Contains('ك'), path + ": Arabic kaf (U+0643): use ک (U+06A9)");
+            }
         }
 
         [Test]
@@ -73,7 +77,7 @@ namespace Hollow.Tests.Data
         {
             var font = Resources.Load<TMP_FontAsset>("Fonts/Vazirmatn SDF");
             Assert.IsNotNull(font, "Hollow > UI > Build Persian Font");
-            string text = new string(File.ReadAllText(StringsPath).Where(c => c >= 0x20).Distinct().ToArray());
+            string text = new string((File.ReadAllText(StringsPath) + File.ReadAllText(DialoguePath)).Where(c => c >= 0x20).Distinct().ToArray());
             Assert.IsTrue(font.HasCharacters(text, out uint[] missing, true, true),
                 "missing: " + string.Join(" ", (missing ?? new uint[0]).Select(c => $"U+{c:X4}")));
         }

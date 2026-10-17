@@ -188,3 +188,6 @@
 
 ### 2026-10-17 — T28: دو ایستگاه خدمات
 - `ArenaLayout.ShopPositions` و `NearestShop`؛ ایستگاه دوم در (12، 0.5) به صحنه‌ی Game اضافه و bake شد. هر دو یک فروشگاه با موجودی مشترک‌اند. تست‌ها: `EveryServiceStationOpensTheSameShopWithSharedStock` و جلوی هر دو ایستگاه باز است. تصمیم D68.
+
+### 2026-10-17 — T29: فیلم‌نامه‌ی فارسی
+- `Dialogue.json` با صحنه‌های C00 تا C06 (فارسی، زمان‌ها مطابق GDD)، نام گوینده‌ی دستیار = AI انتخاب‌شده، barkهای اختیاری با `Next` و `Cooldown`. منبع این متن‌ها `Dialogue.json` است (نه `fa.json`). تصمیم D69.
