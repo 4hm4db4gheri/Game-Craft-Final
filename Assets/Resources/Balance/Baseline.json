@@ -1,6 +1,6 @@
 {
   "Schema": 1,
-  "Revision": 2,
+  "Revision": 3,
   "Name": "Baseline (GDD v0.19)",
   "Player": {
     "MaxHealth": 100.0,
@@ -47,7 +47,9 @@
     "FollowArriveRadius": 0.5,
     "PathClearance": 0.3,
     "DangerIndicatorTime": 1.5,
-    "CatchUpSpeedFactor": 1.15
+    "CatchUpSpeedFactor": 1.15,
+    "RegenerationDelay": 8.0,
+    "RegenerationRate": 2.0
   },
   "Characters": [
     {

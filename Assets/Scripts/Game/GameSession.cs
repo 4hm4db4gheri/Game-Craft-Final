@@ -130,6 +130,7 @@ namespace Hollow.Game
             try
             {
                 var save = SlotStore.Read(slot);
+                BalanceProfileStore.AddCompanionRegeneration(save.Profile, app.Balance.Baseline);
                 app.Balance.ResetLive(save.Profile);
                 var world = save.LoadWorld(layout);
                 world.Profile = app.Balance.Live;
@@ -221,7 +222,7 @@ namespace Hollow.Game
             SyncEncounter(w);
             SyncBarks(w);
             // One-time hints wait for calm moments: not over menus, scenes, the open shop, a failure or the first tutorial steps.
-            bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase;
+            bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade;
             hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy);
             if (telemetry != null)
             {
@@ -256,7 +257,7 @@ namespace Hollow.Game
         {
             var ws = w.Waves;
             int secondsLeft = ws.Kind == EncounterKind.SafeInterval ? Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)) : 0;
-            long key = ((((long)ws.Kind * 8 + w.Phase) * 16 + ws.Wave) * 4096 + WaveSystem.AliveCount(w)) * 1024 + secondsLeft;
+            long key = ((long)ws.Kind * 8 + w.Phase) * 1024 + secondsLeft;
             if (key != lastTopKey) { lastTopKey = key; hud.SetTop(TopLine(w)); } // rebuilt only when it changes (T21)
             var b = w.Boss;
             hud.SetBoss(b.Active ? BossName(b.Id) : null, b.Active ? b.Health / b.MaxHealth : 0);
@@ -266,14 +267,14 @@ namespace Hollow.Game
 
         static string TopLine(World w)
         {
-            var ws = w.Waves;
-            return ws.Kind switch
+            string place = Loc.T("area." + w.Phase);
+            return w.Waves.Kind switch
             {
-                EncounterKind.SafeInterval => Loc.F("top.safe", w.Phase, ws.Wave, WaveSystem.WaveCount(w), Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))),
-                EncounterKind.BossPrep => Loc.F("top.bossPrep", w.Phase),
-                EncounterKind.Boss => Loc.F("top.boss", w.Phase, WaveSystem.AliveCount(w)),
-                EncounterKind.PhaseComplete => Loc.F("top.won", w.Phase),
-                _ => Loc.F("top.wave", w.Phase, ws.Wave, WaveSystem.WaveCount(w), WaveSystem.AliveCount(w)),
+                EncounterKind.SafeInterval => Loc.F("top.areaSafe", place, Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))),
+                EncounterKind.BossPrep => Loc.F("top.areaBossPrep", place),
+                EncounterKind.Boss => Loc.F("top.areaBoss", place),
+                EncounterKind.PhaseComplete => Loc.F("top.areaWon", place),
+                _ => place,
             };
         }
 
@@ -427,6 +428,7 @@ namespace Hollow.Game
             TutorialStage.FirstGroup => Loc.T("tutorial.move"),
             TutorialStage.Purchase => w.Coins.Count > 0 ? Loc.T("tutorial.coins")
                 : w.Shop.Open ? Loc.F("tutorial.clickBuy", Loc.F("shop.buy", TutorialWeaponName(w))) : Loc.F("tutorial.followArrow", TutorialWeaponName(w)),
+            TutorialStage.Grenade => Loc.T(w.Shop.Open ? "tutorial.closeShop" : w.Inventory.Holding ? "tutorial.throwGrenade" : "tutorial.equipGrenade"),
             // A bought weapon goes to slot 2; the pistol stays in hand until the player switches.
             TutorialStage.SecondGroup when w.Player.Loadout.ActiveId != w.Profile.Economy.TutorialWeapon && w.Player.Loadout.Owns(w.Profile.Economy.TutorialWeapon)
                 => Loc.F("tutorial.press2", TutorialWeaponName(w)),
@@ -442,10 +444,24 @@ namespace Hollow.Game
             else if (shopPanel.Visible) shopPanel.Hide();
 
             // The first purchase is shown, not told: an arrow leads to the shop once the coins are collected.
+            bool guideCoins = w.Tutorial == TutorialStage.Purchase && w.Coins.Count > 0 && playing;
             bool guideToShop = w.Tutorial == TutorialStage.Purchase && w.Coins.Count == 0 && !w.Shop.Open && playing;
-            hud.SetGuide(guideToShop ? w.Layout.NearestShop(w.Player.Position) : null, worldCamera);
+            Vector2? guide = guideToShop ? w.Layout.NearestShop(w.Player.Position) : null;
+            if (guideCoins)
+            {
+                float nearest = float.MaxValue;
+                foreach (var coin in w.Coins)
+                {
+                    if (!coin.Alive) continue;
+                    float distance = (coin.Position - w.Player.Position).sqrMagnitude;
+                    if (distance >= nearest) continue;
+                    nearest = distance;
+                    guide = coin.Position;
+                }
+            }
+            hud.SetGuide(guide, worldCamera);
             string status = playing ? TutorialPrompt(w) : null; // no hints over scenes and menus
-            if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
+            if (status == null && !w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
             hud.SetStatus(hints.Showing ? null : status); // a hint card says it better; the line returns afterwards
         }

@@ -119,6 +119,8 @@ namespace Hollow.Sim
             inv.Get(inv.Held).Count--;
             inv.NextUseTick = w.Clock.Tick + w.Ticks(w.Profile.Economy.ItemUseGap);
             w.Progress.ItemsUsed++;
+            if (w.Tutorial == TutorialStage.Grenade && inv.Held == ItemId.Grenade)
+                w.Tutorial = TutorialStage.SecondGroup;
             w.Emit(SimEventType.ItemUsed, PlayerState.EntityId, w.Player.Position, default, 0, (int)inv.Held);
             inv.Holding = false; // the previous weapon comes back
             if (inv.Count(inv.Held) <= 0 && Selection(w) is ItemId next) Select(w, next); // an empty type passes the slot on

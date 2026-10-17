@@ -8,6 +8,24 @@ namespace Hollow.Tests.Data
     public class BalanceDataTests
     {
         [Test]
+        public void OlderProfileGetsOnlyTheNewOperatorRecoverySettings()
+        {
+            var baseline = TestData.Baseline();
+            var older = BalanceJson.Clone(baseline);
+            older.Revision = baseline.Revision - 1;
+            older.Companion.RegenerationDelay = 0;
+            older.Companion.RegenerationRate = 0;
+            older.Companion.Phases[0].MaxHealth = 123;
+
+            BalanceProfileStore.AddCompanionRegeneration(older, baseline);
+
+            Assert.AreEqual(baseline.Companion.RegenerationDelay, older.Companion.RegenerationDelay);
+            Assert.AreEqual(baseline.Companion.RegenerationRate, older.Companion.RegenerationRate);
+            Assert.AreEqual(123, older.Companion.Phases[0].MaxHealth);
+            Assert.AreEqual(baseline.Revision, older.Revision);
+        }
+
+        [Test]
         public void BaselineHasNoValidationErrors()
         {
             var errors = BalanceValidator.Validate(TestData.Baseline()).Where(i => i.Severity == IssueSeverity.Error).ToList();

@@ -55,6 +55,11 @@ namespace Hollow.Tests.Sim
             foreach (var c in w.Coins.ToList()) CoinSystem.Collect(w, c);
             Assert.AreEqual(8, w.Progress.Wallet);
             Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg));
+            Assert.AreEqual(TutorialStage.Grenade, w.Tutorial);
+            sim.Run(60, PlayerCommand.None);
+            Assert.AreEqual(0, w.Enemies.Count, "the next group waits for a grenade throw");
+            Assert.IsTrue(ItemSystem.EquipSelected(w));
+            Assert.AreEqual(ItemUseResult.Used, ItemSystem.Use(w));
             Assert.AreEqual(TutorialStage.SecondGroup, w.Tutorial);
 
             for (int t = 0; t < 60 * 60 && w.Waves.Kind == EncounterKind.Wave; t++)
@@ -204,6 +209,7 @@ namespace Hollow.Tests.Sim
                 if (ticks % 2 == 0) KillActive(w, 45);
                 foreach (var c in w.Coins.ToList()) CoinSystem.Collect(w, c);
                 if (w.Tutorial == TutorialStage.Purchase) ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg);
+                if (w.Tutorial == TutorialStage.Grenade) { ItemSystem.EquipSelected(w); ItemSystem.Use(w); }
                 while (w.Progress.Pending != null) XpSystem.Choose(w, w.Progress.Pending.Options[0]);
                 wavesDone += w.Events.Count(e => e.Type == SimEventType.WaveCompleted);
                 w.Events.Clear();

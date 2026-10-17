@@ -39,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 2, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 3, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -60,6 +60,7 @@ namespace Hollow.EditorTools
                 AttackerCap = 3, FireRange = 8, ProjectileSpeed = 22, MoveSpeed = 4.6f, BodyRadius = 0.4f,
                 FollowDistanceMin = 2.5f, FollowDistanceMax = 4, OpportunisticRange = 3, WarningSoundCooldown = 2.5f,
                 ProjectileRange = 10, FollowSideBias = 0.6f, FollowArriveRadius = 0.5f, PathClearance = 0.3f, DangerIndicatorTime = 1.5f, CatchUpSpeedFactor = 1.15f,
+                RegenerationDelay = 8f, RegenerationRate = 2f,
             };
 
             // v0.19 §3: each AI starts with one rank of one skill (the start value is that skill's rank-one value).

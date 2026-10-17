@@ -127,6 +127,8 @@ namespace Hollow.Data
         [Placeholder, Unit("s")] public float DangerIndicatorTime;
         /// <summary>Beyond the follow distance the companion moves at least this multiple of the player's speed.</summary>
         [Placeholder] public float CatchUpSpeedFactor;
+          [Placeholder, Unit("s")] public float RegenerationDelay;
+          [Placeholder, Unit("HP/s")] public float RegenerationRate;
     }
 
     [Serializable]

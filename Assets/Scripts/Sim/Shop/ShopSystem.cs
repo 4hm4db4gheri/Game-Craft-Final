@@ -29,7 +29,7 @@ namespace Hollow.Sim
         public bool Enabled => Lock == LockReason.None;
     }
 
-    public enum TutorialStage { None, FirstGroup, Purchase, SecondGroup }
+    public enum TutorialStage { None, FirstGroup, Purchase, SecondGroup, Grenade }
 
     /// <summary>Shop state that must survive a save (open flag, price snapshot, per-encounter stock).</summary>
     public sealed class ShopState
@@ -213,7 +213,11 @@ namespace Hollow.Sim
             {
                 case OfferKind.BuyWeapon:
                     WeaponSystem.Give(w, weapon);
-                    if (w.Tutorial == TutorialStage.Purchase && weapon == w.Profile.Economy.TutorialWeapon) w.Tutorial = TutorialStage.SecondGroup;
+                    if (w.Tutorial == TutorialStage.Purchase && weapon == w.Profile.Economy.TutorialWeapon)
+                    {
+                        w.Inventory.Add(ItemId.Grenade, 1); // one free practice throw before the next group
+                        w.Tutorial = TutorialStage.Grenade;
+                    }
                     break;
                 case OfferKind.EquipWeapon:
                     WeaponSystem.Equip(w, weapon, slot);

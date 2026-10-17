@@ -134,6 +134,22 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void OperatorRegeneratesAfterDamageFreeDelayAndStopsAtMaximum()
+        {
+            var w = WithCompanion().World;
+            w.Profile.Companion.RegenerationDelay = 2f;
+            w.Profile.Companion.RegenerationRate = 6f;
+            CompanionSystem.Damage(w, 20, Vector2.left);
+            float hurt = w.Companion.Health;
+            while (w.Clock.Tick < w.Ticks(2f)) { CompanionSystem.Step(w); w.Clock.Step(true); }
+            Assert.AreEqual(hurt, w.Companion.Health, 0.001f);
+            CompanionSystem.Step(w);
+            Assert.Greater(w.Companion.Health, hurt);
+            for (int i = 0; i < 60 * 10; i++) { CompanionSystem.Step(w); w.Clock.Step(true); }
+            Assert.AreEqual(w.Companion.MaxHealth, w.Companion.Health, 0.001f);
+        }
+
+        [Test]
         public void PlayerDeathFailsTheEncounterWithItsOwnReason()
         {
             var sim = WithCompanion();

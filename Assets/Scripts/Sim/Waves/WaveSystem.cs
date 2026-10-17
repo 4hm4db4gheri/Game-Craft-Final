@@ -134,7 +134,7 @@ namespace Hollow.Sim
 
             if (IsTutorialWave(w))
             {
-                if (w.Tutorial == TutorialStage.Purchase) return;
+                if (w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade) return;
                 if (w.Tutorial == TutorialStage.FirstGroup && ws.SpawnedTotal >= w.Profile.Spawning.TutorialFirstGroupCount) return;
             }
 

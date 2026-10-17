@@ -20,11 +20,25 @@ namespace Hollow.Data
 #if !UNITY_EDITOR
             if (File.Exists(ActiveProfilePath))
             {
-                try { return new BalanceService(baseline, BalanceJson.FromJson(File.ReadAllText(ActiveProfilePath))); }
+                try
+                {
+                    var active = BalanceJson.FromJson(File.ReadAllText(ActiveProfilePath));
+                    AddCompanionRegeneration(active, baseline);
+                    return new BalanceService(baseline, active);
+                }
                 catch (System.Exception e) { Debug.LogWarning($"[Hollow] Ignoring saved profile: {e.Message}"); }
             }
 #endif
             return new BalanceService(baseline);
+        }
+
+        /// <summary>Older profiles lack the newly added recovery fields; retain every other saved balance choice.</summary>
+        public static void AddCompanionRegeneration(BalanceProfile profile, BalanceProfile baseline)
+        {
+            if (profile.Revision >= baseline.Revision) return;
+            profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;
+            profile.Companion.RegenerationRate = baseline.Companion.RegenerationRate;
+            profile.Revision = baseline.Revision;
         }
     }
 }

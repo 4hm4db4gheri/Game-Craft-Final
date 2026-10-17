@@ -55,6 +55,9 @@ namespace Hollow.Sim
             var phase = w.Profile.CompanionFor(w.Phase);
             if (phase == null) return;
 
+            if (c.Health < c.MaxHealth && w.Clock.Tick - c.LastHitTick >= w.Ticks(data.RegenerationDelay))
+                c.Health = Mathf.Min(c.MaxHealth, c.Health + data.RegenerationRate * Core.SimClock.Dt);
+
             Follow(w, c, data);
             Shoot(w, c, data, phase);
 

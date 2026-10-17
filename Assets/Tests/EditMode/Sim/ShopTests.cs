@@ -217,7 +217,8 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(LockReason.TutorialPurchaseFirst, Find(w, OfferKind.BuyItem, item: ItemId.Grenade).Lock);
             Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg));
             Assert.AreEqual(0, w.Progress.Wallet);
-            Assert.AreEqual(TutorialStage.SecondGroup, w.Tutorial);
+            Assert.AreEqual(TutorialStage.Grenade, w.Tutorial);
+            Assert.AreEqual(1, w.Inventory.Count(ItemId.Grenade));
             Assert.AreEqual(LockReason.NotEnoughCoins, Find(w, OfferKind.BuyItem, item: ItemId.Grenade).Lock, "gate lifted");
         }
 

@@ -11,8 +11,8 @@ using UnityEngine.UI;
 namespace Hollow.UI
 {
     /// <summary>
-    /// Narrow live shop panel (§11): the world keeps running and WASD still moves. Phase pages are buttons
-    /// because the mouse wheel swaps weapons. One click buys; no confirmation; disabled rows say why.
+    /// Narrow live shop panel (§11): shows everything unlocked through the current phase.
+    /// The world keeps running and WASD still moves. One click buys; disabled rows say why.
     /// </summary>
     public sealed class ShopPanel : MonoBehaviour
     {
@@ -22,7 +22,6 @@ namespace Hollow.UI
         UIRoot root;
         RectTransform panel, list;
         TextMeshProUGUI header;
-        readonly List<Button> pageButtons = new();
         /// <summary>A clickable offer; its text is redrawn from the offer when prices or locks change.</summary>
         sealed class Row
         {
@@ -34,8 +33,6 @@ namespace Hollow.UI
 
         readonly List<Row> rows = new();
         Action<ShopOffer> onBuy;
-        int page = 1;
-        int shownPage = -1;
         int shownSignature;
 
         public bool Visible => panel.gameObject.activeSelf;
@@ -49,20 +46,13 @@ namespace Hollow.UI
             UIFactory.Panel(panel, t, null, raycast: true);
             var head = UIFactory.Rect(panel, "Header", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -12), new Vector2(RowWidth, 70));
             header = UIFactory.Text(head, "Text", "", t, 26, TextAlignmentOptions.Top);
-            for (int i = 1; i <= 3; i++)
-            {
-                int p = i;
-                var b = UIFactory.Button(panel, $"Page{i}", Loc.F("shop.page", i), t, new Vector2(0.5f, 1), new Vector2(-(RowWidth / 3f) + (i - 1) * (RowWidth / 3f), -105),
-                    new Vector2(RowWidth / 3f - 12, 44), () => { page = p; shownPage = -1; }, out _, 22);
-                pageButtons.Add(b);
-            }
-            list = UIFactory.Rect(panel, "List", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -135), new Vector2(RowWidth + 10, 712));
+            list = UIFactory.Rect(panel, "List", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -80), new Vector2(RowWidth + 10, 770));
             panel.gameObject.SetActive(false);
         }
 
         public void Show(World w)
         {
-            if (!Visible) { page = Mathf.Clamp(w.Phase, 1, 3); shownPage = -1; }
+            if (!Visible) shownSignature = int.MinValue;
             panel.gameObject.SetActive(true);
             Refresh(w);
         }
@@ -74,22 +64,19 @@ namespace Hollow.UI
             var offers = ShopSystem.Offers(w);
             int signature = Signature(w, offers);
             // Rebuild only when the set of rows changes; prices/locks update in place so a click is never lost.
-            if (page != shownPage || signature != shownSignature) Rebuild(w, offers);
+            if (signature != shownSignature) Rebuild(w, offers);
             else UpdateRows(w, offers);
-            shownPage = page;
             shownSignature = signature;
 
             header.text = $"<b>{Loc.T("shop.title")}</b>   <color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Coin)}>{Loc.F("common.coins", w.Progress.Wallet)}</color>\n" +
                           $"<size=18><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{Loc.T("shop.hint")}</color></size>";
-            for (int i = 0; i < pageButtons.Count; i++)
-                pageButtons[i].GetComponentInChildren<TextMeshProUGUI>().fontStyle = i + 1 == page ? FontStyles.Bold | FontStyles.Underline : FontStyles.Normal;
         }
 
         static int Signature(World w, List<ShopOffer> offers)
         {
             var L = w.Player.Loadout;
             // Equipping changes locks, not keys: the carried weapons and the active slot are part of the layout too.
-            int h = 17 + (int)L.Slot1 * 7919 + (L.HasPrimary ? 1 + (int)L.SlotPrimary * 131 : 0) + L.ActiveSlot * 3;
+            int h = 17 + w.Phase * 97 + (int)L.Slot1 * 7919 + (L.HasPrimary ? 1 + (int)L.SlotPrimary * 131 : 0) + L.ActiveSlot * 3;
             foreach (var o in offers)
                 h = h * 31 + (int)ShopSystem.Key(o) + (o.Kind == OfferKind.BuyItem && w.Inventory.Count(o.Item) > 0 ? 1 : 0);
             return h;
@@ -209,17 +196,17 @@ namespace Hollow.UI
             bool buyHeader = false;
             foreach (var o in offers)
             {
-                if (o.Page != page || o.Kind != OfferKind.BuyWeapon) continue;
+                if (o.Page > w.Phase || o.Kind != OfferKind.BuyWeapon) continue;
                 if (!buyHeader) { Section(Loc.T("shop.weapons")); buyHeader = true; }
                 Row(o);
             }
             Section(Loc.T("shop.upgrades"));
             foreach (var o in offers)
-                if (o.Page == page && o.Kind == OfferKind.UpgradeWeapon) Row(o, 62); // name and price, then the change list
+                if (o.Page <= w.Phase && o.Kind == OfferKind.UpgradeWeapon) Row(o, 62); // name and price, then the change list
             Section(Loc.T("shop.equipment"));
             foreach (var o in offers)
             {
-                if (o.Kind == OfferKind.BuyItem && o.Page == page) Row(o);
+                if (o.Kind == OfferKind.BuyItem && o.Page <= w.Phase) Row(o);
                 if (o.Kind == OfferKind.HealPlayer || (o.Kind == OfferKind.HealCompanion && o.Lock != LockReason.NoCompanion))
                     Row(o);
             }
