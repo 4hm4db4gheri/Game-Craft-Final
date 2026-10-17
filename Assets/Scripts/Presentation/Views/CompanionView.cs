@@ -14,6 +14,10 @@ namespace Hollow.Presentation
         [SerializeField] SpriteRenderer danger;
         [SerializeField] Color phaseTwoTint = new(0.75f, 0.75f, 0.75f, 1f);
         [SerializeField] float phaseTwoScale = 0.92f;
+        /// <summary>Imported phase-two look (rifle given away, sidearm only); replaces the grey tint when set.</summary>
+        [SerializeField] SpriteSet phaseTwoSet;
+        /// <summary>How long the firing pose stays up after each shot.</summary>
+        [SerializeField] float attackPoseTime = 0.3f;
 
         /// <summary>Tip of the Operator's rifle on screen (the rifle sits at hip height in front of the body).</summary>
         public Vector2 Muzzle(Vector2 shotDirection) =>
@@ -21,7 +25,7 @@ namespace Hollow.Presentation
 
         Color[] baseColors;
         SpriteSetAnimator anim;
-        float flashUntil;
+        float flashUntil, attackUntil;
 
         void Awake()
         {
@@ -32,6 +36,9 @@ namespace Hollow.Presentation
 
         public void Flash(float seconds) => flashUntil = Time.time + seconds;
 
+        /// <summary>The Operator just fired: hold the firing pose for a moment.</summary>
+        public void Fired() => attackUntil = Time.time + attackPoseTime;
+
         public void Sync(World w, float alpha)
         {
             var c = w.Companion;
@@ -41,15 +48,18 @@ namespace Hollow.Presentation
             transform.position = new Vector3(pos.x, pos.y, 0);
 
             bool weaker = w.Phase >= 2;
+            bool art = anim != null && anim.HasArt;
+            if (art && weaker && phaseTwoSet != null) anim.UseSet(phaseTwoSet);
+            bool tint = weaker && !(art && phaseTwoSet != null);
             body.localScale = new Vector3(c.Facing.x < -0.05f ? -1 : 1, 1, 1) * (weaker ? phaseTwoScale : 1f);
             bool flashing = Time.time < flashUntil;
             for (int i = 0; i < bodyRenderers.Length; i++)
             {
-                Color baseC = weaker ? baseColors[i] * phaseTwoTint : baseColors[i];
-                bodyRenderers[i].color = c.Dead ? Color.gray : flashing ? Color.white : baseC;
+                Color baseC = tint ? baseColors[i] * phaseTwoTint : baseColors[i];
+                bodyRenderers[i].color = c.Dead && !art ? Color.gray : flashing && !art ? Color.white : baseC;
             }
 
-            if (anim != null) anim.SetState(c.Dead ? "death" : c.Velocity.sqrMagnitude > 0.05f ? "move" : "idle");
+            if (anim != null) anim.SetState(c.Dead ? "death" : flashing ? "hit" : Time.time < attackUntil ? "attack" : c.Velocity.sqrMagnitude > 0.05f ? "move" : "idle");
             float since = (w.Clock.Tick - c.LastHitTick) * Core.SimClock.Dt;
             bool showDanger = !c.Dead && since < w.Profile.Companion.DangerIndicatorTime;
             danger.enabled = showDanger;

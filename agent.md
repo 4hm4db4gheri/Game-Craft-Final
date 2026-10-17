@@ -29,22 +29,22 @@
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
 | `Assets/Resources/Localization/fa.json` | همه‌ی متن‌های بازیکن به فارسی (کلید ← متن)، خوانده با `Hollow.UI.Loc` (`Loc.T`/`Loc.F`/`Loc.Weapon`…). متن جدید = کلید جدید در همین فایل؛ تست `LocalizationTests` کلیدهای کد را چک می‌کند |
-| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ حداکثر ۴ ثانیه). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
-| `Assets/Scripts/Sim/Save/SlotStore.cs` + `Game/MainMenuController.cs` | گزینهٔ «پاک‌کردن پیشرفت بازی» در منوی اصلی، با تأیید بازیکن: حذف سه فایل جایگاه و فایل‌های موقت، سپس انتخاب جایگاه برای بازی تازه. تنظیمات و فایل‌های دیگر حفظ می‌شوند؛ خطای حذف پیام و امکان تلاش دوباره دارد |
+| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ ۳ ثانیه، بازی در این مدت متوقف است). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
 
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
-| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۳۳ تست، همه پاس) |
+| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۴۵ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
+| `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
 | `Assets/Scripts/Sim/Telemetry/` | `RunTelemetry`: لاگ هر بازی (Observed جدا از Calculated)؛ فایل در `persistentDataPath/telemetry` توسط `Game/TelemetryFile.cs` |
-| `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `WeaponLevels_Template.csv` |
+| `docs/` | GDD، QUESTIONS، DECISIONS، TASKS، USER_STORIES، `ART_MASTER_BRIEF.md` و `ART_ASSET_LIST.md` (پرامپت ساخت آرت با AI)، `ART_ANIMATION_BRIEF.md` (پرامپت انیمیشن موج ۲ از روی فریم‌های موجود)، `WeaponLevels_Template.csv` |
 
 ## قراردادها (Conventions)
 
@@ -58,18 +58,15 @@
 
 ## وضعیت فعلی
 
-- درخواست تازه: فلش آموزشی به نزدیک‌ترین سکه، هشدار زودهنگام دش و مرگ اپراتور، نارنجک رایگان و پرتاب اجباری پیش از گروه دوم، فروشگاه بدون تب فاز و با آیتم‌های بازشدهٔ فعلی، نام محیط به‌جای شمارندهٔ موج/دشمن، و ترمیم اپراتور پس از ۸ ثانیه بدون آسیب با نرخ ۲ جان/ثانیه. بررسی بالانس و پیشنهادها در `docs/BALANCE_REVIEW_2026-10-17.md`؛ عددهای سلاح/سکه هنوز تغییر نکرده‌اند تا playtest تصمیم را روشن کند.
-- God mode پنل F10 اکنون بازیکن و اپراتور را در برابر آسیب محافظت می‌کند. پرچم در World فقط برای اجراست و در ذخیره نمی‌رود؛ پس از خاموش‌کردن تیک، آسیب دوباره اعمال می‌شود. کد و تست جدید کامپایل شدند؛ اجرای تست در Unity هنوز به اتصال Editor نیاز دارد.
-- پنل توسعهٔ F10 در Play Mode بزرگ و دارای اسکرول است؛ God mode در بالای پنل قرار دارد تا دسترسی به آن آسان باشد. تغییر با کامپایلر Unity کامپایل شد؛ بررسی ظاهری داخل ادیتور هنوز انجام نشده است.
-- گزینهٔ پاک‌کردن پیشرفت از منوی اصلی اضافه شد؛ همهٔ جایگاه‌ها، آموزش و راهنماهای ذخیره‌شده پس از تأیید پاک می‌شوند. ۳ تست جدید حذف و ۲ بررسی متن فارسی خارج از ادیتور با Mono پاس شدند و چهار اسمبلی مرتبط با کامپایلر و response fileهای یونیتی کامپایل شدند. تست داخل ادیتور و بررسی ظاهری این تغییر هنوز انجام نشده: بستهٔ Pipeline به علت خطای دسترسی به رجیستری بارگذاری نشده است.
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۳۳ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۴۵ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
 - باقی‌مانده: هیچ تسکی از T00–T22 نمانده. کارهای بعدی با طراح/کاربر: اعداد سطح ۲ و ۳ سلاح‌ها، playtest انسانی، آرت AI، گوش دادن به صداها (فهرست در `docs/RELEASE_NOTES.md`).
 ## کارهای باز / ایده‌ها
 
 - **GDD v0.19**: همه‌ی بخش‌ها جز موبایل (F13، فقط اگر وقت بماند) انجام شد. با کاربر/تیم: گوش دادن به صداهای سنتزشده‌ی دشمن‌ها، ضبط صداپیشگی طبق `docs/VOICE_LINES.md`، بازبینی متن فارسی و فیلم‌نامه توسط آرتیست، playtest انسانی.
 
-- آرت با AI توسط کاربر طبق `docs/ART_MASTER_BRIEF.md` تولید می‌شود؛ importer خودکار (T16a) آماده است و زمین، prop، decor و کیوسک فروشگاه را هم پوشش می‌دهد (T16).
+- همه‌ی حالت‌های شخصیت‌ها، دشمن‌ها و دو باس حالا sheet انیمیشن ساخته‌شده (`Tools/ArtGen`) دارند؛ وقتی sheetهای دست‌کشیده‌ی موج ۲ برسند، خودکار جایگزین می‌شوند. باس ۱ هنوز ظاهر بین خرس و گراز دارد (از آرت است، با کد درست نمی‌شود).
+- آرت موج ۱ اعمال شد. هنوز آرت ندارند (placeholder می‌مانند): ۱۸ نوع دشمن (همه جز A1، A2، R1، R2، H2)، باس ۳، propها و decorهای فاز ۲ و propهای Stumps/LogPile/Excavator/LightPost، سلاح‌های BAT/IRF/MSG/HAM/ERF/ESG/EBL، آیتم‌ها جز نارنجک. از آرت موج ۱ هنوز استفاده نمی‌شود: آیکن‌ها (`ICO_*`)، دکمه/پنل/اسلات UI، `PKP_GRN` (رابط با کد ساخته شده و جای آیکن ندارد).
 ---
 
 ## تاریخچه‌ی کارها
@@ -226,26 +223,43 @@
 ### 2026-10-17 — کوتاه کردن راهنماها
 - به خواست کاربر راهنماهای چند سلاح، خشاب خالی، جان کم و سکه برای ارتقا حذف شدند. متن اپراتور زخمی حالا می‌گوید خود بازیکن هم در فروشگاه درمان می‌شود. زمان: حداکثر ۴ ثانیه (قبلاً ۷)، حداقل ۰.۸، فاصله‌ی بین دو راهنما ۱.۲ ثانیه. ۴۳۳ تست پاس.
 
-### 2026-10-17 — گزینهٔ پاک‌کردن پیشرفت بازی
-- خواندن کامل agent.md و بررسی مسیر ذخیره: آموزش، checkpoint و راهنماهای دیده‌شده داخل save هستند؛ تنظیمات در PlayerPrefs جدا هستند.
-- افزودن گزینهٔ فارسی به منوی اصلی، تأیید حذف برگشت‌ناپذیر هر سه جایگاه، حذف فایل‌های slot و tmp با `SlotStore.DeleteAll`، مدیریت خطا و تلاش مجدد، سپس بازکردن انتخاب جایگاه بازی تازه. تنظیمات صدا و تصویر، بالانس و فایل‌های گزارش حفظ می‌شوند. هنگام ورود به منوی اصلی، مسیر dev_saves به مسیر جایگاه‌های واقعی برمی‌گردد.
-- تأیید: کامپایل `Hollow.Sim`، `Hollow.UI`، `Hollow.Game` و `Hollow.Tests.EditMode` با Roslyn و response fileهای موجود Unity به پوشهٔ موقت. اجرای مستقیم ۳ تست جدید NUnit و ۲ تست متن فارسی با Mono: همه پاس. تست نبودن پوشهٔ saves یک DirectoryNotFoundException پیدا کرد و اصلاح شد. ذخیره‌های واقعی برای آزمایش حذف نشدند.
-- محدودیت بررسی: Editor باز است ولی بستهٔ Pipeline به علت منع دسترسی رجیستری بارگذاری نشده؛ اجرای Test Runner داخل Unity و Play Mode و بررسی ظاهری انجام نشد. اسکریپت موقت بررسی در `Temp/ResetProgressCheck` است.
-- فایل‌های تغییرکرده: `Assets/Scripts/UI/MenuScreens.cs`، `Assets/Scripts/Game/MainMenuController.cs`، `Assets/Scripts/Sim/Save/SlotStore.cs`، `Assets/Resources/Localization/fa.json`، `Assets/Tests/EditMode/Sim/SaveTests.cs`، `agent.md`.
+### 2026-10-17 — اعمال آرت موج ۱
+- کاربر پوشه‌ی `Assets/Art Images` (۱۰۴ PNG طبق brief) را اضافه کرد. فایل‌ها به `Assets/Art/Incoming` منتقل شدند، `HANDOFF_wave1.md` و `ASSET_CARDS` به `docs/art/`، و پوشه‌ی `Art Images` حذف شد. سپس `Apply Incoming Art` اجرا شد (۴۱ مجموعه).
+- importer گسترش یافت: حاشیه‌ی آرنا (`ENV_P<n>_BorderH/V_prop`) با `ArenaTools.PlaceBorders` در `ArenaAuthoring.Borders` هر فاز (فقط نمایشی، Walls زیرشان)؛ فاز ۲ تا آمدن آرت خودش زمین و حاشیه‌ی فاز ۳ را می‌گیرد (`StandIn`)؛ decor بدون آرت در فاز دارای زمین آرت پنهان می‌شود؛ گلوله‌ها (`VisualCatalog.PlayerBulletArt/PlayerPelletArt/EnemyShotArt` بر اساس فاز)؛ جلوه‌های muzzle/impact/explosion به‌صورت strip در `FeedbackDirector.Fx`؛ جسد از فریم `death`؛ رتیکل؛ ظاهر فاز ۲ اپراتور (`CompanionView.phaseTwoSet`)؛ حالت `hit` بازیکن و اپراتور.
+- در Play mode فاز ۱ و ۲ و ۳، دو باس، شلیک، جسد و جلوه‌ها دیده شد. اسکرین‌شات: `docs/screenshots/ArtWave1_Phase1.png`، `ArtWave1_Phase3.png`. ۴۳۳ تست پاس.
+- نکته‌ی تست: اجرای تست‌ها با `unity command run_tests --mode EditMode --timeout 600`
 
-### 2026-10-17 — درشت‌کردن پنل توسعه
-- پنل F10 که قبلاً ۳۶۰×۵۲۰ پیکسل بود، حالا با ارتفاع پنجرهٔ Game و عرض تا ۷۶۰ واحد نمایش داده می‌شود؛ متن و دکمه‌ها درشت‌ترند و محتوای اضافی اسکرول می‌شود. گزینهٔ God mode به بالای پنل منتقل شد.
-- `Hollow.Game` با فایل پاسخ Roslyn موجود Unity بدون خطا کامپایل شد. امکان بررسی کلیک و چیدمان در Play Mode از طریق Pipeline فراهم نبود.
-- فایل‌های تغییرکرده: `Assets/Scripts/Game/DevPanel.cs`، `agent.md`.
+### 2026-10-17 — بررسی مشکلات آرت موج ۱ (فقط بررسی، بدون تغییر کد)
+- همه‌ی حالت‌های شخصیت‌ها یک فریم‌اند (تیم آرت در `HANDOFF_wave1.md` گفته strip بعداً می‌آید)؛ پس حرکت بی‌انیمیشن از asset است. ولی کد هم برای حالت تک‌فریمی حرکت جبرانی (تکان/کج شدن) ندارد.
+- مشکلات سمت کد: `CompanionView` هیچ‌وقت حالت `attack` اپراتور را نمی‌خواهد؛ `BossView` در هشدار انفجار `blast` را نشان می‌دهد و `windup_blast` استفاده نمی‌شود.
+- مشکلات سمت asset: باس ۱ حالت `move` ندارد و بین خرس و گراز قاطی است؛ رنگ حالت‌های باس ۲ یکی نیست؛ اپراتور فاز ۲ فقط `idle` دارد؛ درز در تکرار زمین فاز ۱ و حاشیه‌های P1 افقی و P3 عمودی؛ فریم ۲ و ۳ انفجار بریده و ۵ تا ۷ خالی؛ دکمه‌های UI چهار ارتفاع مختلف؛ آیکن سکه/قفل/بی‌نهایت تار. سایه‌ی زیر پا در هیچ‌کدام نیست.
 
-### 2026-10-17 — God mode اپراتور
-- تیک God mode پنل F10 اکنون پرچم موقت `World.GodMode` را کنترل می‌کند؛ `PlayerSystem.Damage` و `CompanionSystem.Damage` هر دو در این حالت آسیب را رد می‌کنند. این پرچم از ذخیره حذف شده و با خاموش شدن تیک فوراً غیرفعال می‌شود.
-- تست `GodModeProtectsPlayerAndOperatorAndTurnsOffImmediately` افزوده شد. `Hollow.Sim`، `Hollow.Game` و `Hollow.Tests.EditMode` با کامپایلر Unity کامپایل شدند. اجرای تست بیرون Unity به API بومی موتور نیاز داشت؛ Pipeline ادیتور هم در دسترس نبود، بنابراین اجرای NUnit در خود Unity باقی مانده است.
-- فایل‌های تغییرکرده: `Assets/Scripts/Sim/World.cs`، `Assets/Scripts/Sim/Player/PlayerSystem.cs`، `Assets/Scripts/Sim/Companion/CompanionSystem.cs`، `Assets/Scripts/Game/DevPanel.cs`، `Assets/Tests/EditMode/Sim/CompanionTests.cs`، `agent.md`.
+### 2026-10-17 — رفع مشکلات سمت کد آرت موج ۱
+- `SpriteSetAnimator`: وقتی موجود حرکت می‌کند و حالت فعلی فقط یک فریم دارد، رندرر آرت (فرزند body) با پرش و تکان کوچک «قدم» برمی‌دارد. سرعت از جابه‌جایی خود transform اندازه گرفته می‌شود و تعداد قدم با اندازه‌ی sprite تنظیم می‌شود. اعداد فقط نمایشی‌اند و روی کامپوننت هستند. strip چندفریمی همان‌طور که کشیده شده پخش می‌شود. برای پهپاد بازیکن خاموش است (`StepMotion = false`، خودش bob دارد).
+- `CompanionView.Fired()`: با هر گلوله‌ی اپراتور ۰.۳ ثانیه حالت `attack` (صدا زده از `WorldPresenter` هنگام ساخت view گلوله).
+- `BossView`: باس ۲ در هشدار `windup_blast` و بعد از انفجار `blast` نشان می‌دهد.
+- ۴۳۳ تست پاس. در Play mode گرگ‌ها هنگام حرکت قدم برمی‌دارند و اپراتور بعد از شلیک حالت attack دارد؛ باس ۲ در Play mode دیده نشد.
+- نکته: در Unity 6.6 `GetInstanceID()` منسوخ و خطای کامپایل است (`GetEntityId`). (بدون `--mode` صفر تست اجرا می‌شود). `eval` طولانی با خطای timeout ۵ ثانیه برمی‌گردد ولی کارش ادامه پیدا می‌کند؛ نتیجه را در console ببین.
 
-### 2026-10-17 — بازبینی آموزش، فروشگاه، اپراتور و اقتصاد
-- فایل Word مرجع v0.19 خوانده و با `docs/GDD_v0.19.md` و بالانس فعلی سنجیده شد. طبق درخواست کاربر، نمایش بالای HUD فقط محیط و حالت نبرد/استراحت را نشان می‌دهد؛ فروشگاه تب فاز ندارد و پیشنهادهای بازشده تا فاز فعلی را نشان می‌دهد. فلش آموزش به نزدیک‌ترین سکهٔ باقی‌مانده می‌رود. متن شروع با دش آغاز می‌شود و می‌گوید مرگ اپراتور بازی را تمام می‌کند.
-- خرید SMG آموزشی یک نارنجک رایگان می‌دهد؛ گروه دوم تا استفادهٔ موفق از آن صبر می‌کند. اپراتور پس از ۸ ثانیه بی‌آسیب‌ماندن با نرخ ۲ HP/s تا سقف جان خود ترمیم می‌شود؛ این اعداد در seed و Baseline.json هستند. پروفایل‌های ذخیره‌شدهٔ قبل از revision 3 فقط دو فیلد تازه را از baseline می‌گیرند.
-- بررسی عددی: داکیومنت ۵۰۸۹ سکهٔ درآمد سناریویی و ۱۴۲۱ سکه ماندهٔ مسیر خرید نمونه پیش‌بینی می‌کند. خشاب‌ها زمان reload دارند اما مهمات ذخیره محدود نیست. توصیهٔ اولیه حفظ دو اسلات و آزمودن تنظیم سلاح و درآمد پس از دادهٔ playtest؛ گزارش کامل در `docs/BALANCE_REVIEW_2026-10-17.md`. تصمیم D76.
-- فایل‌های تغییرکرده: `Assets/Editor/BaselineSeed.cs`، `Assets/Resources/Balance/Baseline.json`، `Assets/Resources/Localization/fa.json`، `Assets/Scripts/Data/BalanceProfile.cs` و `BalanceProfileStore.cs`، `Assets/Scripts/Game/GameSession.cs`، `Assets/Scripts/Sim/Companion/CompanionSystem.cs`، `Assets/Scripts/Sim/Items/ItemSystem.cs`، `Assets/Scripts/Sim/Shop/ShopSystem.cs`، `Assets/Scripts/Sim/Waves/WaveSystem.cs`، `Assets/Scripts/UI/ShopPanel.cs`، تست‌های ویرایش‌شده، `docs/DECISIONS.md`، گزارش بالانس و `agent.md`.
-- تأیید: پنج اسمبلی `Hollow.Data/Sim/UI/Game/Tests.EditMode` با کامپایلر Unity بدون خطا کامپایل شدند؛ دو JSON معتبرند و کلیدهای تازهٔ فارسی حاضرند. تست‌های NUnit و بررسی ظاهری در Play Mode به اتصال Pipeline ادیتور نیاز دارند و اجرا نشدند. فایل تغییرکردهٔ مستقل `ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json` دست‌نخورده ماند.
+### 2026-10-17 — رفع باگ: فاصله‌ی گلوله از سر تفنگ
+- گزارش کاربر: گلوله‌ها دورتر از سر تفنگ ظاهر می‌شوند. علت: `PlayerView.Muzzle` سر لوله را لبه‌ی راست canvas فرض می‌کرد (۷۵٪ عرض از دسته)، ولی در آرت AI تفنگ فقط تا حدود ۵۸–۷۰٪ عرض canvas کشیده شده؛ فاصله ۰.۴۵ تا ۰.۷۷ واحد بود.
+- رفع: `ApplyIncomingArt.BarrelTip` سر لوله را از پیکسل‌های تصویر پیدا می‌کند (راست‌ترین ستون مات) و در `WeaponVisual.MuzzleLocal` ذخیره می‌کند؛ `PlayerView.Muzzle` از آن استفاده می‌کند (با flipY). گلوله، muzzle flash و tracer همه از همین نقطه شروع می‌شوند. سلاح‌های بدون آرت فرمول قبلی را دارند.
+- در Play mode برای تپانچه، SMG و دولول (چپ و راست) فاصله‌ی نقطه‌ی محاسبه‌شده تا سر لوله‌ی کشیده‌شده ۰.۰۱–۰.۰۲ واحد شد. ۴۳۳ تست پاس.
+
+### 2026-10-17 — پرامپت انیمیشن آرت (موج ۲) و sheet شبکه‌ای
+- `docs/ART_ANIMATION_BRIEF.md`: یک addendum که بعد از master brief چسبانده می‌شود؛ فریم موجود به‌عنوان reference ضمیمه می‌شود و برای هر حالت حرکت فریم‌به‌فریم نوشته شده (اولویت A: move گرگ، جوجه‌تیغی، Crawler، Shooter، نگهبان، اپراتور و move باس ۱؛ attack اپراتور). اشاره به آن در `ART_MASTER_BRIEF.md`.
+- importer (`ArtRules.Grid`): sheet می‌تواند شبکه باشد (۴ فریم = ۲×۲ مربع، ۶ = ۳×۲ در 3:2، ۸ = ۴×۲) چون ابزارهای تصویر عکس 6:1 نمی‌دهند؛ ترتیب چپ به راست و بالا به پایین؛ strip یک‌ردیفه هنوز کار می‌کند. اگر فایل تک‌فریمی و sheet یک حالت هر دو باشند، sheet انتخاب می‌شود (`ApplyIncomingArt.Collect`).
+- با یک sheet مصنوعی ۳×۲ گرگ بررسی شد (برش، pivot، اندازه‌ی ۲ واحد، انتخاب sheet) و فایل حذف شد. تست‌های `ArtSheetTests`؛ ۴۴۰ تست پاس.
+- باز: همه‌ی sheetها با ۱۰ فریم در ثانیه پخش می‌شوند؛ وقتی sheetها رسیدند شاید idle به سرعت کمتری نیاز داشته باشد.
+
+### 2026-10-17 — راهنما: ۳ ثانیه و توقف بازی
+- به خواست کاربر راهنماهای یک‌باره حالا حداکثر ۳ ثانیه‌اند (قبلاً ۴) و وقتی یکی روی صفحه است بازی متوقف می‌شود: `GameSession` تا وقتی `HintCoach.Showing` است قدم شبیه‌سازی نمی‌زند و با `PushModal/PopModal` ورودی دنیا را نگه می‌دارد (در `OnDestroy` هم آزاد می‌شود). چون بازیکن در این مدت کاری نمی‌تواند بکند، بستن زودتر با «انجام دادن کار» عملاً پیش نمی‌آید؛ راهنما بعد از ۳ ثانیه بسته می‌شود. D75 به‌روز شد.
+- ۴۴۰ تست پاس. در Play mode: با راهنمای سلاح دوم، tick شبیه‌سازی در مدت نمایش ثابت ماند، ورودی دنیا بسته بود و بعد از حدود ۳ ثانیه بازی ادامه پیدا کرد.
+
+### 2026-10-17 — انیمیشن ساخته‌شده برای همه‌ی شخصیت‌ها و رفع مشکلات تصویر آرت موج ۱
+- `Tools/ArtGen/animate.py`: از فریم‌های تکی، ۶۵ sheet (سلول ۵۱۲ پیکسل، شبکه‌ی سازگار با `ArtRules.Grid`) برای بازیکن، اپراتور فاز ۱ و ۲، پنج دشمن و دو باس: idle ۸ فریم (نفس کشیدن یا شناور بودن)، move ۶ فریم (چهارپا: تاب پاهای جلو و عقب، pitch، پرش؛ دوپا: هر پا یک لایه‌ی جدا که حول لگن می‌چرخد و پای جلو روی پای عقب کشیده می‌شود، بدن با بسته شدن پاها بالا می‌رود)، windup/attack/hit/recover، death (۲ فریم افتادن از حالت ایستاده + فرود روی فریم death؛ آخرین فریم همان فریم کشیده‌شده است پس جسد عوض نمی‌شود). حالت‌های نبوده ساخته شد: move باس ۱ از idle، و move/attack/hit/death اپراتور فاز ۲ (مرگ: افتادن به پشت). باس‌ها: charge، burst و stunned حلقه‌ای، تپش درخشش سبز در windup_blast.
+- `Tools/ArtGen/fix_art.py`: رنگ burst (زنگ‌زده) و blast/windup_blast (سبز) باس ۲ با idle یکی شد (درخشش و شعله دست نخورد)؛ رگه‌های تیغ نقاشی‌شده در attack جوجه‌تیغی حذف شد؛ فریم‌های انفجار در سلول جا شدند، لبه‌ها محو و انتهای آن کم‌کم محو می‌شود؛ لبه‌ی muzzle و impact محو شد؛ درز تکرار حاشیه‌های P1 افقی و عمودی و زمین P1 برطرف شد؛ ستون حصار P3 از پنل‌های کامل دوباره ساخته شد (تکرار پنل به پنل، لکه‌های کنار حذف)؛ آیکن سکه، قفل و بی‌نهایت و چهار حالت دکمه (هم‌اندازه) دوباره کشیده شدند.
+- `ApplyIncomingArt.Collect`: اولویت sheet دست‌کشیده > sheet ساخته‌شده > فریم تکی (`Rank`). `SpriteState.FramesPerSecond` (idle با ۶۰٪ سرعت)؛ charge/burst/stunned حلقه‌ای.
+- در Play mode دیده شد: گرگ‌ها move/windup/recover، اپراتور idle/move/attack، بازیکن idle/hit/death با فریم‌های ساخته‌شده پخش می‌شوند. ۴۴۵ تست پاس (۵ تست جدید در `ArtSheetTests`). تصویر: `docs/screenshots/ArtAnimated_Walks.png`.
+- محدودیت: حرکت‌ها از خم کردن یک تصویر ساخته شده‌اند؛ پای دوپاها در هر قدم جابه‌جا نمی‌شود (هر حلقه یک قدم)، و حالت حمله‌ی اپراتور فاز ۲ فقط لگد سلاح است. حجم sheetها حدود ۳۶ مگابایت (LFS).
+- نکته‌ی تست: `capture_game_view --save_path X` فایل را در `Assets/X` می‌گذارد؛ بعد از برداشتن، پوشه و meta آن را پاک کن.

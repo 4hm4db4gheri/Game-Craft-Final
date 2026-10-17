@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.6, y: 1.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1487491973079914379}
@@ -81,8 +81,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -90
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 996ad46408d3e524d9c02a2e286bb582, type: 3}
-  m_Color: {r: 0.32, g: 0.31, b: 0.3, a: 0.6}
+  m_Sprite: {fileID: 21300000, guid: 1366371d3d06cde4a9699003937bfe0b, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -133,6 +133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5915126122461167344}
+  - component: {fileID: 3234751695608778150}
   m_Layer: 0
   m_Name: PH_Decor_P3_Ash
   m_TagString: Untagged
@@ -156,3 +157,25 @@ Transform:
   - {fileID: 1487491973079914379}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3234751695608778150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8271340392392940170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859555f4964a8bd409f045ea3b7d4118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSetAnimator
+  set: {fileID: 11400000, guid: fe2f8dbea02732245aaeaec9fe2e44e6, type: 2}
+  target: {fileID: 6779365797276978369}
+  stepMotion: 1
+  strideFraction: 0.35
+  minStepsPerSecond: 1.6
+  maxStepsPerSecond: 7
+  hopFraction: 0.025
+  rockDegrees: 4
+  movingSpeed: 0.3
+  blendRate: 10

@@ -9,6 +9,7 @@
         "Hollow.Sim",
         "Hollow.Presentation",
         "Hollow.UI",
+        "Hollow.Editor",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [

@@ -40,8 +40,10 @@ namespace Hollow.Presentation
             {
                 BossAi.ChargeWindup => "windup_charge", BossAi.Charging => "charge", BossAi.ChargeRecover => "recover",
                 BossAi.StrikeWindup => "windup_strike", BossAi.StrikeRecover => "strike",
-                BossAi.BurstWarning => "windup_burst", BossAi.Bursting => "burst", BossAi.BurstRecover => "recover", BossAi.BlastRecover => "recover",
-                BossAi.BlastWarning => b.Id == BossId.FormerCompanion ? "throw" : "blast",
+                BossAi.BurstWarning => "windup_burst", BossAi.Bursting => "burst", BossAi.BurstRecover => "recover",
+                BossAi.BlastWarning => b.Id == BossId.FormerCompanion ? "throw" : "windup_blast",
+                // The robot's blast frame is the slam itself, so it shows once the blast has gone off.
+                BossAi.BlastRecover => b.Id == BossId.FormerCompanion ? "recover" : "blast",
                 _ => w.Clock.Tick < b.StunnedUntilTick ? "stunned" : "move",
             });
             var d = w.Profile.Boss(w.Phase);

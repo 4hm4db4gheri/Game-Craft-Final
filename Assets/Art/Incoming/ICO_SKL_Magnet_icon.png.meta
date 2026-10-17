@@ -1,0 +1,1207 @@
+fileFormatVersion: 2
+guid: f0fd2e26235f4a649996a0e2e2ff892c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8988907996296238259
+    second: ICO_SKL_Magnet_icon_0
+  - first:
+      213: -5467953046927560146
+    second: ICO_SKL_Magnet_icon_1
+  - first:
+      213: -1773718262689460358
+    second: ICO_SKL_Magnet_icon_2
+  - first:
+      213: 6992359521997013056
+    second: ICO_SKL_Magnet_icon_3
+  - first:
+      213: -7826212439372030954
+    second: ICO_SKL_Magnet_icon_4
+  - first:
+      213: -3192838805272710408
+    second: ICO_SKL_Magnet_icon_5
+  - first:
+      213: 4980048262793162729
+    second: ICO_SKL_Magnet_icon_6
+  - first:
+      213: -9102017841468909172
+    second: ICO_SKL_Magnet_icon_7
+  - first:
+      213: -404224895062358069
+    second: ICO_SKL_Magnet_icon_8
+  - first:
+      213: -4058796857926332712
+    second: ICO_SKL_Magnet_icon_9
+  - first:
+      213: 5248887697687914562
+    second: ICO_SKL_Magnet_icon_10
+  - first:
+      213: -3319983661915892868
+    second: ICO_SKL_Magnet_icon_11
+  - first:
+      213: -532616454753339126
+    second: ICO_SKL_Magnet_icon_12
+  - first:
+      213: 570671703131921480
+    second: ICO_SKL_Magnet_icon_13
+  - first:
+      213: -7545314205225915132
+    second: ICO_SKL_Magnet_icon_14
+  - first:
+      213: 3794455167748019123
+    second: ICO_SKL_Magnet_icon_15
+  - first:
+      213: 5856620470841739127
+    second: ICO_SKL_Magnet_icon_16
+  - first:
+      213: 2040224040699973667
+    second: ICO_SKL_Magnet_icon_17
+  - first:
+      213: -8150353570023895910
+    second: ICO_SKL_Magnet_icon_18
+  - first:
+      213: -8125161571080014438
+    second: ICO_SKL_Magnet_icon_19
+  - first:
+      213: -6587340525867581033
+    second: ICO_SKL_Magnet_icon_20
+  - first:
+      213: 2750378317449601620
+    second: ICO_SKL_Magnet_icon_21
+  - first:
+      213: 4719890537353706589
+    second: ICO_SKL_Magnet_icon_22
+  - first:
+      213: 32137413358425348
+    second: ICO_SKL_Magnet_icon_23
+  - first:
+      213: 7301194067153261260
+    second: ICO_SKL_Magnet_icon_24
+  - first:
+      213: -9003067376390421686
+    second: ICO_SKL_Magnet_icon_25
+  - first:
+      213: 7788072124817424442
+    second: ICO_SKL_Magnet_icon_26
+  - first:
+      213: -4779139169521393162
+    second: ICO_SKL_Magnet_icon_27
+  - first:
+      213: -4521908493861110330
+    second: ICO_SKL_Magnet_icon_28
+  - first:
+      213: 9151087176237993034
+    second: ICO_SKL_Magnet_icon_29
+  - first:
+      213: 1428669394013544621
+    second: ICO_SKL_Magnet_icon_30
+  - first:
+      213: -203129012610106417
+    second: ICO_SKL_Magnet_icon_31
+  - first:
+      213: 1157716571553546282
+    second: ICO_SKL_Magnet_icon_32
+  - first:
+      213: 7961182598060622273
+    second: ICO_SKL_Magnet_icon_33
+  - first:
+      213: 93389063948391923
+    second: ICO_SKL_Magnet_icon_34
+  - first:
+      213: -5560921512666175182
+    second: ICO_SKL_Magnet_icon_35
+  - first:
+      213: 1460700677220530448
+    second: ICO_SKL_Magnet_icon_36
+  - first:
+      213: -883465520857976203
+    second: ICO_SKL_Magnet_icon_37
+  - first:
+      213: -319533682342731448
+    second: ICO_SKL_Magnet_icon_38
+  - first:
+      213: 6484285436840726983
+    second: ICO_SKL_Magnet_icon_39
+  - first:
+      213: -7014167685795310264
+    second: ICO_SKL_Magnet_icon_40
+  - first:
+      213: -1243485123165475614
+    second: ICO_SKL_Magnet_icon_41
+  - first:
+      213: -6557503163159746507
+    second: ICO_SKL_Magnet_icon_42
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_0
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 424
+        width: 9
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4b281a7dcbf04380800000000000000
+      internalID: -8988907996296238259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_1
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 363
+        width: 95
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e223e5d9caded14b0800000000000000
+      internalID: -5467953046927560146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_2
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 426
+        width: 56
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7f85cc33ac7267e0800000000000000
+      internalID: -1773718262689460358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_3
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 449
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 040c37a20f9d90160800000000000000
+      internalID: 6992359521997013056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_4
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 433
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61c9c7e5045b36390800000000000000
+      internalID: -7826212439372030954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_5
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 441
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f233a2e502c0b3d0800000000000000
+      internalID: -3192838805272710408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_6
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 395
+        width: 49
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ef6614728fac1540800000000000000
+      internalID: 4980048262793162729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_7
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 439
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c895afb6ff22fa180800000000000000
+      internalID: -9102017841468909172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_8
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 410
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc740708997e36af0800000000000000
+      internalID: -404224895062358069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_9
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 418
+        width: 39
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8de44db13c14ca7c0800000000000000
+      internalID: -4058796857926332712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_10
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 426
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2482b9e1d8bc7d840800000000000000
+      internalID: 5248887697687914562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_11
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 403
+        width: 8
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c731763137c0de1d0800000000000000
+      internalID: -3319983661915892868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_12
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 410
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0936e40824cb98f0800000000000000
+      internalID: -532616454753339126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_13
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 426
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84c9b84f3ee6be700800000000000000
+      internalID: 570671703131921480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_14
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 50
+        width: 338
+        height: 354
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40decc605b8a94790800000000000000
+      internalID: -7545314205225915132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_15
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 402
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b314c50fdc98a430800000000000000
+      internalID: 3794455167748019123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_16
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 402
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7778dccd945e64150800000000000000
+      internalID: 5856620470841739127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_17
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 402
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 320522894f4505c10800000000000000
+      internalID: 2040224040699973667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_18
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 395
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9c83e84c9024ee80800000000000000
+      internalID: -8150353570023895910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_19
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 387
+        width: 31
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a95fe1d9990ad3f80800000000000000
+      internalID: -8125161571080014438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_20
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 363
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 791c02561b01594a0800000000000000
+      internalID: -6587340525867581033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_21
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 371
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4522581f18e4b2620800000000000000
+      internalID: 2750378317449601620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_22
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 364
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5cf1b9cf6b608140800000000000000
+      internalID: 4719890537353706589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_23
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 342
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4059a33aecc227000800000000000000
+      internalID: 32137413358425348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_24
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 354
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc21cd8125d035560800000000000000
+      internalID: 7301194067153261260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_25
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 325
+        width: 41
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a434755ebedae0380800000000000000
+      internalID: -9003067376390421686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_26
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 346
+        width: 9
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a304dd4a55ac41c60800000000000000
+      internalID: 7788072124817424442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_27
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 325
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f1a58c0f361dadb0800000000000000
+      internalID: -4779139169521393162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_28
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 338
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cd3694de24fe31c0800000000000000
+      internalID: -4521908493861110330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_29
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 333
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4c4c406d413ffe70800000000000000
+      internalID: 9151087176237993034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_30
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 317
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da066a39e37a3d310800000000000000
+      internalID: 1428669394013544621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_31
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 317
+        width: 19
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcb7ccf3d375e2df0800000000000000
+      internalID: -203129012610106417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_32
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 325
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2048068619011010800000000000000
+      internalID: 1157716571553546282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_33
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 303
+        width: 8
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c1cc6d846dcb7e60800000000000000
+      internalID: 7961182598060622273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_34
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 310
+        width: 23
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f5dc8edbd8cb4100800000000000000
+      internalID: 93389063948391923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_35
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 301
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23964b5e853a3d2b0800000000000000
+      internalID: -5560921512666175182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_36
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 301
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 019f6ecd683754410800000000000000
+      internalID: 1460700677220530448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_37
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 232
+        width: 83
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57274f12acc4db3f0800000000000000
+      internalID: -883465520857976203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_38
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 225
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84160321fc9c09bf0800000000000000
+      internalID: -319533682342731448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_39
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 225
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c15125ef3fccf950800000000000000
+      internalID: 6484285436840726983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_40
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 225
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 845952507aba8ae90800000000000000
+      internalID: -7014167685795310264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_41
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 209
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ec2d366ed04ebee0800000000000000
+      internalID: -1243485123165475614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ICO_SKL_Magnet_icon_42
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 217
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 538ec52cd911ff4a0800000000000000
+      internalID: -6557503163159746507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

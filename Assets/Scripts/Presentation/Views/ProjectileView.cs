@@ -19,11 +19,15 @@ namespace Hollow.Presentation
 
         Vector2 muzzleOffset;
         float bornAt;
+        Sprite placeholderSprite;
+        Vector3 placeholderScale;
+        bool placeholderSaved;
 
         public Color Color { get; private set; }
 
         /// <param name="muzzle">Where the shot leaves the weapon on screen, when known (player and companion).</param>
-        public void Begin(ProjectileState p, Color color, Vector2? muzzle = null)
+        /// <param name="art">Imported projectile sprite (drawn at its own size, untinted); null keeps the placeholder.</param>
+        public void Begin(ProjectileState p, Color color, Vector2? muzzle = null, Sprite art = null)
         {
             Color = color;
             bornAt = Time.time;
@@ -31,7 +35,13 @@ namespace Hollow.Presentation
             muzzleOffset = muzzle.HasValue ? muzzle.Value - line : Vector2.zero;
             Place(p.Position, 1f);
             Rotate(p);
-            if (core != null) core.color = color;
+            if (core != null)
+            {
+                if (!placeholderSaved) { placeholderSprite = core.sprite; placeholderScale = core.transform.localScale; placeholderSaved = true; }
+                core.sprite = art != null ? art : placeholderSprite;
+                core.transform.localScale = art != null ? Vector3.one : placeholderScale;
+                core.color = art != null ? Color.white : color;
+            }
             if (trail != null)
             {
                 trail.Clear();

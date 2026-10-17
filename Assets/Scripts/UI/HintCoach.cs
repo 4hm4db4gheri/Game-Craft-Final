@@ -7,12 +7,12 @@ namespace Hollow.UI
 {
     /// <summary>
     /// Shows one contextual hint at a time like the opening tutorial: the screen dims a little except the HUD part
-    /// the hint is about, which gets a pulsing frame, and a short card sits above it. The world keeps running, the
-    /// overlay never takes a click, and a hint closes when the player does what it says or after a few seconds.
+    /// the hint is about, which gets a pulsing frame, and a short card sits above it. The game holds still while a
+    /// hint is up (<see cref="Showing"/>; the session stops the simulation and world input) and the hint closes on its own.
     /// </summary>
     public sealed class HintCoach : MonoBehaviour
     {
-        const float MinSeconds = 0.8f, MaxSeconds = 4f, GapSeconds = 1.2f, FadeSeconds = 0.2f, Pad = 14f, DimAlpha = 0.5f;
+        const float MinSeconds = 0.8f, MaxSeconds = 3f, GapSeconds = 1.2f, FadeSeconds = 0.2f, Pad = 14f, DimAlpha = 0.5f;
 
         UIRoot root;
         HudView hud;

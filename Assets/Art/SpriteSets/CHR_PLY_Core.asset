@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28821693a4694649ae006f66323edd4, type: 3}
+  m_Name: CHR_PLY_Core
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSet
+  FramesPerSecond: 10
+  States:
+  - State: death
+    Frames:
+    - {fileID: -9192638271177797499, guid: 7d8b29f951ba9d8468e00efd0375d6f2, type: 3}
+    - {fileID: 8559509556701815258, guid: 7d8b29f951ba9d8468e00efd0375d6f2, type: 3}
+    - {fileID: -5286180679089938723, guid: 7d8b29f951ba9d8468e00efd0375d6f2, type: 3}
+    - {fileID: -1891855120789479077, guid: 7d8b29f951ba9d8468e00efd0375d6f2, type: 3}
+    - {fileID: -5582970244224541034, guid: 7d8b29f951ba9d8468e00efd0375d6f2, type: 3}
+    - {fileID: 830680230883465780, guid: 7d8b29f951ba9d8468e00efd0375d6f2, type: 3}
+    Loop: 0
+    FramesPerSecond: 0
+  - State: hit
+    Frames:
+    - {fileID: -59066101396820148, guid: b3f86a2f32bda0e4d9aa7bf95d10ed61, type: 3}
+    - {fileID: -9037724387597929990, guid: b3f86a2f32bda0e4d9aa7bf95d10ed61, type: 3}
+    - {fileID: 8501104746477335304, guid: b3f86a2f32bda0e4d9aa7bf95d10ed61, type: 3}
+    Loop: 0
+    FramesPerSecond: 0
+  - State: idle
+    Frames:
+    - {fileID: 8793639957104055765, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    - {fileID: 6084859605308855041, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    - {fileID: 8603369663158992956, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    - {fileID: -5906421172241655209, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    - {fileID: 5704420531145803721, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    - {fileID: -148617073940163930, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    - {fileID: 4729606205655721961, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    - {fileID: -2073685336235588006, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+    Loop: 1
+    FramesPerSecond: 6
+  - State: move
+    Frames:
+    - {fileID: -3527056022417232336, guid: 40a370840c2400549b2d8da356e6acaa, type: 3}
+    - {fileID: 1559915471669483522, guid: 40a370840c2400549b2d8da356e6acaa, type: 3}
+    - {fileID: -2447649416737202741, guid: 40a370840c2400549b2d8da356e6acaa, type: 3}
+    - {fileID: -6256732298934330293, guid: 40a370840c2400549b2d8da356e6acaa, type: 3}
+    - {fileID: 1672106482186590498, guid: 40a370840c2400549b2d8da356e6acaa, type: 3}
+    - {fileID: 1097377042340866633, guid: 40a370840c2400549b2d8da356e6acaa, type: 3}
+    Loop: 1
+    FramesPerSecond: 0

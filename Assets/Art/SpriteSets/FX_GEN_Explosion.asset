@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28821693a4694649ae006f66323edd4, type: 3}
+  m_Name: FX_GEN_Explosion
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSet
+  FramesPerSecond: 16
+  States:
+  - State: burst
+    Frames:
+    - {fileID: 7515357072684481883, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    - {fileID: -4921743515574907004, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    - {fileID: -3985803507129442065, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    - {fileID: 503023373425029793, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    - {fileID: -2712056041054931070, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    - {fileID: -5514864345428697800, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    - {fileID: -5246676762576682618, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    - {fileID: -5060425255707449445, guid: cd3a747079742b84bb0b21f74e602a32, type: 3}
+    Loop: 1
+    FramesPerSecond: 0

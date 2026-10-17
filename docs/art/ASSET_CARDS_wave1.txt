@@ -1,0 +1,104 @@
+ASSET_CARD {"file":"CHR_PLY_Core_idle.png","cellUnits":2,"heightUnits":1.1,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_PLY_Core_move.png","cellUnits":2,"heightUnits":1.1,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_PLY_Core_hit.png","cellUnits":2,"heightUnits":1.1,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_PLY_Core_death.png","cellUnits":2,"heightUnits":1.1,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_OPR_P1_idle.png","cellUnits":2,"heightUnits":1.7,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_OPR_P1_move.png","cellUnits":2,"heightUnits":1.7,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_OPR_P1_attack.png","cellUnits":2,"heightUnits":1.7,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_OPR_P1_hit.png","cellUnits":2,"heightUnits":1.7,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_OPR_P1_death.png","cellUnits":2,"heightUnits":1.7,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"CHR_OPR_P2_idle.png","cellUnits":2,"heightUnits":1.6,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A1_RunnerWolf_idle.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A1_RunnerWolf_move.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A1_RunnerWolf_windup.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A1_RunnerWolf_attack.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A1_RunnerWolf_death.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A2_QuillShooter_idle.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A2_QuillShooter_move.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A2_QuillShooter_windup.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A2_QuillShooter_attack.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A2_QuillShooter_death.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R1_Crawler_idle.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R1_Crawler_move.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R1_Crawler_windup.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R1_Crawler_attack.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R1_Crawler_death.png","cellUnits":2,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R2_Shooter_idle.png","cellUnits":2,"heightUnits":1.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R2_Shooter_move.png","cellUnits":2,"heightUnits":1.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R2_Shooter_windup.png","cellUnits":2,"heightUnits":1.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R2_Shooter_attack.png","cellUnits":2,"heightUnits":1.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_R2_Shooter_death.png","cellUnits":2,"heightUnits":1.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H2_RifleGuard_idle.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H2_RifleGuard_move.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H2_RifleGuard_windup.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H2_RifleGuard_attack.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H2_RifleGuard_death.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B1_LargeBeast_idle.png","cellUnits":6,"heightUnits":3.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B1_LargeBeast_windup_charge.png","cellUnits":6,"heightUnits":3.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B1_LargeBeast_charge.png","cellUnits":6,"heightUnits":3.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B1_LargeBeast_recover.png","cellUnits":6,"heightUnits":3.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B1_LargeBeast_windup_strike.png","cellUnits":6,"heightUnits":3.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B1_LargeBeast_strike.png","cellUnits":6,"heightUnits":3.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B1_LargeBeast_death.png","cellUnits":6,"heightUnits":3.5,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_idle.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_move.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_windup_burst.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_burst.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_windup_blast.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_blast.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_stunned.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"BOS_B2_IndustrialRobot_death.png","cellUnits":6,"heightUnits":4.15,"frames":1,"background":"transparent","notes":"drawn 4.15 high instead of 4.5 so the raised arm in windup_blast fits the cell"}
+ASSET_CARD {"file":"WPN_PST_Pistol_held.png","cellUnits":0,"heightUnits":0.6,"frames":1,"background":"transparent","notes":"2:1, grip 25%"}
+ASSET_CARD {"file":"WPN_SMG_LightSMG_held.png","cellUnits":0,"heightUnits":0.9,"frames":1,"background":"transparent","notes":"2:1, grip 25%"}
+ASSET_CARD {"file":"WPN_DBS_DoubleBarrel_held.png","cellUnits":0,"heightUnits":1.2,"frames":1,"background":"transparent","notes":"2:1, grip 25%"}
+ASSET_CARD {"file":"ICO_PST_Pistol_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_SMG_LightSMG_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_DBS_DoubleBarrel_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"PRJ_PLY_Bullet_proj.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"2:1, pointing right"}
+ASSET_CARD {"file":"PRJ_PLY_Pellet_proj.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"2:1, pointing right"}
+ASSET_CARD {"file":"PRJ_ENM_Quill_proj.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"2:1, pointing right"}
+ASSET_CARD {"file":"PRJ_ENM_Bolt_proj.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"2:1, pointing right"}
+ASSET_CARD {"file":"PRJ_ENM_Bullet_proj.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"2:1, pointing right"}
+ASSET_CARD {"file":"PKP_COIN_Coin_spin_f6.png","cellUnits":0.5,"heightUnits":0.35,"frames":6,"background":"transparent","notes":"frame 6 mirrored from frame 2"}
+ASSET_CARD {"file":"PKP_GRN_Grenade_world.png","cellUnits":1,"heightUnits":0.4,"frames":1,"background":"transparent","notes":""}
+ASSET_CARD {"file":"ICO_GRN_Grenade_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"UI_GEN_Panel_ui.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"UI_GEN_Button_ui_normal.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"UI_GEN_Button_ui_hover.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"UI_GEN_Button_ui_pressed.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"UI_GEN_Button_ui_disabled.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"UI_GEN_Slot_ui.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"UI_GEN_Reticle_ui.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"ICO_GEN_Coin_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"ICO_GEN_Lock_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"ICO_GEN_Infinity_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"UI"}
+ASSET_CARD {"file":"ICO_SKL_Damage_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_SKL_Reload_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_SKL_DashCooldown_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_SKL_DashDamage_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_SKL_MaxHealth_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_SKL_Magnet_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"1:1 icon"}
+ASSET_CARD {"file":"ICO_SKL_MoveSpeed_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"from old card sheet"}
+ASSET_CARD {"file":"FX_GEN_MuzzleFlash_burst_f3.png","cellUnits":1,"heightUnits":0,"frames":3,"background":"black","notes":"additive"}
+ASSET_CARD {"file":"FX_GEN_Impact_burst_f4.png","cellUnits":1,"heightUnits":0,"frames":4,"background":"black","notes":"additive"}
+ASSET_CARD {"file":"FX_GEN_Explosion_burst_f8.png","cellUnits":3,"heightUnits":0,"frames":8,"background":"black","notes":"additive"}
+ASSET_CARD {"file":"ENV_P1_Ground_ground.png","cellUnits":8,"heightUnits":0,"frames":1,"background":"full","notes":"seamless"}
+ASSET_CARD {"file":"ENV_P3_Ground_ground.png","cellUnits":8,"heightUnits":0,"frames":1,"background":"full","notes":"seamless (drawn as cracked concrete = phase 3)"}
+ASSET_CARD {"file":"ENV_P1_Tree_prop.png","cellUnits":5,"heightUnits":4,"frames":1,"background":"transparent","notes":"footprint 1x1"}
+ASSET_CARD {"file":"ENV_P1_Rock_prop.png","cellUnits":3,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 2x1"}
+ASSET_CARD {"file":"ENV_P1_Hedge_prop.png","cellUnits":4,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 3x1"}
+ASSET_CARD {"file":"ENV_SHOP_Kiosk_prop.png","cellUnits":3,"heightUnits":2.5,"frames":1,"background":"transparent","notes":"footprint 2x1"}
+ASSET_CARD {"file":"ENV_P1_GrassTuft_decor_a.png","cellUnits":1,"heightUnits":0,"frames":1,"background":"transparent","notes":"walk-over"}
+ASSET_CARD {"file":"ENV_P1_GrassTuft_decor_b.png","cellUnits":1,"heightUnits":0,"frames":1,"background":"transparent","notes":"walk-over"}
+ASSET_CARD {"file":"ENV_P1_Roots_decor_a.png","cellUnits":2,"heightUnits":0,"frames":1,"background":"transparent","notes":"walk-over"}
+ASSET_CARD {"file":"ENV_P1_Roots_decor_b.png","cellUnits":2,"heightUnits":0,"frames":1,"background":"transparent","notes":"walk-over"}
+ASSET_CARD {"file":"ENV_P1_BorderH_prop.png","cellUnits":0,"heightUnits":2,"frames":1,"background":"full","notes":"4x2 units, tiles horizontally, opaque"}
+ASSET_CARD {"file":"ENV_P1_BorderV_prop.png","cellUnits":0,"heightUnits":4,"frames":1,"background":"transparent","notes":"1x4 units, tiles vertically"}
+ASSET_CARD {"file":"ENV_P3_Barricade_prop.png","cellUnits":4,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 3x1"}
+ASSET_CARD {"file":"ENV_P3_Sandbags_prop.png","cellUnits":4,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 3x1"}
+ASSET_CARD {"file":"ENV_P3_DeadTree_prop.png","cellUnits":4,"heightUnits":3,"frames":1,"background":"transparent","notes":"footprint 1x1"}
+ASSET_CARD {"file":"ENV_P3_MachineBroken_prop.png","cellUnits":3,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 2x2"}
+ASSET_CARD {"file":"ENV_P3_Ash_decor_a.png","cellUnits":2,"heightUnits":0,"frames":1,"background":"transparent","notes":"walk-over"}
+ASSET_CARD {"file":"ENV_P3_Cracks_decor_a.png","cellUnits":2,"heightUnits":0,"frames":1,"background":"transparent","notes":"walk-over"}
+ASSET_CARD {"file":"ENV_P3_BorderH_prop.png","cellUnits":0,"heightUnits":2,"frames":1,"background":"transparent","notes":"4x2 units, tiles horizontally"}
+ASSET_CARD {"file":"ENV_P3_BorderV_prop.png","cellUnits":0,"heightUnits":4,"frames":1,"background":"transparent","notes":"1x4 units, tiles vertically"}

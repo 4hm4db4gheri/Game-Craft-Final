@@ -44,6 +44,7 @@ namespace Hollow.Game
         string lastSavedHash;
         string flashMessage;
         float flashUntil;
+        bool hintHold;
 
         public Simulation Sim { get; private set; }
         World W => Sim.World;
@@ -90,6 +91,7 @@ namespace Hollow.Game
 
         void OnDestroy()
         {
+            if (app != null) SetHintHold(false);
             if (app != null && app.Balance != null) app.Balance.Applied -= OnBalanceApplied;
             GameSettings.Changed -= ApplyFeelSettings;
             if (telemetry != null && telemetry.Run.Observed.Outcome == "running")
@@ -210,7 +212,7 @@ namespace Hollow.Game
             }
             else if (state == GameState.Playing && W.Progress.Pending != null) OpenXpChoice();
 
-            if (!app.ToolFreeze) driver.Update(Time.unscaledDeltaTime);
+            if (!app.ToolFreeze && !hintHold) driver.Update(Time.unscaledDeltaTime);
 
             var w = W;
             float alpha = driver.InterpolationAlpha;
@@ -224,6 +226,7 @@ namespace Hollow.Game
             // One-time hints wait for calm moments: not over menus, scenes, the open shop, a failure or the first tutorial steps.
             bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade;
             hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy);
+            SetHintHold(hints.Showing);
             if (telemetry != null)
             {
                 telemetry.Observe(w);
@@ -231,6 +234,14 @@ namespace Hollow.Game
                 if (telemetry.Dirty) TelemetryFile.Write(telemetry);
             }
             w.Events.Clear();
+        }
+
+        /// <summary>A hint on screen freezes the game: no simulation steps, and world input is held like under a modal.</summary>
+        void SetHintHold(bool hold)
+        {
+            if (hold == hintHold) return;
+            hintHold = hold;
+            if (hold) app.PushModal(); else app.PopModal();
         }
 
         void HandleKeys()
