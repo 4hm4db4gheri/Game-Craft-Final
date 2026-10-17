@@ -107,7 +107,7 @@ namespace Hollow.Game
 
         void StartNewGame()
         {
-            SetWorld(Simulation.NewWorld(app.Balance.Live, layout, DevPanel.FixedSeed ?? (ulong)DateTime.UtcNow.Ticks));
+            SetWorld(Simulation.NewWorld(app.Balance.Live, layout, DevPanel.FixedSeed ?? (ulong)DateTime.UtcNow.Ticks, app.PendingAi));
             telemetry = new RunTelemetry(W, "new game", TelemetryFile.Build);
             WaveSystem.StartWave(W, 1);
             SaveNow(quiet: true); // claims the chosen slot (replacement was confirmed in the picker)
@@ -370,7 +370,7 @@ namespace Hollow.Game
             foreach (var o in w.Player.Loadout.Owned) weapons.Append(Loc.F("results.weapon", Loc.Weapon(o.Id), o.Level)).Append("   ");
             var skills = new System.Collections.Generic.List<string>();
             foreach (var s in w.Progress.ChosenSkills) skills.Add(Loc.Skill(s));
-            return Loc.F("results.line1", $"{(int)t.TotalMinutes}:{t.Seconds:00}", w.Progress.Kills, w.Retries) + "\n" +
+            return Loc.F("results.ai", Loc.T("ai." + w.Player.Ai)) + "\n" + Loc.F("results.line1", $"{(int)t.TotalMinutes}:{t.Seconds:00}", w.Progress.Kills, w.Retries) + "\n" +
                    Loc.F("results.line2", w.Progress.CoinsGenerated, w.Progress.CoinsCollected, w.Progress.TotalXp, w.Progress.ItemsUsed) + "\n" +
                    Loc.F("results.skills", string.Join("، ", skills)) + "\n" + Loc.F("results.weapons", weapons);
         }

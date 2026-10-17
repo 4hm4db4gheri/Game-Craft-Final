@@ -62,6 +62,15 @@ namespace Hollow.EditorTools
                 ProjectileRange = 10, FollowSideBias = 0.6f, FollowArriveRadius = 0.5f, PathClearance = 0.3f, DangerIndicatorTime = 1.5f, CatchUpSpeedFactor = 1.15f,
             };
 
+            // v0.19 §3: each AI starts with one rank of one skill (the start value is that skill's rank-one value).
+            p.Characters = new List<CharacterData>
+            {
+                new() { Id = AiId.Gpt, DisplayName = "GPT", StartingSkill = SkillId.ReloadMultiplier, StartingRank = 1 },
+                new() { Id = AiId.Claude, DisplayName = "Claude", StartingSkill = SkillId.MagnetRadius, StartingRank = 1 },
+                new() { Id = AiId.Grok, DisplayName = "Grok", StartingSkill = SkillId.DashDamage, StartingRank = 1 },
+                new() { Id = AiId.DeepSeek, DisplayName = "DeepSeek", StartingSkill = SkillId.MoveSpeed, StartingRank = 1 },
+            };
+
             p.Enemies = Enemies();
 
             p.Spawning = new SpawnRules

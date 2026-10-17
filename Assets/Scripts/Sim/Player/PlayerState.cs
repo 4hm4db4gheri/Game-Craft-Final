@@ -27,6 +27,8 @@ namespace Hollow.Sim
         public LoadoutState Loadout = new();
 
         /// <summary>Rank taken per skill (index = (int)SkillId), 0 = not taken.</summary>
+        /// <summary>The chosen AI (v0.19 §3); kept in saves, never chosen again on load.</summary>
+        public AiId Ai;
         public int[] SkillRanks = new int[System.Enum.GetValues(typeof(SkillId)).Length];
 
         public int SkillRank(SkillId id) => SkillRanks[(int)id];

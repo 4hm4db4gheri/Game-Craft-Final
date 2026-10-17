@@ -17,6 +17,9 @@ namespace Hollow.Data
 
     public enum BossId { LargeBeast, IndustrialRobot, FormerCompanion }
 
+    /// <summary>The playable AI (v0.19 §3). None = no character chosen (tests and tools only).</summary>
+    public enum AiId { None, Gpt, Claude, Grok, DeepSeek }
+
     public enum WeaponId
     {
         Pistol, LightSmg, DoubleBarrel, Baton,

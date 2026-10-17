@@ -15,6 +15,7 @@ namespace Hollow.Sim
         public WeaponId Weapon;
         public int WeaponLevel;
         public bool Completed;
+        public AiId Ai;
     }
 
     /// <summary>
@@ -43,7 +44,7 @@ namespace Hollow.Sim
                 {
                     Phase = w.Phase, Wave = w.Waves.Wave, Encounter = w.Waves.Kind.ToString(),
                     PlaytimeSeconds = playtimeSeconds, SavedAtUtc = DateTime.UtcNow.ToString("o"),
-                    Weapon = active?.Id ?? WeaponId.Pistol, WeaponLevel = active?.Level ?? 1, Completed = w.Completed,
+                    Weapon = active?.Id ?? WeaponId.Pistol, WeaponLevel = active?.Level ?? 1, Completed = w.Completed, Ai = w.Player.Ai,
                 },
                 ProfileHash = BalanceJson.Hash(w.Profile),
                 ProfileRevision = w.Profile.Revision,

@@ -49,6 +49,32 @@
     "DangerIndicatorTime": 1.5,
     "CatchUpSpeedFactor": 1.15
   },
+  "Characters": [
+    {
+      "Id": "Gpt",
+      "DisplayName": "GPT",
+      "StartingSkill": "ReloadMultiplier",
+      "StartingRank": 1
+    },
+    {
+      "Id": "Claude",
+      "DisplayName": "Claude",
+      "StartingSkill": "MagnetRadius",
+      "StartingRank": 1
+    },
+    {
+      "Id": "Grok",
+      "DisplayName": "Grok",
+      "StartingSkill": "DashDamage",
+      "StartingRank": 1
+    },
+    {
+      "Id": "DeepSeek",
+      "DisplayName": "DeepSeek",
+      "StartingSkill": "MoveSpeed",
+      "StartingRank": 1
+    }
+  ],
   "Spawning": {
     "BatchShares": [
       0.3,

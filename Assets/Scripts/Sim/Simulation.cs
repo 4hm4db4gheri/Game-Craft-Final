@@ -13,13 +13,14 @@ namespace Hollow.Sim
             World = world;
         }
 
-        public static World NewWorld(BalanceProfile profile, ArenaLayout layout, ulong seed)
+        public static World NewWorld(BalanceProfile profile, ArenaLayout layout, ulong seed, AiId ai = AiId.None)
         {
             var w = new World();
             w.Rng.Reseed(seed);
             w.Seed = seed;
             w.Bind(profile, layout);
             PlayerSystem.Spawn(w, layout.PlayerStart);
+            XpSystem.ApplyCharacter(w, ai);
             WeaponSystem.Give(w, WeaponId.Pistol);
             CompanionSystem.SpawnForPhase(w, layout.CompanionStart);
             ShopSystem.RefreshStock(w);

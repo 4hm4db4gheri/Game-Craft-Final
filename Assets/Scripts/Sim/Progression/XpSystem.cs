@@ -55,6 +55,20 @@ namespace Hollow.Sim
             pr.Pending = card;
         }
 
+        /// <summary>
+        /// v0.19 §3: the chosen AI starts with one rank of its skill. The rank sets the value once (ranks are
+        /// absolute, never applied twice) and counts toward the cap, so only ranks two and three remain to earn.
+        /// </summary>
+        public static void ApplyCharacter(World w, AiId ai)
+        {
+            w.Player.Ai = ai;
+            var c = w.Profile.Character(ai);
+            if (ai == AiId.None || c == null) return;
+            var p = w.Player;
+            p.SkillRanks[(int)c.StartingSkill] = Mathf.Clamp(c.StartingRank, 0, MaxRank(w, c.StartingSkill));
+            p.Health = PlayerStats.MaxHealth(w); // a new game starts at full health, whatever the bonus
+        }
+
         /// <summary>Applies the chosen option of the pending card. Returns false if the choice is not on the card.</summary>
         public static bool Choose(World w, SkillId id)
         {

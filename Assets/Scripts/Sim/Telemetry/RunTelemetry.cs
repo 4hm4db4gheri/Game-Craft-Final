@@ -71,6 +71,7 @@ namespace Hollow.Sim
         public string StartedUtc;
         public string Mode;
         public ulong Seed;
+        public string Ai;
         public string ProfileName;
         public int ProfileRevision;
         public string ProfileHash;
@@ -101,6 +102,7 @@ namespace Hollow.Sim
             Run.StartedUtc = DateTime.UtcNow.ToString("o");
             Run.Mode = mode;
             Run.Seed = w.Seed;
+            Run.Ai = w.Player.Ai.ToString();
             Run.ProfileName = w.Profile.Name;
             Run.ProfileRevision = w.Profile.Revision;
             Run.ProfileHash = BalanceJson.Hash(w.Profile);

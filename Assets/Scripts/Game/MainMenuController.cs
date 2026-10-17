@@ -26,16 +26,21 @@ namespace Hollow.Game
             if (app.OpenNewGamePicker)
             {
                 app.OpenNewGamePicker = false;
-                menus.ShowSlots(SlotPickMode.NewGame, slot => app.StartNewGame(slot), Main);
+                NewGame();
             }
         }
+
+        /// <summary>New game (v0.19 §3): choose a slot, then an AI, then the opening.</summary>
+        void NewGame() =>
+            menus.ShowSlots(SlotPickMode.NewGame,
+                slot => menus.ShowAiSelect(app.Balance.Live, ai => app.StartNewGame(slot, ai), NewGame), Main);
 
         void Main()
         {
             bool anySave = false;
             for (int s = 1; s <= SlotStore.SlotCount; s++) anySave |= SlotStore.Exists(s);
             menus.ShowMain(
-                () => menus.ShowSlots(SlotPickMode.NewGame, slot => app.StartNewGame(slot), Main),
+                NewGame,
                 () => menus.ShowSlots(SlotPickMode.Continue, slot => app.LoadGame(slot), Main),
                 anySave,
                 () => menus.ShowSettings(settings, Main),

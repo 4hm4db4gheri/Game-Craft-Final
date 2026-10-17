@@ -118,6 +118,7 @@ namespace Hollow.UI
             var t = TimeSpan.FromSeconds(s.PlaytimeSeconds);
             string saved = DateTime.TryParse(s.SavedAtUtc, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var d)
                 ? SolarDate(d.ToLocalTime()) : "";
+            if (s.Ai != Hollow.Data.AiId.None) where = Loc.T("ai." + s.Ai) + " · " + where;
             return Loc.F("slots.describe", where, $"{(int)t.TotalMinutes}:{t.Seconds:00}", Loc.Weapon(s.Weapon), s.WeaponLevel, saved);
         }
 
@@ -126,6 +127,39 @@ namespace Hollow.UI
         {
             var pc = new PersianCalendar();
             return $"{pc.GetYear(local):0000}/{pc.GetMonth(local):00}/{pc.GetDayOfMonth(local):00} {local:HH:mm}";
+        }
+
+        // ---------------------------------------------------------------- AI selection (v0.19 §3)
+
+        /// <summary>Four cards: the AI, its starting bonus and the ranks left to earn. The bonus is fiction.</summary>
+        public void ShowAiSelect(Hollow.Data.BalanceProfile profile, Action<Hollow.Data.AiId> pick, Action back)
+        {
+            var box = Begin(Loc.T("ai.title"), Loc.T("ai.subtitle"), 0.75f, 1500, 700);
+            var chars = profile.Characters;
+            float width = 330, gap = 22;
+            float x0 = (chars.Count - 1) * (width + gap) * 0.5f; // first card on the right: Persian reads right to left
+            for (int i = 0; i < chars.Count; i++)
+            {
+                var c = chars[i];
+                var ranks = profile.Skill(c.StartingSkill).Ranks;
+                int start = Mathf.Clamp(c.StartingRank, 1, ranks.Count);
+                var later = new List<string>();
+                for (int r = start; r < ranks.Count; r++) later.Add(XpCardScreen.Format(c.StartingSkill, ranks[r]));
+                string dim = ColorUtility.ToHtmlStringRGB(root.Theme.TextDim);
+                string accent = ColorUtility.ToHtmlStringRGB(root.Theme.Accent);
+                string label =
+                    $"<size=40><b>{Loc.T("ai." + c.Id)}</b></size>\n\n" +
+                    $"<size=22><color=#{dim}>{Loc.T("ai.startsWith")}</color></size>\n" +
+                    $"<size=26>{Loc.Skill(c.StartingSkill)}</size>\n" +
+                    $"<size=34><color=#{accent}>{XpCardScreen.Format(c.StartingSkill, ranks[start - 1])}</color></size>\n\n" +
+                    $"<size=20><color=#{dim}>{Loc.F("ai.later", string.Join("، ", later))}</color></size>";
+                var id = c.Id;
+                UIFactory.Button(box, $"Ai{c.Id}", label, root.Theme, new Vector2(0.5f, 0.5f), new Vector2(x0 - i * (width + gap), 20),
+                    new Vector2(width, 400), () => pick(id), out _);
+            }
+            var note = UIFactory.Rect(box, "Note", new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 110), new Vector2(1400, 40));
+            UIFactory.Text(note, "T", Loc.T("ai.disclaimer"), root.Theme, 18, TextAlignmentOptions.Center, root.Theme.TextDim);
+            UIFactory.Button(box, "Back", Loc.T("common.back"), root.Theme, new Vector2(0.5f, 0), new Vector2(0, 50), new Vector2(300, 64), back, out _);
         }
 
         // ---------------------------------------------------------------- confirm

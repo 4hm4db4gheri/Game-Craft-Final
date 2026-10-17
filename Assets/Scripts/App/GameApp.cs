@@ -101,10 +101,14 @@ namespace Hollow.App
             SceneManager.LoadScene(SceneNames.MainMenu);
         }
 
-        public void StartNewGame(int slot)
+        /// <summary>The AI picked for the next new game (v0.19 §3).</summary>
+        public Hollow.Data.AiId PendingAi { get; private set; } = Hollow.Data.AiId.Gpt;
+
+        public void StartNewGame(int slot, Hollow.Data.AiId ai)
         {
             Launch = LaunchMode.NewGame;
             ActiveSlot = slot;
+            PendingAi = ai;
             EnterGameScene();
         }
 

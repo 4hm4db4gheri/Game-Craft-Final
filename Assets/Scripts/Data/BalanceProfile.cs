@@ -20,6 +20,7 @@ namespace Hollow.Data
 
         [PanelGroup(PanelGroups.PlayerCompanion)] public PlayerData Player = new();
         [PanelGroup(PanelGroups.PlayerCompanion)] public CompanionData Companion = new();
+        [PanelGroup(PanelGroups.PlayerCompanion)] public List<CharacterData> Characters = new();
         [PanelGroup(PanelGroups.WavesBosses)] public SpawnRules Spawning = new();
         [PanelGroup(PanelGroups.WavesBosses)] public List<WaveData> Waves = new();
         [PanelGroup(PanelGroups.WavesBosses)] public List<BossData> Bosses = new();
@@ -53,6 +54,7 @@ namespace Hollow.Data
 
         public ItemData Item(ItemId id) => Items.Find(i => i.Id == id) ?? throw new KeyNotFoundException($"No item data for {id}");
         public SkillData Skill(SkillId id) => Skills.Find(s => s.Id == id) ?? throw new KeyNotFoundException($"No skill data for {id}");
+        public CharacterData Character(AiId id) => Characters.Find(c => c.Id == id);
         public BossData Boss(int phase) => Bosses.Find(b => b.Phase == phase) ?? throw new KeyNotFoundException($"No boss for phase {phase}");
         public WaveData Wave(int phase, int wave) => Waves.Find(w => w.Phase == phase && w.Wave == wave) ?? throw new KeyNotFoundException($"No wave {phase}-{wave}");
         public List<WaveData> WavesOfPhase(int phase) => Waves.FindAll(w => w.Phase == phase);
@@ -67,6 +69,19 @@ namespace Hollow.Data
             weaponIndex = new Dictionary<WeaponId, WeaponData>();
             foreach (var w in Weapons) weaponIndex[w.Id] = w;
         }
+    }
+
+    /// <summary>
+    /// A selectable AI (v0.19 §3): it starts with one rank of one skill. That rank counts toward the skill's
+    /// three-rank cap. The bonuses are fictional game characterisation, not claims about real models.
+    /// </summary>
+    [Serializable]
+    public sealed class CharacterData
+    {
+        public AiId Id;
+        public string DisplayName;
+        [Gdd("v0.19 §3")] public SkillId StartingSkill;
+        [Gdd("v0.19 §3")] public int StartingRank = 1;
     }
 
     [Serializable]
