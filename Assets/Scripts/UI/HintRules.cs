@@ -3,10 +3,10 @@ using Hollow.Sim;
 
 namespace Hollow.UI
 {
-    public enum HintId { Item, ItemSwitch, WeaponSwitch, Loadout, Reload, Heal, HealCompanion, Upgrade }
+    public enum HintId { Item, ItemSwitch, WeaponSwitch, HealCompanion }
 
     /// <summary>The HUD part a hint points at.</summary>
-    public enum HintTarget { Item, Weapon, Health, Companion, Wallet }
+    public enum HintTarget { Item, Weapon, Companion }
 
     /// <summary>What the world looked like when a hint appeared, so it can close once the player acts on it.</summary>
     public struct HintStart
@@ -16,19 +16,15 @@ namespace Hollow.UI
     }
 
     /// <summary>
-    /// One-time contextual hints (a new item, a second item type, a second weapon...). Each shows once per game:
-    /// shown hints are kept with the save in <see cref="NarrativeState.SeenScenes"/> as <c>hint:Id</c>.
-    /// The thresholds are UI cues, not gameplay numbers.
+    /// One-time contextual hints (a second weapon, the first item, a second item type, a hurt operator). Each shows
+    /// once per game: shown hints are kept with the save in <see cref="NarrativeState.SeenScenes"/> as <c>hint:Id</c>.
+    /// The threshold is a UI cue, not a gameplay number.
     /// </summary>
     public static class HintRules
     {
-        const float LowHealthFraction = 0.4f;
         const float LowCompanionFraction = 0.5f;
 
-        static readonly HintId[] Order =
-        {
-            HintId.WeaponSwitch, HintId.Item, HintId.ItemSwitch, HintId.Loadout, HintId.Reload, HintId.HealCompanion, HintId.Heal, HintId.Upgrade,
-        };
+        static readonly HintId[] Order = { HintId.WeaponSwitch, HintId.Item, HintId.ItemSwitch, HintId.HealCompanion };
 
         public static string Key(HintId id) => "hint:" + id;
         public static bool Seen(World w, HintId id) => w.Narrative.SeenScenes.Contains(Key(id));
@@ -43,9 +39,7 @@ namespace Hollow.UI
         public static HintTarget Target(HintId id) => id switch
         {
             HintId.Item or HintId.ItemSwitch => HintTarget.Item,
-            HintId.Heal => HintTarget.Health,
             HintId.HealCompanion => HintTarget.Companion,
-            HintId.Upgrade => HintTarget.Wallet,
             _ => HintTarget.Weapon,
         };
 
@@ -57,22 +51,14 @@ namespace Hollow.UI
             return null;
         }
 
-        public static bool Due(World w, HintId id)
+        public static bool Due(World w, HintId id) => id switch
         {
-            var L = w.Player.Loadout;
-            return id switch
-            {
-                HintId.Item => ItemSystem.Selection(w) != null,
-                HintId.ItemSwitch => ItemTypesCarried(w) >= 2,
-                HintId.WeaponSwitch => L.HasPrimary,
-                HintId.Loadout => L.Owned.Count >= 3,
-                HintId.Reload => L.Reloading && L.Active != null && L.Active.Ammo == 0,
-                HintId.Heal => w.Player.Health < PlayerStats.MaxHealth(w) * LowHealthFraction && !w.Player.Dead,
-                HintId.HealCompanion => CompanionSystem.Active(w) && w.Companion.Health < w.Companion.MaxHealth * LowCompanionFraction,
-                HintId.Upgrade => CanAffordAnUpgrade(w),
-                _ => false,
-            };
-        }
+            HintId.Item => ItemSystem.Selection(w) != null,
+            HintId.ItemSwitch => ItemTypesCarried(w) >= 2,
+            HintId.WeaponSwitch => w.Player.Loadout.HasPrimary,
+            HintId.HealCompanion => CompanionSystem.Active(w) && w.Companion.Health < w.Companion.MaxHealth * LowCompanionFraction,
+            _ => false,
+        };
 
         public static HintStart Capture(World w) => new() { ActiveSlot = w.Player.Loadout.ActiveSlot, Selection = ItemSystem.Selection(w) };
 
@@ -82,17 +68,9 @@ namespace Hollow.UI
             HintId.Item => w.Inventory.Holding,
             HintId.ItemSwitch => ItemSystem.Selection(w) != start.Selection,
             HintId.WeaponSwitch => w.Player.Loadout.ActiveSlot != start.ActiveSlot,
-            HintId.Loadout or HintId.Heal or HintId.HealCompanion or HintId.Upgrade => w.Shop.Open,
+            HintId.HealCompanion => w.Shop.Open,
             _ => false,
         };
-
-        static bool CanAffordAnUpgrade(World w)
-        {
-            if (w.Tutorial != TutorialStage.None) return false;
-            foreach (var o in ShopSystem.Offers(w))
-                if (o.Kind == OfferKind.UpgradeWeapon && o.Enabled) return true;
-            return false;
-        }
 
         static int ItemTypesCarried(World w)
         {

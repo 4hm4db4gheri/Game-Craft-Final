@@ -12,7 +12,7 @@ namespace Hollow.UI
     /// </summary>
     public sealed class HintCoach : MonoBehaviour
     {
-        const float MinSeconds = 1.5f, MaxSeconds = 7f, GapSeconds = 2.5f, FadeSeconds = 0.25f, Pad = 14f, DimAlpha = 0.5f;
+        const float MinSeconds = 0.8f, MaxSeconds = 4f, GapSeconds = 1.2f, FadeSeconds = 0.2f, Pad = 14f, DimAlpha = 0.5f;
 
         UIRoot root;
         HudView hud;

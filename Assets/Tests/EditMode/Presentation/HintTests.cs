@@ -9,27 +9,12 @@ namespace Hollow.Tests.Presentation
     /// <summary>One-time contextual hints: when each appears, when it may close, and that a save remembers it.</summary>
     public class HintTests
     {
-        static World NewWorld()
+        static World NewWorld(bool companion = false)
         {
-            var w = SimTestUtil.NewSim().World;
+            var w = SimTestUtil.NewSim(companion: companion).World;
             w.Tutorial = TutorialStage.None;
             w.Progress.Wallet = 10000;
-            HintRules.MarkSeen(w, HintId.Upgrade); // the rich test wallet could always afford one
             return w;
-        }
-
-        [Test]
-        public void EnoughCoinsForAnUpgradePointsAtTheWallet()
-        {
-            var w = SimTestUtil.NewSim().World;
-            w.Tutorial = TutorialStage.None;
-            w.Progress.Wallet = 0;
-            Assert.IsNull(HintRules.Next(w));
-            w.Progress.Wallet = 10000;
-            Assert.AreEqual(HintId.Upgrade, HintRules.Next(w));
-            Assert.AreEqual(HintTarget.Wallet, HintRules.Target(HintId.Upgrade));
-            w.Tutorial = TutorialStage.Purchase;
-            Assert.IsNull(HintRules.Next(w), "not during the opening tutorial");
         }
 
         [Test]
@@ -39,7 +24,7 @@ namespace Hollow.Tests.Presentation
         }
 
         [Test]
-        public void ASecondWeaponTeachesSwitchingAndAThirdTeachesTheShopSlots()
+        public void ASecondWeaponTeachesSwitchingOnce()
         {
             var w = NewWorld();
             ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg);
@@ -52,9 +37,8 @@ namespace Hollow.Tests.Presentation
             Assert.IsTrue(HintRules.Done(w, HintId.WeaponSwitch, start), "closes once the player switches");
 
             HintRules.MarkSeen(w, HintId.WeaponSwitch);
-            Assert.IsNull(HintRules.Next(w));
             ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.DoubleBarrel);
-            Assert.AreEqual(HintId.Loadout, HintRules.Next(w));
+            Assert.IsNull(HintRules.Next(w), "a third weapon brings no hint");
         }
 
         [Test]
@@ -72,12 +56,14 @@ namespace Hollow.Tests.Presentation
         }
 
         [Test]
-        public void LowHealthPointsAtTheHealthBar()
+        public void AHurtOperatorPointsAtItsBarAndLowPlayerHealthAloneDoesNot()
         {
-            var w = NewWorld();
-            w.Player.Health = PlayerStats.MaxHealth(w) * 0.3f;
-            Assert.AreEqual(HintId.Heal, HintRules.Next(w));
-            Assert.AreEqual(HintTarget.Health, HintRules.Target(HintId.Heal));
+            var w = NewWorld(companion: true);
+            w.Player.Health = PlayerStats.MaxHealth(w) * 0.2f;
+            Assert.IsNull(HintRules.Next(w), "the player's own health has no hint of its own");
+            w.Companion.Health = w.Companion.MaxHealth * 0.3f;
+            Assert.AreEqual(HintId.HealCompanion, HintRules.Next(w));
+            Assert.AreEqual(HintTarget.Companion, HintRules.Target(HintId.HealCompanion));
         }
 
         [Test]

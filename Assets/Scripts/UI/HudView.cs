@@ -24,15 +24,13 @@ namespace Hollow.UI
         UnityEngine.UI.Image itemFrame;
         BarView itemGap;
         ItemId shownItem;
-        RectTransform weaponPanel, walletPanel;
+        RectTransform weaponPanel;
 
         /// <summary>The HUD part a hint points at (v0.19 one-time hints).</summary>
         public RectTransform TargetRect(HintTarget target) => target switch
         {
             HintTarget.Item => (RectTransform)itemButton.transform,
-            HintTarget.Health => (RectTransform)health.transform,
             HintTarget.Companion => (RectTransform)companion.transform,
-            HintTarget.Wallet => walletPanel,
             _ => weaponPanel,
         };
 
@@ -63,7 +61,7 @@ namespace Hollow.UI
 
             var top = UIFactory.Rect(hud, "Top", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -16), new Vector2(900, 48));
             topText = UIFactory.Text(top, "Text", "", t, 26, TextAlignmentOptions.Center);
-            var wallet = walletPanel = UIFactory.Rect(hud, "Wallet", new Vector2(1, 1), new Vector2(1, 1), new Vector2(-40, -16), new Vector2(300, 48));
+            var wallet = UIFactory.Rect(hud, "Wallet", new Vector2(1, 1), new Vector2(1, 1), new Vector2(-40, -16), new Vector2(300, 48));
             walletText = UIFactory.Text(wallet, "Text", "", t, 32, TextAlignmentOptions.MidlineRight, t.Coin);
             var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -175), new Vector2(1200, 90));
             statusText = UIFactory.Text(status, "Text", "", t, 30, TextAlignmentOptions.Center, t.Accent);

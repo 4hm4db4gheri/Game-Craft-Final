@@ -1,7 +1,7 @@
 # Hollow — Release notes (jam build)
 
 Build: Windows x64 release, `Builds/Windows/Hollow.exe` — **Succeeded, 0 errors, 1 warning**, 139.7 MB (incremental rebuild after GDD v0.19, T23–T31). The built game was started and ran without errors in `Player.log`; the dev panel is removed from release builds.
-Tests: 434 EditMode tests, 434 passed (includes the full-game bot, localisation, AI selection, gift, item slot, two stations and enemy-audio tests).
+Tests: 433 EditMode tests, 433 passed (includes the full-game bot, localisation, AI selection, gift, item slot, two stations and enemy-audio tests).
 GDD: v0.19 (`docs/GDD_v0.19.md`); what changed and where it is implemented: `docs/GDD_CHANGES_v0.19.md`, decisions D61–D71. Not done: mobile (v0.19 §22, only if time remains). The game is now Persian (RTLTMPro + Vazirmatn); enemy sounds are synthesised placeholders and no voice is recorded yet (`docs/VOICE_LINES.md`).
 Date: 2026-10-17. Machine used for every measurement: i7-8700, GTX 1650 SUPER, 16 GB RAM, Windows 11 Pro.
 
