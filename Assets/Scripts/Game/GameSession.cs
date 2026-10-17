@@ -26,6 +26,7 @@ namespace Hollow.Game
         [SerializeField] UIRoot ui;
 
         HudView hud;
+        HintCoach hints;
         XpCardScreen xpScreen;
         FailureScreen failureScreen;
         ShopPanel shopPanel;
@@ -58,6 +59,8 @@ namespace Hollow.Game
             hud = ui.gameObject.AddComponent<HudView>();
             hud.Init(ui);
             hud.ItemClicked = id => { if (app.States.Current == GameState.Playing) ItemSystem.Equip(W, id); };
+            hints = ui.gameObject.AddComponent<HintCoach>();
+            hints.Init(ui, hud);
             xpScreen = ui.gameObject.AddComponent<XpCardScreen>();
             xpScreen.Init(ui);
             shopPanel = ui.gameObject.AddComponent<ShopPanel>();
@@ -217,6 +220,9 @@ namespace Hollow.Game
             SyncShop(w);
             SyncEncounter(w);
             SyncBarks(w);
+            // One-time hints wait for calm moments: not over menus, scenes, the open shop, a failure or the first tutorial steps.
+            bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase;
+            hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy);
             if (telemetry != null)
             {
                 telemetry.Observe(w);
@@ -441,7 +447,7 @@ namespace Hollow.Game
             string status = playing ? TutorialPrompt(w) : null; // no hints over scenes and menus
             if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
-            hud.SetStatus(status);
+            hud.SetStatus(hints.Showing ? null : status); // a hint card says it better; the line returns afterwards
         }
 
         void OnShopBuy(ShopOffer offer)

@@ -29,11 +29,12 @@
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
 | `Assets/Resources/Localization/fa.json` | همه‌ی متن‌های بازیکن به فارسی (کلید ← متن)، خوانده با `Hollow.UI.Loc` (`Loc.T`/`Loc.F`/`Loc.Weapon`…). متن جدید = کلید جدید در همین فایل؛ تست `LocalizationTests` کلیدهای کد را چک می‌کند |
+| `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، چند سلاح، خشاب خالی، جان کم، اپراتور زخمی، سکه برای ارتقا). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`) |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۲۷ تست، همه پاس) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۳۴ تست، همه پاس) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
@@ -55,7 +56,7 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۲۷ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۳۴ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
 - باقی‌مانده: هیچ تسکی از T00–T22 نمانده. کارهای بعدی با طراح/کاربر: اعداد سطح ۲ و ۳ سلاح‌ها، playtest انسانی، آرت AI، گوش دادن به صداها (فهرست در `docs/RELEASE_NOTES.md`).
 ## کارهای باز / ایده‌ها
@@ -209,3 +210,9 @@
 - گزارش کاربر: «تپانچه یا اسلات ۱ را اصلاً نمی‌شود عوض کرد». کلیدهای ۱ و ۲ کار می‌کردند (با تزریق مستقیم ورودی بررسی شد)؛ محدودیت از طراحی بود. حالا هر دو اسلات هر سلاح خریده‌شده (و خود تپانچه) را می‌گیرند؛ در فروشگاه هر سلاح یک ردیف با دکمه‌های «به اسلات ۱/۲» دارد؛ جابه‌جایی بین اسلات‌ها swap است؛ اسلات ۱ هیچ‌وقت خالی نمی‌شود. `LoadoutState.Slot1` با نام ذخیره‌ی `SlotPistol` (سازگار با saveهای قبلی)، `WeaponSystem.Equip/CanEquip`، `ShopOffer.Slot`. اگر صفحه‌ی فروشگاه از پنل بلندتر شود، کوچک می‌شود. تست‌های جدید در `ShopTests`. تصمیم D73.
 - منو: با اجازه‌ی کاربر پک CC0 کنی (۱ مگابایت) دانلود شد؛ منبع در `ArtSource/`. لایه‌های صنعتی، دکل برق، مه، دود، دستیار AI و vignette با کد ساخته می‌شوند. ستون دکمه‌ها سمت راست، بدون تیره کردن صفحه. تصمیم D74. اسکرین‌شات‌ها: `docs/screenshots/MainMenu_Parallax.png`، `Shop_WeaponSlots.png`.
 - نکته‌ی تست: وقتی پنجره‌ی Game فوکوس ندارد، تزریق کلید با `QueueStateEvent` به actionها نمی‌رسد؛ برای آزمودن زنجیره‌ی ورودی، action را مستقیم در `pressed` ورودی Unity بگذار. تزریق موقعیت ماوس هم از CLI اعمال نمی‌شود.
+
+### 2026-10-17 — راهنماهای یک‌باره و فروشگاه مرتب‌تر
+- `HintRules` و `HintCoach`: وقتی بازیکن سلاح دوم، آیتم اول یا نوع دوم آیتم می‌گیرد (و چند مورد مشابه: سه سلاح، خشاب خالی، جان کم، اپراتور زخمی، سکه‌ی کافی برای ارتقا) یک کارت راهنما می‌آید؛ صفحه کمی تیره می‌شود و بخش مربوط HUD با قاب چشمک‌زن روشن می‌ماند. هر راهنما یک بار در هر بازی، با ذخیره. وقتی فروشگاه، منو، صحنه یا قدم‌های اول آموزش باز است صبر می‌کند. تصمیم D75.
+- فروشگاه: دو کارت اسلات ۱ و ۲ با دکمه‌ی «جابه‌جا»، بعد سلاح‌های دیگر در یک خط با دکمه‌های اسلات، بعد خرید سلاح. پنل پهن‌تر (۶۶۰). `ShopPanel.Row` حالا تابع برچسب خودش را دارد.
+- تست‌های `HintTests`. اسکرین‌شات‌ها: `docs/screenshots/Hint_WeaponSwitch.png`، `Shop_WeaponSlots.png`.
+- نکته‌ی تست: برای اسکرین‌شات در Play mode بدون مردن بازیکن، `GameApp.Instance.ToolFreeze = true` شبیه‌سازی را نگه می‌دارد ولی UI (و راهنماها) کار می‌کنند. اسکریپت‌های پایتون طولانی را با heredoc در Bash اجرا نکن (خطای quote می‌دهد)؛ در فایل بنویس.

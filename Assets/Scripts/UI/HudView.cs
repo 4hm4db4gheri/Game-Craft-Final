@@ -24,6 +24,17 @@ namespace Hollow.UI
         UnityEngine.UI.Image itemFrame;
         BarView itemGap;
         ItemId shownItem;
+        RectTransform weaponPanel, walletPanel;
+
+        /// <summary>The HUD part a hint points at (v0.19 one-time hints).</summary>
+        public RectTransform TargetRect(HintTarget target) => target switch
+        {
+            HintTarget.Item => (RectTransform)itemButton.transform,
+            HintTarget.Health => (RectTransform)health.transform,
+            HintTarget.Companion => (RectTransform)companion.transform,
+            HintTarget.Wallet => walletPanel,
+            _ => weaponPanel,
+        };
 
         /// <summary>Clicking the item slot only equips it (v0.19 §8).</summary>
         public System.Action<ItemId> ItemClicked;
@@ -40,7 +51,7 @@ namespace Hollow.UI
             companionText = UIFactory.Text(companion.transform, "Text", "", t, 16, TextAlignmentOptions.Center);
             companion.gameObject.SetActive(false);
 
-            var weapon = UIFactory.Rect(hud, "Weapon", new Vector2(1, 0), new Vector2(1, 0), new Vector2(-40, 60), new Vector2(460, 110));
+            var weapon = weaponPanel = UIFactory.Rect(hud, "Weapon", new Vector2(1, 0), new Vector2(1, 0), new Vector2(-40, 60), new Vector2(460, 110));
             UIFactory.Panel(weapon, t);
             weaponText = UIFactory.Text(weapon, "Text", "", t, 24, TextAlignmentOptions.MidlineRight);
             weaponText.margin = new Vector4(16, 8, 16, 8);
@@ -52,7 +63,7 @@ namespace Hollow.UI
 
             var top = UIFactory.Rect(hud, "Top", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -16), new Vector2(900, 48));
             topText = UIFactory.Text(top, "Text", "", t, 26, TextAlignmentOptions.Center);
-            var wallet = UIFactory.Rect(hud, "Wallet", new Vector2(1, 1), new Vector2(1, 1), new Vector2(-40, -16), new Vector2(300, 48));
+            var wallet = walletPanel = UIFactory.Rect(hud, "Wallet", new Vector2(1, 1), new Vector2(1, 1), new Vector2(-40, -16), new Vector2(300, 48));
             walletText = UIFactory.Text(wallet, "Text", "", t, 32, TextAlignmentOptions.MidlineRight, t.Coin);
             var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -175), new Vector2(1200, 90));
             statusText = UIFactory.Text(status, "Text", "", t, 30, TextAlignmentOptions.Center, t.Accent);

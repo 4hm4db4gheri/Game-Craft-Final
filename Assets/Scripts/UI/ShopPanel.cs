@@ -17,12 +17,22 @@ namespace Hollow.UI
     public sealed class ShopPanel : MonoBehaviour
     {
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
+        const float RowWidth = 660;
 
         UIRoot root;
         RectTransform panel, list;
         TextMeshProUGUI header;
         readonly List<Button> pageButtons = new();
-        readonly List<(Button button, TextMeshProUGUI text, ShopOffer offer)> rows = new();
+        /// <summary>A clickable offer; its text is redrawn from the offer when prices or locks change.</summary>
+        sealed class Row
+        {
+            public Button Button;
+            public TextMeshProUGUI Text;
+            public ShopOffer Offer;
+            public Func<World, ShopOffer, string> Label;
+        }
+
+        readonly List<Row> rows = new();
         Action<ShopOffer> onBuy;
         int page = 1;
         int shownPage = -1;
@@ -35,18 +45,18 @@ namespace Hollow.UI
             root = uiRoot;
             onBuy = buy;
             var t = root.Theme;
-            panel = UIFactory.Rect(root.Modal, "Shop", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-30, 60), new Vector2(560, 860)); // between the coin counter and the weapon panel
+            panel = UIFactory.Rect(root.Modal, "Shop", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-30, 60), new Vector2(RowWidth + 40, 860)); // between the coin counter and the weapon panel; wide enough for one-line rows
             UIFactory.Panel(panel, t, null, raycast: true);
-            var head = UIFactory.Rect(panel, "Header", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -12), new Vector2(520, 70));
+            var head = UIFactory.Rect(panel, "Header", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -12), new Vector2(RowWidth, 70));
             header = UIFactory.Text(head, "Text", "", t, 26, TextAlignmentOptions.Top);
             for (int i = 1; i <= 3; i++)
             {
                 int p = i;
-                var b = UIFactory.Button(panel, $"Page{i}", Loc.F("shop.page", i), t, new Vector2(0.5f, 1), new Vector2(-170 + (i - 1) * 170, -105),
-                    new Vector2(160, 44), () => { page = p; shownPage = -1; }, out _, 22);
+                var b = UIFactory.Button(panel, $"Page{i}", Loc.F("shop.page", i), t, new Vector2(0.5f, 1), new Vector2(-(RowWidth / 3f) + (i - 1) * (RowWidth / 3f), -105),
+                    new Vector2(RowWidth / 3f - 12, 44), () => { page = p; shownPage = -1; }, out _, 22);
                 pageButtons.Add(b);
             }
-            list = UIFactory.Rect(panel, "List", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -135), new Vector2(530, 712));
+            list = UIFactory.Rect(panel, "List", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -135), new Vector2(RowWidth + 10, 712));
             panel.gameObject.SetActive(false);
         }
 
@@ -77,7 +87,9 @@ namespace Hollow.UI
 
         static int Signature(World w, List<ShopOffer> offers)
         {
-            int h = 17;
+            var L = w.Player.Loadout;
+            // Equipping changes locks, not keys: the carried weapons and the active slot are part of the layout too.
+            int h = 17 + (int)L.Slot1 * 7919 + (L.HasPrimary ? 1 + (int)L.SlotPrimary * 131 : 0) + L.ActiveSlot * 3;
             foreach (var o in offers)
                 h = h * 31 + (int)ShopSystem.Key(o) + (o.Kind == OfferKind.BuyItem && w.Inventory.Count(o.Item) > 0 ? 1 : 0);
             return h;
@@ -85,16 +97,15 @@ namespace Hollow.UI
 
         void UpdateRows(World w, List<ShopOffer> offers)
         {
-            for (int i = 0; i < rows.Count; i++)
+            foreach (var row in rows)
             {
-                var (button, text, old) = rows[i];
-                long key = ShopSystem.Key(old);
+                long key = ShopSystem.Key(row.Offer);
                 foreach (var o in offers)
                 {
                     if (ShopSystem.Key(o) != key) continue;
-                    button.interactable = o.Enabled;
-                    text.text = Label(w, o);
-                    rows[i] = (button, text, o);
+                    row.Button.interactable = o.Enabled;
+                    row.Text.text = row.Label(w, o);
+                    row.Offer = o;
                     break;
                 }
             }
@@ -103,7 +114,6 @@ namespace Hollow.UI
         string Label(World w, ShopOffer o) => o.Kind switch
         {
             OfferKind.BuyWeapon => WeaponLabel(w, o),
-            OfferKind.EquipWeapon => SlotLabel(o),
             OfferKind.UpgradeWeapon => UpgradeLabel(w, o),
             OfferKind.BuyItem => ItemLabel(w, o),
             _ => HealLabel(w, o),
@@ -111,7 +121,7 @@ namespace Hollow.UI
 
         void Rebuild(World w, List<ShopOffer> offers)
         {
-            foreach (var r in rows) Destroy(r.button.gameObject);
+            foreach (var r in rows) Destroy(r.Button.gameObject);
             rows.Clear();
             foreach (Transform child in list) Destroy(child.gameObject);
             var t = root.Theme;
@@ -119,60 +129,99 @@ namespace Hollow.UI
 
             void Section(string title)
             {
-                var rt = UIFactory.Rect(list, title, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -y), new Vector2(520, 26));
+                var rt = UIFactory.Rect(list, title, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -y), new Vector2(RowWidth, 26));
                 UIFactory.Text(rt, "T", $"<b>{title}</b>", t, 19, TextAlignmentOptions.MidlineRight, t.Accent);
                 y += 28;
             }
 
-            void Row(ShopOffer o, string label, float height = 52)
+            Button Add(Transform parent, ShopOffer o, Vector2 anchor, Vector2 pos, Vector2 size, float font, Func<World, ShopOffer, string> label)
             {
-                var b = UIFactory.Button(list, "Row", label, t, new Vector2(0.5f, 1), new Vector2(0, -y - height * 0.5f - 1), new Vector2(520, height),
-                    () => onBuy?.Invoke(o), out var text, 17);
-                text.alignment = TextAlignmentOptions.MidlineRight;
+                var b = UIFactory.Button(parent, "Row", label(w, o), t, anchor, pos, size, () => onBuy?.Invoke(o), out var text, font);
                 b.interactable = o.Enabled;
-                rows.Add((b, text, o));
+                rows.Add(new Row { Button = b, Text = text, Offer = o, Label = label });
+                return b;
+            }
+
+            void Row(ShopOffer o, float height = 52)
+            {
+                Add(list, o, new Vector2(0.5f, 1), new Vector2(0, -y - height * 0.5f - 1), new Vector2(RowWidth, height), 17, Label)
+                    .GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.MidlineRight;
                 y += height + 4;
             }
 
-            // An owned weapon is one line with a button per slot (D73): its name on the right, slots 1 and 2 on the left.
-            void EquipRow(WeaponId weapon)
+            var L = w.Player.Loadout;
+
+            // What the player carries (D73): slot 1 on the right, slot 2 on the left, a swap button between them.
+            void Loadout()
             {
-                const float height = 74, slotWidth = 92, gap = 6; // the stats can take two lines beside the buttons
-                var rt = UIFactory.Rect(list, "Equip", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -y - 1), new Vector2(520, height));
+                const float height = 76, swapWidth = 96, gap = 8;
+                float cardWidth = (RowWidth - swapWidth - 2 * gap) * 0.5f;
+                var rt = UIFactory.Rect(list, "Loadout", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -y - 1), new Vector2(RowWidth, height));
+                for (int slot = 1; slot <= 2; slot++)
+                {
+                    bool filled = slot == 1 || L.HasPrimary;
+                    var id = slot == 1 ? L.Slot1 : L.SlotPrimary;
+                    float x = slot == 1 ? RowWidth - cardWidth * 0.5f : cardWidth * 0.5f;
+                    var card = UIFactory.Rect(rt, $"Slot{slot}", new Vector2(0, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(x, 0), new Vector2(cardWidth, height));
+                    bool active = L.ActiveSlot == slot && filled;
+                    UIFactory.Panel(card, t, active ? new Color(t.Accent.r, t.Accent.g, t.Accent.b, 0.22f) : new Color(1, 1, 1, 0.06f));
+                    string head = $"<size=16><color=#{Hex(active ? t.Accent : t.TextDim)}>{Loc.F("shop.slotCard", slot)}</color></size>";
+                    string body = filled ? $"<b>{Loc.Weapon(id)}</b>  <size=15>{Loc.F("shop.level", L.Get(id)?.Level ?? 1)}</size>"
+                        : $"<color=#{Hex(t.TextDim)}>{Loc.T("shop.emptySlot")}</color>";
+                    UIFactory.Text(card, "T", $"{head}\n{body}", t, 22, TextAlignmentOptions.Center);
+                }
+                foreach (var o in offers)
+                    if (o.Kind == OfferKind.EquipWeapon && L.HasPrimary && o.Weapon == L.SlotPrimary && o.Slot == 1)
+                        Add(rt, o, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(swapWidth, 46), 16, (_, _) => Loc.T("shop.swap"));
+                y += height + 6;
+            }
+
+            // Every other owned weapon (from any phase page): one short line and a button per slot.
+            void Stored(WeaponId weapon)
+            {
+                const float height = 50, slotWidth = 86, gap = 6;
+                var rt = UIFactory.Rect(list, "Stored", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -y - 1), new Vector2(RowWidth, height));
                 UIFactory.Panel(rt, t, new Color(1, 1, 1, 0.04f));
-                float labelWidth = 520 - 2 * (slotWidth + gap) - 10;
-                var labelRect = UIFactory.Rect(rt, "Label", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-8, 0), new Vector2(labelWidth, height));
-                var label = UIFactory.Text(labelRect, "T", "", t, 16, TextAlignmentOptions.MidlineRight);
+                var labelRect = UIFactory.Rect(rt, "Label", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-10, 0), new Vector2(RowWidth - 2 * (slotWidth + gap) - 16, height));
+                var owned = L.Get(weapon);
+                var wd = w.Profile.Weapon(weapon);
+                var level = wd.Levels[Mathf.Clamp(owned.Level - 1, 0, wd.Levels.Count - 1)];
+                UIFactory.Text(labelRect, "T", $"<b>{Loc.Weapon(weapon)}</b>  <size=15>{Loc.F("shop.level", owned.Level)}</size>\n<size=14><color=#{Hex(t.TextDim)}>{ShortStats(level)}</color></size>",
+                    t, 17, TextAlignmentOptions.MidlineRight);
                 foreach (var o in offers)
                 {
                     if (o.Kind != OfferKind.EquipWeapon || o.Weapon != weapon) continue;
-                    label.text = EquipLabel(w, o);
                     float x = gap + (2 - o.Slot) * (slotWidth + gap) + slotWidth * 0.5f; // slot 1 nearer the name
-                    var offer = o;
-                    var b = UIFactory.Button(rt, $"Slot{o.Slot}", SlotLabel(o), t, new Vector2(0, 0.5f), new Vector2(x, 0), new Vector2(slotWidth, height - 8),
-                        () => onBuy?.Invoke(offer), out var text, 16);
-                    b.interactable = o.Enabled;
-                    rows.Add((b, text, o));
+                    Add(rt, o, new Vector2(0, 0.5f), new Vector2(x, 0), new Vector2(slotWidth, height - 10), 16, (_, of) => Loc.F("shop.toSlot", of.Slot));
                 }
                 y += height + 4;
             }
 
-            Section(Loc.T("shop.weapons"));
+            Section(Loc.T("shop.loadout"));
+            Loadout();
+            bool storedHeader = false;
+            foreach (var wd in w.Profile.Weapons)
+            {
+                if (!L.Owns(wd.Id) || L.SlotOf(wd.Id) != 0) continue;
+                if (!storedHeader) { Section(Loc.T("shop.stored")); storedHeader = true; }
+                Stored(wd.Id);
+            }
+            bool buyHeader = false;
             foreach (var o in offers)
             {
-                if (o.Page != page) continue;
-                if (o.Kind == OfferKind.BuyWeapon) Row(o, WeaponLabel(w, o));
-                else if (o.Kind == OfferKind.EquipWeapon && !IsLaterSlotOfShownWeapon(offers, o)) EquipRow(o.Weapon);
+                if (o.Page != page || o.Kind != OfferKind.BuyWeapon) continue;
+                if (!buyHeader) { Section(Loc.T("shop.weapons")); buyHeader = true; }
+                Row(o);
             }
             Section(Loc.T("shop.upgrades"));
             foreach (var o in offers)
-                if (o.Page == page && o.Kind == OfferKind.UpgradeWeapon) Row(o, UpgradeLabel(w, o), 74); // the change list can take two lines
+                if (o.Page == page && o.Kind == OfferKind.UpgradeWeapon) Row(o, 62); // name and price, then the change list
             Section(Loc.T("shop.equipment"));
             foreach (var o in offers)
             {
-                if (o.Kind == OfferKind.BuyItem && o.Page == page) Row(o, ItemLabel(w, o));
+                if (o.Kind == OfferKind.BuyItem && o.Page == page) Row(o);
                 if (o.Kind == OfferKind.HealPlayer || (o.Kind == OfferKind.HealCompanion && o.Lock != LockReason.NoCompanion))
-                    Row(o, HealLabel(w, o));
+                    Row(o);
             }
             // Many owned weapons make a long page; shrink it to the panel rather than spill over the HUD.
             float fit = Mathf.Min(1f, list.sizeDelta.y / Mathf.Max(1f, y));
@@ -194,27 +243,10 @@ namespace Hollow.UI
             return $"<b>{Loc.F("shop.buy", Loc.Weapon(wd.Id))}</b>   {Tail(o)}\n<size=16>{Stats(wd, l)}</size>";
         }
 
-        /// <summary>Name, level and stats of an owned weapon; the slot buttons beside it carry the action.</summary>
-        static string EquipLabel(World w, ShopOffer o)
-        {
-            var wd = w.Profile.Weapon(o.Weapon);
-            var l = wd.Levels[Mathf.Clamp(o.Level - 1, 0, wd.Levels.Count - 1)];
-            return $"<b>{Loc.Weapon(wd.Id)}</b>  {Loc.F("shop.level", o.Level)}\n<size=13>{Stats(wd, l)}</size>";
-        }
+        static string Hex(Color c) => ColorUtility.ToHtmlStringRGB(c);
 
-        static string SlotLabel(ShopOffer o) =>
-            Loc.F(o.Lock == LockReason.AlreadyEquipped ? "shop.inSlot" : "shop.toSlot", o.Slot);
-
-        /// <summary>Equip offers of one weapon share a row: only the first one builds it.</summary>
-        static bool IsLaterSlotOfShownWeapon(List<ShopOffer> offers, ShopOffer o)
-        {
-            foreach (var other in offers)
-            {
-                if (other.Kind != OfferKind.EquipWeapon || other.Weapon != o.Weapon) continue;
-                return other.Slot != o.Slot; // the first equip offer of this weapon is a different one
-            }
-            return false;
-        }
+        static string ShortStats(WeaponLevel l) =>
+            Loc.F("stats.short", l.ProjectileCount > 1 ? $"{l.ProjectileCount}×{F(l.Damage)}" : F(l.Damage), F(l.Rate));
 
         string UpgradeLabel(World w, ShopOffer o)
         {
