@@ -336,12 +336,30 @@ namespace Hollow.Game
             audio.PlayMusic(from + 1); // the mood changes with the environment
             PlayScene($"Phase{from}To{from + 1}", () =>
             {
+                bool giftNow = !W.Narrative.GiftReceived;
                 PhaseSystem.EnterPhase(W, from + 1);
                 presenter.ResetViews();
                 arena.ShowPhase(W.Phase);
+                if (giftNow && W.Narrative.GiftReceived) { OfferGift(); return; }
                 app.States.Transition(GameState.Playing);
                 if (W.Phase == 3) dialogue.ShowBark("Phase3Start");
             });
+        }
+
+        /// <summary>v0.19 §5: in safety, Equip or Store the donated weapon. Nothing is spent either way.</summary>
+        void OfferGift()
+        {
+            var gift = W.Profile.Economy.GiftWeapon;
+            string name = Loc.Weapon(gift);
+            menus.ShowConfirm(Loc.T("gift.title"), Loc.F("gift.body", name),
+                (Loc.T("gift.equip"), () =>
+                {
+                    WeaponSystem.EquipPrimary(W, gift);
+                    Checkpoints.Capture(W); // still the wave start: a retry keeps the choice
+                    menus.Hide();
+                    app.States.Transition(GameState.Playing);
+                }),
+                (Loc.T("gift.store"), () => { menus.Hide(); app.States.Transition(GameState.Playing); }));
         }
 
         void EndGame()

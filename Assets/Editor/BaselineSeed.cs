@@ -108,6 +108,7 @@ namespace Hollow.EditorTools
                 CompanionHealPrice = 30, CompanionHealAmount = 40, CompanionHealsPerEncounter = 1,
                 CoinLifetimeEnabled = true, CoinLifetime = 60, CoinBlinkTime = 5, CoinScatterRadius = 0.6f,
                 ItemUseGap = 0.5f, BossDeathCollectsGroundCoins = true,
+                GiftWeapon = WeaponId.IndustrialRifle, GiftAfterPhase = 1,
             };
             p.Items = Items();
 

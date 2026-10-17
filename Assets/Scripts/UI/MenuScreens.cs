@@ -171,7 +171,8 @@ namespace Hollow.UI
             for (int i = 0; i < options.Length; i++)
             {
                 var (label, action) = options[i];
-                UIFactory.Button(box, label, label, root.Theme, new Vector2(0.5f, 0), new Vector2(x0 + i * 240, 70), new Vector2(220, 64), action, out _, 24);
+                // Right to left: the first (main) option sits on the right.
+                UIFactory.Button(box, label, label, root.Theme, new Vector2(0.5f, 0), new Vector2(-(x0 + i * 240), 70), new Vector2(220, 64), action, out _, 24);
             }
         }
 

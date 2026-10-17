@@ -393,6 +393,9 @@ namespace Hollow.Data
         [Gdd("§9"), Unit("s")] public float ItemUseGap;
         /// <summary>D26: at boss death every ground coin flies to the player before the transition.</summary>
         public bool BossDeathCollectsGroundCoins;
+        /// <summary>v0.19 §5: after this phase the human donates this weapon once, free (an existing weapon, no extra slot).</summary>
+        [Gdd("v0.19 §5")] public WeaponId GiftWeapon = WeaponId.IndustrialRifle;
+        [Gdd("v0.19 §5")] public int GiftAfterPhase = 1;
     }
 
     [Serializable]

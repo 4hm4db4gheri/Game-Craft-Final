@@ -25,8 +25,22 @@ namespace Hollow.Sim
             Vector2 companionAt = w.Companion.Present ? w.Companion.Position : w.Layout.CompanionStart;
             CompanionSystem.SpawnForPhase(w, w.Arena.NearestFree(companionAt, w.Profile.Companion.BodyRadius));
 
+            GiveGift(w, phase);
             w.Waves.Wave = 0;
-            WaveSystem.StartWave(w, 1);
+            WaveSystem.StartWave(w, 1); // the wave-start checkpoint already holds the gift
+        }
+
+        /// <summary>
+        /// v0.19 §5: after phase one the human donates the industrial rifle. It is granted once, free, owned but
+        /// not equipped; the player chooses Equip or Store (UI). Owned weapons are re-equipped free at the shop.
+        /// </summary>
+        public static bool GiveGift(World w, int phase)
+        {
+            var eco = w.Profile.Economy;
+            if (w.Narrative.GiftReceived || phase != eco.GiftAfterPhase + 1) return false;
+            WeaponSystem.Give(w, eco.GiftWeapon, equip: false);
+            w.Narrative.GiftReceived = true;
+            return true;
         }
     }
 }

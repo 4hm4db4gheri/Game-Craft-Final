@@ -2595,7 +2595,9 @@
     "CoinRadius": 0.1,
     "PhaseEndCoinWait": 4.0,
     "ItemUseGap": 0.5,
-    "BossDeathCollectsGroundCoins": true
+    "BossDeathCollectsGroundCoins": true,
+    "GiftWeapon": "IndustrialRifle",
+    "GiftAfterPhase": 1
   },
   "Items": [
     {

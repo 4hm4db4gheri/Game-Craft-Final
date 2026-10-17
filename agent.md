@@ -180,3 +180,5 @@
 - صفحه‌ی `MenuScreens.ShowAiSelect` بعد از انتخاب جایگاه. `GameApp.StartNewGame(slot, ai)`. تست‌های `CharacterTests`. تصمیم D65.
 - نکته: متن‌های جدید را در `scratchpad/fa_<task>.json` نمی‌توان نگه داشت (scratchpad موقت است)؛ `fa.json` خودش منبع است و باید مستقیم ویرایش شود.
 
+### 2026-10-17 — T26: هدیه‌ی تفنگ
+- ورود به فاز ۲ یک بار تفنگ صنعتی را رایگان و بدون equip می‌دهد (`PhaseSystem.GiveGift`، `Narrative.GiftReceived`)؛ بعد از صحنه، پنجره‌ی «همین حالا بردار / نگه دار برای بعد». دکمه‌ی اول پنجره‌های تأیید سمت راست است. تست‌های `GiftTests`. تصمیم D66.

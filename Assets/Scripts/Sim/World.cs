@@ -79,5 +79,7 @@ namespace Hollow.Sim
         /// <summary>The player chose to visit the shop before the boss and is now preparing.</summary>
         public bool PreparingAtShop;
         public bool PhaseBarkShown;
+        /// <summary>The human's donated weapon was granted (once, v0.19 §5).</summary>
+        public bool GiftReceived;
     }
 }
