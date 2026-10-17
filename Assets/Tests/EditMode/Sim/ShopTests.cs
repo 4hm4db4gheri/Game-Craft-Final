@@ -63,6 +63,50 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void ThePistolSlotTakesAnyOwnedWeaponAndThePistolComesBack()
+        {
+            var sim = Rich();
+            var w = sim.World;
+            var L = w.Player.Loadout;
+            ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg);
+            ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.DoubleBarrel);
+            int wallet = w.Progress.Wallet;
+
+            Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.EquipWeapon, WeaponId.LightSmg, slot: 1), "a bought weapon replaces the pistol");
+            Assert.AreEqual(WeaponId.LightSmg, L.Slot1);
+            Assert.AreEqual(WeaponId.DoubleBarrel, L.SlotPrimary);
+            Assert.IsTrue(L.Owns(WeaponId.Pistol), "the pistol stays owned");
+            Assert.AreEqual(wallet, w.Progress.Wallet, "free");
+
+            Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.EquipWeapon, WeaponId.Pistol, slot: 2), "the pistol can go to slot 2");
+            Assert.AreEqual(WeaponId.Pistol, L.SlotPrimary);
+            Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.EquipWeapon, WeaponId.Pistol, slot: 1), "moving between slots swaps them");
+            Assert.AreEqual(WeaponId.Pistol, L.Slot1);
+            Assert.AreEqual(WeaponId.LightSmg, L.SlotPrimary);
+            Assert.IsFalse(ShopSystem.Purchase(w, OfferKind.EquipWeapon, WeaponId.Pistol, slot: 1), "already there");
+        }
+
+        [Test]
+        public void SlotOneIsNeverLeftEmptyAndSlotsSurviveASave()
+        {
+            var sim = Rich();
+            var w = sim.World;
+            Assert.IsFalse(ShopSystem.Offers(w).Any(o => o.Kind == OfferKind.EquipWeapon && o.Slot == 2),
+                "with only the pistol there is nothing to swap it with");
+            Assert.IsFalse(ShopSystem.Purchase(w, OfferKind.EquipWeapon, WeaponId.Pistol, slot: 2));
+            Assert.AreEqual(WeaponId.Pistol, w.Player.Loadout.Slot1);
+
+            ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg);
+            ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.DoubleBarrel);
+            ShopSystem.Purchase(w, OfferKind.EquipWeapon, WeaponId.LightSmg, slot: 1);
+            w.Player.Loadout.ActiveSlot = 1;
+            var restored = WorldSerializer.FromJson(WorldSerializer.ToJson(w), w.Profile, w.Layout);
+            Assert.AreEqual(WeaponId.LightSmg, restored.Player.Loadout.Slot1);
+            Assert.AreEqual(WeaponId.LightSmg, restored.Player.Loadout.ActiveId);
+            StringAssert.Contains("\"SlotPistol\":\"LightSmg\"", WorldSerializer.ToJson(w), "older saves keep loading");
+        }
+
+        [Test]
         public void UndefinedUpgradesAreNotSoldInReleaseButAreInDev()
         {
             var sim = Rich();

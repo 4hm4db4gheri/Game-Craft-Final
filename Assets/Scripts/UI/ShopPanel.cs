@@ -35,7 +35,7 @@ namespace Hollow.UI
             root = uiRoot;
             onBuy = buy;
             var t = root.Theme;
-            panel = UIFactory.Rect(root.Modal, "Shop", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-30, 70), new Vector2(560, 800));
+            panel = UIFactory.Rect(root.Modal, "Shop", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-30, 60), new Vector2(560, 860)); // between the coin counter and the weapon panel
             UIFactory.Panel(panel, t, null, raycast: true);
             var head = UIFactory.Rect(panel, "Header", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -12), new Vector2(520, 70));
             header = UIFactory.Text(head, "Text", "", t, 26, TextAlignmentOptions.Top);
@@ -46,7 +46,7 @@ namespace Hollow.UI
                     new Vector2(160, 44), () => { page = p; shownPage = -1; }, out _, 22);
                 pageButtons.Add(b);
             }
-            list = UIFactory.Rect(panel, "List", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -135), new Vector2(530, 650));
+            list = UIFactory.Rect(panel, "List", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -135), new Vector2(530, 712));
             panel.gameObject.SetActive(false);
         }
 
@@ -102,7 +102,8 @@ namespace Hollow.UI
 
         string Label(World w, ShopOffer o) => o.Kind switch
         {
-            OfferKind.BuyWeapon or OfferKind.EquipWeapon => WeaponLabel(w, o),
+            OfferKind.BuyWeapon => WeaponLabel(w, o),
+            OfferKind.EquipWeapon => SlotLabel(o),
             OfferKind.UpgradeWeapon => UpgradeLabel(w, o),
             OfferKind.BuyItem => ItemLabel(w, o),
             _ => HealLabel(w, o),
@@ -133,10 +134,36 @@ namespace Hollow.UI
                 y += height + 4;
             }
 
+            // An owned weapon is one line with a button per slot (D73): its name on the right, slots 1 and 2 on the left.
+            void EquipRow(WeaponId weapon)
+            {
+                const float height = 74, slotWidth = 92, gap = 6; // the stats can take two lines beside the buttons
+                var rt = UIFactory.Rect(list, "Equip", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -y - 1), new Vector2(520, height));
+                UIFactory.Panel(rt, t, new Color(1, 1, 1, 0.04f));
+                float labelWidth = 520 - 2 * (slotWidth + gap) - 10;
+                var labelRect = UIFactory.Rect(rt, "Label", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-8, 0), new Vector2(labelWidth, height));
+                var label = UIFactory.Text(labelRect, "T", "", t, 16, TextAlignmentOptions.MidlineRight);
+                foreach (var o in offers)
+                {
+                    if (o.Kind != OfferKind.EquipWeapon || o.Weapon != weapon) continue;
+                    label.text = EquipLabel(w, o);
+                    float x = gap + (2 - o.Slot) * (slotWidth + gap) + slotWidth * 0.5f; // slot 1 nearer the name
+                    var offer = o;
+                    var b = UIFactory.Button(rt, $"Slot{o.Slot}", SlotLabel(o), t, new Vector2(0, 0.5f), new Vector2(x, 0), new Vector2(slotWidth, height - 8),
+                        () => onBuy?.Invoke(offer), out var text, 16);
+                    b.interactable = o.Enabled;
+                    rows.Add((b, text, o));
+                }
+                y += height + 4;
+            }
+
             Section(Loc.T("shop.weapons"));
             foreach (var o in offers)
-                if (o.Page == page && (o.Kind == OfferKind.BuyWeapon || o.Kind == OfferKind.EquipWeapon))
-                    Row(o, WeaponLabel(w, o));
+            {
+                if (o.Page != page) continue;
+                if (o.Kind == OfferKind.BuyWeapon) Row(o, WeaponLabel(w, o));
+                else if (o.Kind == OfferKind.EquipWeapon && !IsLaterSlotOfShownWeapon(offers, o)) EquipRow(o.Weapon);
+            }
             Section(Loc.T("shop.upgrades"));
             foreach (var o in offers)
                 if (o.Page == page && o.Kind == OfferKind.UpgradeWeapon) Row(o, UpgradeLabel(w, o), 74); // the change list can take two lines
@@ -147,6 +174,9 @@ namespace Hollow.UI
                 if (o.Kind == OfferKind.HealPlayer || (o.Kind == OfferKind.HealCompanion && o.Lock != LockReason.NoCompanion))
                     Row(o, HealLabel(w, o));
             }
+            // Many owned weapons make a long page; shrink it to the panel rather than spill over the HUD.
+            float fit = Mathf.Min(1f, list.sizeDelta.y / Mathf.Max(1f, y));
+            list.localScale = new Vector3(fit, fit, 1f);
         }
 
         // ---------------------------------------------------------------- labels
@@ -161,8 +191,29 @@ namespace Hollow.UI
         {
             var wd = w.Profile.Weapon(o.Weapon);
             var l = wd.Levels[0];
-            string title = Loc.F(o.Kind == OfferKind.EquipWeapon ? "shop.equip" : "shop.buy", Loc.Weapon(wd.Id));
-            return $"<b>{title}</b>   {Tail(o)}\n<size=16>{Stats(wd, l)}</size>";
+            return $"<b>{Loc.F("shop.buy", Loc.Weapon(wd.Id))}</b>   {Tail(o)}\n<size=16>{Stats(wd, l)}</size>";
+        }
+
+        /// <summary>Name, level and stats of an owned weapon; the slot buttons beside it carry the action.</summary>
+        static string EquipLabel(World w, ShopOffer o)
+        {
+            var wd = w.Profile.Weapon(o.Weapon);
+            var l = wd.Levels[Mathf.Clamp(o.Level - 1, 0, wd.Levels.Count - 1)];
+            return $"<b>{Loc.Weapon(wd.Id)}</b>  {Loc.F("shop.level", o.Level)}\n<size=13>{Stats(wd, l)}</size>";
+        }
+
+        static string SlotLabel(ShopOffer o) =>
+            Loc.F(o.Lock == LockReason.AlreadyEquipped ? "shop.inSlot" : "shop.toSlot", o.Slot);
+
+        /// <summary>Equip offers of one weapon share a row: only the first one builds it.</summary>
+        static bool IsLaterSlotOfShownWeapon(List<ShopOffer> offers, ShopOffer o)
+        {
+            foreach (var other in offers)
+            {
+                if (other.Kind != OfferKind.EquipWeapon || other.Weapon != o.Weapon) continue;
+                return other.Slot != o.Slot; // the first equip offer of this weapon is a different one
+            }
+            return false;
         }
 
         string UpgradeLabel(World w, ShopOffer o)

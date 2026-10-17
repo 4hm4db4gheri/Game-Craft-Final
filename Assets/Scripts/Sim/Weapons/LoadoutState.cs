@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Hollow.Data;
+using Newtonsoft.Json;
 
 namespace Hollow.Sim
 {
@@ -12,16 +13,18 @@ namespace Hollow.Sim
     }
 
     /// <summary>
-    /// Two field slots: 1 = pistol, 2 = current primary (gun or melee). Other owned weapons stay owned and
-    /// are equipped at the shop for free (D18).
+    /// Two field slots. Slot 1 starts with the pistol, slot 2 holds the newest purchase; at the shop any owned
+    /// weapon, the pistol included, can be put in either slot for free (D18, D73). Slot 1 is never empty.
     /// </summary>
     public sealed class LoadoutState
     {
         public List<OwnedWeapon> Owned = new();
-        public WeaponId SlotPistol = WeaponId.Pistol;
+        /// <summary>Slot 1 (saves keep its pre-D73 name).</summary>
+        [JsonProperty("SlotPistol")] public WeaponId Slot1 = WeaponId.Pistol;
+        /// <summary>Slot 2 is empty until the first purchase.</summary>
         public bool HasPrimary;
         public WeaponId SlotPrimary;
-        /// <summary>1 = pistol, 2 = primary.</summary>
+        /// <summary>1 or 2.</summary>
         public int ActiveSlot = 1;
 
         public long SwapReadyTick;
@@ -30,7 +33,10 @@ namespace Hollow.Sim
         public long ReloadEndTick;
         public long ReloadTotalTicks;
 
-        public WeaponId ActiveId => ActiveSlot == 2 && HasPrimary ? SlotPrimary : SlotPistol;
+        public WeaponId ActiveId => ActiveSlot == 2 && HasPrimary ? SlotPrimary : Slot1;
+
+        /// <summary>The slot holding this weapon: 1, 2, or 0 when it is only owned.</summary>
+        public int SlotOf(WeaponId id) => Slot1 == id ? 1 : HasPrimary && SlotPrimary == id ? 2 : 0;
 
         public OwnedWeapon Get(WeaponId id) => Owned.Find(o => o.Id == id);
         public OwnedWeapon Active => Get(ActiveId);

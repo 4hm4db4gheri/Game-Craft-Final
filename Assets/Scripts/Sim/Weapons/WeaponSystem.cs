@@ -24,7 +24,7 @@ namespace Hollow.Sim
         public static float ReloadSeconds(World w, WeaponLevel l) =>
             Mathf.Max(w.Profile.Combat.ReloadFloor, l.ReloadTime * PlayerStats.ReloadMultiplier(w));
 
-        /// <summary>Adds a weapon (full magazine). Non-pistol weapons go to the primary slot (newest purchase).</summary>
+        /// <summary>Adds a weapon (full magazine). A weapon not already carried goes to slot 2 (newest purchase).</summary>
         public static OwnedWeapon Give(World w, WeaponId id, int level = 1, bool equip = true)
         {
             var L = w.Player.Loadout;
@@ -35,18 +35,40 @@ namespace Hollow.Sim
                 owned.Ammo = LevelData(w, owned).Magazine;
                 L.Owned.Add(owned);
             }
-            if (equip && id != L.SlotPistol) EquipPrimary(w, id);
+            if (equip && L.SlotOf(id) == 0) Equip(w, id, 2);
             return owned;
         }
 
-        /// <summary>Puts an owned weapon in the primary slot (free re-equip at the shop).</summary>
-        public static void EquipPrimary(World w, WeaponId id)
+        /// <summary>True when the weapon can go to that slot: owned, not already there, and slot 1 is never left empty.</summary>
+        public static bool CanEquip(LoadoutState L, WeaponId id, int slot)
+        {
+            if (!L.Owns(id) || slot < 1 || slot > 2) return false;
+            int from = L.SlotOf(id);
+            return from != slot && !(from == 1 && !L.HasPrimary);
+        }
+
+        /// <summary>
+        /// Puts an owned weapon in slot 1 or 2 (free at the shop, D73). A weapon moved from the other slot swaps
+        /// places with the one it replaces.
+        /// </summary>
+        public static bool Equip(World w, WeaponId id, int slot)
         {
             var L = w.Player.Loadout;
-            if (!L.Owns(id) || id == L.SlotPistol) return;
-            if (L.ActiveSlot == 2) CancelReload(w);
-            L.HasPrimary = true;
-            L.SlotPrimary = id;
+            if (!CanEquip(L, id, slot)) return false;
+            int from = L.SlotOf(id);
+            if (L.ActiveSlot == slot || L.ActiveSlot == from) CancelReload(w);
+            if (slot == 1)
+            {
+                if (from == 2) L.SlotPrimary = L.Slot1;
+                L.Slot1 = id;
+            }
+            else
+            {
+                if (from == 1) L.Slot1 = L.SlotPrimary;
+                L.HasPrimary = true;
+                L.SlotPrimary = id;
+            }
+            return true;
         }
 
         /// <summary>Applies a new level; the current magazine count is kept, clamped to the new size (D27).</summary>

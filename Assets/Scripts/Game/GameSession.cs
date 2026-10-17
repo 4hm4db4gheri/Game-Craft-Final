@@ -368,7 +368,7 @@ namespace Hollow.Game
             menus.ShowConfirm(Loc.T("gift.title"), Loc.F("gift.body", name),
                 (Loc.T("gift.equip"), () =>
                 {
-                    WeaponSystem.EquipPrimary(W, gift);
+                    WeaponSystem.Equip(W, gift, 2);
                     Checkpoints.Capture(W); // still the wave start: a retry keeps the choice
                     menus.Hide();
                     ResumeAfterTransition();
@@ -447,7 +447,7 @@ namespace Hollow.Game
         void OnShopBuy(ShopOffer offer)
         {
             if (app.States.Current != GameState.Playing) return;
-            bool bought = ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item);
+            bool bought = ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item, offer.Slot);
             audio.Play(bought ? AudioCue.Purchase : AudioCue.Denied);
             if (bought && offer.Kind == OfferKind.BuyWeapon) BarkOnce("FirstPurchase");
         }

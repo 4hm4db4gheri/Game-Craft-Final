@@ -24,6 +24,8 @@ namespace Hollow.Sim
         public int Page;
         public int Level;
         public int StockLeft;
+        /// <summary>Equip offers: the target slot (1 or 2).</summary>
+        public int Slot;
         public bool Enabled => Lock == LockReason.None;
     }
 
@@ -113,11 +115,13 @@ namespace Hollow.Sim
                     continue;
                 }
 
-                if (wd.Id != L.SlotPistol)
+                // Either slot takes any owned weapon, the pistol included (D73).
+                int inSlot = L.SlotOf(wd.Id);
+                for (int slot = 1; slot <= 2; slot++)
                 {
-                    bool equipped = L.HasPrimary && L.SlotPrimary == wd.Id;
-                    Buffer.Add(new ShopOffer { Kind = OfferKind.EquipWeapon, Weapon = wd.Id, Price = 0, Page = page, Level = owned.Level,
-                        Lock = equipped ? LockReason.AlreadyEquipped : tutorialGate ? LockReason.TutorialPurchaseFirst : LockReason.None });
+                    if (inSlot != slot && !WeaponSystem.CanEquip(L, wd.Id, slot)) continue;
+                    Buffer.Add(new ShopOffer { Kind = OfferKind.EquipWeapon, Weapon = wd.Id, Slot = slot, Price = 0, Page = page, Level = owned.Level,
+                        Lock = inSlot == slot ? LockReason.AlreadyEquipped : tutorialGate ? LockReason.TutorialPurchaseFirst : LockReason.None });
                 }
 
                 int next = owned.Level + 1;
@@ -182,7 +186,7 @@ namespace Hollow.Sim
         }
 
         public static long Key(in ShopOffer o) =>
-            (long)o.Kind * 1_000_000L + (long)o.Weapon * 10_000L + (long)o.Item * 100L + o.Level;
+            (long)o.Kind * 1_000_000L + (long)o.Weapon * 10_000L + (long)o.Item * 100L + o.Slot * 10L + o.Level;
 
         static void TakeSnapshot(World w)
         {
@@ -195,11 +199,11 @@ namespace Hollow.Sim
         }
         // ---------------------------------------------------------------- purchase
 
-        /// <summary>Atomic purchase: either everything happens or nothing does (§11).</summary>
-        public static bool Purchase(World w, OfferKind kind, WeaponId weapon = default, ItemId item = default)
+        /// <summary>Atomic purchase: either everything happens or nothing does (§11); <paramref name="slot"/> is the target slot of an equip offer.</summary>
+        public static bool Purchase(World w, OfferKind kind, WeaponId weapon = default, ItemId item = default, int slot = 2)
         {
             var offers = Offers(w);
-            int index = offers.FindIndex(o => o.Kind == kind && Matches(o, weapon, item));
+            int index = offers.FindIndex(o => o.Kind == kind && Matches(o, weapon, item, slot));
             if (index < 0) return false;
             var offer = offers[index];
             if (!offer.Enabled) return false;
@@ -212,7 +216,7 @@ namespace Hollow.Sim
                     if (w.Tutorial == TutorialStage.Purchase && weapon == w.Profile.Economy.TutorialWeapon) w.Tutorial = TutorialStage.SecondGroup;
                     break;
                 case OfferKind.EquipWeapon:
-                    WeaponSystem.EquipPrimary(w, weapon);
+                    WeaponSystem.Equip(w, weapon, slot);
                     break;
                 case OfferKind.UpgradeWeapon:
                     WeaponSystem.SetLevel(w, weapon, offer.Level);
@@ -239,9 +243,10 @@ namespace Hollow.Sim
             return true;
         }
 
-        static bool Matches(in ShopOffer o, WeaponId weapon, ItemId item) => o.Kind switch
+        static bool Matches(in ShopOffer o, WeaponId weapon, ItemId item, int slot) => o.Kind switch
         {
             OfferKind.BuyItem => o.Item == item,
+            OfferKind.EquipWeapon => o.Weapon == weapon && o.Slot == slot,
             OfferKind.HealPlayer or OfferKind.HealCompanion => true,
             _ => o.Weapon == weapon,
         };

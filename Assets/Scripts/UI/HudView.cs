@@ -158,7 +158,7 @@ namespace Hollow.UI
                 {
                     lastWeaponKey = key;
                     sb.Clear();
-                    AppendWeapon(w, L.SlotPistol, L.ActiveSlot == 1, 1);
+                    AppendWeapon(w, L.Slot1, L.ActiveSlot == 1, 1);
                     if (L.HasPrimary) { sb.Append('\n'); AppendWeapon(w, L.SlotPrimary, L.ActiveSlot == 2, 2); }
                     weaponText.text = sb.ToString();
                 }
@@ -189,7 +189,7 @@ namespace Hollow.UI
         static int WeaponKey(World w)
         {
             var L = w.Player.Loadout;
-            int h = L.ActiveSlot * 31 + (L.HasPrimary ? 7 : 0);
+            int h = L.ActiveSlot * 31 + (L.HasPrimary ? 7 + (int)L.SlotPrimary * 131 : 0) + (int)L.Slot1 * 7919;
             foreach (var o in L.Owned) h = h * 397 ^ ((int)o.Id * 1000003 + o.Level * 1009 + o.Ammo);
             return h;
         }
