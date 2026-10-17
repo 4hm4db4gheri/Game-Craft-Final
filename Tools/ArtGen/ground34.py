@@ -16,7 +16,7 @@ Run order:  fix_art.py, ground34.py, animate.py, then Unity: Hollow > Art > Appl
 import os
 import random
 
-from PIL import Image, ImageChops, ImageEnhance
+from PIL import Image, ImageChops, ImageEnhance, ImageStat
 
 import artlib as L
 import fix_art
@@ -82,38 +82,85 @@ def feather(w, h, across_x):
     return m
 
 
+def shade(img, k):
+    return ImageEnhance.Brightness(img).enhance(k)
+
+
+def vertical_ramp(w, h, top, bottom):
+    """'L' mask going from `top` to `bottom` (0-255) down the strip."""
+    m = Image.new("L", (w, h))
+    m.putdata([int(top + (bottom - top) * (y / max(1, h - 1))) for y in range(h) for _ in range(w)])
+    return m
+
+
+# Slab look, in output pixels (128 per unit).
+GAP_X, GAP_Y = 6, 4            # dark joints between slabs (the horizontal one is foreshortened)
+LIP, STEP = 7, 18              # front face of every slab, plus this much per level it stands above the slab in front
+EDGE_LIT, EDGE_SIDE = 3, 3     # lit top edge (light from the upper left), shaded right edge
+ELEVATIONS = [(0, 0.65), (1, 0.2), (-1, 0.15)]  # level of a slab: flush, raised, sunk (damaged ground)
+
+
 def slabs(src, size, seed, joint):
-    """The source's joints are moved to its edges and copies of them drawn over its old (not seamless) edges, so
-    the tile is four slabs each framed by joints. Slabs are then shuffled (and some mirrored) with their own tone;
-    a slab is never next to the same slab, so no mirror patterns show."""
+    """Concrete slabs seen in 3/4: each slab is a top face plus the thin front face the camera sees, with a lit top
+    edge and a dark joint around it. Some slabs stand a little higher or sink, so the floor
+    shows thickness and depth instead of a flat grid. Rows stay aligned (staggered rows read as a wall). The source's drawn slabs give the top faces (its old joints are
+    cropped away); they are shuffled and mirrored so no slab sits next to itself."""
     src = ImageChops.offset(src.convert("RGB"), src.width - joint[0], src.height - joint[1])
     tile = foreshortened(src)
     tw, th = tile.size
-    jw = tw // 32
-    v = ImageChops.offset(tile, jw // 2, 0).crop((0, 0, jw, th))
-    tile.paste(v, (tw // 2 - jw // 2, 0), feather(jw, th, True))
-    jh = round(jw * SQUASH)
-    hstrip = ImageChops.offset(tile, 0, jh // 2).crop((0, 0, tw, jh))
-    tile.paste(hstrip, (0, th // 2 - jh // 2), feather(tw, jh, False))
-
-    sw, sh = tw // 2, th // 2
-    quads = [tile.crop((x, y, x + sw, y + sh)) for y in (0, sh) for x in (0, sw)]
+    sw, sh = tw // 2, th // 2      # 4 x 3 units on screen = a 4 x 4 slab on the ground
+    inset = tw // 48
+    quads = [tile.crop((x + inset, y + inset, x + sw - inset, y + sh - inset)) for y in (0, sh) for x in (0, sw)]
     variants = quads + [q.transpose(Image.FLIP_LEFT_RIGHT) for q in quads]
     rnd = random.Random(seed)
     cols, rows = size // sw, size // sh
-    pick = [[0] * cols for _ in range(rows)]
+    offset = [0] * rows  # aligned rows: staggered ones with front faces read as a brick wall
+
+    def under(r, c, dr):
+        """The two slabs of row r + dr that touch slab (r, c) along its edge."""
+        n = (r + dr) % rows
+        k = (c * sw + offset[r] - offset[n]) // sw
+        return [(n, k % cols), (n, (k + 1) % cols)]
+
+    pick = [[-1] * cols for _ in range(rows)]
     for r in range(rows):
         for c in range(cols):
-            near = {pick[r][c - 1] % 4 if c else -1, pick[r - 1][c] % 4 if r else -1}
+            near = {pick[r][c - 1] % 4} | {pick[n][k] % 4 for n, k in under(r, c, -1) if pick[n][k] >= 0}
             if c == cols - 1: near.add(pick[r][0] % 4)
-            if r == rows - 1: near.add(pick[0][c] % 4)
             choices = [i for i in range(len(variants)) if i % 4 not in near] or list(range(len(variants)))
             pick[r][c] = rnd.choice(choices)
-    out = Image.new("RGB", (size, size))
+    levels, weights = zip(*ELEVATIONS)
+    elev = [[rnd.choices(levels, weights)[0] for _ in range(cols)] for _ in range(rows)]
+
+    mean = [int(v) for v in ImageStat.Stat(tile).mean]
+    out = Image.new("RGB", (size, size), tuple(int(v * 0.28) for v in mean))
+    w = sw - GAP_X
     for r in range(rows):
         for c in range(cols):
-            slab = ImageEnhance.Brightness(variants[pick[r][c]]).enhance(0.93 + rnd.random() * 0.12)
-            out.paste(slab, (c * sw, r * sh))
+            e = elev[r][c]
+            front = min(elev[n][k] for n, k in under(r, c, 1))
+            behind = max(elev[n][k] for n, k in under(r, c, -1))
+            face = LIP + STEP * max(0, e - front)
+            top_h = sh - GAP_Y - face
+            src_slab = variants[pick[r][c]]
+            top = shade(src_slab.resize((w, top_h), Image.LANCZOS), 0.95 + rnd.random() * 0.08 + 0.05 * e)
+            # Lit top edge and left edge, shaded right edge.
+            top.paste(shade(top.crop((0, 0, w, EDGE_LIT)), 1.25), (0, 0))
+            top.paste(shade(top.crop((0, 0, 2, top_h)), 1.1), (0, 0))
+            top.paste(shade(top.crop((w - EDGE_SIDE, 0, w, top_h)), 0.78), (w - EDGE_SIDE, 0))
+            if behind > e:  # the slab behind stands higher: its edge shades this one
+                band = min(top_h, 44)
+                top.paste(shade(top.crop((0, 0, w, band)), 0.5), (0, 0), vertical_ramp(w, band, 200, 0))
+            # Front face: the slab's own concrete, darker toward the ground.
+            lip = src_slab.crop((0, src_slab.height * 2 // 3, src_slab.width, src_slab.height)).resize((w, face), Image.LANCZOS)
+            lip = Image.composite(shade(lip, 0.42), shade(lip, 0.68), vertical_ramp(w, face, 0, 255))
+            slab = Image.new("RGB", (w, sh - GAP_Y))
+            slab.paste(top, (0, 0))
+            slab.paste(lip, (0, top_h))
+            x = (c * sw + offset[r]) % size
+            out.paste(slab, (x, r * sh))
+            if x + w > size:
+                out.paste(slab, (x - size, r * sh))
     return out
 
 
