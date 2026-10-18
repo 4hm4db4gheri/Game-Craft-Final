@@ -33,6 +33,19 @@ namespace Hollow.Tests
         }
 
         [Test]
+        public void ArtWaveTwoNamesParse()
+        {
+            Assert.IsTrue(ArtName.TryParse("FX_DEC_Blood_decal_b.png", out var d));
+            Assert.AreEqual(("Blood", "decal", "b"), (d.Name, d.State, d.Variant));
+            Assert.IsTrue(ArtName.TryParse("UI_PRT_Operator_P2_ui.png", out var p));
+            Assert.AreEqual(("Operator", "P2_ui"), (p.Name, p.State));
+            Assert.IsTrue(ArtName.TryParse("ENM_A7c_Spiderling_move_f8.png", out var s));
+            Assert.AreEqual(("ENM_A7c", "move", 8), (s.Key, s.State, s.Frames));
+            Assert.IsTrue(ArtName.TryParse("ENV_P2_Entrance_prop.png", out var e));
+            Assert.AreEqual(3f, ArtRules.FrameWidthUnits(e));
+        }
+
+        [Test]
         public void HandDrawnSheetsBeatGeneratedSheetsWhichBeatSingleFrames()
         {
             int hand = ApplyIncomingArt.Rank("Assets/Art/Incoming/ENM_A1_RunnerWolf_move_f6.png", 6);

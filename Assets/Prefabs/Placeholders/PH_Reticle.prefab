@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.ReticleView
   reticle: {fileID: 7718051298533477779}
+  bloomGrowth: 0.9
 --- !u!1 &7801695876381944465
 GameObject:
   m_ObjectHideFlags: 0

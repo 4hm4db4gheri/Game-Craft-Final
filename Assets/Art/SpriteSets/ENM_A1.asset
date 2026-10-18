@@ -46,12 +46,12 @@ MonoBehaviour:
     FramesPerSecond: 6
   - State: move
     Frames:
-    - {fileID: -3527056022417232336, guid: 6da1963fb0cede64183abda2b8abc1f4, type: 3}
-    - {fileID: 1559915471669483522, guid: 6da1963fb0cede64183abda2b8abc1f4, type: 3}
-    - {fileID: -2447649416737202741, guid: 6da1963fb0cede64183abda2b8abc1f4, type: 3}
-    - {fileID: -6256732298934330293, guid: 6da1963fb0cede64183abda2b8abc1f4, type: 3}
-    - {fileID: 1672106482186590498, guid: 6da1963fb0cede64183abda2b8abc1f4, type: 3}
-    - {fileID: 1097377042340866633, guid: 6da1963fb0cede64183abda2b8abc1f4, type: 3}
+    - {fileID: -3527056022417232336, guid: 0d9a184019816d8408dbddee616b37a7, type: 3}
+    - {fileID: 1559915471669483522, guid: 0d9a184019816d8408dbddee616b37a7, type: 3}
+    - {fileID: -2447649416737202741, guid: 0d9a184019816d8408dbddee616b37a7, type: 3}
+    - {fileID: -6256732298934330293, guid: 0d9a184019816d8408dbddee616b37a7, type: 3}
+    - {fileID: 1672106482186590498, guid: 0d9a184019816d8408dbddee616b37a7, type: 3}
+    - {fileID: 1097377042340866633, guid: 0d9a184019816d8408dbddee616b37a7, type: 3}
     Loop: 1
     FramesPerSecond: 0
   - State: windup

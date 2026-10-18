@@ -448,6 +448,9 @@ namespace Hollow.Game
             var seen = W.Narrative.SeenScenes;
             bool canSkip = seen.Contains(id);
             if (!canSkip) seen.Add(id);
+            var art = presenter.Catalog;
+            dialogue.SetPortrait("Assistant", art.AiPortrait);
+            dialogue.SetPortrait("Operator", W.Phase >= 2 && art.OperatorPortraitP2 != null ? art.OperatorPortraitP2 : art.OperatorPortraitP1);
             dialogue.PlayScene(id, canSkip, done);
         }
         static string TutorialWeaponName(World w) => Loc.Weapon(w.Profile.Economy.TutorialWeapon);

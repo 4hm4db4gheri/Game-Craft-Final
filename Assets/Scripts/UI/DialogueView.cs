@@ -47,6 +47,8 @@ namespace Hollow.UI
         DialogueData data;
         RectTransform sceneLayer, box;
         TextMeshProUGUI title, line, hint, bark;
+        UnityEngine.UI.Image portrait;
+        RectTransform portraitFrame;
         DialogueScene current;
         int index;
         float lineEnds;
@@ -63,9 +65,17 @@ namespace Hollow.UI
         public event Action LinesStopped;
         readonly Dictionary<string, float> barkTimes = new();
         readonly Dictionary<string, string> speakerNames = new();
+        readonly Dictionary<string, Sprite> portraits = new();
 
         /// <summary>Overrides a speaker's shown name (the assistant speaks under the chosen AI's name, v0.19 §3).</summary>
         public void SetSpeakerName(string speakerId, string name) => speakerNames[speakerId] = name;
+
+        /// <summary>Portrait shown beside a speaker's lines in scenes (null removes it).</summary>
+        public void SetPortrait(string speakerId, Sprite sprite)
+        {
+            if (sprite != null) portraits[speakerId] = sprite;
+            else portraits.Remove(speakerId);
+        }
 
         public bool Playing => current != null;
 
@@ -82,6 +92,14 @@ namespace Hollow.UI
             UIFactory.Panel(box, t);
             line = UIFactory.Text(box, "Line", "", t, 34, TextAlignmentOptions.MidlineRight);
             line.margin = new Vector4(30, 10, 30, 10);
+            // Persian reads from the right: the speaker's face sits at the right end of the box, standing above it.
+            portraitFrame = UIFactory.Rect(box, "Portrait", new Vector2(1, 0), new Vector2(1, 0), new Vector2(-24, 18), new Vector2(210, 210));
+            UIFactory.Panel(portraitFrame, t);
+            var face = UIFactory.Rect(portraitFrame, "Face", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(194, 194));
+            portrait = face.gameObject.AddComponent<UnityEngine.UI.Image>();
+            portrait.preserveAspect = true;
+            portrait.raycastTarget = false;
+            portraitFrame.gameObject.SetActive(false);
             var hintRt = UIFactory.Rect(sceneLayer, "Hint", new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 318), new Vector2(1300, 40));
             hint = UIFactory.Text(hintRt, "H", "", t, 20, TextAlignmentOptions.Center, t.TextDim);
             var advance = sceneLayer.gameObject.AddComponent<UnityEngine.UI.Button>();
@@ -120,6 +138,10 @@ namespace Hollow.UI
             box.gameObject.SetActive(SubtitlesOn);
             var l = current.Lines[index];
             line.text = Format(l.Speaker, l.Text);
+            bool face = portraits.TryGetValue(l.Speaker ?? "", out var sprite);
+            portraitFrame.gameObject.SetActive(face);
+            if (face) portrait.sprite = sprite;
+            line.margin = new Vector4(30, 10, face ? 260 : 30, 10);
             LineStarted?.Invoke($"{current.Id}_{index + 1}");
             lineEnds = Time.unscaledTime + Mathf.Max(0.5f, l.Seconds);
         }

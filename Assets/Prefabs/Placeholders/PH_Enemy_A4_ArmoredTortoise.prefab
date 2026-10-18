@@ -291,7 +291,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8947511908850586470
 Transform:
   m_ObjectHideFlags: 0
@@ -426,8 +426,8 @@ Transform:
   m_GameObject: {fileID: 2585104963340005272}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.45, z: 0}
-  m_LocalScale: {x: 1.2, y: 0.9, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5562912075021972438}
@@ -481,8 +481,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 2ebc7c36c0e22c349a4564539965b9fe, type: 3}
-  m_Color: {r: 0.3, g: 0.36, b: 0.26, a: 1}
+  m_Sprite: {fileID: 8793639957104055765, guid: 5327f1e1ad139d642878ddea76a8fdd5, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -733,6 +733,7 @@ GameObject:
   - component: {fileID: 5543053863094664425}
   - component: {fileID: 5493493999403295162}
   - component: {fileID: 7024374015446258753}
+  - component: {fileID: 6199823618813416328}
   m_Layer: 0
   m_Name: PH_Enemy_A4_ArmoredTortoise
   m_TagString: Untagged
@@ -800,6 +801,30 @@ MonoBehaviour:
   telegraphArc: {fileID: 8953596449186860011}
   countdown: {fileID: 0}
   hpBarWidth: 1.2
+  recoilPushBack: 0.09
+  recoilReturn: 14
+--- !u!114 &6199823618813416328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7088065566029592883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859555f4964a8bd409f045ea3b7d4118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSetAnimator
+  set: {fileID: 11400000, guid: a6ed4f6ff16435d4ab5b3c07e9125e6e, type: 2}
+  target: {fileID: 2674126599855262445}
+  stepMotion: 1
+  strideFraction: 0.35
+  minStepsPerSecond: 1.6
+  maxStepsPerSecond: 7
+  hopFraction: 0.025
+  rockDegrees: 4
+  movingSpeed: 0.3
+  blendRate: 10
 --- !u!1001 &3208942807236875150
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -441,6 +441,9 @@ MonoBehaviour:
   phaseTwoScale: 0.92
   phaseTwoSet: {fileID: 11400000, guid: cab2905f2fabf0d418f9ae10c4cc17b9, type: 2}
   attackPoseTime: 0.3
+  recoilPushBack: 0.07
+  recoilLift: 0.03
+  recoilReturn: 14
 --- !u!114 &8103571137173734395
 MonoBehaviour:
   m_ObjectHideFlags: 0

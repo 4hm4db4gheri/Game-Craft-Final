@@ -1,4 +1,4 @@
-"""Builds animation sheets for every character state from the single drawn frames of art wave 1.
+"""Builds animation sheets for every character state from the single drawn frames of art waves 1 and 2.
 
 Each drawn frame is bent with a fine mesh: legs swing around the hip, the body bobs, leans, squashes and
 recoils, so a state gets real frames instead of one still picture. Every sheet starts or ends on the drawn
@@ -229,6 +229,13 @@ BODIES = {
     "ENM_R1_Crawler": Body("quad", belly=0.55, split=0.5, front=0.65, back=0.35, leg=12),
     "ENM_R2_Shooter": Body("biped", belly=0.5, split=0.48, front=0.55, back=0.4, leg=12, ranged=True),
     "ENM_H2_RifleGuard": Body("biped", belly=0.46, split=0.5, front=0.55, back=0.45, leg=16, ranged=True),
+    # Art wave 2 (docs/art/HANDOFF_wave2.md)
+    "ENM_A3_ChargingBoar": Body("quad", belly=0.45, split=0.55, front=0.72, back=0.3, leg=13),
+    "ENM_A4_ArmoredTortoise": Body("quad", belly=0.3, split=0.55, front=0.7, back=0.3, leg=8, heavy=0.6),
+    "ENM_A5_HowlingWolf": Body("quad", belly=0.5, split=0.55, front=0.72, back=0.3, leg=13),
+    "ENM_A6_ExplosiveBeetle": Body("quad", belly=0.25, split=0.6, front=0.75, back=0.35, leg=10),
+    "ENM_A7c_Spiderling": Body("quad", belly=0.5, split=0.5, front=0.7, back=0.3, leg=10),
+    "ENM_H1_BatonGuard": Body("biped", belly=0.46, split=0.5, front=0.55, back=0.45, leg=16),
     "BOS_B1_LargeBeast": Body("quad", belly=0.42, split=0.55, front=0.7, back=0.3, leg=9, heavy=0.8),
     "BOS_B2_IndustrialRobot": Body("biped", belly=0.4, split=0.5, front=0.6, back=0.4, leg=8, ranged=True, heavy=0.6),
 }
@@ -271,8 +278,24 @@ def plan(key):
     if key.startswith("CHR_OPR"):
         add("attack", src("attack") or idle_img, attack(body))
 
+    if key == "ENM_A3_ChargingBoar":
+        # The charge is a long run along the warned line: a fast, low gallop that loops (ApplyIncomingArt.Chargers).
+        add("attack", src("attack"), move(replace(body, leg=19, heavy=1.4)))
+    if key == "ENM_A5_HowlingWolf" and src("howl") is not None:
+        # The howl lands when the wind-up ends: the head comes up, then holds the howl, chest pumping.
+        rise = [Pose(pitch=-2.0 * i, sy=1 + 0.01 * i) for i in range(3)]
+        hold = [Pose(breath=0.02 * math.sin(TAU * i / 5), sy=1.02) for i in range(5)]
+        out["windup"] = frames(src("windup"), body, rise) + frames(src("howl"), body, hold)
+    if key == "ENM_A6_ExplosiveBeetle":
+        # The fuse: the sac swells and throbs brighter until it bursts.
+        out["windup"] = frames(src("windup"), body, [Pose(sx=1 + 0.01 * i, sy=1 + 0.008 * i, glow=1 + (0.6 if i % 2 else 0.15) * (1 + i / 4))
+                                                     for i in range(8)])
+
     death_img = src("death")
-    if death_img is not None:
+    if key == "ENM_A6_ExplosiveBeetle" and death_img is not None:
+        out["death"] = frames(src("windup") or idle_img, body, [Pose(sx=1.08, sy=1.06, glow=2.0)])
+        out["death"] += frames(death_img, body, [Pose(sy=0.88, sx=1.08), Pose(sy=1.02), Pose()])
+    elif death_img is not None:
         start = hit_img or idle_img
         out["death"] = frames(start, body, death_fall(body)) + frames(death_img, body, death_land())
     elif key == "CHR_OPR_P2":

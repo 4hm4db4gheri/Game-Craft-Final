@@ -66,7 +66,8 @@ namespace Hollow.Tests.Presentation
                 var renderers = e.Prefab.GetComponentsInChildren<SpriteRenderer>(true)
                     .Where(r => r.transform.parent != null && r.transform.parent.name == "Body").ToList();
                 string key = string.Join("|", renderers.Select(r =>
-                    $"{(r.sprite != null ? r.sprite.name : "-")}:{r.transform.localScale.x:F2}x{r.transform.localScale.y:F2}:{ColorUtility.ToHtmlStringRGB(r.color)}"));
+                    // Sheet frames are named by state ("idle_0") in every sheet: the texture tells the drawings apart.
+                    $"{(r.sprite != null ? r.sprite.texture.name + "/" + r.sprite.name : "-")}:{r.transform.localScale.x:F2}x{r.transform.localScale.y:F2}:{ColorUtility.ToHtmlStringRGB(r.color)}"));
                 char phase = e.Id.ToString()[0];
                 if (!byPhase.TryGetValue(phase, out var list)) byPhase[phase] = list = new();
                 list.Add((e.Id, key));

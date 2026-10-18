@@ -152,5 +152,16 @@ MonoBehaviour:
   MuzzleFlashFx: {fileID: 11400000, guid: 67ab99b67e790f644aac13c89dc27497, type: 2}
   ImpactFx: {fileID: 11400000, guid: 56a0c7d969bf5ed4b8dbf3bb320a5ea5, type: 2}
   ExplosionFx: {fileID: 11400000, guid: 61210b3632b579a4e8390b4f2e085ed8, type: 2}
+  EnemyGrenadeArt: {fileID: 21300000, guid: 8b62fc6d0e81e2244800ab13e028c84f, type: 3}
+  PlayerGrenadeArt: {fileID: 21300000, guid: 245fe2e63710adc4c8d45fc3d2a662cd, type: 3}
+  BloodDecals:
+  - {fileID: 21300000, guid: 40e78dd9d0ad88049930d6e71806ca9a, type: 3}
+  - {fileID: 21300000, guid: 5958f4ee1c38ae1439a9ac13de68bea2, type: 3}
+  OilDecals:
+  - {fileID: 21300000, guid: 2e4bee3cb6fa9464bbd2fa48f4181ca1, type: 3}
+  - {fileID: 21300000, guid: 557cc1acc89ca25418770410cc900c42, type: 3}
+  AiPortrait: {fileID: 21300000, guid: 01d655eb3ca5c5447b29f1d1364b5b03, type: 3}
+  OperatorPortraitP1: {fileID: 21300000, guid: e348a2208d51a714a86d39e32c6adff1, type: 3}
+  OperatorPortraitP2: {fileID: 21300000, guid: 3db9b54c9dd73984ca296461c700947e, type: 3}
   Telegraph: {r: 1, g: 0.29, b: 0.11, a: 1}
   HitFlash: {r: 1, g: 1, b: 1, a: 1}

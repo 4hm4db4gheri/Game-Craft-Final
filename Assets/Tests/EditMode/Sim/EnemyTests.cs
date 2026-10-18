@@ -83,6 +83,26 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void OnlyHitsOnTheShieldAreReportedAsBlocked()
+        {
+            var sim = SimTestUtil.NewSim();
+            var w = sim.World;
+            var tortoise = w.AddEnemy(EnemyId.A4_ArmoredTortoise, new Vector2(5, 5));
+            tortoise.Facing = Vector2.right;
+            w.Events.Clear();
+            Combat.DamageEnemy(w, tortoise, 10, DamageSource.Weapon, Vector2.left);
+            int blocked = w.Events.FindIndex(e => e.Type == SimEventType.ArmorBlocked);
+            Assert.GreaterOrEqual(blocked, 0, "a frontal hit is a shield hit");
+            Assert.AreEqual(tortoise.Id, w.Events[blocked].EntityId);
+            Assert.AreEqual(w.Profile.Combat.FrontalArmorReduction, w.Events[blocked].Value, 1e-4f);
+            Assert.AreEqual(SimEventType.EnemyHit, w.Events[blocked + 1].Type, "the presentation pairs it with the next hit");
+
+            w.Events.Clear();
+            Combat.DamageEnemy(w, tortoise, 10, DamageSource.Weapon, Vector2.right);
+            Assert.IsFalse(w.Events.Exists(e => e.Type == SimEventType.ArmorBlocked), "a hit from behind is not");
+        }
+
+        [Test]
         public void ArmorDoesNotApplyToUnarmoredEnemiesOrWhenIgnored()
         {
             var sim = SimTestUtil.NewSim();

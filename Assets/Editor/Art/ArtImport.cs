@@ -69,7 +69,7 @@ namespace Hollow.EditorTools
             ["Tree"] = 5, ["Rock"] = 2.5f, ["Hedge"] = 3.5f, ["Stumps"] = 1.5f, ["LogPile"] = 2.5f, ["Excavator"] = 4,
             ["CableSpool"] = 1.5f, ["MachineLit"] = 3, ["CrateStack"] = 2.5f, ["PipeBarrier"] = 3.5f, ["Generator"] = 2.5f,
             ["Barricade"] = 3.5f, ["MachineBroken"] = 3, ["Sandbags"] = 3.5f, ["DeadTree"] = 4, ["LightPost"] = 3.5f,
-            ["Kiosk"] = 3, ["BorderH"] = 4, ["BorderV"] = 1,
+            ["Kiosk"] = 3, ["BorderH"] = 4, ["BorderV"] = 1, ["Entrance"] = 3,
         };
 
         public static float GroundUnits = 8f;

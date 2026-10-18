@@ -194,6 +194,11 @@ MonoBehaviour:
   - {fileID: 5809731683143966872}
   laneLine: {fileID: 3967626939942066306}
   area: {fileID: 6189848819718562332}
+  leapLift: 16
+  pounceLift: 0.9
+  shadowWidth: 2.5
+  shadowDepth: 0.75
+  shadowRise: 0.2
 --- !u!114 &3481705710197930308
 MonoBehaviour:
   m_ObjectHideFlags: 0

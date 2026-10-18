@@ -22,6 +22,8 @@ namespace Hollow.Presentation
         readonly ArcView[] flashes = new ArcView[12];
         int nextFlash;
         readonly EntityViews<ArcView> mines = new();
+        /// <summary>Thrown grenades: the art and its ground shadow, one pair per hazard still to go off.</summary>
+        readonly System.Collections.Generic.List<(SpriteRenderer Body, SpriteRenderer Shadow)> grenades = new();
         ArcView previewArea, previewRay, shieldRing;
         readonly System.Collections.Generic.Dictionary<BossId, BossView> bossViews = new();
         readonly System.Collections.Generic.Dictionary<EnemyId, ViewPool<EnemyView>> poolsByType = new();
@@ -115,8 +117,58 @@ namespace Hollow.Presentation
                 v.Set(h.Position, Vector2.right, h.Radius, 360f, c, 400, SortingLayers.Telegraphs);
             }
             hazards.ReleaseUnseen();
+            SyncGrenades(w, alpha);
 
             SyncItems(w, alpha);
+        }
+
+        /// <summary>
+        /// A thrown grenade flies in an arc from the thrower to its marked point, then lies there blinking faster until
+        /// it goes off (the marked circle is drawn by the hazard view). Visual only.
+        /// </summary>
+        void SyncGrenades(World w, float alpha)
+        {
+            int used = 0;
+            float now = w.Clock.Tick + alpha;
+            foreach (var h in w.Hazards)
+            {
+                if (h.Cancelled || h.LandTick <= h.CreatedTick) continue;
+                var art = h.Owner == HazardOwner.Player && catalog.PlayerGrenadeArt != null ? catalog.PlayerGrenadeArt : catalog.EnemyGrenadeArt;
+                if (art == null) continue;
+                if (used == grenades.Count) grenades.Add((NewGrenadeRenderer("Grenade", SortingLayers.Effects, 20), NewGrenadeRenderer("GrenadeShadow", 0, -40)));
+                var (body, shadow) = grenades[used++];
+                float t = Mathf.Clamp01((now - h.CreatedTick) / (h.LandTick - h.CreatedTick));
+                Vector2 ground = Vector2.Lerp(h.LaunchFrom, h.Position, t);
+                float distance = Vector2.Distance(h.LaunchFrom, h.Position);
+                float height = Mathf.Clamp(0.5f + distance * 0.18f, 0.5f, 2.6f) * 4f * t * (1f - t);
+                float lift = Mathf.Lerp(0.6f, 0.12f, t); // leaves the hand, comes to rest on the ground
+                body.sprite = shadow.sprite = art;
+                body.transform.position = ground + Vector2.up * (height + lift);
+                float spin = t < 1f ? -540f * t * Mathf.Sign(h.Position.x - h.LaunchFrom.x + 0.001f) : 0f;
+                body.transform.rotation = Quaternion.Euler(0, 0, spin);
+                // On the ground it blinks red, faster as the fuse runs out.
+                float left = Mathf.Max(0f, (h.DetonateTick - now) * Core.SimClock.Dt);
+                float blink = t < 1f ? 0f : Mathf.Max(0f, Mathf.Sin(Time.time * Mathf.Lerp(28f, 9f, Mathf.Clamp01(left))));
+                body.color = Color.Lerp(Color.white, new Color(1f, 0.45f, 0.35f), blink * 0.7f);
+                shadow.transform.position = ground;
+                float shrink = 1f / (1f + height * 0.6f);
+                shadow.transform.localScale = new Vector3(0.9f * shrink, 0.35f * shrink, 1);
+                shadow.color = new Color(0, 0, 0, 0.45f * shrink);
+                body.enabled = shadow.enabled = true;
+            }
+            for (int i = used; i < grenades.Count; i++) grenades[i].Body.enabled = grenades[i].Shadow.enabled = false;
+        }
+
+        SpriteRenderer NewGrenadeRenderer(string name, int layer, int order)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var r = go.AddComponent<SpriteRenderer>();
+            var shot = catalog.EnemyProjectile != null ? catalog.EnemyProjectile.GetComponentInChildren<SpriteRenderer>(true) : null;
+            if (shot != null) r.sharedMaterial = shot.sharedMaterial; // unlit, like every shot: readable in the dark phases
+            if (layer != 0) r.sortingLayerID = layer;
+            r.sortingOrder = order;
+            return r;
         }
 
         void SyncBoss(World w, float alpha)
