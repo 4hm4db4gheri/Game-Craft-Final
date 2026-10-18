@@ -426,3 +426,6 @@
 - به خواست کاربر: `ApplyIncomingArt.Wire` صفحه‌ی placeholder جلوی دشمن (`FrontPlate`) را وقتی آرت دارد خاموش می‌کند (لاک‌پشت؛ R4 و H4 تا آمدن آرت صفحه دارند).
 - `Combat.DamageEnemy` هنگام کم شدن آسیب با زره جلو رویداد تازه‌ی `ArmorBlocked` را درست قبل از `EnemyHit` می‌فرستد. `FeedbackDirector.ShieldHit`: برق و حلقه‌ی آبی سرد در سمت تیرانداز، جرقه‌ی سفید برگشتی، بدون خون و جرقه‌ی بدن؛ عدد آسیب آن فریم آبی فولادی. `AudioDirector`: `ImpactMetal` با pitch ۱.۴۵ به‌جای صدای ضربه‌ی بدن. قانون آسیب تغییر نکرد.
 - تست تازه‌ی `OnlyHitsOnTheShieldAreReportedAsBlocked`. ۵۰۴ تست پاس. در Play mode شلیک به جلوی لاک‌پشت دیده شد؛ صدا شنیده نشده است.
+
+### 2026-10-18 — push
+- `f335491` (آرت موج ۲)، `a215c59` و `271da7d` (شیلد) به `origin/main` push شدند (۱۲۰ فایل LFS، ۴۹ مگابایت). تغییر تازه‌ای برای commit نبود؛ `Assets/_Recovery` مثل قبل commit نشد.
