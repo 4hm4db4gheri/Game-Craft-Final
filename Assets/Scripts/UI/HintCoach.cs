@@ -8,7 +8,8 @@ namespace Hollow.UI
     /// <summary>
     /// Shows one contextual hint at a time like the opening tutorial: the screen dims a little except the HUD part
     /// the hint is about, which gets a pulsing frame, and a short card sits above it. The game holds still while a
-    /// hint is up (<see cref="Showing"/>; the session stops the simulation and world input) and the hint closes on its own.
+    /// hint is up (<see cref="Showing"/>; the session stops the simulation and world input) and the hint closes on its own
+    /// or with E, which the card's last line says.
     /// </summary>
     public sealed class HintCoach : MonoBehaviour
     {
@@ -20,7 +21,7 @@ namespace Hollow.UI
         CanvasGroup group;
         readonly Image[] dim = new Image[4];
         readonly Image[] frame = new Image[4];
-        TextMeshProUGUI cardText;
+        TextMeshProUGUI cardText, closeText;
 
         HintId? current;
         HintStart start;
@@ -43,14 +44,17 @@ namespace Hollow.UI
                 dim[i] = Piece("Dim", new Color(0, 0, 0, DimAlpha));
                 frame[i] = Piece("Frame", t.Accent);
             }
-            card = UIFactory.Rect(overlay, "Card", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0f), Vector2.zero, new Vector2(660, 118));
+            card = UIFactory.Rect(overlay, "Card", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0f), Vector2.zero, new Vector2(660, 148));
             UIFactory.Panel(card, t);
-            var edge = UIFactory.Rect(card, "Edge", new Vector2(1, 0), new Vector2(1, 0), Vector2.zero, new Vector2(6, 118));
+            var edge = UIFactory.Rect(card, "Edge", new Vector2(1, 0), new Vector2(1, 0), Vector2.zero, new Vector2(6, 148));
             var edgeImage = edge.gameObject.AddComponent<Image>();
             edgeImage.color = t.Accent;
             edgeImage.raycastTarget = false;
             cardText = UIFactory.Text(card, "Text", "", t, 26, TextAlignmentOptions.MidlineRight);
-            cardText.margin = new Vector4(22, 10, 26, 10);
+            cardText.margin = new Vector4(22, 10, 26, 40);
+            var close = UIFactory.Rect(card, "Close", new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 8), new Vector2(660, 30));
+            closeText = UIFactory.Text(close, "Text", Loc.T("hint.close"), t, 19, TextAlignmentOptions.MidlineRight, t.Accent);
+            closeText.margin = new Vector4(22, 0, 26, 0);
             group.alpha = 0;
             overlay.gameObject.SetActive(false);
         }
@@ -64,8 +68,9 @@ namespace Hollow.UI
             return img;
         }
 
-        /// <summary>Called every frame. <paramref name="canShow"/> is false over menus, scenes and the open shop.</summary>
-        public void Sync(World w, bool canShow)
+        /// <summary>Called every frame. <paramref name="canShow"/> is false over menus, scenes and the open shop;
+        /// <paramref name="closePressed"/> (E) closes the current hint early.</summary>
+        public void Sync(World w, bool canShow, bool closePressed = false)
         {
             float dt = Time.unscaledDeltaTime;
             if (!canShow)
@@ -91,7 +96,8 @@ namespace Hollow.UI
             }
 
             shownFor += dt;
-            bool finished = shownFor >= MaxSeconds || (shownFor >= MinSeconds && HintRules.Done(w, current.Value, start));
+            bool finished = shownFor >= MaxSeconds || (closePressed && shownFor > dt) ||
+                (shownFor >= MinSeconds && HintRules.Done(w, current.Value, start));
             if (finished) Close();
             alpha = Mathf.MoveTowards(alpha, current.HasValue ? 1f : 0f, dt / FadeSeconds);
             Apply();

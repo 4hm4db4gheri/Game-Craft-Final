@@ -38,6 +38,7 @@ namespace Hollow.Presentation
         static readonly Color MetalChunk = new(0.38f, 0.4f, 0.44f, 1f);
         static readonly Color Brass = new(0.9f, 0.7f, 0.32f, 1f);
         static readonly Color MuzzleWarm = new(1f, 0.82f, 0.45f, 1f);
+        static readonly Color MuzzleFire = new(1f, 0.42f, 0.1f, 1f); // Flash lifts it by 0.3, so glows read orange-gold
         static readonly Color Smoke = new(0.7f, 0.7f, 0.7f, 0.28f);
         static readonly Color Dust = new(0.72f, 0.66f, 0.56f, 0.35f);
         static readonly Color DashCyan = new(0.45f, 0.92f, 1f, 1f);
@@ -68,7 +69,8 @@ namespace Hollow.Presentation
         ParticleSystem sparks, gore, puffs, motes, dust, glints;
         long lastWalkTick = -1;
         ParticleSystem.EmitParams emit = new() { applyShapeToPosition = false };
-        readonly List<(SpriteRenderer R, float Until, float Length)> flashes = new();
+        const int FlashPool = 48; // rapid fire stacks several glows per shot
+        readonly List<(SpriteRenderer R, float Until, float Length, float Alpha)> flashes = new();
         int nextFlash;
         readonly List<SpriteRenderer> decals = new(), corpses = new();
         int nextDecal, nextCorpse;
@@ -403,14 +405,22 @@ namespace Hollow.Presentation
             }
         }
 
-        /// <summary>Muzzle fire: the imported flash strip (or a glow), a light pop, a few sparks and a wisp of smoke.</summary>
+        /// <summary>
+        /// Muzzle fire: the imported flash strip (or a glow), a white-hot core, a tongue of flame along the shot,
+        /// a wide light pop, a cone of sparks with a few fast embers, and smoke.
+        /// </summary>
         void GunFlash(Vector2 muzzle, Vector2 dir, float size, Color color, FeedbackData f)
         {
-            if (!Fx(presenter.Catalog.MuzzleFlashFx, muzzle + dir * (size * 0.35f), size, dir))
-                Flash(muzzle, size * 0.9f, color, f.MuzzleFlashTime);
-            Flash(muzzle, size * 1.5f, color, f.MuzzleFlashTime * 1.6f); // the light the shot throws around
-            Burst(muzzle, dir, 40f, Scaled(4), color, 5f);
-            Puff(muzzle + dir * 0.1f, dir, Scaled(2), Smoke, 1.4f);
+            float t = f.MuzzleFlashTime;
+            if (!Fx(presenter.Catalog.MuzzleFlashFx, muzzle + dir * (size * 0.5f), size * 1.45f, dir))
+                Flash(muzzle, size * 1.2f, color, t * 1.2f);
+            Flash(muzzle, size * 0.75f, Color.white, t * 1.1f, 1f);                       // white-hot core
+            Flash(muzzle + dir * (size * 0.55f), size * 0.9f, MuzzleFire, t * 1.4f);     // flame tongue
+            Flash(muzzle + dir * (size * 1.05f), size * 0.55f, MuzzleFire, t * 1.1f, 0.75f);
+            Flash(muzzle, size * 2.6f, color, t * 2.2f, 0.45f);                           // the light the shot throws around
+            Burst(muzzle, dir, 55f, Scaled(8), color, 6f);
+            Burst(muzzle, dir, 16f, Scaled(4), MuzzleFire, 11f);                          // fast embers straight out
+            Puff(muzzle + dir * 0.15f, dir, Scaled(3), Smoke, 1.6f);
         }
 
         void EnemyDeath(World w, in SimEvent ev, FeedbackData f)
@@ -812,9 +822,9 @@ namespace Hollow.Presentation
             }
         }
 
-        void Flash(Vector2 at, float size, Color color, float seconds)
+        void Flash(Vector2 at, float size, Color color, float seconds, float alpha = 0.9f)
         {
-            if (flashes.Count < 24)
+            if (flashes.Count < FlashPool)
             {
                 var go = new GameObject("Flash");
                 go.transform.SetParent(transform, false);
@@ -823,17 +833,17 @@ namespace Hollow.Presentation
                 added.sharedMaterial = unlitMaterial;
                 added.sortingLayerID = SortingLayers.Effects;
                 added.sortingOrder = 20;
-                flashes.Add((added, 0, 0));
+                flashes.Add((added, 0, 0, 0));
             }
             int i = nextFlash;
-            nextFlash = (nextFlash + 1) % 24; // the slot just added is always at i: slots are added in order
+            nextFlash = (nextFlash + 1) % FlashPool; // the slot just added is always at i: slots are added in order
             var r = flashes[i].R;
             r.transform.position = new Vector3(at.x, at.y, 0);
             r.transform.localScale = new Vector3(size, size, 1);
-            r.color = new Color(Mathf.Min(1f, color.r + 0.3f), Mathf.Min(1f, color.g + 0.3f), Mathf.Min(1f, color.b + 0.3f), 0.9f);
+            r.color = new Color(Mathf.Min(1f, color.r + 0.3f), Mathf.Min(1f, color.g + 0.3f), Mathf.Min(1f, color.b + 0.3f), alpha);
             r.enabled = true;
             float length = Mathf.Max(0.02f, seconds);
-            flashes[i] = (r, Time.time + length, length);
+            flashes[i] = (r, Time.time + length, length, alpha);
         }
 
         /// <summary>Plays an imported effect strip once at a size in units; false when there is no art for it.</summary>
@@ -1073,12 +1083,12 @@ namespace Hollow.Presentation
             float now = Time.time;
             for (int i = 0; i < flashes.Count; i++)
             {
-                var (r, until, length) = flashes[i];
+                var (r, until, length, alpha) = flashes[i];
                 if (!r.enabled) continue;
                 float left = until - now;
                 if (left <= 0f) { r.enabled = false; continue; }
                 var c = r.color;
-                c.a = 0.9f * (left / length);
+                c.a = alpha * (left / length);
                 r.color = c;
             }
             for (int i = 0; i < tracers.Count; i++)

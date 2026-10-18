@@ -12,7 +12,7 @@ namespace Hollow.UI
 {
     /// <summary>
     /// Shop panel: shows everything unlocked through the current phase.
-    /// It opens automatically between waves; one click buys and disabled rows say why.
+    /// It opens automatically between waves and with E at a station; one click buys and disabled rows say why.
     /// </summary>
     public sealed class ShopPanel : MonoBehaviour
     {
@@ -76,11 +76,13 @@ namespace Hollow.UI
             else UpdateRows(w, offers);
             shownSignature = signature;
 
-            string hint = w.Waves.Kind == EncounterKind.SafeInterval
+            bool timed = w.Waves.Kind == EncounterKind.SafeInterval;
+            string hint = timed
                 ? Loc.F("shop.safeHint", Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)))
                 : Loc.T("shop.hint");
+            var hintColor = timed ? root.Theme.Accent : root.Theme.TextDim; // the timed shop closes only with E: say so plainly
             header.text = $"<b>{Loc.T("shop.title")}</b>   <color=#{ColorUtility.ToHtmlStringRGB(root.Theme.Coin)}>{Loc.F("common.coins", w.Progress.Wallet)}</color>\n" +
-                          $"<size=18><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{hint}</color></size>";
+                          $"<size=20><color=#{ColorUtility.ToHtmlStringRGB(hintColor)}>{hint}</color></size>";
         }
 
         static int Signature(World w, List<ShopOffer> offers)
