@@ -24,9 +24,46 @@ namespace Hollow.Sim
 
         /// <summary>Enter Play Mode without Domain Reload keeps statics between sessions: start every session clean.</summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() => RootOverride = null; // a direct Game-scene session must not redirect the next menu session
+        static void ResetStatics()
+        {
+            RootOverride = null; // a direct Game-scene session must not redirect the next menu session
+            buildChecked = false;
+        }
 
-        public static string Root => RootOverride ?? Path.Combine(Application.persistentDataPath, "saves");
+        /// <summary>A player build keeps its slots apart from the Editor's and starts every new build with
+        /// empty slots: the first launch of a build whose GUID differs from the stamp clears them.</summary>
+        public static string Root => RootOverride ?? DefaultRoot();
+
+        const string BuildStampFile = "build.txt";
+        static bool buildChecked;
+
+        static string DefaultRoot()
+        {
+            if (Application.isEditor) return Path.Combine(Application.persistentDataPath, "saves");
+            string root = Path.Combine(Application.persistentDataPath, "build_saves");
+            if (!buildChecked)
+            {
+                buildChecked = true;
+                try
+                {
+                    string stamp = Path.Combine(root, BuildStampFile);
+                    string build = Application.buildGUID;
+                    if (!File.Exists(stamp) || File.ReadAllText(stamp).Trim() != build)
+                    {
+                        Directory.CreateDirectory(root);
+                        for (int slot = 1; slot <= SlotCount; slot++)
+                        {
+                            string path = Path.Combine(root, $"slot{slot}.json");
+                            File.Delete(path);
+                            File.Delete(path + ".tmp");
+                        }
+                        File.WriteAllText(stamp, build);
+                    }
+                }
+                catch (Exception e) { Debug.LogWarning($"[Hollow] Could not reset the slots of a new build: {e.Message}"); }
+            }
+            return root;
+        }
         public static string PathOf(int slot) => Path.Combine(Root, $"slot{slot}.json");
         public static bool Exists(int slot) => File.Exists(PathOf(slot));
 
