@@ -376,6 +376,20 @@ namespace Hollow.Presentation
                     Burst(ev.Position + Vector2.up * 0.9f, ev.Direction, 90f, f.ImpactSparks, Blood, 4f);
                     break;
 
+                case SimEventType.ObstacleBroken:
+                {
+                    // D87: the charge smashes through: splinters and rubble, a dust cloud and a heavy kick.
+                    float size = Mathf.Sqrt(Mathf.Max(1f, ev.Value));
+                    Vector2 at = ev.Position + Vector2.up * 0.3f;
+                    var chunk = w.Phase == 1 ? new Color(0.45f, 0.32f, 0.2f) : new Color(0.42f, 0.42f, 0.44f);
+                    Gore(at, Vector2.zero, Scaled(10 + (int)(size * 6)), Dust, chunk, 0.6f + size * 0.35f);
+                    Burst(at, Vector2.up, 360f, f.ExplosionSparks, new Color(1f, 0.85f, 0.6f), size * 3f);
+                    Puff(at, Vector2.up, Scaled(4 + (int)(size * 2)), Dust, size * 1.1f);
+                    Ring(ev.Position, 0.3f, size * 1.8f, 0.4f, new Color(0.9f, 0.8f, 0.65f, 0.6f), 0.55f);
+                    Shake(f.ShakeOnBossImpact, Vector2.zero);
+                    break;
+                }
+
                 case SimEventType.BossDefeated:
                     Burst(ev.Position + Vector2.up, Vector2.right, 360f, f.ExplosionSparks * 2, new Color(1f, 0.8f, 0.5f), 9f);
                     bool robot = (BossId)ev.Code == BossId.IndustrialRobot;

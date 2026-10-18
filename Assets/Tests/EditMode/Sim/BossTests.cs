@@ -65,10 +65,11 @@ namespace Hollow.Tests.Sim
                 {
                     sim.Step(PlayerCommand.None);
                     if (t % 20 == 0) KillAdds(w);
-                    if (t > 2 && w.Boss.AddQueue.Count == 0 && !w.Enemies.Any(e => e.Alive)) break;
+                    if (t > 2 && w.Boss.AddQueue.Count == 0 && !w.Enemies.Any(e => e.Alive && e.EncounterGroup == BossState.EncounterGroup)) break;
                 }
                 KillAdds(w);
             }
+            if (BossSystem.OffMap(w.Boss)) w.Boss.Ai = BossAi.Rest; // not mid-leap for the final blow
             BossSystem.Damage(w, 1e9f, DamageSource.Weapon, Vector2.right);
             Assert.AreEqual(2, w.Boss.FiredThresholds.Count);
             Assert.AreEqual(d.RewardXp, w.Progress.TotalXp - xp0, "XP pool");

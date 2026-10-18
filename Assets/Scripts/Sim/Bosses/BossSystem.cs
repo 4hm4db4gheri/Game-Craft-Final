@@ -14,6 +14,8 @@ namespace Hollow.Sim
     {
         public const int EntityId = -2;
         public const int EncounterGroup = 1;
+        /// <summary>D87: endless boss reinforcements; outside the reward pool.</summary>
+        public const int ReinforcementGroup = 2;
 
         public bool Active;
         public bool Dead;
@@ -50,6 +52,9 @@ namespace Hollow.Sim
         public List<int> FiredThresholds = new();
         public List<EnemyId> AddQueue = new();
         public long NextAddActiveTick;
+        /// <summary>D87: reinforcements waiting to spawn, and when the next group is called.</summary>
+        public List<EnemyId> ReinforceQueue = new();
+        public long NextReinforceActiveTick;
 
         /// <summary>Encounter reward pool already paid out through adds (§9).</summary>
         public int PoolXpPaid;
@@ -89,6 +94,8 @@ namespace Hollow.Sim
             b.AddQueue.Clear();
             foreach (var c in d.OpeningAdds) for (int i = 0; i < c.Count; i++) b.AddQueue.Add(c.Id);
             b.NextAddActiveTick = w.Clock.ActiveTicks;
+            b.ReinforceQueue.Clear();
+            b.NextReinforceActiveTick = w.Clock.ActiveTicks + w.Ticks(d.ReinforceInterval);
             b.PoolXpPaid = b.PoolCoinsPaid = 0;
             b.HealedTotal = 0;
             b.StunnedUntilTick = b.EmpResistantUntilTick = 0;
@@ -129,20 +136,29 @@ namespace Hollow.Sim
 
         static void SpawnAdds(World w, BossState b, BossData d)
         {
-            if (b.AddQueue.Count == 0 || w.Clock.ActiveTicks < b.NextAddActiveTick) return;
+            // D87: the opening and threshold adds come first; then a reinforcement group is called every interval.
+            if (b.AddQueue.Count == 0 && b.ReinforceQueue.Count == 0 && d.ReinforceInterval > 0f && d.Reinforcements.Count > 0 &&
+                w.Clock.ActiveTicks >= b.NextReinforceActiveTick)
+            {
+                foreach (var c in d.Reinforcements) for (int i = 0; i < c.Count; i++) b.ReinforceQueue.Add(c.Id);
+                b.NextReinforceActiveTick = w.Clock.ActiveTicks + w.Ticks(d.ReinforceInterval);
+            }
+            bool reinforcing = b.AddQueue.Count == 0;
+            var queue = reinforcing ? b.ReinforceQueue : b.AddQueue;
+            if (queue.Count == 0 || w.Clock.ActiveTicks < b.NextAddActiveTick) return;
             if (WaveSystem.AliveCount(w) + 1 >= d.ActiveCap) return; // the cap includes the boss
             int support = 0;
             foreach (var e in w.Enemies) if (e.Alive && w.Profile.Enemy(e.Type).CountsAsSupport) support++;
-            int index = b.AddQueue.FindIndex(id => !w.Profile.Enemy(id).CountsAsSupport || support < w.Profile.Spawning.SupportCap);
+            int index = queue.FindIndex(id => !w.Profile.Enemy(id).CountsAsSupport || support < w.Profile.Spawning.SupportCap);
             if (index < 0) return;
-            var type = b.AddQueue[index];
+            var type = queue[index];
             if (!WaveSystem.FindSpawnPoint(w, w.Profile.Enemy(type).BodyRadius, out var pos))
             {
                 b.NextAddActiveTick = w.Clock.ActiveTicks + w.Ticks(w.Profile.Spawning.NoSafePointRetryDelay);
                 return;
             }
-            EnemySystem.Spawn(w, type, pos, true, BossState.EncounterGroup);
-            b.AddQueue.RemoveAt(index);
+            EnemySystem.Spawn(w, type, pos, true, reinforcing ? BossState.ReinforcementGroup : BossState.EncounterGroup);
+            queue.RemoveAt(index);
             b.NextAddActiveTick = w.Clock.ActiveTicks + System.Math.Max(1, w.Ticks(d.AddSpawnGap));
         }
 
@@ -187,6 +203,8 @@ namespace Hollow.Sim
                 {
                     Vector2 from = b.Position;
                     float step = d.ChargeSpeed * Core.SimClock.Dt;
+                    // D87: obstacles just ahead give way instead of stopping the charge; walls still stop it.
+                    if (d.ChargeBreaksObstacles) Obstacles.BreakAround(w, from + b.AttackDir * step * 2, b.Radius);
                     b.Position = w.Arena.MoveCircle(from, b.AttackDir * step, b.Radius);
                     float moved = Vector2.Distance(from, b.Position);
                     b.ChargeTravelled += moved;
@@ -528,6 +546,7 @@ namespace Hollow.Sim
                 w.Emit(SimEventType.EnemyDied, e.Id, e.Position, Vector2.zero, 0, (int)e.Type);
             }
             b.AddQueue.Clear();
+            b.ReinforceQueue.Clear();
             foreach (var h in w.Hazards) h.Cancelled = true;
             foreach (var p in w.Projectiles) if (p.Owner == ProjectileOwner.Enemy) p.Alive = false;
             if (w.Profile.Economy.BossDeathCollectsGroundCoins)

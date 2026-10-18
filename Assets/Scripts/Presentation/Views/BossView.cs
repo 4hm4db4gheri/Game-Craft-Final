@@ -17,6 +17,11 @@ namespace Hollow.Presentation
         /// <summary>Visual only: how high a leap carries the body (enough to leave the screen) and a pounce hop per unit of radius.</summary>
         [SerializeField] float leapLift = 16f;
         [SerializeField] float pounceLift = 0.9f;
+        /// <summary>Visual only (D87): the contact shadow follows the body's ground circle — this wide and this deep per unit
+        /// of radius, its middle this far up behind the feet — so the boss stands on the ground instead of above a wide pool.</summary>
+        [SerializeField] float shadowWidth = 2.5f;
+        [SerializeField] float shadowDepth = 0.75f;
+        [SerializeField] float shadowRise = 0.2f;
 
         Transform shadow;
         Vector3 shadowScale;
@@ -31,7 +36,6 @@ namespace Hollow.Presentation
             baseColors = new Color[bodyRenderers.Length];
             for (int i = 0; i < bodyRenderers.Length; i++) baseColors[i] = bodyRenderers[i].color;
             shadow = transform.Find("Shadow");
-            if (shadow != null) shadowScale = shadow.localScale;
         }
 
         public void Flash(float seconds) => flashUntil = Time.time + seconds;
@@ -42,6 +46,8 @@ namespace Hollow.Presentation
             Vector2 pos = Vector2.Lerp(b.PrevPosition, b.Position, alpha);
             transform.position = new Vector3(pos.x, pos.y, 0);
             body.localScale = new Vector3(b.Facing.x < -0.05f ? -1 : 1, 1, 1);
+            shadowScale = new Vector3(b.Radius * shadowWidth, b.Radius * shadowDepth, 1);
+            if (shadow != null) shadow.localPosition = new Vector3(0, b.Radius * shadowRise, 0);
             float leap = LeapHeight(b.Ai, BossSystem.MoveProgress(w)), hop = b.Ai == BossAi.Pouncing ? Hop(BossSystem.MoveProgress(w)) : 0f;
             body.localPosition = new Vector3(0, leap * leapLift + hop * pounceLift * b.Radius, 0);
             if (shadow != null) shadow.localScale = shadowScale * Mathf.Lerp(1f, 0.45f, Mathf.Max(leap, hop * 0.4f));

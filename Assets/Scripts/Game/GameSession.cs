@@ -250,6 +250,7 @@ namespace Hollow.Game
             var w = W;
             float alpha = driver.InterpolationAlpha;
             presenter.Sync(w, alpha);
+            arena.SyncBroken(w.Phase, w.BrokenCells, w.Layout.Width);
             arena.SyncForeground(Vector2.Lerp(w.Player.PrevPosition, w.Player.Position, alpha));
             cameraRig.Sync(w, alpha);
             var held = w.Profile.Weapon(w.Player.Loadout.ActiveId);

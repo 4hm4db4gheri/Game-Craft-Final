@@ -36,6 +36,8 @@ namespace Hollow.Sim
         Purchased,
         /// <summary>XP card choice: Code = SkillId, Value = new rank.</summary>
         SkillChosen,
+        /// <summary>D87: a boss charge broke an obstacle; Position = its middle, Value = cells cleared.</summary>
+        ObstacleBroken,
     }
 
     /// <summary>

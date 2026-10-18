@@ -55,6 +55,9 @@ namespace Hollow.Sim
             }
         }
 
+        /// <summary>The grid changed (a broken obstacle): rebuild on the next <see cref="SetTarget"/>.</summary>
+        public void Invalidate() => targetCell = new Vector2Int(int.MinValue, int.MinValue);
+
         /// <summary>Direction to walk from <paramref name="from"/>: straight at the target when the way is clear, else the flow.</summary>
         public Vector2 Direction(Vector2 from, Vector2 target)
         {

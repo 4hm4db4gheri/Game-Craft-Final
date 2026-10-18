@@ -221,6 +221,56 @@ namespace Hollow.Presentation
             foreach (var material in ownedGroundMaterials) if (material != null) Destroy(material);
         }
 
+        long brokenSignature = long.MinValue;
+        readonly List<(Tilemap Map, Vector3Int Cell, TileBase Tile)> removedTiles = new();
+        readonly HashSet<int> brokenSet = new();
+        readonly List<GameObject> hiddenProps = new();
+
+        /// <summary>
+        /// D87: hides the props and painted obstacle tiles a boss charge broke (the simulation's
+        /// <see cref="World.BrokenCells"/>), and brings them back when a checkpoint or another phase no longer has them broken.
+        /// </summary>
+        public void SyncBroken(int phase, List<int> broken, int width)
+        {
+            long signature = phase * 1000003L + broken.Count;
+            foreach (int c in broken) signature = signature * 31 + c;
+            if (signature == brokenSignature) return;
+            brokenSignature = signature;
+            brokenSet.Clear();
+            foreach (int c in broken) brokenSet.Add(c);
+
+            foreach (var (map, cell, tile) in removedTiles) if (map != null) map.SetTile(cell, tile);
+            removedTiles.Clear();
+            foreach (var go in hiddenProps) if (go != null) go.SetActive(true);
+            hiddenProps.Clear();
+            if (brokenSet.Count == 0) return;
+            for (int i = 0; i < Props.Length; i++)
+            {
+                if (Props[i] == null) continue;
+                foreach (var prop in Props[i].GetComponentsInChildren<ArenaProp>(true))
+                {
+                    if (prop.Phase != phase || !prop.gameObject.activeSelf) continue;
+                    foreach (var c in prop.Rect.allPositionsWithin)
+                        if (brokenSet.Contains(c.y * width + c.x))
+                        {
+                            prop.gameObject.SetActive(false);
+                            hiddenProps.Add(prop.gameObject);
+                            break;
+                        }
+                }
+            }
+            var obstacles = phase >= 1 && phase <= Obstacles.Length ? Obstacles[phase - 1] : null;
+            if (obstacles == null) return;
+            foreach (int c in brokenSet)
+            {
+                var cell = new Vector3Int(c % width, c / width, 0);
+                var tile = obstacles.GetTile(cell);
+                if (tile == null) continue;
+                removedTiles.Add((obstacles, cell, tile));
+                obstacles.SetTile(cell, null);
+            }
+        }
+
         /// <summary>Shows the ground, decor, props, border and obstacle layer of the given phase only.</summary>
         public void ShowPhase(int phase)
         {

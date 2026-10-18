@@ -39,7 +39,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۸۵ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۹۱ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
@@ -62,6 +62,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D87: جان بازیکن دیگر خودکار پر نمی‌شود (فقط درمان فروشگاه). شارژ باس موانع فاز را می‌شکند و رد می‌شود (دیوار و ایستگاه نه؛ `World.BrokenCells` ذخیره می‌شود، `Sim/Arena/Obstacles.cs`). سایه‌ی باس از شعاع بدن ساخته می‌شود و باس دیگر معلق به نظر نمی‌رسد. باس‌ها هر ۸ ثانیه نیروی کمکی بدون پاداش می‌آورند و سقف دشمن‌ها بالاتر رفت. در Play mode شکستن سنگ و سایه‌ی باس ۱ دیده شد؛ با دست بازی نشده است.
 
 - D86 (سختی): باس‌ها زره دارند (۳۰/۴۰/۴۵٪، جز وقت recovery یا stun) و جان بیشتر (3400/8000/13500)؛ چرخه‌ی حمله از داده (`BossData.Moves`) با دو حرکت تازه: pounce (پرش روی جای علامت‌خورده‌ی بازیکن) و leap (بیرون رفتن از نقشه، دایره‌ی فرود بازیکن را دنبال می‌کند، قفل، کوبیدن). رگبار باس ۲ پهن، سه‌تایی، رفت‌وبرگشتی و دنبال‌کننده است. تفنگ‌های رگباری ضعیف‌تر شدند و bloom دارند (رتیکل باز می‌شود). در Play mode دیده شد؛ با دست بازی نشده است.
 
@@ -380,4 +382,11 @@
 - دو باگ قدیمی: save وسط reload از خشاب خالی بعد از load شروع reload را اشتباه می‌گرفت (`LoadoutState.ReloadByRound`)؛ `ArcMesh` meshهای نابودشده‌ی Play قبلی را در cache استاتیک نگه می‌داشت (Domain Reload خاموش) و مخروط/دایره‌ی هشدار باس بعد از اولین Play دیده نمی‌شد.
 - تست‌ها: زره، leap (ترک نقشه، دنبال کردن، کوبیدن، فرار از دایره‌ی قفل)، pounce، رگبار پهن و دنبال‌کننده، EMP در هوا، bloom، save وسط reload. `FullRunTests` حالا محل اختلاف JSON را نشان می‌دهد. ۴۸۵ تست پاس. Play mode: leap، رگبار و pounce با اسکرین‌شات دیده شد (`docs/screenshots/Boss2_LeapTracking.png`، `Boss2_LeapLocked.png`، `Boss2_FanBurst.png`، `Boss1_Pounce.png`). با دست بازی نشده؛ اعداد باید با playtest تنظیم شوند.
 - نکته‌ی تست Play mode: با `GameApp.Instance.ToolFreeze = true` و `session.Sim.Step(...)` در eval می‌شود شبیه‌سازی را دقیقاً تا یک حالت باس جلو برد و با `capture_game_view --source camera` عکس گرفت (حالت screen وقتی ادیتور فوکوس ندارد فریم قدیمی می‌دهد).
+
+### 2026-10-18 — بدون بازسازی جان بازیکن، شکستن موانع با شارژ باس، سایه‌ی باس، نیروی کمکی باس (D87)
+- جان بازیکن: کد بازسازی خودکار و فیلدهای `PlayerData.RegenerationDelay/Rate` حذف شد (seed، JSON). بازسازی اپراتور سر جایش است. تست `PlayerHealthNeverComesBackByItself`.
+- شکستن موانع: `Sim/Arena/Obstacles.BreakAround` در هر تیک شارژ جلوی باس را بررسی می‌کند؛ کل بلوک متصل سلول‌های مسدود فاز (نه `BaseBlocked`: دیوار و ایستگاه) باز می‌شود، در `World.BrokenCells` ذخیره می‌شود (در `Bind` اعمال، در `EnterPhase` پاک، با retry برمی‌گردد) و `FlowField.Invalidate`. رویداد `ObstacleBroken`: تراشه، گرد و خاک، حلقه، shake و صدا. `ArenaAuthoring.SyncBroken` prop یا تایل‌های مانع شکسته را پنهان می‌کند و در صورت لزوم برمی‌گرداند. `BossData.ChargeBreaksObstacles`.
+- سایه‌ی باس: `BossView` اندازه و جای سایه را از شعاع بدن می‌سازد (۲.۵ × ۰.۷۵ شعاع، ۰.۲ شعاع بالاتر از پا)؛ قبلاً بیضی ۵ × ۳.۷ واحدی دور پا بود.
+- نیروی کمکی: `BossData.Reinforcements` و `ReinforceInterval` (۸ ثانیه)؛ `BossState.ReinforceQueue`، گروه `BossState.ReinforcementGroup` که XP و سکه نمی‌دهد (استخر پاداش ثابت می‌ماند). سقف‌ها 24/32/40، فاصله‌ی spawn کمتر. فرزندان producer حالا سقف باس را هم رعایت می‌کنند (باگ قدیمی). revision 9 داده‌ی باس‌ها را از baseline می‌گیرد.
+- تست‌های تازه‌ی `BossPressureTests` (شکستن و ادامه‌ی شارژ، ذخیره، دیوار نمی‌شکند، retry برمی‌گرداند، نیروی کمکی بدون پاداش). `SlowKillPaysExactlyTheSamePool` حالا ضربه‌ی آخر را وسط leap نمی‌زند. ۴۹۱ تست پاس. Play mode: باس ۱ با شارژ سنگ را شکست و رد شد، سایه زیر پا دیده شد. با دست بازی نشده است.
 

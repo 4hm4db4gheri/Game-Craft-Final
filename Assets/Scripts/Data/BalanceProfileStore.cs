@@ -38,8 +38,6 @@ namespace Hollow.Data
             if (profile.Revision >= baseline.Revision) return;
             if (profile.Revision < 4)
             {
-                profile.Player.RegenerationDelay = baseline.Player.RegenerationDelay;
-                profile.Player.RegenerationRate = baseline.Player.RegenerationRate;
                 profile.Player.DashMineDelay = baseline.Player.DashMineDelay;
                 profile.Player.DashMineRadius = baseline.Player.DashMineRadius;
                 if (profile.Skills.Find(s => s.Id == SkillId.DashMine) == null)
@@ -78,6 +76,12 @@ namespace Hollow.Data
                 var fresh = BalanceJson.Clone(baseline);
                 profile.Bosses = fresh.Bosses;
                 profile.Weapons = fresh.Weapons;
+                profile.BuildIndex();
+            }
+            if (profile.Revision < 9)
+            {
+                // D87: bosses bring endless reinforcements and a bigger crowd, and a charge breaks obstacles.
+                profile.Bosses = BalanceJson.Clone(baseline).Bosses;
                 profile.BuildIndex();
             }
             if (profile.Revision < 3)

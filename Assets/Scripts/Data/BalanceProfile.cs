@@ -89,8 +89,6 @@ namespace Hollow.Data
     public sealed class PlayerData
     {
         [Gdd("§4")] public float MaxHealth;
-        [Placeholder, Unit("s")] public float RegenerationDelay;
-        [Placeholder, Unit("HP/s")] public float RegenerationRate;
         [Gdd("§4"), Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u/s²")] public float Acceleration;
         [Placeholder, Unit("u/s²")] public float Deceleration;
@@ -268,6 +266,10 @@ namespace Hollow.Data
         [Gdd("§7")] public List<EnemyCount> OpeningAdds = new();
         [Gdd("§7")] public List<BossThreshold> Thresholds = new();
         [Gdd("§7")] public int ActiveCap;
+        /// <summary>D87: after the opening adds, this group joins again every ReinforceInterval active seconds while the
+        /// boss lives (inside the same cap). Reinforcements give no XP or coins, so the fixed reward pool (§9) holds.</summary>
+        [Placeholder] public List<EnemyCount> Reinforcements = new();
+        [Placeholder, Unit("s")] public float ReinforceInterval;
         [Gdd("§9")] public int RewardXp;
         [Gdd("§9")] public int RewardCoins;
         public bool IsMachine;
@@ -297,6 +299,8 @@ namespace Hollow.Data
         /// <summary>…but never longer than this.</summary>
         [Placeholder, Unit("u")] public float ChargeMaxDistance = 14f;
         [Gdd("§7"), Unit("s")] public float ChargeRecovery;
+        /// <summary>D87: a charge breaks the phase obstacles in its path instead of stopping on them (walls and stations stay).</summary>
+        [Placeholder] public bool ChargeBreaksObstacles = true;
         [Gdd("§7"), Unit("s")] public float StrikeWindup;
         [Gdd("v0.19 §12"), Unit("u")] public float StrikeRadius;
         /// <summary>The area strike is chosen when the player is within StrikeRadius × this.</summary>

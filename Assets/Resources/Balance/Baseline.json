@@ -1,11 +1,9 @@
 {
   "Schema": 1,
-  "Revision": 8,
+  "Revision": 9,
   "Name": "Baseline (GDD v0.19)",
   "Player": {
     "MaxHealth": 100.0,
-    "RegenerationDelay": 6.0,
-    "RegenerationRate": 3.0,
     "MoveSpeed": 5.0,
     "Acceleration": 80.0,
     "Deceleration": 100.0,
@@ -586,7 +584,22 @@
           ]
         }
       ],
-      "ActiveCap": 18,
+      "ActiveCap": 24,
+      "Reinforcements": [
+        {
+          "Id": "A1_RunnerWolf",
+          "Count": 3
+        },
+        {
+          "Id": "A2_QuillShooter",
+          "Count": 1
+        },
+        {
+          "Id": "A3_ChargingBoar",
+          "Count": 1
+        }
+      ],
+      "ReinforceInterval": 8.0,
       "RewardXp": 210,
       "RewardCoins": 180,
       "IsMachine": false,
@@ -609,6 +622,7 @@
       "ChargeOvershoot": 2.0,
       "ChargeMaxDistance": 14.0,
       "ChargeRecovery": 1.2,
+      "ChargeBreaksObstacles": true,
       "StrikeWindup": 0.9,
       "StrikeRadius": 2.8,
       "StrikeTriggerFactor": 1.5,
@@ -646,7 +660,7 @@
       "HealCapFraction": 0.0,
       "BurstShotDamage": 0.0,
       "ProjectileRange": 0.0,
-      "AddSpawnGap": 0.5,
+      "AddSpawnGap": 0.4,
       "EmpAffects": false
     },
     {
@@ -700,7 +714,22 @@
           ]
         }
       ],
-      "ActiveCap": 26,
+      "ActiveCap": 32,
+      "Reinforcements": [
+        {
+          "Id": "R1_Crawler",
+          "Count": 3
+        },
+        {
+          "Id": "R2_Shooter",
+          "Count": 2
+        },
+        {
+          "Id": "R3_SawCharger",
+          "Count": 1
+        }
+      ],
+      "ReinforceInterval": 8.0,
       "RewardXp": 358,
       "RewardCoins": 324,
       "IsMachine": true,
@@ -723,6 +752,7 @@
       "ChargeOvershoot": 2.0,
       "ChargeMaxDistance": 14.0,
       "ChargeRecovery": 0.0,
+      "ChargeBreaksObstacles": true,
       "StrikeWindup": 0.0,
       "StrikeRadius": 0.0,
       "StrikeTriggerFactor": 1.5,
@@ -760,7 +790,7 @@
       "HealCapFraction": 0.1,
       "BurstShotDamage": 18.0,
       "ProjectileRange": 16.0,
-      "AddSpawnGap": 0.45,
+      "AddSpawnGap": 0.35,
       "EmpAffects": true
     },
     {
@@ -814,7 +844,22 @@
           ]
         }
       ],
-      "ActiveCap": 34,
+      "ActiveCap": 40,
+      "Reinforcements": [
+        {
+          "Id": "H1_BatonGuard",
+          "Count": 2
+        },
+        {
+          "Id": "H2_RifleGuard",
+          "Count": 2
+        },
+        {
+          "Id": "H3_FastAssaulter",
+          "Count": 1
+        }
+      ],
+      "ReinforceInterval": 8.0,
       "RewardXp": 356,
       "RewardCoins": 486,
       "IsMachine": false,
@@ -838,6 +883,7 @@
       "ChargeOvershoot": 2.0,
       "ChargeMaxDistance": 14.0,
       "ChargeRecovery": 0.0,
+      "ChargeBreaksObstacles": true,
       "StrikeWindup": 0.0,
       "StrikeRadius": 0.0,
       "StrikeTriggerFactor": 1.5,
@@ -875,7 +921,7 @@
       "HealCapFraction": 0.1,
       "BurstShotDamage": 32.0,
       "ProjectileRange": 15.0,
-      "AddSpawnGap": 0.4,
+      "AddSpawnGap": 0.35,
       "EmpAffects": true
     }
   ],

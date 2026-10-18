@@ -32,11 +32,11 @@ namespace Hollow.Tests.Data
             var older = BalanceJson.Clone(baseline);
             older.Revision = 3;
             older.Companion.RegenerationRate = 7f;
-            older.Player.RegenerationRate = 0;
+            older.Player.DashMineDelay = 0;
             older.Skills.RemoveAll(s => s.Id == SkillId.DashMine);
             BalanceProfileStore.AddCompanionRegeneration(older, baseline);
             Assert.AreEqual(7f, older.Companion.RegenerationRate);
-            Assert.AreEqual(baseline.Player.RegenerationRate, older.Player.RegenerationRate);
+            Assert.AreEqual(baseline.Player.DashMineDelay, older.Player.DashMineDelay);
             Assert.IsNotNull(older.Skill(SkillId.DashMine));
         }
 

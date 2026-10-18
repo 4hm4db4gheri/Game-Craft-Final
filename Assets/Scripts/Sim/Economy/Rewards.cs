@@ -12,6 +12,8 @@ namespace Hollow.Sim
         {
             // The tutorial's practice grenade target is outside the wave's reward budget: a kill, but no XP or coins.
             if (e.Id == w.TutorialGrenadeEnemyId) { w.Progress.Kills++; return; }
+            // D87: boss reinforcements keep the pressure up but never pay, so the encounter pool stays fixed.
+            if (e.EncounterGroup == BossState.ReinforcementGroup) { w.Progress.Kills++; return; }
             var d = w.Profile.Enemy(e.Type);
             // Children pay their assigned share of the parent's pool; producers pay what was never assigned (§6).
             int xp = d.IsChild ? e.ShareXp - e.XpPaid : d.Xp - e.XpAllocated - e.XpPaid;

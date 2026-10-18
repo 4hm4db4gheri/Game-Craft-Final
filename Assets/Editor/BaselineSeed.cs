@@ -39,12 +39,12 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 8, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 9, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
             {
-                MaxHealth = 100, RegenerationDelay = 6f, RegenerationRate = 3f, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
+                MaxHealth = 100, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
                 DashDistance = 3, DashDuration = 0.18f, DashCooldown = 2.5f, DashDamage = 50, DashMineDelay = 0.7f, DashMineRadius = 1.8f,
                 PostHitInvulnerability = 0.5f, BodyRadius = 0.35f, MagnetRadius = 1,
                 CoinPullSpeed = 9, ShopInteractRange = 2.2f, CrowdPushShare = 0.3f,
@@ -343,7 +343,7 @@ namespace Hollow.EditorTools
                 new()
                 {
                     // D86: more health and armour than v0.19 (2600), and a pounce that closes the distance.
-                    Id = BossId.LargeBeast, Phase = 1, Health = 3400, Damage = 20, ActiveCap = 18, RewardXp = 210, RewardCoins = 180,
+                    Id = BossId.LargeBeast, Phase = 1, Health = 3400, Damage = 20, ActiveCap = 24, RewardXp = 210, RewardCoins = 180,
                     OpeningAdds = Adds((EnemyId.A1_RunnerWolf, 8), (EnemyId.A2_QuillShooter, 4)),
                     Thresholds = new List<BossThreshold>
                     {
@@ -352,14 +352,16 @@ namespace Hollow.EditorTools
                     },
                     MoveSpeed = 2.4f, BodyRadius = 1.4f, HitHeight = HitHeight(3.5f, 1.4f), AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
                     ChargeTelegraph = 0.8f, ChargeSpeed = 9, ChargeRecovery = 1.2f,
-                    StrikeWindup = 0.9f, StrikeRadius = 2.8f, StrikeRecovery = 1.3f, AddSpawnGap = 0.5f,
+                    StrikeWindup = 0.9f, StrikeRadius = 2.8f, StrikeRecovery = 1.3f, AddSpawnGap = 0.4f,
+                    // D87: a fresh pack every 8 s while the boss lives (no reward; the pool above stays fixed).
+                    Reinforcements = Adds((EnemyId.A1_RunnerWolf, 3), (EnemyId.A2_QuillShooter, 1), (EnemyId.A3_ChargingBoar, 1)), ReinforceInterval = 8f,
                     Moves = Moves(BossMove.Charge, BossMove.Strike, BossMove.Pounce), Armor = 0.3f, ExposedArmor = 0f,
                     PounceTelegraph = 0.6f, PounceFlightTime = 0.5f, PounceRange = 8f, PounceRadius = 2.6f, PounceDamage = 22f, PounceRecovery = 1f, PounceChainLowHealth = 2,
                 },
                 new()
                 {
                     // D86: v0.19 had 6500 health and a 30° single-bullet sweep that one step sideways escaped.
-                    Id = BossId.IndustrialRobot, Phase = 2, Health = 8000, Damage = 28, ActiveCap = 26, RewardXp = 358, RewardCoins = 324, IsMachine = true,
+                    Id = BossId.IndustrialRobot, Phase = 2, Health = 8000, Damage = 28, ActiveCap = 32, RewardXp = 358, RewardCoins = 324, IsMachine = true,
                     OpeningAdds = Adds((EnemyId.R1_Crawler, 6), (EnemyId.R2_Shooter, 4)),
                     Thresholds = new List<BossThreshold>
                     {
@@ -370,7 +372,8 @@ namespace Hollow.EditorTools
                     BurstWarning = 0.8f, BurstDuration = 1.8f, BurstRecovery = 1.3f, BurstShotInterval = 0.15f, BurstSpread = 70, ProjectileSpeed = 10,
                     BurstFanCount = 3, BurstFanSpacing = 9f, BurstSweeps = 2, BurstTrackRate = 40f,
                     BlastWarning = 1.0f, BlastRadius = 3, BlastThrowRange = 9, BlastRecovery = 1.5f, HealCapFraction = 0.1f,
-                    BurstShotDamage = 18, ProjectileRange = 16, AddSpawnGap = 0.45f, EmpAffects = true,
+                    BurstShotDamage = 18, ProjectileRange = 16, AddSpawnGap = 0.35f, EmpAffects = true,
+                    Reinforcements = Adds((EnemyId.R1_Crawler, 3), (EnemyId.R2_Shooter, 2), (EnemyId.R3_SawCharger, 1)), ReinforceInterval = 8f,
                     Moves = Moves(BossMove.Burst, BossMove.Blast, BossMove.Leap), Armor = 0.4f, ExposedArmor = 0f,
                     LeapRiseTime = 0.45f, LeapTrackTime = 1.8f, LeapTrackSpeed = 7f, LeapLockTime = 0.9f, LeapRadius = 3.4f, LeapDamage = 40f, LeapRecovery = 1.6f,
                 },
@@ -378,7 +381,7 @@ namespace Hollow.EditorTools
                 {
                     // Burst: three shots 0.2 apart (duration 0.6). Grenade: thrown 0.6 after marking, one-second fuse → 1.6 marked.
                     // D86: v0.19 had 11000 health; the final boss now uses every kind of move.
-                    Id = BossId.FormerCompanion, Phase = 3, Health = 13500, Damage = 32, ActiveCap = 34, RewardXp = 356, RewardCoins = 486,
+                    Id = BossId.FormerCompanion, Phase = 3, Health = 13500, Damage = 32, ActiveCap = 40, RewardXp = 356, RewardCoins = 486,
                     OpeningAdds = Adds((EnemyId.H1_BatonGuard, 8), (EnemyId.H2_RifleGuard, 6)),
                     Thresholds = new List<BossThreshold>
                     {
@@ -388,7 +391,8 @@ namespace Hollow.EditorTools
                     MoveSpeed = 2.2f, BodyRadius = 0.9f, HitHeight = HitHeight(3.0f, 0.9f), AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
                     BurstWarning = 0.7f, BurstDuration = 0.6f, BurstRecovery = 1.2f, BurstShotInterval = 0.2f, BurstSpread = 20, ProjectileSpeed = 11,
                     BlastWarning = 1.6f, BlastFlightFraction = 0.5f, BlastRadius = 2.6f, BlastThrowRange = 9, BlastRecovery = 0f, HealCapFraction = 0.1f,
-                    BurstShotDamage = 32, ProjectileRange = 15, AddSpawnGap = 0.4f, EmpAffects = true, BurstTrackRate = 60f,
+                    BurstShotDamage = 32, ProjectileRange = 15, AddSpawnGap = 0.35f, EmpAffects = true, BurstTrackRate = 60f,
+                    Reinforcements = Adds((EnemyId.H1_BatonGuard, 2), (EnemyId.H2_RifleGuard, 2), (EnemyId.H3_FastAssaulter, 1)), ReinforceInterval = 8f,
                     Moves = Moves(BossMove.Burst, BossMove.Pounce, BossMove.Blast, BossMove.Leap), Armor = 0.45f, ExposedArmor = 0f,
                     PounceTelegraph = 0.55f, PounceFlightTime = 0.45f, PounceRange = 8f, PounceRadius = 2.2f, PounceDamage = 30f, PounceRecovery = 0.9f, PounceChainLowHealth = 2,
                     LeapRiseTime = 0.4f, LeapTrackTime = 1.6f, LeapTrackSpeed = 7.5f, LeapLockTime = 0.85f, LeapRadius = 3f, LeapDamage = 40f, LeapRecovery = 1.4f,
