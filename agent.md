@@ -38,11 +38,11 @@
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
-| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۲ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ (۱۰۴ فایل) و موج ۲ (۴۳ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۳ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
-| `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
+| `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد)؛ `fix_wave2.py` موج ۲ را از `ArtSource/ArtWave2_Original` به Incoming می‌آورد و درست می‌کند. ترتیب: `fix_art.py` و `fix_wave2.py`، بعد `animate.py`، بعد `Apply Incoming Art`. موج بعدی: نسخه‌ی اصلی را در `ArtSource/ArtWave<n>_Original` بگذار و اسکریپت مشابه بنویس. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Editor/VisualTuningWindow.cs` + `docs/VISUAL_DEPTH_PASS.md` | داشبورد `Hollow > Visual Tuning` برای رنگ نور، افکت‌های دوربین و تنوع روشنایی زمین در هر فاز؛ روش تست و محدودیت آرت در سند |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle با دود و پوکه، جرقه، خون/روغن پاشیده با لکه‌های کوچک، جسد/لکه با سقف، حلقه‌ها، ردّ دش، جلوه‌ی level up و مرگ بازیکن، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse). چهار ParticleSystem (sparks، gore با جاذبه، puffs، motes رو به بالا) و حلقه‌ی ساخته‌شده با کد. لگد سلاح در `PlayerView.Kick`، `CompanionView.Fired(dir)` و `EnemyView.Kick` |
@@ -62,6 +62,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D90 (آرت موج ۲): شش دشمن تازه (گراز، لاک‌پشت، گرگ زوزه‌کش، سوسک انفجاری، بچه‌عنکبوت، نگهبان باتوم‌دار) آرت و انیمیشن دارند؛ sheet دست‌کشیده‌ی دویدن گرگ و راه رفتن بچه‌عنکبوت جای sheet ساخته‌شده را گرفتند. نارنجک پرتاب‌شده با قوس و سایه پرواز می‌کند، لکه‌ی خون/روغن آرت دارد، صحنه‌های داستان پرتره‌ی گوینده دارند، آیکن برنامه گذاشته شد، و دروازه‌ی ورود هر فاز (فقط نمایشی) در سه منطقه‌ی spawn شمال/شرق/غرب است. در Play mode دیده شد؛ با دست بازی نشده است.
 
 - D89: مهارت سرعت حرکت (+۱۲/۲۴/۳۶٪) و زمان خشاب (×0.8/0.62/0.45) قوی‌تر شدند. همه‌ی حمله‌های سنگین باس‌ها (شارژ، ضربه‌ی ناحیه‌ای، فرود pounce و leap، انفجار و نارنجک باس) موانع را می‌شکنند؛ تیر نه (`HeavyMovesBreakObstacles`). باس ۳: pounce دوتایی (سه‌تایی در جان کم) و سریع‌تر، رگبار ۱ ثانیه‌ای که مخروطش سریع رو به بازیکن می‌چرخد و گلوله‌هایش کمی دنبال بازیکن می‌روند، و سه نارنجک با فاصله‌ی ۰.۳ ثانیه جلو و دو طرف جهت حرکت بازیکن (هیچ‌وقت روی خود او). با دست بازی نشده است.
 
@@ -93,7 +95,7 @@
 - **GDD v0.19**: همه‌ی بخش‌ها جز موبایل (F13، فقط اگر وقت بماند) انجام شد. با کاربر/تیم: گوش دادن به صداهای سنتزشده‌ی دشمن‌ها، ضبط صداپیشگی طبق `docs/VOICE_LINES.md`، بازبینی متن فارسی و فیلم‌نامه توسط آرتیست، playtest انسانی.
 
 - همه‌ی حالت‌های شخصیت‌ها، دشمن‌ها و دو باس حالا sheet انیمیشن ساخته‌شده (`Tools/ArtGen`) دارند؛ وقتی sheetهای دست‌کشیده‌ی موج ۲ برسند، خودکار جایگزین می‌شوند. باس ۱ هنوز ظاهر بین خرس و گراز دارد (از آرت است، با کد درست نمی‌شود).
-- آرت موج ۱ اعمال شد. هنوز آرت ندارند (placeholder می‌مانند): ۱۸ نوع دشمن (همه جز A1، A2، R1، R2، H2)، باس ۳، propها و decorهای فاز ۲ و propهای Stumps/LogPile/Excavator/LightPost، سلاح‌های BAT/IRF/MSG/HAM/ERF/ESG/EBL، آیتم‌ها جز نارنجک. از آرت موج ۱ هنوز استفاده نمی‌شود: آیکن‌ها (`ICO_*`)، دکمه/پنل/اسلات UI، `PKP_GRN` (رابط با کد ساخته شده و جای آیکن ندارد).
+- آرت موج ۱ و ۲ اعمال شد. هنوز آرت ندارند (placeholder می‌مانند): ۱۲ نوع دشمن (A7، R3–R7، R7c، H3–H7، H7c)، باس ۳، propها و decorهای فاز ۲ و propهای Stumps/LogPile/Excavator/LightPost، سلاح‌های BAT/IRF/MSG/HAM/ERF/ESG/EBL، آیتم‌ها جز نارنجک. از آرت موج ۱ هنوز استفاده نمی‌شود: آیکن‌ها (`ICO_*`)، دکمه/پنل/اسلات UI، `PKP_GRN` (رابط با کد ساخته شده و جای آیکن ندارد).
 ---
 
 ## تاریخچه‌ی کارها
@@ -409,3 +411,11 @@
 
 ### 2026-10-18 — commit و push
 - تغییرات خودکار یونیتی (glyphهای تازه‌ی اطلس وزیرمتن، یک rid در تنظیمات سراسری URP) commit شد و همراه `0dd6e5a` و `f120231` به `origin/main` push شد. `Assets/_Recovery` مثل قبل commit نشد.
+
+### 2026-10-18 — آرت موج ۲ (D90)
+- کاربر پوشه‌ی `Art Images 2` (۴۳ PNG، `HANDOFF_wave2.md`، کارت‌ها) را اضافه کرد. نسخه‌ی اصلی در `ArtSource/ArtWave2_Original`، یادداشت‌ها در `docs/art/HANDOFF_wave2.md` و `ASSET_CARDS_wave2.txt`؛ پوشه‌ی `Art Images 2` پاک شد.
+- `Tools/ArtGen/fix_wave2.py`: پس‌زمینه‌ی مژنتای باقی‌مانده روی گراز، لاک‌پشت، گرگ زوزه‌کش، سوسک و بچه‌عنکبوت (حاشیه‌ی صورتی و فاصله‌ی بین پاها) از رنگ هر پیکسل جدا می‌شود؛ خط‌های حرکت سوسک و تکه‌های جدای دروازه‌ها حذف شد؛ رنگ sheet دویدن گرگ با فریم‌های موج ۱ یکی شد. سر باتوم که به لبه‌ی بالا خورده دست نخورد (کمتر از یک پیکسل در بازی).
+- `animate.py`: بدن‌های A3/A4/A5/A6/A7c/H1. زوزه: windup به فریم howl می‌رسد و نگه می‌دارد؛ سوسک: فتیله با باد کردن و تپش نور؛ گراز: حمله‌ی چهارنعل حلقه‌ای (`ApplyIncomingArt.Chargers`: A3، R3، H3). sheetهای دست‌کشیده‌ی موج ۲ (دویدن گرگ، راه رفتن بچه‌عنکبوت) خودکار جای sheet ساخته‌شده را گرفتند.
+- کد: `VisualCatalog` (نارنجک دشمن و بازیکن، لکه‌ها، پرتره‌ها)؛ `WorldPresenter.SyncGrenades` (قوس، چرخش، سایه، چشمک قرمز روی زمین)؛ `FeedbackDirector.Decal` آرت لکه را می‌گیرد؛ `DialogueView.SetPortrait` و `GameSession.PlayScene` (پرتره سمت راست کادر؛ اپراتور از فاز ۲ زخمی)؛ `ApplyIncomingArt` آیکن برنامه را در PlayerSettings می‌گذارد؛ `ArenaTools.PlaceEntrances` دروازه‌ی هر فاز (×۱.۶) در منطقه‌ی spawn شمال (کنار، نه زیر HUD)، شرق و غرب؛ دروازه‌های کناری روی بازیکن محو می‌شوند.
+- تست: `ReadabilityTests.NoTwoEnemiesOfAPhaseShareAShape` حالا تصویر را با نام texture تشخیص می‌دهد (فریم‌های sheet همه `idle_0` نام دارند)؛ تست تازه‌ی `ArtWaveTwoNamesParse`. ۵۰۳ تست پاس. در Play mode دیده شد: هر شش دشمن، لکه‌ها، نارنجک در پرواز، پرتره در صحنه‌ی Opening، دروازه‌های سه فاز. با دست بازی نشده است.
+- نکته‌ی تست: `capture_game_view`/`capture_scene_view` فقط داخل پروژه ذخیره می‌کنند و مسیر را زیر `Assets/` می‌گذارند؛ بعد از برداشتن فایل و meta را پاک کن. `LookAt` در Scene view اندازه را نادیده گرفت؛ برای دیدن فاز دیگر در Play mode `ArenaAuthoring.ShowPhase(n)` را صدا بزن.

@@ -106,12 +106,17 @@ namespace Hollow.EditorTools
                         break;
                     case "ENV" when k.Length > 2:
                         if (states.ContainsKey("ground")) { ground = true; applied++; }
-                        else if (k[2] is "BorderH" or "BorderV") { ground = true; applied++; } // placed in the scene with the ground
+                        else if (k[2] is "BorderH" or "BorderV" or "Entrance") { ground = true; applied++; } // placed in the scene with the ground
                         else if (states.ContainsKey("prop")) applied += Wire($"{PrefabBuilder.Dir}/PH_Prop_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
                         else if (states.Keys.Any(s => s.StartsWith("decor"))) applied += Wire($"{PrefabBuilder.Dir}/PH_Decor_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
                         break;
                     case "PKP" when id == "COIN":
                         applied += Wire($"{PrefabBuilder.Dir}/PH_Coin.prefab", "Coin", Set(key, states));
+                        break;
+                    case "PKP" when id == "GRN" && catalog != null:
+                        catalog.PlayerGrenadeArt = states.Values.First()[0];
+                        EditorUtility.SetDirty(catalog);
+                        applied++;
                         break;
                     case "PRJ" when catalog != null:
                     {
@@ -123,8 +128,20 @@ namespace Hollow.EditorTools
                             case ("ENM", "Quill"): SetEnemyShot(catalog, 0, sprite); break;
                             case ("ENM", "Bolt"): SetEnemyShot(catalog, 1, sprite); break;
                             case ("ENM", "Bullet"): SetEnemyShot(catalog, 2, sprite); break;
+                            case ("ENM", "Grenade"): catalog.EnemyGrenadeArt = sprite; break;
                             default: continue;
                         }
+                        EditorUtility.SetDirty(catalog);
+                        applied++;
+                        break;
+                    }
+                    case "FX" when catalog != null && id == "DEC" && k.Length > 2:
+                    {
+                        // Every variant (decal_a, decal_b, ...) is one random pick.
+                        var marks = states.Where(s => s.Key.StartsWith("decal")).OrderBy(s => s.Key).Select(s => s.Value[0]).ToArray();
+                        if (k[2] == "Blood") catalog.BloodDecals = marks;
+                        else if (k[2] == "Oil") catalog.OilDecals = marks;
+                        else continue;
                         EditorUtility.SetDirty(catalog);
                         applied++;
                         break;
@@ -143,6 +160,18 @@ namespace Hollow.EditorTools
                     }
                     case "UI" when k.Length > 2 && k[2] == "Reticle":
                         applied += SetReticle(states.Values.First()[0]);
+                        break;
+                    case "UI" when catalog != null && id == "PRT" && k.Length > 2:
+                    {
+                        if (k[2] == "AI") catalog.AiPortrait = states.Values.First()[0];
+                        else if (k[2] == "Operator" && states.TryGetValue("P1_ui", out var p1)) catalog.OperatorPortraitP1 = p1[0];
+                        if (k[2] == "Operator" && states.TryGetValue("P2_ui", out var p2)) catalog.OperatorPortraitP2 = p2[0];
+                        EditorUtility.SetDirty(catalog);
+                        applied++;
+                        break;
+                    }
+                    case "ICO" when id == "APP":
+                        applied += SetAppIcon(states.Values.First()[0].texture);
                         break;
                     case "WPN":
                         if (catalog != null && WeaponIds.TryGetValue(id, out var weapon) && states.TryGetValue("held", out var held))
@@ -229,6 +258,17 @@ namespace Hollow.EditorTools
             return Vector2.zero;
         }
 
+        /// <summary>The game's window, taskbar and executable icon.</summary>
+        static int SetAppIcon(Texture2D icon)
+        {
+            var target = UnityEditor.Build.NamedBuildTarget.Unknown;
+            var current = PlayerSettings.GetIcons(target, IconKind.Application);
+            if (current.Length == 1 && current[0] == icon) return 1;
+            PlayerSettings.SetIcons(target, new[] { icon }, IconKind.Application);
+            AssetDatabase.SaveAssets();
+            return 1;
+        }
+
         static void SetEnemyShot(VisualCatalog catalog, int phaseIndex, Sprite sprite)
         {
             if (catalog.EnemyShotArt == null || catalog.EnemyShotArt.Length != 3) catalog.EnemyShotArt = new Sprite[3];
@@ -274,6 +314,9 @@ namespace Hollow.EditorTools
             finally { PrefabUtility.UnloadPrefabContents(root); }
         }
 
+        /// <summary>A charger's attack is its run along the warned line: the gallop loops for as long as it lasts.</summary>
+        static readonly HashSet<string> Chargers = new() { "ENM_A3", "ENM_R3", "ENM_H3" };
+
         static SpriteSet Set(string key, Dictionary<string, List<Sprite>> states, float framesPerSecond = 10f)
         {
             string path = $"{SetsDir}/{key}.asset";
@@ -289,7 +332,7 @@ namespace Hollow.EditorTools
                 set.States.Add(new SpriteState
                 {
                     State = state, Frames = new List<Sprite>(frames),
-                    Loop = state is "idle" or "move" or "spin" or "charge" or "burst" or "stunned",
+                    Loop = state is "idle" or "move" or "spin" or "charge" or "burst" or "stunned" || (state == "attack" && Chargers.Contains(key)),
                     // Breathing reads calmer than walking: idle plays at 60 % speed.
                     FramesPerSecond = state == "idle" && frames.Count > 1 ? framesPerSecond * 0.6f : 0f,
                 });

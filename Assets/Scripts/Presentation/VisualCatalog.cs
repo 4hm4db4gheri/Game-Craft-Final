@@ -57,6 +57,16 @@ namespace Hollow.Presentation
         public SpriteSet MuzzleFlashFx;
         public SpriteSet ImpactFx;
         public SpriteSet ExplosionFx;
+        /// <summary>Thrown grenades in flight and on the ground until they go off (grenadier and boss 3; the player's).</summary>
+        public Sprite EnemyGrenadeArt;
+        public Sprite PlayerGrenadeArt;
+        /// <summary>Ground marks left by kills; empty = the tinted placeholder blob.</summary>
+        public Sprite[] BloodDecals = new Sprite[0];
+        public Sprite[] OilDecals = new Sprite[0];
+        /// <summary>Dialogue portraits: the assistant (every AI) and the Operator in phase one and from phase two (injured).</summary>
+        public Sprite AiPortrait;
+        public Sprite OperatorPortraitP1;
+        public Sprite OperatorPortraitP2;
 
         /// <summary>Art for a shot: pellets for weapons with falloff (shotguns), the phase's enemy shot otherwise.</summary>
         public Sprite ProjectileArt(ProjectileState p, int phase)

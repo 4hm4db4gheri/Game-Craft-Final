@@ -924,11 +924,26 @@ namespace Hollow.Presentation
             if (decals.Count == 0) return;
             var r = decals[nextDecal];
             nextDecal = (nextDecal + 1) % decals.Count; // the oldest mark makes room (cap, G7)
-            r.sprite = blobSprite;
-            r.color = color;
             r.transform.position = new Vector3(at.x, at.y, 0);
-            r.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0f, 360f));
-            r.transform.localScale = new Vector3(size * Random.Range(0.9f, 1.2f), size * Random.Range(0.55f, 0.75f), 1);
+            var art = color == Blood ? presenter.Catalog.BloodDecals : color == Oil ? presenter.Catalog.OilDecals : null;
+            if (art != null && art.Length > 0 && art[Random.Range(0, art.Length)] is { } mark)
+            {
+                // Painted splat: its own colours; a little turn and a flatter height keep it lying on the 3/4 ground.
+                r.sprite = mark;
+                r.color = new Color(1f, 1f, 1f, color.a);
+                r.flipX = Random.value < 0.5f;
+                r.transform.rotation = Quaternion.Euler(0, 0, Random.Range(-20f, 20f));
+                float s = size / Mathf.Max(0.01f, mark.bounds.size.x);
+                r.transform.localScale = new Vector3(s * Random.Range(0.9f, 1.15f), s * Random.Range(0.62f, 0.75f), 1);
+            }
+            else
+            {
+                r.sprite = blobSprite;
+                r.color = color;
+                r.flipX = false;
+                r.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0f, 360f));
+                r.transform.localScale = new Vector3(size * Random.Range(0.9f, 1.2f), size * Random.Range(0.55f, 0.75f), 1);
+            }
             r.enabled = true;
         }
 

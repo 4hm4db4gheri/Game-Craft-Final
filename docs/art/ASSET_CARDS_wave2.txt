@@ -1,0 +1,43 @@
+ASSET_CARD {"file":"ENM_A3_ChargingBoar_idle.png","cellUnits":3,"heightUnits":1.3,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A3_ChargingBoar_move.png","cellUnits":3,"heightUnits":1.3,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A3_ChargingBoar_windup.png","cellUnits":3,"heightUnits":1.3,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A3_ChargingBoar_attack.png","cellUnits":3,"heightUnits":1.3,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A3_ChargingBoar_recover.png","cellUnits":3,"heightUnits":1.3,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A3_ChargingBoar_death.png","cellUnits":3,"heightUnits":1.3,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A4_ArmoredTortoise_idle.png","cellUnits":3,"heightUnits":1.2,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A4_ArmoredTortoise_move.png","cellUnits":3,"heightUnits":1.2,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A4_ArmoredTortoise_windup.png","cellUnits":3,"heightUnits":1.2,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A4_ArmoredTortoise_attack.png","cellUnits":3,"heightUnits":1.2,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A4_ArmoredTortoise_death.png","cellUnits":3,"heightUnits":1.2,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A5_HowlingWolf_idle.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A5_HowlingWolf_move.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A5_HowlingWolf_windup.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A5_HowlingWolf_howl.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A5_HowlingWolf_death.png","cellUnits":2,"heightUnits":1.0,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A7c_Spiderling_idle.png","cellUnits":1,"heightUnits":0.4,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A7c_Spiderling_move.png","cellUnits":1,"heightUnits":0.4,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A7c_Spiderling_attack.png","cellUnits":1,"heightUnits":0.4,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A7c_Spiderling_death.png","cellUnits":1,"heightUnits":0.4,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A6_ExplosiveBeetle_idle.png","cellUnits":1,"heightUnits":0.6,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A6_ExplosiveBeetle_move.png","cellUnits":1,"heightUnits":0.6,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A6_ExplosiveBeetle_windup.png","cellUnits":1,"heightUnits":0.6,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A6_ExplosiveBeetle_death.png","cellUnits":1,"heightUnits":0.6,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H1_BatonGuard_idle.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H1_BatonGuard_move.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H1_BatonGuard_windup.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H1_BatonGuard_attack.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_H1_BatonGuard_death.png","cellUnits":2,"heightUnits":1.75,"frames":1,"background":"transparent","notes":"single frame"}
+ASSET_CARD {"file":"ENM_A7c_Spiderling_move_f8.png","cellUnits":1,"heightUnits":0.4,"frames":8,"background":"transparent","notes":"4x2 grid, loop"}
+ASSET_CARD {"file":"ENM_A1_RunnerWolf_move_f6.png","cellUnits":2,"heightUnits":0.9,"frames":6,"background":"transparent","notes":"3x2 grid, loop"}
+ASSET_CARD {"file":"PRJ_ENM_Grenade_proj.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"transparent","notes":"new file name"}
+ASSET_CARD {"file":"FX_DEC_Blood_decal_a.png","cellUnits":1,"heightUnits":0,"frames":1,"background":"transparent","notes":"decal"}
+ASSET_CARD {"file":"FX_DEC_Blood_decal_b.png","cellUnits":1,"heightUnits":0,"frames":1,"background":"transparent","notes":"decal"}
+ASSET_CARD {"file":"FX_DEC_Oil_decal_a.png","cellUnits":1,"heightUnits":0,"frames":1,"background":"transparent","notes":"decal"}
+ASSET_CARD {"file":"FX_DEC_Oil_decal_b.png","cellUnits":1,"heightUnits":0,"frames":1,"background":"transparent","notes":"decal"}
+ASSET_CARD {"file":"UI_PRT_Operator_P1_ui.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"full","notes":"new file name"}
+ASSET_CARD {"file":"UI_PRT_Operator_P2_ui.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"full","notes":"new file name"}
+ASSET_CARD {"file":"UI_PRT_AI_ui.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"full","notes":"new file name"}
+ASSET_CARD {"file":"ICO_APP_Hollow_icon.png","cellUnits":0,"heightUnits":0,"frames":1,"background":"full","notes":"new file name"}
+ASSET_CARD {"file":"ENV_P1_Entrance_prop.png","cellUnits":3,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 2x1, new file name"}
+ASSET_CARD {"file":"ENV_P2_Entrance_prop.png","cellUnits":3,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 2x1, new file name"}
+ASSET_CARD {"file":"ENV_P3_Entrance_prop.png","cellUnits":3,"heightUnits":0,"frames":1,"background":"transparent","notes":"footprint 2x1, new file name"}

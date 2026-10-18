@@ -677,6 +677,8 @@ MonoBehaviour:
   telegraphArc: {fileID: 1717183469697604524}
   countdown: {fileID: 0}
   hpBarWidth: 1.2
+  recoilPushBack: 0.09
+  recoilReturn: 14
 --- !u!114 &3608960238811699461
 MonoBehaviour:
   m_ObjectHideFlags: 0

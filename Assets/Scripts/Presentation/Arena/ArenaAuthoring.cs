@@ -145,6 +145,7 @@ namespace Hollow.Presentation
                 }
             }
             if (foreground.Count == 0)
+            {
                 foreach (var phaseProps in Props)
                 {
                     if (phaseProps == null) continue;
@@ -157,6 +158,16 @@ namespace Hollow.Presentation
                                 foreground.Add((renderer, prop.transform, renderer.color));
                     }
                 }
+                // Entrances on the side walls stand up too (ArenaTools.PlaceEntrances names them "Entrance <side>").
+                if (Borders != null)
+                    foreach (var border in Borders)
+                    {
+                        if (border == null) continue;
+                        foreach (Transform child in border)
+                            if (child.name.StartsWith("Entrance") && child.TryGetComponent<SpriteRenderer>(out var r))
+                                foreground.Add((r, child, r.color));
+                    }
+            }
         }
 
         void ApplyPropArt(ArenaProp prop, Texture2D atlas)

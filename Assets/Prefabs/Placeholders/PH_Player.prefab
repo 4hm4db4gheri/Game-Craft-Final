@@ -665,6 +665,11 @@ MonoBehaviour:
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   hurtColor: {r: 1, g: 0.35, b: 0.35, a: 1}
   dashColor: {r: 0.5, g: 0.9, b: 1, a: 0.6}
+  dashStretch: {x: 1.18, y: 0.86}
+  recoilDegrees: 11
+  recoilPushBack: 0.1
+  recoilReturn: 16
+  recoilMax: 1.6
 --- !u!114 &1170250817050615006
 MonoBehaviour:
   m_ObjectHideFlags: 0
