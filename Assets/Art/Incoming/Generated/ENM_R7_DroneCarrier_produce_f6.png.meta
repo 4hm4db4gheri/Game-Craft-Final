@@ -74,9 +74,9 @@ TextureImporter:
     maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
-    compressionQuality: 50
-    crunchedCompression: 0
+    textureCompression: 1
+    compressionQuality: 60
+    crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
     ignorePlatformSupport: 0
@@ -140,7 +140,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 440a99605e8268d4b9238dbe1552bebc
+      spriteID: ba8464538336a96429e1cfc565ef523c
       internalID: 4540790461852395122
       vertices: []
       indices: 
@@ -162,7 +162,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d8dba3cbb16c7e647b6d9f01abd1d670
+      spriteID: f0f697dacec37a54eaa51f7b19bb9c40
       internalID: -6737649637946073795
       vertices: []
       indices: 
@@ -184,7 +184,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dda296d58a421df4ebee96cd439825e2
+      spriteID: c4b84c036339bd141b164cb493236273
       internalID: -5824568976648155614
       vertices: []
       indices: 
@@ -206,7 +206,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3e7c67da0b98888448e5450d3aa6ee53
+      spriteID: 0d69122b6e74a2145abffa7ef61ad38c
       internalID: -5703138620459927218
       vertices: []
       indices: 
@@ -228,7 +228,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5905ac3a1d27fae4e9c52de1c6617704
+      spriteID: c5f0c0251f2b5b44aa5e55737b8a86bb
       internalID: -6946121746557454139
       vertices: []
       indices: 
@@ -250,7 +250,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa2049fc7a745a74f9f9895424ccf332
+      spriteID: 8b4780f0f41c0d14da9dac94855f40b7
       internalID: 6641442430229533212
       vertices: []
       indices: 

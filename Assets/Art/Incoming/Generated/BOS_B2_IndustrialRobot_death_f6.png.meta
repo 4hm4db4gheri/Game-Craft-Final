@@ -74,9 +74,9 @@ TextureImporter:
     maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
-    compressionQuality: 50
-    crunchedCompression: 0
+    textureCompression: 1
+    compressionQuality: 60
+    crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
     ignorePlatformSupport: 0
@@ -140,7 +140,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 11b26f9fe7181cc42a649c012129a6b2
+      spriteID: 11a0553eae5939d4ebe60d9d4ddb4b32
       internalID: -9192638271177797499
       vertices: []
       indices: 
@@ -162,7 +162,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0395c254032e432478931d289bc53df8
+      spriteID: 95c7f7f1aefaf594d8eba796fce46e61
       internalID: 8559509556701815258
       vertices: []
       indices: 
@@ -184,7 +184,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 524075a446e0c8e4097ebeb6d3c5debd
+      spriteID: c3a057df2fed5064eb322c5b0e0adc39
       internalID: -5286180679089938723
       vertices: []
       indices: 
@@ -206,7 +206,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa9b971bd7b7c52499f30ff10335e8a2
+      spriteID: 629da8848f575e54bb3ab5be5bbce413
       internalID: -1891855120789479077
       vertices: []
       indices: 
@@ -228,7 +228,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c535323dcdf10b1458abc3bbf176e7b9
+      spriteID: f70b917684e1c494495e7ea0f4acb91d
       internalID: -5582970244224541034
       vertices: []
       indices: 
@@ -250,7 +250,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6654c2f0dbcb604468d43a3af8221619
+      spriteID: 0aecb0ae972c43341bac4f8e2a23f018
       internalID: 830680230883465780
       vertices: []
       indices: 

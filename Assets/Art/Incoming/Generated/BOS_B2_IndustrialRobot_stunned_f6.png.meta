@@ -74,9 +74,9 @@ TextureImporter:
     maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
-    compressionQuality: 50
-    crunchedCompression: 0
+    textureCompression: 1
+    compressionQuality: 60
+    crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
     ignorePlatformSupport: 0
@@ -140,7 +140,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0dc2d85b82ac50f4093d54ba50f64e6a
+      spriteID: c0a8806e7b383e040b66ae1579b861cb
       internalID: 1799660439864881212
       vertices: []
       indices: 
@@ -162,7 +162,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f1f9557575f734441a49552f61bffee1
+      spriteID: 71636c45e4050c24c935a9408f9bcfe3
       internalID: -3373519950653160162
       vertices: []
       indices: 
@@ -184,7 +184,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0872867dd7496354cb71f821251aac2f
+      spriteID: d661d22d9731abe4a88e667af9c3413a
       internalID: -3316934282925469932
       vertices: []
       indices: 
@@ -206,7 +206,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c2b2fe0db2f87a48ae44f33f455a4cb
+      spriteID: 5e92576e4de93744a8147ff9477516dc
       internalID: 4313986317484480918
       vertices: []
       indices: 
@@ -228,7 +228,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9e8295ae95980ca45a217d8137d1675f
+      spriteID: 027934e80eeaf5048a5efeb468ba12d2
       internalID: 9131637350334259489
       vertices: []
       indices: 
@@ -250,7 +250,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: afa905083b107cc4080a9beb71cbae5e
+      spriteID: 8fcf91754543fd8469da15430967d2db
       internalID: 2070783115961275832
       vertices: []
       indices: 

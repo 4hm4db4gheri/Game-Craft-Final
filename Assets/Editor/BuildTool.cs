@@ -11,6 +11,7 @@ namespace Hollow.EditorTools
     {
         public const string OutputDir = "Builds/Windows";
         public const string ResultFile = "Builds/last_build_result.txt";
+        public const string AssetsFile = "Builds/last_build_assets.txt";
 
         [MenuItem("Hollow/Build/Windows x64")]
         public static void BuildWindows() => BuildWindows(development: false);
@@ -28,11 +29,20 @@ namespace Hollow.EditorTools
                 target = BuildTarget.StandaloneWindows64,
                 options = development ? BuildOptions.Development : BuildOptions.None,
             };
+            // Start empty: files of an older build (e.g. Hollow_Data from before the rename) would ship too.
+            if (Directory.Exists(OutputDir)) Directory.Delete(OutputDir, true);
             BuildReport report = BuildPipeline.BuildPlayer(options);
+            foreach (var dir in Directory.Exists(OutputDir) ? Directory.GetDirectories(OutputDir, "*_DontShipItWithYourGame") : new string[0])
+                Directory.Delete(dir, true);
             var s = report.summary;
             string line = $"{s.result} errors={s.totalErrors} warnings={s.totalWarnings} size={s.totalSize} time={s.totalTime.TotalSeconds:0.0}s dev={development}";
             Directory.CreateDirectory("Builds");
             File.WriteAllText(ResultFile, line);
+            // The 60 largest assets in the build, to see what to shrink next.
+            var largest = report.packedAssets.SelectMany(p => p.contents)
+                .GroupBy(c => c.sourceAssetPath).Select(g => (Path: g.Key, Size: g.Sum(c => (long)c.packedSize)))
+                .OrderByDescending(a => a.Size).Take(60).Select(a => $"{a.Size / 1024,8} KB  {a.Path}");
+            File.WriteAllLines(AssetsFile, largest);
             Debug.Log($"[Hollow] Build {line}");
         }
     }

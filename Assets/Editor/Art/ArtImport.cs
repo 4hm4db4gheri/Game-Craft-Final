@@ -124,6 +124,9 @@ namespace Hollow.EditorTools
             return best;
         }
 
+        /// <summary>Crunch quality (0–100) for every imported sprite; higher is sharper and larger on disk.</summary>
+        public const int CrunchQuality = 60;
+
         /// <summary>Effects on black are blended additively: black becomes transparent.</summary>
         public static bool BlackIsTransparent(ArtName n) => n.Category == "FX" && n.Id == "GEN";
     }
@@ -146,8 +149,17 @@ namespace Hollow.EditorTools
             imp.mipmapEnabled = false;
             imp.isReadable = true;
             imp.filterMode = FilterMode.Bilinear;
-            imp.textureCompression = TextureImporterCompression.CompressedHQ;
+            // Crunched DXT keeps the build small (BC7 sheets made it ~400 MB); sheets are mostly transparent.
+            imp.textureCompression = TextureImporterCompression.Compressed;
+            imp.crunchedCompression = true;
+            imp.compressionQuality = ArtRules.CrunchQuality;
             imp.maxTextureSize = 4096;
+            var platform = imp.GetDefaultPlatformTextureSettings();
+            platform.textureCompression = TextureImporterCompression.Compressed;
+            platform.crunchedCompression = true;
+            platform.compressionQuality = ArtRules.CrunchQuality;
+            platform.maxTextureSize = 4096;
+            imp.SetPlatformTextureSettings(platform);
 
             int frames = n.State == "ground" ? 64 : n.Frames;
             var (cols, rows) = n.State == "ground" ? (1, 1) : ArtRules.Grid(frames, w, h);

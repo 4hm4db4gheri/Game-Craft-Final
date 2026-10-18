@@ -17,10 +17,14 @@ namespace Hollow.EditorTools
             importer.wrapMode = TextureWrapMode.Clamp;
             importer.filterMode = FilterMode.Bilinear;
             importer.maxTextureSize = 2048;
-            importer.textureCompression = TextureImporterCompression.CompressedHQ;
+            importer.textureCompression = TextureImporterCompression.Compressed;
+            importer.crunchedCompression = true;
+            importer.compressionQuality = 80;
             var platform = importer.GetDefaultPlatformTextureSettings();
             platform.maxTextureSize = 2048;
-            platform.textureCompression = TextureImporterCompression.CompressedHQ;
+            platform.textureCompression = TextureImporterCompression.Compressed;
+            platform.crunchedCompression = true;
+            platform.compressionQuality = 80;
             importer.SetPlatformTextureSettings(platform);
         }
     }

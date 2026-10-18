@@ -306,8 +306,7 @@ MonoBehaviour:
     Cooldown: 0.1
     Priority: 70
   - Cue: 33
-    Clips:
-    - {fileID: 8300000, guid: 348307b1c17534442b528a6e78e1953f, type: 3}
+    Clips: []
     Bus: 1
     Volume: 0.7
     PitchJitter: 0.06
@@ -386,29 +385,40 @@ MonoBehaviour:
     Cooldown: 1
     Priority: 100
   - Cue: 43
-    Clips:
-    - {fileID: 8300000, guid: fae6e7786628c1342add005b806d2cff, type: 3}
+    Clips: []
     Bus: 0
     Volume: 0.55
     PitchJitter: 0
     Cooldown: 0
     Priority: 100
   - Cue: 44
-    Clips:
-    - {fileID: 8300000, guid: a781cce9379bb6645a65b5e11edbf210, type: 3}
+    Clips: []
     Bus: 0
     Volume: 0.55
     PitchJitter: 0
     Cooldown: 0
     Priority: 100
   - Cue: 45
-    Clips:
-    - {fileID: 8300000, guid: 3a5cb7cfb9cc80d4fad3842386180bcd, type: 3}
+    Clips: []
     Bus: 0
     Volume: 0.55
     PitchJitter: 0
     Cooldown: 0
     Priority: 100
+  - Cue: 46
+    Clips: []
+    Bus: 1
+    Volume: 0.7
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 50
+  - Cue: 47
+    Clips: []
+    Bus: 1
+    Volume: 0.7
+    PitchJitter: 0.06
+    Cooldown: 0.05
+    Priority: 50
   Enemies:
   - Key: A1_RunnerWolf
     Presence:
