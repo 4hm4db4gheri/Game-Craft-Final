@@ -32,6 +32,15 @@ namespace Hollow.Presentation
         public bool PivotAtGrip;
         /// <summary>Barrel tip in the sprite's own units from its pivot, measured from imported art; zero = unknown.</summary>
         public Vector2 MuzzleLocal;
+        /// <summary>Square shop icon (ICO_&lt;code&gt;_*); empty = the held art, if any.</summary>
+        public Sprite Icon;
+    }
+
+    [Serializable]
+    public sealed class ItemIcon
+    {
+        public ItemId Id;
+        public Sprite Sprite;
     }
 
     /// <summary>
@@ -67,6 +76,23 @@ namespace Hollow.Presentation
         public Sprite AiPortrait;
         public Sprite OperatorPortraitP1;
         public Sprite OperatorPortraitP2;
+        [Header("Shop icons (ICO_*)")]
+        public List<ItemIcon> ItemIcons = new();
+        public Sprite CoinIcon;
+        public Sprite RepairIcon;
+
+        /// <summary>The shop picture of a weapon: its icon, else its imported held art, else nothing.</summary>
+        public Sprite WeaponIcon(WeaponId id)
+        {
+            var w = Weapon(id);
+            return w == null ? null : w.Icon != null ? w.Icon : w.PivotAtGrip ? w.Sprite : null;
+        }
+
+        public Sprite ItemArt(ItemId id)
+        {
+            foreach (var i in ItemIcons) if (i.Id == id && i.Sprite != null) return i.Sprite;
+            return id == ItemId.Grenade ? PlayerGrenadeArt : null;
+        }
 
         /// <summary>Art for a shot: pellets for weapons with falloff (shotguns), the phase's enemy shot otherwise.</summary>
         public Sprite ProjectileArt(ProjectileState p, int phase)

@@ -33,6 +33,9 @@ namespace Hollow.Presentation.Menu
             public float Bob, BobSpeed = 1f;
             [Tooltip("Alpha breathing, 0..1 of the tint alpha.")]
             public float Pulse, PulseSpeed = 1f;
+            [Tooltip("Optional animation of a single layer (frames replace Sprite in turn).")]
+            public Sprite[] Frames = Array.Empty<Sprite>();
+            public float FrameRate = 6f;
         }
 
         [SerializeField] Camera view;
@@ -239,6 +242,8 @@ namespace Hollow.Presentation.Menu
                 b.Scroll += d.Scroll * dt;
                 b.Strip.localPosition = new Vector3(-Mathf.Repeat(b.Scroll, b.TileWidth), 0f, 0f);
             }
+            if (d.Frames is { Length: > 1 })
+                b.Copies[0].sprite = d.Frames[(int)(time * d.FrameRate) % d.Frames.Length];
             if (d.Pulse != 0)
             {
                 float a = d.Tint.a * (1f - d.Pulse + d.Pulse * (0.5f + 0.5f * Mathf.Sin(time * d.PulseSpeed)));

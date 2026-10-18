@@ -69,6 +69,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 1
     MuzzleLocal: {x: 0.46757814, y: 0.15175782}
+    Icon: {fileID: 21300000, guid: f5c6c70e5e020d54d9f16c93a0c76a8c, type: 3}
   - Id: 1
     Sprite: {fileID: 21300000, guid: 1f7cf400b18144b41aa0237789c23b57, type: 3}
     Color: {r: 1, g: 1, b: 1, a: 1}
@@ -76,6 +77,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 1
     MuzzleLocal: {x: 0.5923828, y: 0.114257805}
+    Icon: {fileID: 21300000, guid: 1c74764751ed92c4ea28436ce561d646, type: 3}
   - Id: 2
     Sprite: {fileID: 21300000, guid: 8a976a06af8d0004a874c6f125778c94, type: 3}
     Color: {r: 1, g: 1, b: 1, a: 1}
@@ -83,6 +85,7 @@ MonoBehaviour:
     ProjectileColor: {r: 1, g: 0.95, b: 0.8, a: 1}
     PivotAtGrip: 1
     MuzzleLocal: {x: 1.0898438, y: 0.124218754}
+    Icon: {fileID: 21300000, guid: cfb4908d289d47b468e580c8ed505890, type: 3}
   - Id: 3
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.3, g: 0.3, b: 0.35, a: 1}
@@ -90,6 +93,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 0
     MuzzleLocal: {x: 0, y: 0}
+    Icon: {fileID: 21300000, guid: 134e120f853b4554093c7adb12fd941e, type: 3}
   - Id: 4
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.45, g: 0.45, b: 0.4, a: 1}
@@ -97,6 +101,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 0
     MuzzleLocal: {x: 0, y: 0}
+    Icon: {fileID: 21300000, guid: 5ad4d1e547ed5c94a89860e3c04125c5, type: 3}
   - Id: 5
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.35, g: 0.35, b: 0.4, a: 1}
@@ -104,6 +109,7 @@ MonoBehaviour:
     ProjectileColor: {r: 1, g: 0.95, b: 0.8, a: 1}
     PivotAtGrip: 0
     MuzzleLocal: {x: 0, y: 0}
+    Icon: {fileID: 21300000, guid: c3b973f4ce1919d459a9f4cceb1c801c, type: 3}
   - Id: 6
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.5, g: 0.45, b: 0.4, a: 1}
@@ -111,6 +117,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.6, g: 0.95, b: 1, a: 1}
     PivotAtGrip: 0
     MuzzleLocal: {x: 0, y: 0}
+    Icon: {fileID: 21300000, guid: b241f7c0abb87c94daf727fecacc09a2, type: 3}
   - Id: 7
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.9, g: 0.95, b: 1, a: 1}
@@ -118,6 +125,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
     PivotAtGrip: 0
     MuzzleLocal: {x: 0, y: 0}
+    Icon: {fileID: 21300000, guid: c691ed576f2c05c428a6abc1ac1db5eb, type: 3}
   - Id: 8
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.9, g: 0.95, b: 1, a: 1}
@@ -125,6 +133,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
     PivotAtGrip: 0
     MuzzleLocal: {x: 0, y: 0}
+    Icon: {fileID: 21300000, guid: 4b43f518b4304a54bbaeb7add14ad5e4, type: 3}
   - Id: 9
     Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
     Color: {r: 0.55, g: 1, b: 1, a: 1}
@@ -132,6 +141,7 @@ MonoBehaviour:
     ProjectileColor: {r: 0.4, g: 1, b: 1, a: 1}
     PivotAtGrip: 0
     MuzzleLocal: {x: 0, y: 0}
+    Icon: {fileID: 21300000, guid: c6a0565023b59564e99cf766f501480e, type: 3}
   Bosses:
   - Id: 0
     Prefab: {fileID: 1321717015412269441, guid: dbf31126bc7d68b46b3a6eb1abe223b9, type: 3}
@@ -163,5 +173,16 @@ MonoBehaviour:
   AiPortrait: {fileID: 21300000, guid: 01d655eb3ca5c5447b29f1d1364b5b03, type: 3}
   OperatorPortraitP1: {fileID: 21300000, guid: e348a2208d51a714a86d39e32c6adff1, type: 3}
   OperatorPortraitP2: {fileID: 21300000, guid: 3db9b54c9dd73984ca296461c700947e, type: 3}
+  ItemIcons:
+  - Id: 3
+    Sprite: {fileID: 21300000, guid: a607e0ae0127d734c80d0ba776bedda2, type: 3}
+  - Id: 0
+    Sprite: {fileID: 21300000, guid: ffe2386b1bcbdd64eac0f0c16dcd5bd4, type: 3}
+  - Id: 2
+    Sprite: {fileID: 21300000, guid: 939c7bd9ab11fef45b8d6b40a244ead5, type: 3}
+  - Id: 4
+    Sprite: {fileID: 21300000, guid: 896de3a388012614ba4fff26c69fb8de, type: 3}
+  CoinIcon: {fileID: 21300000, guid: 0696e6d688821194492ecbabf9623ea4, type: 3}
+  RepairIcon: {fileID: 21300000, guid: 60d5d6bc5d9ddde4fbf4587aa2369d2c, type: 3}
   Telegraph: {r: 1, g: 0.29, b: 0.11, a: 1}
   HitFlash: {r: 1, g: 1, b: 1, a: 1}

@@ -59,6 +59,41 @@ namespace Hollow.EditorTools
             return map;
         }
 
+        static readonly Dictionary<string, ItemId> ItemIds = new()
+        {
+            ["GRN"] = ItemId.Grenade, ["MIN"] = ItemId.Mine, ["EMP"] = ItemId.EmpPulse, ["SHD"] = ItemId.PersonalShield,
+        };
+
+        /// <summary>Shop icons: weapons and items by code, the coin, and the repair (max health) symbol.</summary>
+        static int SetIcon(VisualCatalog catalog, string id, string name, Sprite sprite)
+        {
+            if (WeaponIds.TryGetValue(id, out var weapon) && catalog.Weapon(weapon) is { } wv) wv.Icon = sprite;
+            else if (ItemIds.TryGetValue(id, out var item))
+            {
+                catalog.ItemIcons.RemoveAll(i => i.Id == item);
+                catalog.ItemIcons.Add(new ItemIcon { Id = item, Sprite = sprite });
+            }
+            else if (id == "GEN" && name == "Coin") catalog.CoinIcon = sprite;
+            else if (id == "SKL" && name == "MaxHealth") catalog.RepairIcon = sprite;
+            else return 0;
+            EditorUtility.SetDirty(catalog);
+            return 1;
+        }
+
+        /// <summary>Only the shop icons, without touching prefabs or the scene (also part of <see cref="Apply"/>).</summary>
+        public static void ApplyIcons()
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<VisualCatalog>(EnemyPrefabBuilder.CatalogPath);
+            int n = 0;
+            foreach (var (key, states) in Collect())
+            {
+                string[] k = key.Split('_');
+                if (k[0] == "ICO" && k[1] != "APP") n += SetIcon(catalog, k[1], k.Length > 2 ? k[2] : "", states.Values.First()[0]);
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[Hollow art] Applied {n} shop icon(s).");
+        }
+
         public const string GeneratedDir = ArtRules.IncomingDir + "/Generated";
 
         public static int Rank(string path, int frames) => frames <= 1 ? 0 : path.StartsWith(GeneratedDir) ? 1 : 2;
@@ -172,6 +207,9 @@ namespace Hollow.EditorTools
                     }
                     case "ICO" when id == "APP":
                         applied += SetAppIcon(states.Values.First()[0].texture);
+                        break;
+                    case "ICO" when catalog != null:
+                        applied += SetIcon(catalog, id, k.Length > 2 ? k[2] : "", states.Values.First()[0]);
                         break;
                     case "WPN":
                         if (catalog != null && WeaponIds.TryGetValue(id, out var weapon) && states.TryGetValue("held", out var held))

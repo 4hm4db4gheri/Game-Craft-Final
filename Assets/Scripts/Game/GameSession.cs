@@ -71,7 +71,15 @@ namespace Hollow.Game
             xpScreen = ui.gameObject.AddComponent<XpCardScreen>();
             xpScreen.Init(ui);
             shopPanel = ui.gameObject.AddComponent<ShopPanel>();
-            shopPanel.Init(ui, OnShopBuy);
+            var catalog = presenter.Catalog;
+            shopPanel.Init(ui, OnShopBuy, new ShopArt
+            {
+                Weapon = catalog.WeaponIcon,
+                Item = catalog.ItemArt,
+                Companion = phase => phase >= 2 && catalog.OperatorPortraitP2 != null ? catalog.OperatorPortraitP2 : catalog.OperatorPortraitP1,
+                Coin = catalog.CoinIcon,
+                Repair = catalog.RepairIcon,
+            });
             failureScreen = ui.gameObject.AddComponent<FailureScreen>();
             failureScreen.Init(ui, RetryFromCheckpoint, () => ShowSlotLoad(fromFailure: true), () => app.GoToMainMenu());
             menus = ui.gameObject.AddComponent<MenuScreens>();

@@ -39,6 +39,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ (۱۰۴ فایل) و موج ۲ (۴۳ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
+| `ArtSource/GameIcons/` + `Tools/ArtGen/game_icons.py` | آیکن‌های سفید game-icons.net (CC BY 3.0) برای فروشگاه؛ اسکریپت آن‌ها را رنگ و سایه می‌دهد و `ICO_*` در Incoming می‌سازد. بعد `ApplyIncomingArt.ApplyIcons()` (یا Apply Incoming Art) آیکن‌ها را در `VisualCatalog` می‌گذارد |
 | `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۴ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
@@ -62,6 +63,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D93: منوی اصلی حالا پهپاد خود بازیکن را (با فریم‌های idle بازی) به‌جای دستیار کشیده‌شده نشان می‌دهد. فروشگاه بازطراحی شد (طبق تصویر مرجع کاربر): ستون قاب‌دار سمت راست، کیف پول با آیکن سکه، دو کارت اسلات با عکس سلاح، فهرست قابل اسکرول با عکس هر ردیف، و دکمه‌ی پایین «تجهیزات و درمان» که بین دو بخش فهرست می‌پرد. ۱۰ آیکن نبوده از game-icons.net (CC BY 3.0) دانلود و رنگ شد. در Play mode دیده شد؛ با دست بازی نشده است.
 
 - D92 (شاخه‌ی `feature/post-process`): post process پررنگ‌تر (bloom، کنتراست، vignette، split toning هر فاز، film grain، کمی chromatic aberration)، مه دو لایه (زیر و روی بدن‌ها، unlit، رنگ هر فاز، نفس‌کشیدن؛ فاز ۳ غلیظ)، نور زنده (بالا و پایین رفتن آرام، قطع و وصل برق در فاز ۲ و بیشتر در ۳، دو نورافکن چرخان در فاز ۳؛ درخشش بازیکن ثابت می‌ماند)، و لبه‌ی قرمز با ضربه و ضربان قلب زیر ۳۰٪ جان. همه در `AtmosphereData` و پنجره‌ی Visual Tuning. در Play mode دیده شد؛ با دست بازی نشده است.
 
@@ -440,3 +443,10 @@
 
 ### 2026-10-18 — push و merge پاس post process
 - `8df8f7e` (D92) و `ee5bbcc` (glyphهای وزیرمتن) روی `main` هستند و به `origin/main` push شدند. commitها به‌اشتباه مستقیم روی `main` نشسته بودند (checkout قبل از commit به main برگشته بود)؛ شاخه‌ی `feature/post-process` به همان commit آورده و push شد، پس merge جداگانه لازم نشد (هر دو شاخه یکی‌اند). `Assets/_Recovery` مثل قبل commit نشد.
+
+### 2026-10-18 — پهپاد بازیکن در منوی اصلی و فروشگاه تازه (D93)
+- منو: `MenuBackdropBuilder.Helper` لایه‌ی `Player` را از `Generated/CHR_PLY_Core_idle_f8` (یا فریم تکی) می‌سازد، با درخشش و bob قبلی؛ `MenuBackdrop.Layer.Frames/FrameRate` لایه‌ی تکی را انیمیت می‌کند. بدون آرت بازیکن همان AiShell/AiCore. صحنه‌ی MainMenu با `Rebuild Main Menu Scene` دوباره ساخته شد.
+- فروشگاه (`UI/ShopPanel.cs` بازنویسی): پنل ۶۴۰×۸۰۰ با قاب و گوشه‌های روشن؛ عنوان، سکه با آیکن، راهنمای بستن؛ کارت‌های اسلات با عکس و دکمه‌ی جابه‌جا در فاصله‌ی بین آن‌ها؛ `ScrollRect` با `RectMask2D` و اسکرول‌بار چپ؛ ردیف‌ها با عکس چپ، نام، قیمت (طلایی؛ نارنجی-قرمز وقتی سکه کم است) و جزئیات کوچک؛ قفل‌های دیگر ردیف را کم‌رنگ می‌کنند. دکمه‌ی پایین بین سلاح‌ها و «تجهیزات و درمان» می‌پرد. موقعیت اسکرول بعد از rebuild حفظ می‌شود. عکس‌ها از `ShopArt` (ساخته در `GameSession` از `VisualCatalog`: `WeaponIcon`، `ItemArt`، `CoinIcon`، `RepairIcon`، پرتره‌ی اپراتور)؛ `Fit` عکس را با mesh تنگ sprite جا می‌دهد. `UIFactory.Click()` صدای کلیک دکمه‌های دست‌ساز. کلیدهای تازه‌ی `shop.slotKey`، `shop.weaponsTab`.
+- آیکن: `ApplyIncomingArt.SetIcon/ApplyIcons` برای `ICO_<کد سلاح/آیتم>`، `ICO_GEN_Coin`، `ICO_SKL_MaxHealth` (تعمیر). با اجازه‌ی کاربر ۱۰ آیکن از game-icons.net دانلود شد (دو مورد اول اشتباه بودند و با جایگزین از همان سایت عوض شدند)؛ `docs/CREDITS.md`.
+- ۵۰۴ تست پاس. Play mode (صحنه‌ی Game مستقیم، dev_saves): فروشگاه با ۸ و ۱۵۰ سکه، با سلاح‌های خریده‌شده، دکمه‌ی پرش و جابه‌جا دیده شد؛ منو با پهپاد دیده شد. با ماوس واقعی (اسکرول چرخ، hover) آزموده نشده.
+- نکته: هم‌زمان یک جلسه‌ی دیگر آرت موج ۳ را در همین پوشه اعمال می‌کرد؛ فایل‌های آن commit نشدند.

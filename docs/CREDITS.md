@@ -108,3 +108,20 @@ Downloaded 2026-10-16 with the user’s approval. The licence of each pack or fi
 | `Assets/Audio/Sfx/Victory_1.ogg` | jingles_SAX07.ogg | Music Jingles (https://kenney.nl/assets/music-jingles) | Victory |
 
 Total audio in the project: 5.50 MB on disk (71 effect files, 3 music loops).
+
+## Shop icons (game-icons.net, CC BY 3.0)
+
+Source silhouettes in `ArtSource/GameIcons`, coloured into `Assets/Art/Incoming/ICO_*_icon.png` by `Tools/ArtGen/game_icons.py`. License: [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), from https://game-icons.net.
+
+| Project file | Icon | Author |
+|---|---|---|
+| `ICO_BAT_Baton_icon.png` | Baton | Skoll |
+| `ICO_IRF_IndustrialRifle_icon.png` | Famas | Skoll |
+| `ICO_MSG_MagShotgun_icon.png` | Sawed-off shotgun | Delapouite |
+| `ICO_HAM_Hammer_icon.png` | Warhammer | Delapouite |
+| `ICO_ERF_EnergyRifle_icon.png` | Ray gun | Lorc |
+| `ICO_ESG_EnergyShotgun_icon.png` | Blaster | sbed |
+| `ICO_EBL_EnergyBlade_icon.png` | Sparkling sabre | Lorc |
+| `ICO_MIN_Mine_icon.png` | Teller mine | Skoll |
+| `ICO_EMP_EmpPulse_icon.png` | Lightning helix | Lorc |
+| `ICO_SHD_Shield_icon.png` | Energy shield | Lorc |

@@ -94,14 +94,19 @@ namespace Hollow.UI
             b.colors = colors;
             b.onClick.AddListener(() =>
             {
-                // The click sound is feedback only: a failing listener must never swallow the button's action.
-                try { ButtonClicked?.Invoke(); }
-                catch (Exception e) { Debug.LogException(e); }
+                Click();
                 onClick();
             });
             text = Text(rt, "Label", label, theme, fontSize > 0 ? fontSize : theme.BaseFontSize, TextAlignmentOptions.Center);
             text.margin = new Vector4(10, 6, 10, 6);
             return b;
+        }
+
+        /// <summary>Plays the UI click for a button built by hand. Feedback only: a failing listener never swallows the action.</summary>
+        public static void Click()
+        {
+            try { ButtonClicked?.Invoke(); }
+            catch (Exception e) { Debug.LogException(e); }
         }
 
         public static BarView Bar(Transform parent, string name, UITheme theme, Vector2 anchor, Vector2 pivot, Vector2 pos, Vector2 size, Color fill)
