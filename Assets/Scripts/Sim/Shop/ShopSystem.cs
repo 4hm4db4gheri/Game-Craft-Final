@@ -46,8 +46,8 @@ namespace Hollow.Sim
     }
 
     /// <summary>
-    /// The world-station shop: automatically available throughout the timed safe interval. The stations
-    /// remain in the arena, but normal waves and boss fights do not allow shopping.
+    /// The world-station shop: opens by itself when the timed safe interval starts (E closes it) and at any
+    /// station with E, in combat too (live shopping, v0.19 §13). Only the phase-complete state blocks it.
     /// </summary>
     public static class ShopSystem
     {
@@ -60,16 +60,17 @@ namespace Hollow.Sim
         public static void Step(World w, in PlayerCommand cmd)
         {
             var s = w.Shop;
-            if (w.Waves.Kind == EncounterKind.SafeInterval) return;
-            bool tutorialShopping = w.Waves.Kind == EncounterKind.Wave &&
-                (w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade);
-            if ((w.Waves.Kind == EncounterKind.Wave && !tutorialShopping) ||
-                w.Waves.Kind == EncounterKind.Boss || w.Waves.Kind == EncounterKind.PhaseComplete)
+            if (w.Waves.Kind == EncounterKind.PhaseComplete)
             {
                 if (s.Open) SetOpen(w, false);
                 return;
             }
-            if (s.Open && (!InRange(w) || w.Player.Dashing || w.Player.Dead)) SetOpen(w, false);
+            bool inRange = InRange(w);
+            if (cmd.InteractPressed && (inRange || s.Open)) SetOpen(w, !s.Open);
+            // The timed shop opens wherever the wave ended (WaveSystem), so only E closes it; anywhere else
+            // the station shop is live and closes on dash or leaving range (§13).
+            if (w.Waves.Kind == EncounterKind.SafeInterval) return;
+            if (s.Open && (!inRange || w.Player.Dashing || w.Player.Dead)) SetOpen(w, false);
         }
 
         /// <summary>Near any service station (v0.19 §13): each one opens the same shop.</summary>

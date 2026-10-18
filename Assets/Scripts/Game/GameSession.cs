@@ -273,7 +273,8 @@ namespace Hollow.Game
             // One-time hints wait for calm moments: not over menus, scenes, the open shop, a failure or the first tutorial steps.
             bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase ||
                 w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown;
-            hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy);
+            hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy,
+                app.Router.InteractDownThisFrame);
             SetHintHold(hints.Showing);
             if (telemetry != null)
             {
@@ -298,7 +299,7 @@ namespace Hollow.Game
             var state = app.States.Current;
             if (dialogue.Playing)
             {
-                if (input.TakeConfirm()) dialogue.Next();
+                if (input.TakeConfirm() | app.Router.InteractDownThisFrame) dialogue.Next(); // E, like the hint cards
                 if (input.TakePause()) dialogue.Skip();
                 return;
             }
@@ -307,11 +308,6 @@ namespace Hollow.Game
                 if (state == GameState.Playing || state == GameState.XPChoice || state == GameState.BossPrep) OpenPause();
                 else if (state == GameState.Paused) ClosePause();
             }
-            if (input.TakeShop() && app.States.Current == GameState.Playing &&
-                (W.Waves.Kind == EncounterKind.SafeInterval ||
-                 (ShopSystem.InRange(W) && (W.Waves.Kind == EncounterKind.BossPrep ||
-                  W.Tutorial == TutorialStage.Purchase || W.Tutorial == TutorialStage.Grenade))))
-                ShopSystem.SetOpen(W, !W.Shop.Open);
             if (input.TakeConfirm() && state == GameState.Playing) OnConfirm();
         }
 
@@ -511,8 +507,7 @@ namespace Hollow.Game
                 hud.SetGuideUi(shopPanel.TutorialBuyButton(w));
             else hud.SetGuide(guide, worldCamera);
             string status = playing ? TutorialPrompt(w) : null; // no hints over scenes and menus
-            if (status == null && !w.Shop.Open && ShopSystem.InRange(w) && playing &&
-                (w.Tutorial == TutorialStage.Purchase || w.Waves.Kind == EncounterKind.BossPrep))
+            if (status == null && !w.Shop.Open && ShopSystem.InRange(w) && playing && w.Waves.Kind != EncounterKind.PhaseComplete)
                 status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
             hud.SetStatus(hints.Showing ? null : status); // a hint card says it better; the line returns afterwards

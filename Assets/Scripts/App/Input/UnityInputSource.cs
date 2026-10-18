@@ -25,7 +25,6 @@ namespace Hollow.App.Input
 
         public readonly InputAction Pause;
         public readonly InputAction Confirm;
-        public readonly InputAction Shop;
         public readonly InputAction BalancePanel;
         public readonly InputAction DevPanel;
 
@@ -51,7 +50,6 @@ namespace Hollow.App.Input
             interact = Button("Interact", "<Keyboard>/e");
             Pause = Button("Pause", "<Keyboard>/escape");
             Confirm = Button("Confirm", "<Keyboard>/enter");
-            Shop = Button("Shop", "<Keyboard>/tab");
             BalancePanel = Button("BalancePanel", "<Keyboard>/f9");
             DevPanel = Button("DevPanel", "<Keyboard>/f10");
 
@@ -74,14 +72,13 @@ namespace Hollow.App.Input
         // App-level keys, so callers do not need the Input System assembly.
         public bool TakeConfirm() => TakePress(Confirm);
         public bool TakePause() => TakePress(Pause);
-        public bool TakeShop() => TakePress(Shop);
         public bool TakeBalancePanel() => TakePress(BalancePanel);
         public bool TakeDevPanel() => TakePress(DevPanel);
 
         InputAction[] All() => new[]
         {
             move, fire, cancel, dash, reload, weapon1, weapon2, scroll, equipItem, cycleItem, interact,
-            Pause, Confirm, Shop, BalancePanel, DevPanel
+            Pause, Confirm, BalancePanel, DevPanel
         };
 
         public RawInputSample Read(Camera worldCamera)
