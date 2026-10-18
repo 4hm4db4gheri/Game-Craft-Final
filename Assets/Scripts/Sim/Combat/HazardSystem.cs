@@ -69,6 +69,9 @@ namespace Hollow.Sim
                     PlayerSystem.Damage(w, h.Damage, SimMath.SafeNormal(w.Player.Position - h.Position, Vector2.up));
                 if (CompanionSystem.Active(w) && Vector2.Distance(w.Companion.Position, h.Position) <= h.Radius + w.Profile.Companion.BodyRadius)
                     CompanionSystem.Damage(w, h.Damage, SimMath.SafeNormal(w.Companion.Position - h.Position, Vector2.up));
+                // D89: a boss blast is a heavy move and clears the obstacles in its zone.
+                if (h.SourceId == BossState.EntityId && w.Boss.Active && BossSystem.Data(w).HeavyMovesBreakObstacles)
+                    Obstacles.BreakAround(w, h.Position, h.Radius);
                 return;
             }
 

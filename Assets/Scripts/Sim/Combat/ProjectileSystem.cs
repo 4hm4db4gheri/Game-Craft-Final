@@ -21,6 +21,15 @@ namespace Hollow.Sim
             return r;
         }
 
+        /// <summary>Turns a homing shot toward the player, never faster than its rate; the speed stays the same.</summary>
+        static void Home(World w, ProjectileState p, float dt)
+        {
+            Vector2 want = w.Player.Position - p.Position;
+            if (want.sqrMagnitude < 1e-6f || p.Velocity.sqrMagnitude < 1e-6f) return;
+            float max = p.Homing * dt;
+            p.Velocity = SimMath.Rotate(p.Velocity, Mathf.Clamp(Vector2.SignedAngle(p.Velocity, want), -max, max));
+        }
+
         public static void Step(World w)
         {
             float dt = Core.SimClock.Dt;
@@ -31,6 +40,7 @@ namespace Hollow.Sim
             {
                 if (!p.Alive) continue;
                 p.PrevPosition = p.Position;
+                if (p.Homing > 0f && !w.Player.Dead) Home(w, p, dt);
                 Vector2 from = p.Position;
                 Vector2 to = from + p.Velocity * dt;
 

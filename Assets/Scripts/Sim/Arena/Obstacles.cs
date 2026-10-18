@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Hollow.Sim
 {
     /// <summary>
-    /// D87: a boss charge breaks the obstacles in its way. Only the phase's obstacles and set pieces break — never
+    /// D87/D89: a boss's heavy moves (charge, area strike, pounce and leap landings, blasts) break the obstacles they reach. Only the phase's obstacles and set pieces break — never
     /// the outer walls or a service station. A broken obstacle goes as a whole (the connected blocked cells it was
     /// made of), stays broken for the rest of the phase (saved in <see cref="World.BrokenCells"/>) and the path maps
     /// are rebuilt around the new opening.
@@ -43,7 +43,7 @@ namespace Hollow.Sim
             return broken;
         }
 
-        /// <summary>The cells a charge may break this phase: phase obstacles and set pieces minus walls and stations.</summary>
+        /// <summary>The cells a heavy move may break this phase: phase obstacles and set pieces minus walls and stations.</summary>
         static void Collect(World w)
         {
             fixedCells.Clear();

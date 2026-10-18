@@ -39,7 +39,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۹۱ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۲ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
@@ -62,6 +62,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D89: مهارت سرعت حرکت (+۱۲/۲۴/۳۶٪) و زمان خشاب (×0.8/0.62/0.45) قوی‌تر شدند. همه‌ی حمله‌های سنگین باس‌ها (شارژ، ضربه‌ی ناحیه‌ای، فرود pounce و leap، انفجار و نارنجک باس) موانع را می‌شکنند؛ تیر نه (`HeavyMovesBreakObstacles`). باس ۳: pounce دوتایی (سه‌تایی در جان کم) و سریع‌تر، رگبار ۱ ثانیه‌ای که مخروطش سریع رو به بازیکن می‌چرخد و گلوله‌هایش کمی دنبال بازیکن می‌روند، و سه نارنجک با فاصله‌ی ۰.۳ ثانیه جلو و دو طرف جهت حرکت بازیکن (هیچ‌وقت روی خود او). با دست بازی نشده است.
 
 - D88: فروشگاه و منوها فقط با ماوس (EventSystem رویداد navigation نمی‌فرستد؛ WASD انتخاب را جابه‌جا نمی‌کند و Space دکمه را نمی‌زند). صحنه‌های داستان با E (و Enter یا کلیک) جلو می‌روند. باس ۲ هر پنج حرکت یک بار leap می‌کند و مخروط رگبارش ثابت می‌ماند. با دست بازی نشده است.
 
@@ -397,3 +399,10 @@
 - `GameSession.HandleKeys`: صحنه‌ی داستان با `Router.InteractDownThisFrame` (E) هم جلو می‌رود؛ متن `dialogue.hint`/`dialogue.hintSkip` حالا E را می‌گوید.
 - باس ۲: `Moves` = Burst، Blast، Burst، Blast، Leap (قبلاً هر سه حرکت یک leap)؛ `BurstTrackRate` = 0 (مخروط دنبال بازیکن نمی‌چرخد، رفت‌وبرگشت داخل همان مخروط مانده). باس ۳ هنوز دنبال می‌کند. seed و `Baseline.json` revision 10؛ `BalanceProfileStore` پروفایل‌های ذخیره‌شده‌ی قبل از آن را مهاجرت می‌دهد. تست `RobotBurstFansSweepsTheWholeConeAndStaysWhereItWarned`.
 - ۴۹۱ تست پاس. دیالوگ با E و باس ۲ در Play mode بررسی نشده‌اند.
+
+### 2026-10-18 — مهارت‌های محسوس‌تر، شکستن موانع با همه‌ی حمله‌های سنگین، باس ۳ تهاجمی‌تر (D89)
+- مهارت‌ها در seed: سرعت حرکت 5.6/6.2/6.8 (قبلاً 5.3/5.6/5.9)، ضریب خشاب 0.8/0.62/0.45 (قبلاً 0.92/0.84/0.76؛ کف 0.45 ثانیه سر جایش).
+- `BossData.ChargeBreaksObstacles` → `HeavyMovesBreakObstacles`؛ `Obstacles.BreakAround` حالا در ضربه‌ی ناحیه‌ای (Strike)، `Land` (فرود pounce و leap) و انفجار hazard باس (`HazardSystem.Detonate` با `SourceId == BossState.EntityId`) هم صدا زده می‌شود. باس ۲: همه‌چیز جز رگبار.
+- باس ۳: `Moves` = Burst، Pounce، Blast، Pounce، Leap؛ فیلد تازه‌ی `PounceChain` (۲، در جان کم ۳)؛ pounce سریع‌تر. رگبار: `BurstDuration` 1، آسیب 26، `BurstTrackRate` 160، فیلد تازه‌ی `BurstHoming` 50 (`ProjectileState.Homing`، `ProjectileSystem.Home` جهت را با سرعت ثابت می‌چرخاند). نارنجک: `BlastCount/BlastGap/BlastLead/BlastPlayerGap/BlastSideAngle`؛ `BossSystem.ThrowNextBlast` هر نارنجک را هنگام پرتاب از جای و جهت حرکت بازیکن می‌گذارد (`BossState.BlastsLeft/BlastIndex/NextBlastTick`، ذخیره می‌شوند).
+- revision 11 مهارت‌ها و باس‌های پروفایل ذخیره‌شده را از baseline می‌گیرد. seed و `Baseline.json` یکی‌اند.
+- تست‌های تازه: `HeavyMovesBreakTheObstaclesInTheirZone` (۷ حالت)، `ShotsAndRegularEnemyBlastsBreakNothing`، `FormerCompanionPouncesTwiceInARow`، `FormerCompanionBurstTurnsAndBendsTowardThePlayer`، `FormerCompanionGrenadesHemThePlayerInButNeverLandOnThem`. ۵۰۲ تست پاس. در Play mode دیده نشده و با دست بازی نشده است.

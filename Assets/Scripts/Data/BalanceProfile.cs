@@ -299,8 +299,9 @@ namespace Hollow.Data
         /// <summary>…but never longer than this.</summary>
         [Placeholder, Unit("u")] public float ChargeMaxDistance = 14f;
         [Gdd("§7"), Unit("s")] public float ChargeRecovery;
-        /// <summary>D87: a charge breaks the phase obstacles in its path instead of stopping on them (walls and stations stay).</summary>
-        [Placeholder] public bool ChargeBreaksObstacles = true;
+        /// <summary>D87/D89: every heavy move breaks the phase obstacles it touches (walls and stations stay): a charge
+        /// smashes through, and an area strike, a pounce or leap landing and a blast clear their whole zone. Shots never do.</summary>
+        [Placeholder] public bool HeavyMovesBreakObstacles = true;
         [Gdd("§7"), Unit("s")] public float StrikeWindup;
         [Gdd("v0.19 §12"), Unit("u")] public float StrikeRadius;
         /// <summary>The area strike is chosen when the player is within StrikeRadius × this.</summary>
@@ -322,6 +323,8 @@ namespace Hollow.Data
         /// <summary>D86: the warned cone turns toward the player at most this fast, during the warning and the burst.</summary>
         [Placeholder, Unit("deg/s")] public float BurstTrackRate;
         [Gdd("v0.19 §12"), Unit("u/s")] public float ProjectileSpeed;
+        /// <summary>D89: burst bullets bend toward the player at most this fast while they fly (same range).</summary>
+        [Placeholder, Unit("deg/s")] public float BurstHoming;
         /// <summary>Time from marking the blast zone to the explosion (for the former companion: throw delay + fuse).</summary>
         [Gdd("§7"), Unit("s")] public float BlastWarning;
         /// <summary>Thrown blasts (former companion) fly for BlastWarning × this before the zone shows its full danger.</summary>
@@ -330,6 +333,17 @@ namespace Hollow.Data
         [Placeholder, Unit("u")] public float BlastThrowRange;
         /// <summary>The boss stays in place this long after its blast goes off.</summary>
         [Gdd("v0.19 §12"), Unit("s")] public float BlastRecovery;
+        /// <summary>D89: blasts per attack, thrown this far apart in time. One blast lands on the player; a volley never does:
+        /// the first lands ahead of where the player is heading, the others to either side, each with a gap to the player
+        /// so standing clear is possible but a straight run is not.</summary>
+        [Placeholder] public int BlastCount = 1;
+        [Placeholder, Unit("s")] public float BlastGap;
+        /// <summary>The first blast of a volley aims where the player will be this long from now (at least the gap away).</summary>
+        [Placeholder, Unit("s")] public float BlastLead;
+        /// <summary>Free space between the player's body and the edge of each volley zone when it is thrown.</summary>
+        [Placeholder, Unit("u")] public float BlastPlayerGap;
+        /// <summary>The side blasts land this far around from the player's heading.</summary>
+        [Placeholder, Unit("deg")] public float BlastSideAngle;
 
         /// <summary>D86 pounce: the landing zone is marked on the player for the telegraph and the flight…</summary>
         [Placeholder, Unit("s")] public float PounceTelegraph;
@@ -339,7 +353,8 @@ namespace Hollow.Data
         [Placeholder, Unit("u")] public float PounceRadius;
         [Placeholder] public float PounceDamage;
         [Placeholder, Unit("s")] public float PounceRecovery;
-        /// <summary>Pounces in a row at low health (each with its full warning).</summary>
+        /// <summary>Pounces in a row (each with its full warning), and at low health.</summary>
+        [Placeholder] public int PounceChain = 1;
         [Placeholder] public int PounceChainLowHealth = 1;
 
         /// <summary>D86 leap: the boss rises off the map, its landing zone follows the player, locks, then it slams down.</summary>

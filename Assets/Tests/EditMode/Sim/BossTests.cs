@@ -372,6 +372,87 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void FormerCompanionPouncesTwiceInARow()
+        {
+            var sim = Fight(3);
+            var w = sim.World;
+            var d = w.Profile.Boss(3);
+            Assert.GreaterOrEqual(d.Moves.Count(m => m == BossMove.Pounce), 2, "pounces come up more than once a cycle");
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(0, -5), w.Profile.Player.BodyRadius);
+            NextMove(w, BossMove.Pounce);
+            Assert.IsTrue(RunUntil(sim, BossAi.PounceRecover));
+            for (int t = 0; t < 120 && w.Boss.Ai == BossAi.PounceRecover; t++) sim.Step(PlayerCommand.None);
+            Assert.AreEqual(BossAi.PounceWindup, w.Boss.Ai, "a second pounce follows straight away");
+        }
+
+        [Test]
+        public void FormerCompanionBurstTurnsAndBendsTowardThePlayer()
+        {
+            var sim = Fight(3);
+            var w = sim.World;
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(0, -6), w.Profile.Player.BodyRadius);
+            NextMove(w, BossMove.Burst);
+            Assert.IsTrue(RunUntil(sim, BossAi.BurstWarning));
+            // Step well aside: the cone turns after the player.
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(6, -3), w.Profile.Player.BodyRadius);
+            Assert.IsTrue(RunUntil(sim, BossAi.Bursting));
+            Vector2 toPlayer = w.Player.Position - w.Boss.Position;
+            Assert.Less(Vector2.Angle(w.Boss.AttackDir, toPlayer), 10f, "the cone faces the player again");
+
+            ProjectileState shot = null;
+            for (int t = 0; t < 30 && shot == null; t++)
+            {
+                sim.Step(PlayerCommand.None);
+                KillAdds(w);
+                shot = w.Projectiles.FirstOrDefault(p => p.SourceId == BossState.EntityId);
+            }
+            Assert.IsNotNull(shot);
+            Assert.Greater(shot.Homing, 0f);
+            // Move the player off the bullet's line: it bends after them.
+            w.Player.Position = w.Arena.NearestFree(shot.Position + SimMath.Rotate(shot.Velocity.normalized, 60f) * 5f, w.Profile.Player.BodyRadius);
+            Vector2 v0 = shot.Velocity;
+            float side = Vector2.SignedAngle(v0, w.Player.Position - shot.Position);
+            sim.Step(PlayerCommand.None);
+            sim.Step(PlayerCommand.None);
+            float turned = Vector2.SignedAngle(v0, shot.Velocity);
+            Assert.Greater(turned * side, 0f, "the bullet turns toward the player");
+            Assert.AreEqual(v0.magnitude, shot.Velocity.magnitude, 1e-3f, "at the same speed");
+        }
+
+        [Test]
+        public void FormerCompanionGrenadesHemThePlayerInButNeverLandOnThem()
+        {
+            var sim = Fight(3);
+            var w = sim.World;
+            var d = w.Profile.Boss(3);
+            Assert.Greater(d.BlastCount, 1);
+            w.Player.Position = w.Player.PrevPosition = w.Arena.NearestFree(w.Boss.Position + new Vector2(-4, -6), w.Profile.Player.BodyRadius);
+            var run = new PlayerCommand { Move = Vector2.right };
+            sim.Run(30, run); // up to speed
+            NextMove(w, BossMove.Blast);
+            w.Boss.AiUntilTick = w.Clock.Tick;
+
+            float clear = d.BlastRadius + w.Profile.Player.BodyRadius;
+            var zones = new List<(Vector2 at, Vector2 player, Vector2 heading)>();
+            var seen = new HashSet<int>(w.Hazards.Select(h => h.Id));
+            for (int t = 0; t < 60 * 3 && zones.Count < d.BlastCount; t++)
+            {
+                Vector2 player = w.Player.Position, heading = w.Player.Velocity.normalized;
+                sim.Step(run);
+                KillAdds(w);
+                foreach (var h in w.Hazards)
+                    if (seen.Add(h.Id) && h.SourceId == BossState.EntityId) zones.Add((h.Position, player, heading));
+            }
+            Assert.AreEqual(d.BlastCount, zones.Count, "a whole volley");
+            foreach (var z in zones)
+                Assert.Greater(Vector2.Distance(z.at, z.player), clear, "never on the player");
+            Assert.Greater(Vector2.Dot(zones[0].at - zones[0].player, zones[0].heading), clear, "the first lands ahead of the run");
+            float side1 = Vector3.Cross(zones[1].heading, zones[1].at - zones[1].player).z;
+            float side2 = Vector3.Cross(zones[2].heading, zones[2].at - zones[2].player).z;
+            Assert.Less(side1 * side2, 0f, "the next ones land on either side");
+        }
+
+        [Test]
         public void TheBossIsUntouchableByBodiesMinesAndTheCompanionWhileOffTheMap()
         {
             var sim = Fight(2);

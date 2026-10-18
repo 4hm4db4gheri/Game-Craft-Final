@@ -90,6 +90,14 @@ namespace Hollow.Data
                 foreach (var b in profile.Bosses)
                     if (baseline.Bosses.Find(x => x.Id == b.Id) is { } bb) { b.Moves = new(bb.Moves); b.BurstTrackRate = bb.BurstTrackRate; }
             }
+            if (profile.Revision < 11)
+            {
+                // D89: stronger movement-speed and reload skills; every heavy boss move breaks obstacles; the final boss
+                // pounces more, tracks with its burst and throws grenade volleys around the player.
+                profile.Skills = BalanceJson.Clone(baseline).Skills;
+                profile.Bosses = BalanceJson.Clone(baseline).Bosses;
+                profile.BuildIndex();
+            }
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;

@@ -39,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 10, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 11, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -118,8 +118,9 @@ namespace Hollow.EditorTools
             p.Skills = new List<SkillData>
             {
                 Skill(SkillId.WeaponDamage, "Weapon damage", 1.08f, 1.16f, 1.24f),
-                Skill(SkillId.MoveSpeed, "Movement speed", 5.3f, 5.6f, 5.9f),
-                Skill(SkillId.ReloadMultiplier, "Reload time", 0.92f, 0.84f, 0.76f),
+                // D89: +6/12/18 % speed and -8/16/24 % reload were not felt; now +12/24/36 % and -20/38/55 % (the reload floor still holds).
+                Skill(SkillId.MoveSpeed, "Movement speed", 5.6f, 6.2f, 6.8f),
+                Skill(SkillId.ReloadMultiplier, "Reload time", 0.8f, 0.62f, 0.45f),
                 Skill(SkillId.DashCooldown, "Dash cooldown", 2.25f, 2f, 1.75f),
                 Skill(SkillId.DashDamage, "Dash damage", 60, 70, 80),
                 Skill(SkillId.MaxHealth, "Maximum health", 120, 140, 160),
@@ -389,12 +390,17 @@ namespace Hollow.EditorTools
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.H3_FastAssaulter, 6), (EnemyId.H4_ShieldGuard, 6), (EnemyId.H7_Engineer, 2)) },
                     },
                     MoveSpeed = 2.2f, BodyRadius = 0.9f, HitHeight = HitHeight(3.0f, 0.9f), AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
-                    BurstWarning = 0.7f, BurstDuration = 0.6f, BurstRecovery = 1.2f, BurstShotInterval = 0.2f, BurstSpread = 20, ProjectileSpeed = 11,
-                    BlastWarning = 1.6f, BlastFlightFraction = 0.5f, BlastRadius = 2.6f, BlastThrowRange = 9, BlastRecovery = 0f, HealCapFraction = 0.1f,
-                    BurstShotDamage = 32, ProjectileRange = 15, AddSpawnGap = 0.35f, EmpAffects = true, BurstTrackRate = 60f,
+                    // D89: a longer burst whose cone turns to the player quickly and whose bullets bend after them (same range).
+                    BurstWarning = 0.7f, BurstDuration = 1f, BurstRecovery = 1.2f, BurstShotInterval = 0.2f, BurstSpread = 20, ProjectileSpeed = 11,
+                    BurstShotDamage = 26, ProjectileRange = 15, AddSpawnGap = 0.35f, EmpAffects = true, BurstTrackRate = 160f, BurstHoming = 50f,
+                    // D89: three grenades 0.3 s apart around where the player is heading, never on them (see BossSystem.ThrowNextBlast).
+                    BlastWarning = 1.4f, BlastFlightFraction = 0.5f, BlastRadius = 2.4f, BlastThrowRange = 9, BlastRecovery = 0f, HealCapFraction = 0.1f,
+                    BlastCount = 3, BlastGap = 0.3f, BlastLead = 0.9f, BlastPlayerGap = 0.35f, BlastSideAngle = 100f,
                     Reinforcements = Adds((EnemyId.H1_BatonGuard, 2), (EnemyId.H2_RifleGuard, 2), (EnemyId.H3_FastAssaulter, 1)), ReinforceInterval = 8f,
-                    Moves = Moves(BossMove.Burst, BossMove.Pounce, BossMove.Blast, BossMove.Leap), Armor = 0.45f, ExposedArmor = 0f,
-                    PounceTelegraph = 0.55f, PounceFlightTime = 0.45f, PounceRange = 8f, PounceRadius = 2.2f, PounceDamage = 30f, PounceRecovery = 0.9f, PounceChainLowHealth = 2,
+                    // D89: pounces twice as often, two in a row (three at low health), and quicker.
+                    Moves = Moves(BossMove.Burst, BossMove.Pounce, BossMove.Blast, BossMove.Pounce, BossMove.Leap), Armor = 0.45f, ExposedArmor = 0f,
+                    PounceTelegraph = 0.45f, PounceFlightTime = 0.35f, PounceRange = 8f, PounceRadius = 2.2f, PounceDamage = 28f, PounceRecovery = 0.7f,
+                    PounceChain = 2, PounceChainLowHealth = 3,
                     LeapRiseTime = 0.4f, LeapTrackTime = 1.6f, LeapTrackSpeed = 7.5f, LeapLockTime = 0.85f, LeapRadius = 3f, LeapDamage = 40f, LeapRecovery = 1.4f,
                 },
             };

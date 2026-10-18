@@ -43,6 +43,10 @@ namespace Hollow.Sim
         public Vector2 LeapFrom;
         public long MoveStartTick;
         public int ChainLeft;
+        /// <summary>D89: blasts of the current volley still to throw, how many were thrown, and when the next one goes.</summary>
+        public int BlastsLeft;
+        public int BlastIndex;
+        public long NextBlastTick;
 
         public long StunnedUntilTick;
         public long EmpResistantUntilTick;
@@ -69,6 +73,8 @@ namespace Hollow.Sim
     /// D86: armour blocks a share of every hit except in the exposed windows (recovering or stunned); the attack cycle
     /// comes from the data and adds the pounce (a hop onto the player's marked position) and the leap (off the map,
     /// the landing zone follows the player, locks, then a slam); the burst can fan, sweep there and back and track.
+    /// D89: every heavy move breaks the obstacles it reaches; burst bullets can home; blasts can come as a volley
+    /// placed around the player's heading.
     /// </summary>
     public static class BossSystem
     {
@@ -100,6 +106,7 @@ namespace Hollow.Sim
             b.HealedTotal = 0;
             b.StunnedUntilTick = b.EmpResistantUntilTick = 0;
             b.ChainLeft = 0;
+            b.BlastsLeft = b.BlastIndex = 0;
 
             w.Waves.Kind = EncounterKind.Boss;
             w.SafeInterval = false;
@@ -118,6 +125,7 @@ namespace Hollow.Sim
             SpawnAdds(w, b, d);
             if (w.Player.Dead) return;
             if (w.Clock.Tick < b.StunnedUntilTick) return;
+            if (b.BlastsLeft > 0 && w.Clock.Tick >= b.NextBlastTick) ThrowNextBlast(w, b, d);
             StepAi(w, b, d);
         }
 
@@ -204,7 +212,7 @@ namespace Hollow.Sim
                     Vector2 from = b.Position;
                     float step = d.ChargeSpeed * Core.SimClock.Dt;
                     // D87: obstacles just ahead give way instead of stopping the charge; walls still stop it.
-                    if (d.ChargeBreaksObstacles) Obstacles.BreakAround(w, from + b.AttackDir * step * 2, b.Radius);
+                    if (d.HeavyMovesBreakObstacles) Obstacles.BreakAround(w, from + b.AttackDir * step * 2, b.Radius);
                     b.Position = w.Arena.MoveCircle(from, b.AttackDir * step, b.Radius);
                     float moved = Vector2.Distance(from, b.Position);
                     b.ChargeTravelled += moved;
@@ -241,7 +249,7 @@ namespace Hollow.Sim
                     break;
                 case BossAi.Pouncing:
                     b.Position = Vector2.Lerp(b.LeapFrom, b.AttackPoint, Flight(now, b));
-                    if (now >= b.AiUntilTick) Land(w, b, d.PounceRadius, d.PounceDamage, BossAi.PounceRecover, d.PounceRecovery);
+                    if (now >= b.AiUntilTick) Land(w, b, d, d.PounceRadius, d.PounceDamage, BossAi.PounceRecover, d.PounceRecovery);
                     break;
 
                 case BossAi.LeapRise:
@@ -269,7 +277,7 @@ namespace Hollow.Sim
                     break;
                 }
                 case BossAi.LeapLock:
-                    if (now >= b.AiUntilTick) Land(w, b, d.LeapRadius, d.LeapDamage, BossAi.LeapRecover, d.LeapRecovery);
+                    if (now >= b.AiUntilTick) Land(w, b, d, d.LeapRadius, d.LeapDamage, BossAi.LeapRecover, d.LeapRecovery);
                     break;
 
                 case BossAi.StrikeWindup:
@@ -278,6 +286,7 @@ namespace Hollow.Sim
                         Attack(w, b);
                         w.Emit(SimEventType.Explosion, BossState.EntityId, b.Position, default, d.StrikeRadius, (int)HazardOwner.Enemy);
                         AreaDamage(w, b.Position, d.StrikeRadius, d.Damage);
+                        if (d.HeavyMovesBreakObstacles) Obstacles.BreakAround(w, b.Position, d.StrikeRadius);
                         b.Ai = BossAi.StrikeRecover;
                         b.AiUntilTick = now + w.Ticks(d.StrikeRecovery);
                     }
@@ -355,11 +364,11 @@ namespace Hollow.Sim
                 case BossMove.Blast:
                     Blast(w, b, d);
                     b.Ai = BossAi.BlastWarning;
-                    b.AiUntilTick = now + w.Ticks(d.BlastWarning);
+                    b.AiUntilTick = now + w.Ticks(d.BlastWarning + d.BlastGap * System.Math.Max(0, d.BlastCount - 1));
                     break;
 
                 case BossMove.Pounce:
-                    b.ChainLeft = LowHealth(b, d) ? System.Math.Max(0, d.PounceChainLowHealth - 1) : 0;
+                    b.ChainLeft = System.Math.Max(0, (LowHealth(b, d) ? d.PounceChainLowHealth : d.PounceChain) - 1);
                     StartPounce(w, b, d);
                     break;
 
@@ -390,12 +399,13 @@ namespace Hollow.Sim
                 d.PounceTelegraph + d.PounceFlightTime, (int)TelegraphShape.Circle);
         }
 
-        static void Land(World w, BossState b, float radius, float damage, BossAi recover, float recovery)
+        static void Land(World w, BossState b, BossData d, float radius, float damage, BossAi recover, float recovery)
         {
             b.Position = b.AttackPoint;
             Attack(w, b);
             w.Emit(SimEventType.Explosion, BossState.EntityId, b.Position, default, radius, (int)HazardOwner.Enemy);
             AreaDamage(w, b.Position, radius, damage);
+            if (d.HeavyMovesBreakObstacles) Obstacles.BreakAround(w, b.Position, radius);
             b.Ai = recover;
             b.AiUntilTick = w.Clock.Tick + w.Ticks(recovery);
         }
@@ -416,9 +426,40 @@ namespace Hollow.Sim
 
         static void Blast(World w, BossState b, BossData d)
         {
-            Vector2 target = w.Player.Position;
-            if (Vector2.Distance(b.Position, target) > d.BlastThrowRange)
-                target = b.Position + SimMath.SafeNormal(target - b.Position, b.Facing) * d.BlastThrowRange;
+            if (d.BlastCount <= 1)
+            {
+                Vector2 target = w.Player.Position;
+                if (Vector2.Distance(b.Position, target) > d.BlastThrowRange)
+                    target = b.Position + SimMath.SafeNormal(target - b.Position, b.Facing) * d.BlastThrowRange;
+                ThrowBlast(w, b, d, target);
+                return;
+            }
+            b.BlastsLeft = d.BlastCount;
+            b.BlastIndex = 0;
+            ThrowNextBlast(w, b, d);
+        }
+
+        /// <summary>
+        /// D89 volley: each blast is placed when it is thrown, from where the player is and where they are heading - the
+        /// first ahead of them, the next ones on alternate sides - always leaving a gap to the player's body, so a player
+        /// who reads the zones can stay out of them, but running on in a straight line does not.
+        /// </summary>
+        static void ThrowNextBlast(World w, BossState b, BossData d)
+        {
+            var p = w.Player;
+            Vector2 heading = p.Velocity.sqrMagnitude > 0.5f ? p.Velocity.normalized : SimMath.SafeNormal(p.Position - b.Position, b.Facing);
+            float gap = d.BlastRadius + w.Profile.Player.BodyRadius + d.BlastPlayerGap;
+            int k = b.BlastIndex;
+            float distance = k == 0 ? Mathf.Max(gap, p.Velocity.magnitude * d.BlastLead) : gap;
+            float angle = k == 0 ? 0f : d.BlastSideAngle * ((k + 1) / 2) * ((k & 1) == 1 ? 1f : -1f);
+            ThrowBlast(w, b, d, p.Position + SimMath.Rotate(heading, angle) * distance);
+            b.BlastIndex++;
+            b.BlastsLeft--;
+            b.NextBlastTick = w.Clock.Tick + System.Math.Max(1, w.Ticks(d.BlastGap));
+        }
+
+        static void ThrowBlast(World w, BossState b, BossData d, Vector2 target)
+        {
             float flight = d.Id == BossId.FormerCompanion ? d.BlastWarning * d.BlastFlightFraction : 0f;
             HazardSystem.Create(w, HazardOwner.Enemy, b.Position, target, d.BlastRadius, d.Damage, d.BlastWarning, BossState.EntityId, default, flight);
             w.Emit(SimEventType.EnemyTelegraph, BossState.EntityId, target, Vector2.right * d.BlastRadius, d.BlastWarning, (int)TelegraphShape.Circle);
@@ -452,7 +493,7 @@ namespace Hollow.Sim
                 Id = w.AllocateId(), Owner = ProjectileOwner.Enemy, SourceId = BossState.EntityId,
                 Position = b.Position, PrevPosition = b.Position, Origin = b.Position,
                 Velocity = dir * d.ProjectileSpeed, Damage = d.BurstShotDamage, Range = d.ProjectileRange,
-                Radius = w.Profile.Combat.EnemyProjectileRadius, TargetsLeft = 1,
+                Radius = w.Profile.Combat.EnemyProjectileRadius, TargetsLeft = 1, Homing = d.BurstHoming,
             });
         }
 
@@ -547,6 +588,7 @@ namespace Hollow.Sim
             }
             b.AddQueue.Clear();
             b.ReinforceQueue.Clear();
+            b.BlastsLeft = 0;
             foreach (var h in w.Hazards) h.Cancelled = true;
             foreach (var p in w.Projectiles) if (p.Owner == ProjectileOwner.Enemy) p.Alive = false;
             if (w.Profile.Economy.BossDeathCollectsGroundCoins)

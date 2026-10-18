@@ -11,13 +11,15 @@ namespace Hollow.Tests.Sim
     public class BossPressureTests
     {
         /// <summary>Open 40 × 40 arena with a 2 × 2 phase-one obstacle at world (-1..1, 5..7).</summary>
-        static Simulation ArenaWithRock(out int[] rock)
+        static Simulation ArenaWithRock(out int[] rock, int phase = 1)
         {
             var layout = SimTestUtil.OpenArena();
             rock = new[] { layout.CellIndex(19, 25), layout.CellIndex(20, 25), layout.CellIndex(19, 26), layout.CellIndex(20, 26) };
-            layout.PhaseBlocked[0].Cells.AddRange(rock);
-            var sim = SimTestUtil.NewSim(layout);
+            while (layout.PhaseBlocked.Count < phase) layout.PhaseBlocked.Add(new PhaseCells());
+            layout.PhaseBlocked[phase - 1].Cells.AddRange(rock);
+            var sim = SimTestUtil.NewSim(layout, companion: false);
             var w = sim.World;
+            if (phase != 1) PhaseSystem.EnterPhase(w, phase);
             w.Tutorial = TutorialStage.None;
             w.Progress.ChoicesBlocked = true;
             w.Player.InvulnerableUntilTick = long.MaxValue;
@@ -55,6 +57,76 @@ namespace Hollow.Tests.Sim
             // Saved, and still open after loading.
             var loaded = WorldSerializer.FromJson(WorldSerializer.ToJson(w), w.Profile, w.Layout);
             Assert.IsFalse(loaded.Arena.IsBlockedCell(19, 25));
+        }
+
+        public enum HeavyMove { Strike, PounceLanding, LeapLanding, RobotBlast, FormerCompanionGrenade }
+
+        /// <summary>D89: every heavy move clears the obstacles in its zone, not only the charge.</summary>
+        [TestCase(HeavyMove.Strike, 1)]
+        [TestCase(HeavyMove.PounceLanding, 1)]
+        [TestCase(HeavyMove.PounceLanding, 3)]
+        [TestCase(HeavyMove.LeapLanding, 2)]
+        [TestCase(HeavyMove.LeapLanding, 3)]
+        [TestCase(HeavyMove.RobotBlast, 2)]
+        [TestCase(HeavyMove.FormerCompanionGrenade, 3)]
+        public void HeavyMovesBreakTheObstaclesInTheirZone(HeavyMove move, int phase)
+        {
+            var sim = ArenaWithRock(out var rock, phase);
+            var w = sim.World;
+            var b = w.Boss;
+            var d = w.Profile.Boss(phase);
+            w.Player.Position = w.Player.PrevPosition = new Vector2(10, -10);
+            Vector2 near = new(0, 3.6f); // just below the rock at (-1..1, 5..7)
+            long now = w.Clock.Tick;
+            switch (move)
+            {
+                case HeavyMove.Strike:
+                    b.Position = b.PrevPosition = near;
+                    b.Ai = BossAi.StrikeWindup;
+                    b.AiUntilTick = now;
+                    break;
+                case HeavyMove.PounceLanding:
+                    b.LeapFrom = b.Position = b.PrevPosition = new Vector2(0, -4);
+                    b.AttackPoint = near;
+                    b.Ai = BossAi.Pouncing;
+                    b.MoveStartTick = now;
+                    b.AiUntilTick = now + 2;
+                    break;
+                case HeavyMove.LeapLanding:
+                    b.Position = b.PrevPosition = b.AttackPoint = near;
+                    b.Ai = BossAi.LeapLock;
+                    b.MoveStartTick = now;
+                    b.AiUntilTick = now + 2;
+                    break;
+                default:
+                    b.Position = b.PrevPosition = new Vector2(0, -6);
+                    b.Ai = BossAi.BlastRecover;
+                    b.AiUntilTick = long.MaxValue;
+                    HazardSystem.Create(w, HazardOwner.Enemy, b.Position, near, d.BlastRadius, d.Damage, 0.2f, BossState.EntityId);
+                    break;
+            }
+            w.Drain();
+            sim.Run(20, PlayerCommand.None);
+            CollectionAssert.AreEquivalent(rock, w.BrokenCells, $"{move} cleared the rock");
+            Assert.AreEqual(1, w.Drain().Count(e => e.Type == SimEventType.ObstacleBroken));
+        }
+
+        [Test]
+        public void ShotsAndRegularEnemyBlastsBreakNothing()
+        {
+            var sim = ArenaWithRock(out _, 2);
+            var w = sim.World;
+            w.Player.Position = w.Player.PrevPosition = new Vector2(10, -10);
+            w.Boss.Ai = BossAi.BlastRecover;
+            w.Boss.AiUntilTick = long.MaxValue;
+            HazardSystem.Create(w, HazardOwner.Enemy, Vector2.zero, new Vector2(0, 3.6f), 3f, 10f, 0.2f, sourceId: 12345);
+            w.Projectiles.Add(new ProjectileState
+            {
+                Id = w.AllocateId(), Owner = ProjectileOwner.Enemy, SourceId = BossState.EntityId, Position = new Vector2(0, 2),
+                PrevPosition = new Vector2(0, 2), Origin = new Vector2(0, 2), Velocity = Vector2.up * 10, Damage = 10, Range = 10, Radius = 0.2f,
+            });
+            sim.Run(30, PlayerCommand.None);
+            Assert.IsEmpty(w.BrokenCells);
         }
 
         [Test]
