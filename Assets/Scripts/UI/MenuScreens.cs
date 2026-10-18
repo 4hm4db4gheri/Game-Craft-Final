@@ -84,6 +84,7 @@ namespace Hollow.UI
             Btn(box, Loc.T("menu.continue"), y, continueGame, anySave); y -= 80;
             Btn(box, Loc.T("menu.newGame"), y, newGame); y -= 80;
             Btn(box, Loc.T("menu.settings"), y, settings); y -= 80;
+            Btn(box, Loc.T("menu.quit"), y, quit); y -= 80;
         }
 
         // ---------------------------------------------------------------- slots

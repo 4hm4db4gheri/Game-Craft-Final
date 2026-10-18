@@ -513,3 +513,6 @@
 - به خواست کاربر هیچ تستی اجرا نشد و کد هنوز در Unity کامپایل نشده (ادیتور مشغول reimport همه‌ی textureها بود). Play mode دیده نشده.
 - نکته: اضافه کردن یک `AssetPostprocessor` تازه با `OnPreprocessTexture` همه‌ی textureهای پروژه (حتی پکیج‌ها) را دوباره import می‌کند (چند ده دقیقه)؛ قانون تازه‌ی texture را در postprocessor موجود بگذار.
 
+
+### 2026-10-18 — دکمه‌ی خروج در منوی اصلی
+- به خواست کاربر دکمه‌ی «خروج» (`menu.quit`) زیر «تنظیمات» در `MenuScreens.ShowMain` برگشت؛ `GameApp.Quit` را صدا می‌زند (در Editor Play را متوقف می‌کند). کامپایل بدون خطا؛ Play mode دیده نشده.
