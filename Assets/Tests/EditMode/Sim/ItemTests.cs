@@ -17,7 +17,7 @@ namespace Hollow.Tests.Sim
             var sim = SimTestUtil.NewSim(companion: companion);
             var w = sim.World;
             w.Phase = phase;
-            foreach (ItemId id in System.Enum.GetValues(typeof(ItemId))) w.Inventory.Add(id, 2);
+            foreach (var d in w.Profile.Items) w.Inventory.Add(d.Id, 2);
             return sim;
         }
 
@@ -29,14 +29,14 @@ namespace Hollow.Tests.Sim
         {
             var sim = WithItems();
             var w = sim.World;
-            w.Inventory.Selected = ItemId.PushPulse;
+            w.Inventory.Selected = ItemId.EmpPulse;
             sim.Step(new PlayerCommand { EquipItemPressed = true, AimWorld = AimRight });
             Assert.IsTrue(w.Inventory.Holding);
-            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Held);
-            Assert.AreEqual(2, w.Inventory.Count(ItemId.PushPulse), "F only equips");
+            Assert.AreEqual(ItemId.EmpPulse, w.Inventory.Held);
+            Assert.AreEqual(2, w.Inventory.Count(ItemId.EmpPulse), "F only equips");
             int ammo = w.Player.Loadout.Active.Ammo;
             sim.Step(Click);
-            Assert.AreEqual(1, w.Inventory.Count(ItemId.PushPulse));
+            Assert.AreEqual(1, w.Inventory.Count(ItemId.EmpPulse));
             Assert.IsFalse(w.Inventory.Holding, "previous weapon restored");
             Assert.AreEqual(ammo, w.Player.Loadout.Active.Ammo, "the item click did not fire the gun");
             sim.Run(10, new PlayerCommand { FireHeld = true, AimWorld = AimRight });
@@ -46,17 +46,19 @@ namespace Hollow.Tests.Sim
         [Test]
         public void GSelectsTheNextTypeSkippingEmptyAndLockedOnesWithoutEquipping()
         {
-            var sim = WithItems(phase: 1);
+            var sim = WithItems(phase: 2);
             var w = sim.World;
             Assert.AreEqual(ItemId.Grenade, w.Inventory.Selected, "the first purchase sets the selection");
             w.Inventory.Get(ItemId.Grenade).Count = 0;
             sim.Step(new PlayerCommand { CycleItemPressed = true });
-            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Selected, "grenade empty, push pulse next");
+            Assert.AreEqual(ItemId.Mine, w.Inventory.Selected, "grenade empty, mine next");
             Assert.IsFalse(w.Inventory.Holding, "G only selects; F equips");
             sim.Step(new PlayerCommand { CycleItemPressed = true });
-            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Selected, "mine/EMP/shield are locked in phase 1");
+            Assert.AreEqual(ItemId.EmpPulse, w.Inventory.Selected);
+            sim.Step(new PlayerCommand { CycleItemPressed = true });
+            Assert.AreEqual(ItemId.Mine, w.Inventory.Selected, "the shield is locked in phase 2 and the grenade is empty");
             sim.Step(new PlayerCommand { EquipItemPressed = true });
-            Assert.AreEqual(ItemId.PushPulse, w.Inventory.Held);
+            Assert.AreEqual(ItemId.Mine, w.Inventory.Held);
         }
 
         [Test]
@@ -64,12 +66,12 @@ namespace Hollow.Tests.Sim
         {
             var sim = WithItems();
             var w = sim.World;
-            w.Inventory.Get(ItemId.PushPulse).Count = 1;
-            w.Inventory.Selected = ItemId.PushPulse;
+            w.Inventory.Get(ItemId.EmpPulse).Count = 1;
+            w.Inventory.Selected = ItemId.EmpPulse;
             sim.Step(new PlayerCommand { EquipItemPressed = true, AimWorld = AimRight });
             sim.Step(Click);
-            Assert.AreEqual(0, w.Inventory.Count(ItemId.PushPulse));
-            Assert.AreEqual(ItemId.Mine, w.Inventory.Selected);
+            Assert.AreEqual(0, w.Inventory.Count(ItemId.EmpPulse));
+            Assert.AreEqual(ItemId.PersonalShield, w.Inventory.Selected);
         }
 
         [TestCase("right click")]
@@ -89,7 +91,7 @@ namespace Hollow.Tests.Sim
         {
             var sim = WithItems();
             var w = sim.World;
-            ItemSystem.Equip(w, ItemId.PushPulse);
+            ItemSystem.Equip(w, ItemId.Mine);
             sim.Step(Click);
             sim.Step(Idle);
             ItemSystem.Equip(w, ItemId.EmpPulse);
@@ -226,16 +228,15 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void PushPulseMovesEnemiesAndDealsNoDamage()
+        public void ThePushPulseIsGoneEvenFromAnOldSave()
         {
             var sim = WithItems();
             var w = sim.World;
-            var e = w.AddEnemy(EnemyId.A1_RunnerWolf, new Vector2(1.5f, 0));
-            ItemSystem.Equip(w, ItemId.PushPulse);
-            sim.Step(Click);
-            sim.Run(15, Idle);
-            Assert.AreEqual(1000f, e.Health);
-            Assert.Greater(e.Position.x, 3f);
+            Assert.IsFalse(w.Profile.HasItem(ItemId.PushPulse), "removed from the balance data");
+            w.Inventory.Add(ItemId.PushPulse, 2); // an inventory saved before the removal
+            Assert.IsFalse(ItemSystem.Available(w, ItemId.PushPulse));
+            Assert.IsFalse(ItemSystem.Equip(w, ItemId.PushPulse));
+            for (int i = 0; i < 6; i++) { ItemSystem.Cycle(w); Assert.AreNotEqual(ItemId.PushPulse, w.Inventory.Selected); }
         }
 
         [Test]
@@ -246,7 +247,7 @@ namespace Hollow.Tests.Sim
             ItemSystem.Cycle(w);
             ItemSystem.Cycle(w);
             var loaded = WorldSerializer.FromJson(WorldSerializer.ToJson(w), w.Profile, w.Layout);
-            Assert.AreEqual(ItemId.Mine, loaded.Inventory.Selected);
+            Assert.AreEqual(ItemId.EmpPulse, loaded.Inventory.Selected);
             Assert.IsTrue(loaded.Inventory.HasSelection);
         }
     }

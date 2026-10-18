@@ -291,7 +291,6 @@ namespace Hollow.UI
         static string ItemEffect(ItemData i) => i.Id switch
         {
             ItemId.Grenade => Loc.F("itemFx.grenade", F(i.Damage), F(i.Radius), F(i.FuseTime)),
-            ItemId.PushPulse => Loc.F("itemFx.push", F(i.Knockback), F(i.Radius)),
             ItemId.Mine => Loc.F("itemFx.mine", F(i.Damage), F(i.Radius), i.MaxActivePerPhase),
             ItemId.EmpPulse => Loc.F("itemFx.emp", F(i.StunRegular), F(i.Radius)),
             ItemId.PersonalShield => Loc.F("itemFx.shield", F(i.Duration)),

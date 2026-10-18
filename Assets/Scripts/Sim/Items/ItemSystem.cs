@@ -45,8 +45,9 @@ namespace Hollow.Sim
             StepMines(w);
         }
 
+        /// <summary>A type with no data (the removed push pulse in an old save) is never usable.</summary>
         public static bool Available(World w, ItemId id) =>
-            w.Inventory.Count(id) > 0 && w.Profile.Item(id).UnlockPhase <= w.Phase;
+            w.Inventory.Count(id) > 0 && w.Profile.HasItem(id) && w.Profile.Item(id).UnlockPhase <= w.Phase;
 
         static readonly ItemId[] AllTypes = (ItemId[])System.Enum.GetValues(typeof(ItemId));
 
@@ -119,7 +120,6 @@ namespace Hollow.Sim
             bool ok = inv.Held switch
             {
                 ItemId.Grenade => ThrowGrenade(w, data),
-                ItemId.PushPulse => Push(w, data),
                 ItemId.Mine => PlaceMine(w, data),
                 ItemId.EmpPulse => Emp(w, data),
                 ItemId.PersonalShield => Shield(w, data),
@@ -154,20 +154,6 @@ namespace Hollow.Sim
             Vector2 target = GrenadeTarget(w);
             // Lands and goes off FuseTime after the throw (flight included, D32).
             HazardSystem.Create(w, HazardOwner.Player, w.Player.Position, target, d.Radius, d.Damage, d.FuseTime, 0, default, d.FuseTime * d.FlightTimeFraction);
-            return true;
-        }
-
-        static bool Push(World w, ItemData d)
-        {
-            var p = w.Player;
-            w.Crowd.Rebuild(w.Enemies);
-            w.Crowd.Query(p.Position, d.Radius + ProjectileSystem.MaxEnemyRadius(w), Candidates);
-            foreach (var e in Candidates)
-            {
-                if (!e.Alive || Vector2.Distance(e.Position, p.Position) > d.Radius + e.Radius) continue;
-                EnemySystem.Knockback(w, e, SimMath.SafeNormal(e.Position - p.Position, Vector2.up), d.Knockback);
-            }
-            w.Emit(SimEventType.Explosion, PlayerState.EntityId, p.Position, default, d.Radius, -1);
             return true;
         }
 

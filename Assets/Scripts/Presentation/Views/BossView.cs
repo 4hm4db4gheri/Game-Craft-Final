@@ -76,6 +76,7 @@ namespace Hollow.Presentation
         static float Progress(long ticksLeft, float total, World w) =>
             1f - Mathf.Clamp01(ticksLeft / (float)Mathf.Max(1, w.Ticks(total)));
 
-        static Color Tint(Color c, float progress) => new(c.r, c.g, c.b, Mathf.Lerp(0.3f, 0.85f, progress));
+        /// <summary>Kept soft so a long warning never glares (the boss is the one place red warnings remain).</summary>
+        static Color Tint(Color c, float progress) => new(c.r, c.g, c.b, Mathf.Lerp(0.18f, 0.55f, progress));
     }
 }

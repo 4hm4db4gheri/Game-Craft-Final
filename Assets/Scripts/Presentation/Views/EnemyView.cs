@@ -20,22 +20,30 @@ namespace Hollow.Presentation
         [SerializeField] ArcView telegraphArc;
         [SerializeField] TMPro.TextMeshPro countdown;
         [SerializeField] float hpBarWidth = 1.2f;
+        /// <summary>Recoil of enemies that fire guns: the body (with its drawn gun) kicks back from the shot.</summary>
+        [SerializeField] float recoilPushBack = 0.09f;
+        [SerializeField] float recoilReturn = 14f;
 
         Color[] baseColors;
         float flashUntil, flashLength = 0.1f, squash;
         SpriteSetAnimator anim;
         int telegraphOrder = 500;
+        Vector3 bodyBaseLocal;
+        Vector2 kickDir;
+        float recoil;
 
         void Awake()
         {
             anim = GetComponent<SpriteSetAnimator>();
             baseColors = new Color[bodyRenderers.Length];
             for (int i = 0; i < bodyRenderers.Length; i++) baseColors[i] = bodyRenderers[i].color;
+            bodyBaseLocal = body.localPosition;
         }
 
         public void ResetView()
         {
             flashUntil = 0;
+            recoil = 0;
             telegraphLine.enabled = false;
             telegraphArc.Hide();
             if (countdown != null) countdown.enabled = false;
@@ -43,6 +51,13 @@ namespace Hollow.Presentation
 
         /// <summary>The body used for the corpse look (aftermath).</summary>
         public SpriteRenderer MainRenderer => bodyRenderers != null && bodyRenderers.Length > 0 ? bodyRenderers[0] : null;
+
+        /// <summary>The enemy fired a gun along this direction.</summary>
+        public void Kick(Vector2 shotDirection)
+        {
+            kickDir = shotDirection.normalized;
+            recoil = 1f;
+        }
 
         /// <summary>Hit reaction: white flash plus a short squash. Visual only; the hitbox never changes (§14).</summary>
         public void Flash(float seconds, float squashAmount = 0f)
@@ -61,6 +76,8 @@ namespace Hollow.Presentation
             bool facingLeft = e.Facing.x < -0.05f;
             float punch = squash * Mathf.Clamp01((flashUntil - Time.time) / flashLength);
             body.localScale = new Vector3((facingLeft ? -1 : 1) * (1f + punch), 1f - punch, 1);
+            recoil *= Mathf.Exp(-recoilReturn * Time.deltaTime);
+            body.localPosition = bodyBaseLocal - (Vector3)(kickDir * recoilPushBack * recoil);
             if (frontPlate != null)
             {
                 float a = Mathf.Atan2(e.Facing.y, e.Facing.x) * Mathf.Rad2Deg;
@@ -115,43 +132,28 @@ namespace Hollow.Presentation
             long left = e.AiUntilTick - w.Clock.Tick;
             float progress = 1f - Mathf.Clamp01(left / (float)total);
             var c = color;
-            c.a = Mathf.Lerp(0.25f, 0.75f, progress);
+            c.a = Mathf.Lerp(0.12f, 0.38f, progress);
 
-            bool lobber = d.Role == EnemyRole.Ranged && d.ExplosionRadius > 0 && d.FuseTime > 0;
+            // Only chargers draw a warning on the ground (their lane); aim lines and attack arcs of the other
+            // enemies were removed as too loud. Their windup pose, sound and the shot itself still warn the player.
+            telegraphLine.enabled = false;
+            telegraphArc.Hide();
             switch (d.Role)
             {
-                case EnemyRole.Ranged when !lobber:
-                    telegraphArc.Hide();
-                    Line(pos, e.AttackDir, d.ProjectileRange, Mathf.Lerp(0.04f, 0.12f, progress), c);
-                    break;
                 case EnemyRole.Charger:
-                    telegraphArc.Hide();
-                    Line(pos, e.AttackDir, e.ChargeLength, e.Radius * 2f, new Color(c.r, c.g, c.b, c.a * 0.6f));
+                    Line(pos, e.AttackDir, e.ChargeLength, e.Radius * 2f, c);
                     break;
                 case EnemyRole.Explosive:
-                    telegraphLine.enabled = false;
-                    telegraphArc.Set(pos, Vector2.right, d.ExplosionRadius, 360f, new Color(c.r, c.g, c.b, c.a * 0.5f), telegraphOrder);
                     if (countdown != null)
                     {
                         countdown.enabled = true;
                         countdown.text = PersianText.Number(Mathf.CeilToInt(left * Core.SimClock.Dt));
                         if (PersianText.Font != null && countdown.font != PersianText.Font) countdown.font = PersianText.Font;
-                        countdown.color = color;
+                        countdown.color = new Color(color.r, color.g, color.b, 0.8f);
                     }
                     break;
-                case EnemyRole.Support:
-                    telegraphLine.enabled = false;
+                case EnemyRole.Support: // the pale heal aura growing, not a red aim warning
                     telegraphArc.Set(pos, Vector2.right, d.AuraRadius * progress, 360f, new Color(0.9f, 0.85f, 0.6f, 0.2f), telegraphOrder - 1);
-                    break;
-                default:
-                    telegraphLine.enabled = false;
-                    if (lobber)
-                    {
-                        telegraphArc.Set(e.AttackPoint, Vector2.right, d.ExplosionRadius, 360f, new Color(c.r, c.g, c.b, c.a * 0.5f), telegraphOrder);
-                        break;
-                    }
-                    float reach = d.AttackRange + e.Radius + w.Profile.Player.BodyRadius;
-                    telegraphArc.Set(pos, e.AttackDir, reach, w.Profile.Combat.EnemyMeleeHitHalfAngle * 2f, c, telegraphOrder);
                     break;
             }
         }

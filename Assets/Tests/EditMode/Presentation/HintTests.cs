@@ -51,7 +51,8 @@ namespace Hollow.Tests.Presentation
             HintRules.MarkSeen(w, HintId.Item);
             ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.Grenade);
             Assert.IsNull(HintRules.Next(w), "more of the same type is not a second type");
-            ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.PushPulse);
+            w.Phase = 2;
+            ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.Mine);
             Assert.AreEqual(HintId.ItemSwitch, HintRules.Next(w));
         }
 

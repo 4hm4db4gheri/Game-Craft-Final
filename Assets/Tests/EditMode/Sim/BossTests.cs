@@ -152,22 +152,6 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void PushPulseNeverDisplacesTheBoss()
-        {
-            var sim = Fight(1);
-            var w = sim.World;
-            w.Phase = 1;
-            w.Inventory.Add(ItemId.PushPulse, 1);
-            w.Player.Position = w.Boss.Position + new Vector2(0, -2f);
-            Vector2 before = w.Boss.Position;
-            w.Boss.StunnedUntilTick = long.MaxValue;
-            ItemSystem.Equip(w, ItemId.PushPulse);
-            sim.Step(new PlayerCommand { FirePressed = true, FireHeld = true, AimWorld = before });
-            sim.Run(20, PlayerCommand.None);
-            Assert.AreEqual(before, w.Boss.Position);
-        }
-
-        [Test]
         public void ActiveCapIncludesTheBoss()
         {
             var sim = Fight(3);

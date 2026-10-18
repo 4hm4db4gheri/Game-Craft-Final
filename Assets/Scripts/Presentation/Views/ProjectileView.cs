@@ -21,6 +21,7 @@ namespace Hollow.Presentation
         float bornAt;
         Sprite placeholderSprite;
         Vector3 placeholderScale;
+        Quaternion placeholderRotation;
         bool placeholderSaved;
 
         public Color Color { get; private set; }
@@ -37,9 +38,17 @@ namespace Hollow.Presentation
             Rotate(p);
             if (core != null)
             {
-                if (!placeholderSaved) { placeholderSprite = core.sprite; placeholderScale = core.transform.localScale; placeholderSaved = true; }
+                if (!placeholderSaved)
+                {
+                    placeholderSprite = core.sprite;
+                    placeholderScale = core.transform.localScale;
+                    placeholderRotation = core.transform.localRotation;
+                    placeholderSaved = true;
+                }
                 core.sprite = art != null ? art : placeholderSprite;
                 core.transform.localScale = art != null ? Vector3.one : placeholderScale;
+                // The placeholder capsule is turned a quarter turn on the prefab; imported art already points along +x.
+                core.transform.localRotation = art != null ? Quaternion.identity : placeholderRotation;
                 core.color = art != null ? Color.white : color;
             }
             if (trail != null)

@@ -52,6 +52,7 @@ namespace Hollow.Data
             return weaponIndex.TryGetValue(id, out var w) ? w : throw new KeyNotFoundException($"No weapon data for {id}");
         }
 
+        public bool HasItem(ItemId id) => Items.Exists(i => i.Id == id);
         public ItemData Item(ItemId id) => Items.Find(i => i.Id == id) ?? throw new KeyNotFoundException($"No item data for {id}");
         public SkillData Skill(SkillId id) => Skills.Find(s => s.Id == id) ?? throw new KeyNotFoundException($"No skill data for {id}");
         public CharacterData Character(AiId id) => Characters.Find(c => c.Id == id);
@@ -455,6 +456,10 @@ namespace Hollow.Data
     public sealed class FeedbackData
     {
         [Placeholder] public float ShakeOnShot;
+        /// <summary>Baton swing kick, a little stronger than a shot (one swing, not a stream).</summary>
+        [Placeholder] public float ShakeOnMelee;
+        [Placeholder] public float ShakeOnDash;
+        [Placeholder] public float ShakeOnPlayerDeath;
         [Placeholder] public float ShakeOnPlayerHit;
         [Placeholder] public float ShakeOnExplosion;
         [Placeholder] public float ShakeOnBossImpact;
@@ -480,6 +485,8 @@ namespace Hollow.Data
         [Gdd("v0.19 §19"), Unit("s")] public float CorpseFadeTime = 1f;
         [Placeholder] public int ImpactSparks;
         [Placeholder] public int DeathSparks;
+        /// <summary>Blood or oil droplets thrown along the killing hit (plus a few heavier chunks and ground stains).</summary>
+        [Placeholder] public int DeathGore;
         [Placeholder] public int ExplosionSparks;
         [Placeholder, Unit("s")] public float DamageNumberLifetime;
         [Placeholder] public int MaxDamageNumbersOnScreen;

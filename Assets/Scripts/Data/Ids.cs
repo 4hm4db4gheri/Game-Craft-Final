@@ -31,6 +31,7 @@ namespace Hollow.Data
 
     public enum WeaponFamily { Sidearm, Direct, Spread, Melee }
 
+    /// <summary>PushPulse was removed from the game; the value stays so saved item numbers keep their meaning.</summary>
     public enum ItemId { Grenade, PushPulse, Mine, EmpPulse, PersonalShield }
 
     public enum SkillId { WeaponDamage, MoveSpeed, ReloadMultiplier, DashCooldown, DashDamage, MaxHealth, MagnetRadius, DashMine }

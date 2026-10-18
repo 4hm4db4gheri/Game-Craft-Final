@@ -1,6 +1,6 @@
 {
   "Schema": 1,
-  "Revision": 5,
+  "Revision": 6,
   "Name": "Baseline (GDD v0.19)",
   "Player": {
     "MaxHealth": 100.0,
@@ -2632,28 +2632,6 @@
       "PlacementRadius": 0.2
     },
     {
-      "Id": "PushPulse",
-      "DisplayName": "Push pulse",
-      "UnlockPhase": 1,
-      "Price": 15,
-      "Carry": 2,
-      "StockPerEncounter": 2,
-      "Damage": 0.0,
-      "Radius": 3.0,
-      "FuseTime": 0.0,
-      "ThrowRange": 0.0,
-      "Knockback": 2.5,
-      "ArmingTime": 0.0,
-      "TriggerRadius": 0.0,
-      "MaxActivePerPhase": 0,
-      "StunRegular": 0.0,
-      "StunBoss": 0.0,
-      "BossResistance": 0.0,
-      "Duration": 0.0,
-      "FlightTimeFraction": 0.8,
-      "PlacementRadius": 0.2
-    },
-    {
       "Id": "Mine",
       "DisplayName": "Mine",
       "UnlockPhase": 2,
@@ -2800,7 +2778,10 @@
     }
   ],
   "Feedback": {
-    "ShakeOnShot": 0.04,
+    "ShakeOnShot": 0.09,
+    "ShakeOnMelee": 0.12,
+    "ShakeOnDash": 0.06,
+    "ShakeOnPlayerDeath": 0.6,
     "ShakeOnPlayerHit": 0.25,
     "ShakeOnExplosion": 0.35,
     "ShakeOnBossImpact": 0.5,
@@ -2823,7 +2804,8 @@
     "CorpseHoldTime": 6.0,
     "CorpseFadeTime": 1.0,
     "ImpactSparks": 5,
-    "DeathSparks": 14,
+    "DeathSparks": 22,
+    "DeathGore": 26,
     "ExplosionSparks": 24,
     "DamageNumberLifetime": 0.65,
     "MaxDamageNumbersOnScreen": 40,

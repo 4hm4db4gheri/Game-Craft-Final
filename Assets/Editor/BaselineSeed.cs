@@ -39,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 5, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 6, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -129,11 +129,11 @@ namespace Hollow.EditorTools
 
             p.Feedback = new FeedbackData
             {
-                ShakeOnShot = 0.04f, ShakeOnPlayerHit = 0.25f, ShakeOnExplosion = 0.35f, ShakeOnBossImpact = 0.5f,
+                ShakeOnShot = 0.09f, ShakeOnMelee = 0.12f, ShakeOnDash = 0.06f, ShakeOnPlayerDeath = 0.6f, ShakeOnPlayerHit = 0.25f, ShakeOnExplosion = 0.35f, ShakeOnBossImpact = 0.5f,
                 HitFlashDuration = 0.08f, HitKnockback = 0.12f, DamageNumbersDefaultOn = true, DamageNumbersMaxPerSecond = 40,
                 MaxParticles = 1500, MaxDecals = 20, MaxCorpses = 30,
                 ShakeOnBossDefeated = 0.7f, ShotShakeMinInterval = 0.08f, ShakeDuration = 0.18f, MuzzleFlashTime = 0.05f,
-                ImpactSparks = 5, DeathSparks = 14, ExplosionSparks = 24, DamageNumberLifetime = 0.65f, MaxDamageNumbersOnScreen = 40,
+                ImpactSparks = 5, DeathSparks = 22, DeathGore = 26, ExplosionSparks = 24, DamageNumberLifetime = 0.65f, MaxDamageNumbersOnScreen = 40,
                 HitSquash = 0.14f, BudgetLowScale = 0.3f, BudgetMediumScale = 0.6f,
             };
 
@@ -448,7 +448,6 @@ namespace Hollow.EditorTools
             return new List<ItemData>
             {
                 new() { Id = ItemId.Grenade, DisplayName = "Grenade", UnlockPhase = 1, Price = 20, Carry = 3, StockPerEncounter = 3, Damage = 160, Radius = 2.4f, FuseTime = 0.8f, ThrowRange = 9 },
-                new() { Id = ItemId.PushPulse, DisplayName = "Push pulse", UnlockPhase = 1, Price = 15, Carry = 2, StockPerEncounter = 2, Radius = 3, Knockback = 2.5f },
                 new() { Id = ItemId.Mine, DisplayName = "Mine", UnlockPhase = 2, Price = 30, Carry = 2, StockPerEncounter = 2, Damage = 260, Radius = 2.7f, ArmingTime = 0.6f, TriggerRadius = 1.2f, MaxActivePerPhase = 4 },
                 new() { Id = ItemId.EmpPulse, DisplayName = "EMP pulse", UnlockPhase = 2, Price = 45, Carry = 2, StockPerEncounter = 2, Radius = 4, StunRegular = 2, StunBoss = 0.8f, BossResistance = 6 },
                 new() { Id = ItemId.PersonalShield, DisplayName = "Personal shield", UnlockPhase = 3, Price = 80, Carry = 1, StockPerEncounter = 1, Duration = 3 },

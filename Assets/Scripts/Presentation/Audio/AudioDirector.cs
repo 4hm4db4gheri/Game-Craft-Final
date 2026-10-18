@@ -466,7 +466,6 @@ namespace Hollow.Presentation
         static AudioCue ItemCue(ItemId id) => id switch
         {
             ItemId.Grenade => AudioCue.GrenadeThrow,
-            ItemId.PushPulse => AudioCue.Push,
             ItemId.Mine => AudioCue.MinePlace,
             ItemId.EmpPulse => AudioCue.Emp,
             _ => AudioCue.Shield,

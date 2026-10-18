@@ -45,7 +45,7 @@
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Editor/VisualTuningWindow.cs` + `docs/VISUAL_DEPTH_PASS.md` | داشبورد `Hollow > Visual Tuning` برای رنگ نور، افکت‌های دوربین و تنوع روشنایی زمین در هر فاز؛ روش تست و محدودیت آرت در سند |
-| `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
+| `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle با دود و پوکه، جرقه، خون/روغن پاشیده با لکه‌های کوچک، جسد/لکه با سقف، حلقه‌ها، ردّ دش، جلوه‌ی level up و مرگ بازیکن، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse). چهار ParticleSystem (sparks، gore با جاذبه، puffs، motes رو به بالا) و حلقه‌ی ساخته‌شده با کد. لگد سلاح در `PlayerView.Kick`، `CompanionView.Fired(dir)` و `EnemyView.Kick` |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
 | `Assets/Scripts/Sim/Telemetry/` | `RunTelemetry`: لاگ هر بازی (Observed جدا از Calculated)؛ فایل در `persistentDataPath/telemetry` توسط `Game/TelemetryFile.cs` |
@@ -62,6 +62,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- پاس juice (D83): گلوله‌ها درست می‌چرخند، هشدار قرمز فقط برای charger و باس (کم‌رنگ‌تر)، پالس رانش حذف شد، لگد سلاح و muzzle برای بازیکن/اپراتور/دشمن تفنگ‌دار، shake شلیک و باتوم، جلوه‌ی دش، level up، مرگ دشمن و مرگ بازیکن. در Play mode دیده شد؛ هنوز کسی آن را با دست بازی نکرده است.
 
 - شاخهٔ codex/gameplay-ux-pass اکنون گیم‌پلیِ آموزش/فروشگاه زمان‌دار و آخرین آرت/نقشهٔ main را با هم دارد. تغییرات محلی صحنه و واردکننده‌ها نیز حفظ شده‌اند.
 
@@ -333,3 +335,13 @@
 - تست‌ها: کلیدهای `operator.idle.<n>` (پیشوند نقطه‌دار مثل `ai.`)؛ تست اپراتور فاز ۲ جان را از پروفایل می‌خواند (۲۶۰)؛ گرگ تمرینی نارنجک kill حساب می‌شود ولی XP و سکه نمی‌دهد (`Rewards.OnEnemyKilled`) تا پاداش موج همان بودجه‌ی GDD بماند؛ فاصله‌ی آن `Spawning.TutorialGrenadeTargetDistance` = 3.5 (seed و JSON)؛ تست telemetry نارنجک تمرینی را پرتاب می‌کند و ۷ kill می‌شمارد. D80 به‌روز شد.
 - ۴۶۳ تست پاس. Play mode از CLI شروع نشد (فوراً stopped، بدون خطا)؛ زمین در Play mode دیده نشده.
 - نکته: یک جلسه‌ی دیگر (VFX/juice) هم‌زمان در همین پوشه کار می‌کند؛ فایل‌های نیمه‌کاره‌ی آن commit نشدند و در فایل‌های مشترک (`BalanceProfile.cs`، `BaselineSeed.cs`، `Baseline.json`) فقط hunkهای این کار stage شد.
+
+### 2026-10-18 — پاس juice: جلوه‌ها، لگد سلاح و shake
+- گلوله: هسته‌ی prefab گلوله (`PH_Projectile_*`) برای placeholder ۹۰ درجه چرخیده بود و آرت وارد شده هم با آن می‌چرخید؛ `ProjectileView` حالا برای آرت چرخش را صفر می‌کند و برای placeholder برمی‌گرداند.
+- هشدار قرمز: `EnemyView` فقط برای charger خط مسیر می‌کشد (کم‌رنگ‌تر: آلفای 0.12 تا 0.38)؛ خط نشانه‌گیری تیرانداز، قوس حمله‌ی نزدیک، دایره‌ی انفجاری و دایره‌ی پرتاب‌کننده حذف شد (شمارش معکوس انفجاری و هاله‌ی زرد درمان مانده‌اند). هشدار باس و منطقه‌ی hazard دشمن کم‌رنگ‌تر شد. رویدادهای telegraph شبیه‌سازی دست نخوردند.
+- پالس رانش: از seed و `Baseline.json` حذف شد؛ مقدار enum برای saveهای قدیمی ماند. `BalanceProfile.HasItem`، `ItemSystem.Available` نوع بدون داده را رد می‌کند، `WorldSerializer` موجودی فروشگاه save قدیمی را هم‌تراز می‌کند، revision 6 پروفایل ذخیره‌شده را مهاجرت می‌دهد. کد `Push` و متن فروشگاه و cue آن حذف شد. تست‌های آیتم/فروشگاه/راهنما/باس با مین و EMP بازنویسی شدند؛ تست جدید `ThePushPulseIsGoneEvenFromAnOldSave`.
+- لگد سلاح: `PlayerView.Kick` (سلاح ۱۱ درجه بالا و ۰.۱ واحد عقب، برگشت نمایی؛ اعداد روی prefab)، بدن اپراتور و دشمن تفنگ‌دار (ربات و انسان تیرانداز، نه حیوان و نه پرتاب‌کننده: `FeedbackDirector.FiresAGun`) هنگام شلیک عقب می‌رود. muzzle: strip آرت یا glow، نور، جرقه، دود و پوکه‌ی برنجی؛ برای دشمن رنگ گرم به‌جای قرمز هشدار.
+- shake: `ShakeOnShot` 0.09 (شاتگان ×۲)، داده‌های جدید `ShakeOnMelee` 0.12، `ShakeOnDash` 0.06، `ShakeOnPlayerDeath` 0.6؛ `DeathSparks` 22 و `DeathGore` 26 (seed، JSON، مهاجرت).
+- جلوه‌های جدید: دش (گرد و خاک، حلقه، جرقه، ردّ تصویر فیروزه‌ای هر ۰.۰۳۵ ثانیه، کش آمدن بدن)، level up (لحظه‌ای که کارت XP آماده می‌شود: نور طلایی، سه حلقه، جرقه و ذرات رو به بالا؛ انتخاب مهارت هم یک حلقه‌ی کوچک)، مرگ دشمن (پاشش خون/روغن با تکه‌ها، مه خون، حلقه، نور مرگ، ۷ لکه‌ی کوچک که با تأخیر روی زمین می‌نشینند و بعد از ۴ ثانیه محو می‌شوند)، مرگ بازیکن (نور، سه حلقه، ۴۰ جرقه، تکه‌های فلزی، دود، ذرات)، ضربه‌ی باتوم (جرقه‌ی قوس). انفجار و مرگ باس هم حلقه و پاشش گرفتند.
+- ۴۶۳ تست پاس. Play mode (جایگاه ۳، بعد پاک شد): مرگ دشمن، دش واقعی، شلیک و level up دیده شد، بدون خطای console. تصویرها: `docs/screenshots/Juice_KillDashLevelUp.png`، `Juice_DashAfterimage.png`. لگد سلاح و شدت shake فقط در کد بررسی شد و با دست بازی نشده است. تصمیم D83.
+- فایل‌های تغییرکرده: `Presentation/Feel/FeedbackDirector.cs`، `Presentation/WorldPresenter.cs`، `Views/PlayerView.cs`، `CompanionView.cs`، `EnemyView.cs`، `BossView.cs`، `ProjectileView.cs`، `SpriteSetAnimator.cs`، `Data/BalanceProfile.cs`، `BalanceProfileStore.cs`، `Ids.cs`، `Editor/BaselineSeed.cs`، `Resources/Balance/Baseline.json`، `Sim/Items/ItemSystem.cs`، `Sim/Save/WorldSerializer.cs`، `UI/ShopPanel.cs`، `Audio/AudioDirector.cs`، تست‌های Item/Shop/Hint/Boss، `docs/DECISIONS.md`، `agent.md`.

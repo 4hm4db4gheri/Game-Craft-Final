@@ -53,6 +53,17 @@ namespace Hollow.Data
             }
             if (profile.Revision < 5)
                 profile.Spawning.SafeIntervalSeconds = baseline.Spawning.SafeIntervalSeconds;
+            if (profile.Revision < 6)
+            {
+                // The push pulse was removed from the game; stronger shot shake and the new melee, dash and death kicks.
+                profile.Items.RemoveAll(i => i.Id == ItemId.PushPulse);
+                profile.Feedback.ShakeOnShot = baseline.Feedback.ShakeOnShot;
+                profile.Feedback.ShakeOnMelee = baseline.Feedback.ShakeOnMelee;
+                profile.Feedback.ShakeOnDash = baseline.Feedback.ShakeOnDash;
+                profile.Feedback.ShakeOnPlayerDeath = baseline.Feedback.ShakeOnPlayerDeath;
+                profile.Feedback.DeathSparks = baseline.Feedback.DeathSparks;
+                profile.Feedback.DeathGore = baseline.Feedback.DeathGore;
+            }
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;
