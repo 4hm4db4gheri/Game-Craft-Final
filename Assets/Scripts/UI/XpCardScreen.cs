@@ -74,6 +74,7 @@ namespace Hollow.UI
             SkillId.DashCooldown => Loc.F("unit.seconds", v.ToString("0.##", Inv)),
             SkillId.MoveSpeed => Loc.F("unit.speed", v.ToString("0.0", Inv)),
             SkillId.MagnetRadius => Loc.F("unit.distance", v.ToString("0.0", Inv)),
+            SkillId.DashMine => Loc.F("xp.dashMineDamage", v.ToString("0", Inv)),
             _ => v.ToString("0", Inv),
         };
     }

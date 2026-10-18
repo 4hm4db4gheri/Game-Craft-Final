@@ -1,9 +1,11 @@
 {
   "Schema": 1,
-  "Revision": 2,
+  "Revision": 5,
   "Name": "Baseline (GDD v0.19)",
   "Player": {
     "MaxHealth": 100.0,
+    "RegenerationDelay": 6.0,
+    "RegenerationRate": 3.0,
     "MoveSpeed": 5.0,
     "Acceleration": 80.0,
     "Deceleration": 100.0,
@@ -11,6 +13,8 @@
     "DashDuration": 0.18,
     "DashCooldown": 2.5,
     "DashDamage": 50.0,
+    "DashMineDelay": 0.7,
+    "DashMineRadius": 1.8,
     "PostHitInvulnerability": 0.5,
     "BodyRadius": 0.35,
     "MagnetRadius": 1.0,
@@ -23,12 +27,14 @@
       {
         "Phase": 1,
         "MaxHealth": 140.0,
+        "DamageTakenMultiplier": 1.0,
         "ShotDamage": 8.0,
         "ShotInterval": 1.2
       },
       {
         "Phase": 2,
-        "MaxHealth": 100.0,
+        "MaxHealth": 260.0,
+        "DamageTakenMultiplier": 0.35,
         "ShotDamage": 6.0,
         "ShotInterval": 1.6
       }
@@ -47,7 +53,9 @@
     "FollowArriveRadius": 0.5,
     "PathClearance": 0.3,
     "DangerIndicatorTime": 1.5,
-    "CatchUpSpeedFactor": 1.15
+    "CatchUpSpeedFactor": 1.15,
+    "RegenerationDelay": 8.0,
+    "RegenerationRate": 2.0
   },
   "Characters": [
     {
@@ -88,7 +96,7 @@
     "SupportExplosiveSeparation": 8.0,
     "MinDistancePlayerBodyWidths": 4.0,
     "MinDistanceCompanionBodyWidths": 3.0,
-    "SafeIntervalSeconds": 8.0,
+    "SafeIntervalSeconds": 15.0,
     "NoSafePointRetryDelay": 0.25,
     "TutorialFirstGroupCount": 4,
     "ChildSpawnBackAngle": 140.0,
@@ -400,7 +408,7 @@
       ],
       "ActiveCap": 10,
       "RangedCap": 3,
-      "SpawnGap": 0.75,
+      "SpawnGap": 0.85,
       "CompletionBonus": 40,
       "GddMaxTotal": 24
     },
@@ -422,9 +430,9 @@
           "Count": 14
         }
       ],
-      "ActiveCap": 18,
-      "RangedCap": 5,
-      "SpawnGap": 0.45,
+      "ActiveCap": 14,
+      "RangedCap": 4,
+      "SpawnGap": 0.6,
       "CompletionBonus": 55,
       "GddMaxTotal": 62
     },
@@ -450,9 +458,9 @@
           "Count": 12
         }
       ],
-      "ActiveCap": 26,
-      "RangedCap": 7,
-      "SpawnGap": 0.33,
+      "ActiveCap": 18,
+      "RangedCap": 5,
+      "SpawnGap": 0.48,
       "CompletionBonus": 70,
       "GddMaxTotal": 88
     },
@@ -482,9 +490,9 @@
           "Count": 18
         }
       ],
-      "ActiveCap": 34,
-      "RangedCap": 9,
-      "SpawnGap": 0.25,
+      "ActiveCap": 22,
+      "RangedCap": 6,
+      "SpawnGap": 0.38,
       "CompletionBonus": 85,
       "GddMaxTotal": 116
     },
@@ -522,9 +530,9 @@
           "Count": 8
         }
       ],
-      "ActiveCap": 42,
-      "RangedCap": 12,
-      "SpawnGap": 0.2,
+      "ActiveCap": 26,
+      "RangedCap": 7,
+      "SpawnGap": 0.32,
       "CompletionBonus": 100,
       "GddMaxTotal": 164
     }
@@ -2779,6 +2787,15 @@
         1.6,
         2.0
       ]
+    },
+    {
+      "Id": "DashMine",
+      "DisplayName": "Dash kill mine",
+      "Ranks": [
+        40.0,
+        65.0,
+        90.0
+      ]
     }
   ],
   "Feedback": {
@@ -2830,6 +2847,23 @@
     "FogPhase1": 0.1,
     "FogPhase2": 0.08,
     "FogPhase3": 0.12,
+    "LightColorPhase1": "#FFF3DE",
+    "LightColorPhase2": "#DFECF1",
+    "LightColorPhase3": "#DCE3F0",
+    "ContrastPhase1": 4.0,
+    "ContrastPhase2": 7.0,
+    "ContrastPhase3": 10.0,
+    "DesaturationPhase1": 2.0,
+    "DesaturationPhase2": 7.0,
+    "DesaturationPhase3": 12.0,
+    "VignettePhase1": 0.07,
+    "VignettePhase2": 0.1,
+    "VignettePhase3": 0.13,
+    "BloomIntensity": 0.18,
+    "BloomThreshold": 1.0,
+    "GroundVariation": 0.12,
+    "ComposedGround": true,
+    "ContactShadowStrength": 0.55,
     "PhaseFadeTime": 1.5,
     "EndingFadeTime": 4.0
   }

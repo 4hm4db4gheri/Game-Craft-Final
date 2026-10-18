@@ -108,6 +108,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -127,7 +140,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9b2a6fef0c316d04f88209dee5366c13
+      spriteID: 1fe62abd309e279409b99a6adf1c98a4
       internalID: -3527056022417232336
       vertices: []
       indices: 
@@ -149,7 +162,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8b4a2e4af8a50904cb3663aa26e6203b
+      spriteID: 9ad611409650da8408ae6df755c70935
       internalID: 1559915471669483522
       vertices: []
       indices: 
@@ -171,7 +184,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ff1bcea29c4c73749946002c3115c348
+      spriteID: 74fe31799f0574c488b4ec98cb7961b3
       internalID: -2447649416737202741
       vertices: []
       indices: 
@@ -193,7 +206,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f43b8a9a0fdbd71448dad84d34a7b308
+      spriteID: e63c49bbeb768e644a70046d19e9ba8a
       internalID: -6256732298934330293
       vertices: []
       indices: 
@@ -215,7 +228,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 783a82ef22ef13448b77b4f9cd10fccc
+      spriteID: 096af512d5be4e942976e357beb913dc
       internalID: 1672106482186590498
       vertices: []
       indices: 
@@ -237,7 +250,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 57ea5cfffe1686842a7cb533414ce70a
+      spriteID: cb6d6dda4fcd10540b669775f150d1c0
       internalID: 1097377042340866633
       vertices: []
       indices: 

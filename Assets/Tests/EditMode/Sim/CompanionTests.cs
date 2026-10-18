@@ -28,6 +28,77 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void GodModeProtectsPlayerAndOperatorAndTurnsOffImmediately()
+        {
+            var w = WithCompanion().World;
+            float playerHealth = w.Player.Health;
+            float operatorHealth = w.Companion.Health;
+            w.GodMode = true;
+
+            Assert.IsFalse(PlayerSystem.Damage(w, 10, Vector2.left));
+            Assert.IsFalse(CompanionSystem.Damage(w, 10, Vector2.left));
+            Assert.AreEqual(playerHealth, w.Player.Health);
+            Assert.AreEqual(operatorHealth, w.Companion.Health);
+            Assert.AreEqual(FailureReason.None, w.Failure);
+            Assert.IsFalse(WorldSerializer.ToJson(w).Contains("GodMode"), "developer mode must not enter saves");
+
+            w.GodMode = false;
+            Assert.IsTrue(PlayerSystem.Damage(w, 10, Vector2.left));
+            Assert.IsTrue(CompanionSystem.Damage(w, 10, Vector2.left));
+            Assert.Less(w.Player.Health, playerHealth);
+            Assert.Less(w.Companion.Health, operatorHealth);
+        }
+
+        [Test]
+        public void PlayerRecoversOnlyAfterConfiguredNoHitDelay()
+        {
+            var sim = WithCompanion();
+            var w = sim.World;
+            w.Profile.Player.RegenerationDelay = 1f;
+            w.Profile.Player.RegenerationRate = 12f;
+            Assert.IsTrue(PlayerSystem.Damage(w, 20, Vector2.left));
+            sim.Run(30, PlayerCommand.None);
+            Assert.AreEqual(80f, w.Player.Health, 0.01f);
+            sim.Run(60, PlayerCommand.None);
+            Assert.Greater(w.Player.Health, 80f);
+            Assert.LessOrEqual(w.Player.Health, 100f);
+        }
+
+        [Test]
+        public void IndustrialOperatorTakesReducedDamage()
+        {
+            var w = WithCompanion().World;
+            w.Phase = 2;
+            CompanionSystem.SpawnForPhase(w, w.Companion.Position);
+            float before = w.Companion.Health;
+            CompanionSystem.Damage(w, 100, Vector2.left);
+            Assert.AreEqual(before - 35f, w.Companion.Health, 0.01f);
+        }
+
+        [Test]
+        public void DashKillMineOnlyUnlocksFromIndustrialPhase()
+        {
+            var sim = SimTestUtil.NewSim();
+            var w = sim.World;
+            w.Player.SkillRanks[(int)SkillId.DashMine] = 1;
+            var first = w.AddEnemy(EnemyId.A1_RunnerWolf, new Vector2(1, 0), 5);
+            sim.Step(new PlayerCommand { DashPressed = true, Move = Vector2.right });
+            sim.Run(12, PlayerCommand.None);
+            Assert.IsFalse(first.Alive);
+            Assert.IsEmpty(w.Hazards);
+
+            w.Phase = 2;
+            w.Player.Position = Vector2.zero;
+            w.Player.DashReadyTick = 0;
+            var second = w.AddEnemy(EnemyId.R1_Crawler, new Vector2(1, 0), 5);
+            sim.Step(new PlayerCommand { DashPressed = true, Move = Vector2.right });
+            sim.Run(12, PlayerCommand.None);
+            Assert.IsFalse(second.Alive);
+            Assert.AreEqual(1, w.Hazards.Count);
+            Assert.AreEqual(40f, w.Hazards[0].Damage);
+        }
+
+        [Test]
         public void FollowsWithinALimitedDistance()
         {
             var sim = WithCompanion();
@@ -109,6 +180,22 @@ namespace Hollow.Tests.Sim
             CompanionSystem.Damage(w, 1000, Vector2.left);
             Assert.IsTrue(w.Companion.Dead);
             Assert.AreEqual(FailureReason.CompanionDied, w.Failure);
+        }
+
+        [Test]
+        public void OperatorRegeneratesAfterDamageFreeDelayAndStopsAtMaximum()
+        {
+            var w = WithCompanion().World;
+            w.Profile.Companion.RegenerationDelay = 2f;
+            w.Profile.Companion.RegenerationRate = 6f;
+            CompanionSystem.Damage(w, 20, Vector2.left);
+            float hurt = w.Companion.Health;
+            while (w.Clock.Tick < w.Ticks(2f)) { CompanionSystem.Step(w); w.Clock.Step(true); }
+            Assert.AreEqual(hurt, w.Companion.Health, 0.001f);
+            CompanionSystem.Step(w);
+            Assert.Greater(w.Companion.Health, hurt);
+            for (int i = 0; i < 60 * 10; i++) { CompanionSystem.Step(w); w.Clock.Step(true); }
+            Assert.AreEqual(w.Companion.MaxHealth, w.Companion.Health, 0.001f);
         }
 
         [Test]

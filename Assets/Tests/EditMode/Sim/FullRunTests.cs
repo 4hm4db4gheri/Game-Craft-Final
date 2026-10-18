@@ -49,6 +49,13 @@ namespace Hollow.Tests.Sim
                 if (w.Boss.Active && !w.Boss.Dead && w.Clock.Tick % 30 == 0) BossSystem.Damage(w, w.Boss.MaxHealth * 0.015f, DamageSource.Weapon, Vector2.right);
                 foreach (var c in w.Coins.ToList()) CoinSystem.Collect(w, c);
                 if (w.Tutorial == TutorialStage.Purchase) ShopSystem.Purchase(w, OfferKind.BuyWeapon, w.Profile.Economy.TutorialWeapon);
+                if (w.Tutorial == TutorialStage.Grenade)
+                {
+                    var target = w.Enemies.Find(e => e.Id == w.TutorialGrenadeEnemyId);
+                    if (target != null) w.Player.Aim = target.Position;
+                    ItemSystem.EquipSelected(w);
+                    ItemSystem.Use(w);
+                }
                 while (w.Progress.Pending != null) XpSystem.Choose(w, w.Progress.Pending.Options[0]);
                 switch (w.Waves.Kind)
                 {

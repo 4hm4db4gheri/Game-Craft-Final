@@ -44,6 +44,10 @@ namespace Hollow.Game
         string lastSavedHash;
         string flashMessage;
         float flashUntil;
+        float nextOperatorBubbleAt;
+        float operatorBubbleUntil;
+        string operatorBubbleLine;
+        int lastOperatorBubble = -1;
         bool hintHold;
 
         public Simulation Sim { get; private set; }
@@ -55,6 +59,8 @@ namespace Hollow.Game
             // Played directly (Editor tests, stress runs): saves go to a separate folder, never the player's slots.
             if (app.EnterGameDirectly()) SlotStore.RootOverride = System.IO.Path.Combine(Application.persistentDataPath, "dev_saves");
             app.WorldCamera = worldCamera;
+            atmosphere.BindCamera(worldCamera);
+            atmosphere.AddShopLights(arena);
             layout = ArenaLayoutStore.LoadFromResources();
 
             hud = ui.gameObject.AddComponent<HudView>();
@@ -112,6 +118,7 @@ namespace Hollow.Game
         {
             if (Sim == null) return;
             W.Profile = profile;
+            ApplyArenaVisuals(profile.Atmosphere);
             if (!W.Completed) atmosphere.SetPhase(profile.Atmosphere, W.Phase, instant: false);
         }
 
@@ -132,6 +139,7 @@ namespace Hollow.Game
             try
             {
                 var save = SlotStore.Read(slot);
+                BalanceProfileStore.AddCompanionRegeneration(save.Profile, app.Balance.Baseline);
                 app.Balance.ResetLive(save.Profile);
                 var world = save.LoadWorld(layout);
                 world.Profile = app.Balance.Live;
@@ -164,13 +172,39 @@ namespace Hollow.Game
 
         void SetWorld(World world)
         {
+            // A save from an earlier layout may place an actor inside a newly authored landmark.
+            if (world.Arena.CircleOverlaps(world.Player.Position, world.Profile.Player.BodyRadius))
+                world.Player.Position = world.Player.PrevPosition = world.Arena.NearestFree(world.Player.Position, world.Profile.Player.BodyRadius);
+            if (world.Companion.Present && world.Arena.CircleOverlaps(world.Companion.Position, world.Profile.Companion.BodyRadius))
+                world.Companion.Position = world.Companion.PrevPosition = world.Arena.NearestFree(world.Companion.Position, world.Profile.Companion.BodyRadius);
+            foreach (var enemy in world.Enemies)
+                if (world.Arena.CircleOverlaps(enemy.Position, enemy.Radius))
+                    enemy.Position = enemy.PrevPosition = world.Arena.NearestFree(enemy.Position, enemy.Radius);
             Sim = new Simulation(world);
+            operatorBubbleUntil = 0;
+            nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(18f, 28f);
             dialogue.SetSpeakerName("Assistant", Loc.T("ai." + world.Player.Ai)); // the chosen AI speaks under its own name
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
+            ApplyArenaVisuals(world.Profile.Atmosphere);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
             if (world.Completed) audio.StopMusic(0.1f);
             else audio.PlayMusic(world.Phase);
+        }
+
+        void ApplyArenaVisuals(AtmosphereData settings)
+        {
+            try
+            {
+                arena.BuildLandmarks(layout);
+                arena.ApplyGroundVariation(settings.GroundVariation);
+                arena.ApplyComposition(settings.ComposedGround, settings.ContactShadowStrength);
+            }
+            catch (Exception error)
+            {
+                // Cosmetic asset errors must not strand the session in Loading with world input disabled.
+                Debug.LogWarning("[Hollow] Arena artwork could not be applied; continuing gameplay. " + error.Message);
+            }
         }
 
         /// <summary>Dev tools (stress run): replaces player input with a scripted command for each tick.</summary>
@@ -216,6 +250,7 @@ namespace Hollow.Game
             var w = W;
             float alpha = driver.InterpolationAlpha;
             presenter.Sync(w, alpha);
+            arena.SyncForeground(Vector2.Lerp(w.Player.PrevPosition, w.Player.Position, alpha));
             cameraRig.Sync(w, alpha);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
             hud.Sync(w, worldCamera);
@@ -223,7 +258,8 @@ namespace Hollow.Game
             SyncEncounter(w);
             SyncBarks(w);
             // One-time hints wait for calm moments: not over menus, scenes, the open shop, a failure or the first tutorial steps.
-            bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase;
+            bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase ||
+                w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown;
             hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy);
             SetHintHold(hints.Showing);
             if (telemetry != null)
@@ -267,7 +303,7 @@ namespace Hollow.Game
         {
             var ws = w.Waves;
             int secondsLeft = ws.Kind == EncounterKind.SafeInterval ? Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)) : 0;
-            long key = ((((long)ws.Kind * 8 + w.Phase) * 16 + ws.Wave) * 4096 + WaveSystem.AliveCount(w)) * 1024 + secondsLeft;
+            long key = (((long)ws.Kind * 8 + w.Phase) * 1024 + secondsLeft) * 32 + ws.Wave;
             if (key != lastTopKey) { lastTopKey = key; hud.SetTop(TopLine(w)); } // rebuilt only when it changes (T21)
             var b = w.Boss;
             hud.SetBoss(b.Active ? BossName(b.Id) : null, b.Active ? b.Health / b.MaxHealth : 0);
@@ -277,14 +313,14 @@ namespace Hollow.Game
 
         static string TopLine(World w)
         {
-            var ws = w.Waves;
-            return ws.Kind switch
+            string place = Loc.T("area." + w.Phase);
+            return w.Waves.Kind switch
             {
-                EncounterKind.SafeInterval => Loc.F("top.safe", w.Phase, ws.Wave, WaveSystem.WaveCount(w), Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w))),
-                EncounterKind.BossPrep => Loc.F("top.bossPrep", w.Phase),
-                EncounterKind.Boss => Loc.F("top.boss", w.Phase, WaveSystem.AliveCount(w)),
-                EncounterKind.PhaseComplete => Loc.F("top.won", w.Phase),
-                _ => Loc.F("top.wave", w.Phase, ws.Wave, WaveSystem.WaveCount(w), WaveSystem.AliveCount(w)),
+                EncounterKind.SafeInterval => Loc.F("top.areaSafe", place, Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)), w.Waves.Wave),
+                EncounterKind.BossPrep => Loc.F("top.areaBossPrep", place),
+                EncounterKind.Boss => Loc.F("top.areaBoss", place),
+                EncounterKind.PhaseComplete => Loc.F("top.areaWon", place),
+                _ => Loc.F("top.areaWave", place, w.Waves.Wave),
             };
         }
 
@@ -293,8 +329,7 @@ namespace Hollow.Game
         void OnConfirm()
         {
             var w = W;
-            if (w.Waves.Kind == EncounterKind.SafeInterval) WaveSystem.SkipSafeInterval(w);
-            else if (w.Waves.Kind == EncounterKind.BossPrep && w.Narrative.PreparingAtShop) BeginBossEntrance();
+            if (w.Waves.Kind == EncounterKind.BossPrep && w.Narrative.PreparingAtShop) BeginBossEntrance();
         }
 
         // ---------------------------------------------------------------- boss preparation, transitions, ending
@@ -438,6 +473,9 @@ namespace Hollow.Game
             TutorialStage.FirstGroup => Loc.T("tutorial.move"),
             TutorialStage.Purchase => w.Coins.Count > 0 ? Loc.T("tutorial.coins")
                 : w.Shop.Open ? Loc.F("tutorial.clickBuy", Loc.F("shop.buy", TutorialWeaponName(w))) : Loc.F("tutorial.followArrow", TutorialWeaponName(w)),
+            TutorialStage.Grenade => Loc.T(w.Shop.Open ? "tutorial.closeShop" : !w.Inventory.Holding ? "tutorial.equipGrenade" :
+                w.Inventory.GrenadeChargeStarted ? "tutorial.releaseGrenade" : "tutorial.throwGrenade"),
+            TutorialStage.GrenadeThrown => Loc.T("tutorial.waitGrenade"),
             // A bought weapon goes to slot 2; the pistol stays in hand until the player switches.
             TutorialStage.SecondGroup when w.Player.Loadout.ActiveId != w.Profile.Economy.TutorialWeapon && w.Player.Loadout.Owns(w.Profile.Economy.TutorialWeapon)
                 => Loc.F("tutorial.press2", TutorialWeaponName(w)),
@@ -453,17 +491,38 @@ namespace Hollow.Game
             else if (shopPanel.Visible) shopPanel.Hide();
 
             // The first purchase is shown, not told: an arrow leads to the shop once the coins are collected.
+            bool guideCoins = w.Tutorial == TutorialStage.Purchase && w.Coins.Count > 0 && playing;
             bool guideToShop = w.Tutorial == TutorialStage.Purchase && w.Coins.Count == 0 && !w.Shop.Open && playing;
-            hud.SetGuide(guideToShop ? w.Layout.NearestShop(w.Player.Position) : null, worldCamera);
+            Vector2? guide = guideToShop ? w.Layout.NearestShop(w.Player.Position) : null;
+            if (guideCoins)
+            {
+                float nearest = float.MaxValue;
+                foreach (var coin in w.Coins)
+                {
+                    if (!coin.Alive) continue;
+                    float distance = (coin.Position - w.Player.Position).sqrMagnitude;
+                    if (distance >= nearest) continue;
+                    nearest = distance;
+                    guide = coin.Position;
+                }
+            }
+            if ((w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown) && !w.Shop.Open && playing)
+                foreach (var enemy in w.Enemies)
+                    if (enemy.Id == w.TutorialGrenadeEnemyId && enemy.Alive) { guide = enemy.Position; break; }
+            if (w.Tutorial == TutorialStage.Purchase && w.Shop.Open && playing)
+                hud.SetGuideUi(shopPanel.TutorialBuyButton(w));
+            else hud.SetGuide(guide, worldCamera);
             string status = playing ? TutorialPrompt(w) : null; // no hints over scenes and menus
-            if (!w.Shop.Open && ShopSystem.InRange(w) && playing) status = Loc.T("tutorial.pressE");
+            if (status == null && !w.Shop.Open && ShopSystem.InRange(w) && playing &&
+                (w.Tutorial == TutorialStage.Purchase || w.Waves.Kind == EncounterKind.BossPrep))
+                status = Loc.T("tutorial.pressE");
             if (Time.unscaledTime < flashUntil) status = flashMessage;
             hud.SetStatus(hints.Showing ? null : status); // a hint card says it better; the line returns afterwards
         }
 
         void OnShopBuy(ShopOffer offer)
         {
-            if (app.States.Current != GameState.Playing) return;
+            if (app.States.Current != GameState.Playing || !W.Shop.Open) return;
             bool bought = ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item, offer.Slot);
             audio.Play(bought ? AudioCue.Purchase : AudioCue.Denied);
             if (bought && offer.Kind == OfferKind.BuyWeapon) BarkOnce("FirstPurchase");
@@ -472,7 +531,20 @@ namespace Hollow.Game
         /// <summary>Optional incidental lines (v0.19 §17); warnings never depend on them.</summary>
         void SyncBarks(World w)
         {
-            if (app.States.Current != GameState.Playing || !w.Companion.Present) return;
+            bool allowed = app.States.Current == GameState.Playing && w.Companion.Present && !w.Companion.Dead &&
+                !dialogue.Playing && !w.Shop.Open && w.Tutorial != TutorialStage.FirstGroup &&
+                w.Tutorial != TutorialStage.Purchase && w.Tutorial != TutorialStage.Grenade && w.Tutorial != TutorialStage.GrenadeThrown;
+            hud.SetOperatorBubble(allowed && Time.unscaledTime < operatorBubbleUntil ? operatorBubbleLine : null, w.Companion.Position, worldCamera);
+            if (!allowed) return;
+            if (Time.unscaledTime >= nextOperatorBubbleAt)
+            {
+                int pick = UnityEngine.Random.Range(0, 7);
+                if (pick == lastOperatorBubble) pick = (pick + 1) % 7;
+                lastOperatorBubble = pick;
+                operatorBubbleLine = Loc.T("operator.idle" + (pick + 1));
+                operatorBubbleUntil = Time.unscaledTime + 3.5f;
+                nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(28f, 44f);
+            }
             foreach (var e in w.Events)
                 if (e.Type == SimEventType.CompanionHit) { dialogue.ShowBark("CompanionWarning"); break; } // its own cooldown
         }
@@ -518,7 +590,7 @@ namespace Hollow.Game
         }
 
         void ShowPauseMenu(string status = null) =>
-            menus.ShowPause(ClosePause, () => { SaveNow(); ShowPauseMenu(flashMessage); }, CanSave(), () => ShowSlotLoad(fromFailure: false),
+            menus.ShowPause(ClosePause, () => { SaveNow(); ShowPauseMenu(flashMessage); }, CanSave(),
                 () => menus.ShowSettings(settings, () => ShowPauseMenu()), () => menus.ShowControls(() => ShowPauseMenu()), ExitToMenu, status);
 
         void ClosePause()

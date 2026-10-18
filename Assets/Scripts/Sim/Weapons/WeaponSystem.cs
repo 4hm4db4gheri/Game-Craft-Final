@@ -8,7 +8,8 @@ namespace Hollow.Sim
     /// <summary>
     /// Guns (GDD §4, §8): per-level records, unlimited reserve with finite magazines, automatic reload on the
     /// last round, manual reload with R, reload cancelled by swap or dash (except weapons flagged otherwise),
-    /// automatic reload restarts when returning to an empty gun, 0.15 s swap. General skill modifiers are
+    /// automatic reload restarts when returning to an empty gun, 0.15 s swap. Missing rounds refill one by one
+    /// over a duration proportional to the missing share of the magazine. General skill modifiers are
     /// applied exactly once, after reading the level record.
     /// </summary>
     public static class WeaponSystem
@@ -102,11 +103,18 @@ namespace Hollow.Sim
                 return;
             }
 
-            if (L.Reloading && now >= L.ReloadEndTick)
+            if (L.Reloading)
             {
-                L.Reloading = false;
-                active.Ammo = level.Magazine;
-                w.Emit(SimEventType.ReloadFinished, PlayerState.EntityId, p.Position, default, 0, (int)active.Id);
+                int missing = Mathf.Max(1, level.Magazine - L.ReloadStartAmmo);
+                long elapsed = Mathf.Clamp((int)(now - (L.ReloadEndTick - L.ReloadTotalTicks)), 0, (int)L.ReloadTotalTicks);
+                int filled = (int)(elapsed * missing / L.ReloadTotalTicks);
+                active.Ammo = Mathf.Min(level.Magazine, L.ReloadStartAmmo + filled);
+                if (now >= L.ReloadEndTick)
+                {
+                    L.Reloading = false;
+                    active.Ammo = level.Magazine;
+                    w.Emit(SimEventType.ReloadFinished, PlayerState.EntityId, p.Position, default, 0, (int)active.Id);
+                }
             }
 
             bool swapping = now < L.SwapReadyTick;
@@ -154,9 +162,11 @@ namespace Hollow.Sim
         {
             var L = w.Player.Loadout;
             L.Reloading = true;
-            L.ReloadTotalTicks = Math.Max(1, w.Ticks(ReloadSeconds(w, l)));
+            L.ReloadStartAmmo = active.Ammo;
+            float duration = ReloadSeconds(w, l) * (l.Magazine - active.Ammo) / Mathf.Max(1f, l.Magazine);
+            L.ReloadTotalTicks = Math.Max(1, w.Ticks(duration));
             L.ReloadEndTick = w.Clock.Tick + L.ReloadTotalTicks;
-            w.Emit(SimEventType.ReloadStarted, PlayerState.EntityId, w.Player.Position, default, ReloadSeconds(w, l), (int)active.Id);
+            w.Emit(SimEventType.ReloadStarted, PlayerState.EntityId, w.Player.Position, default, duration, (int)active.Id);
         }
 
         public static void CancelReload(World w)

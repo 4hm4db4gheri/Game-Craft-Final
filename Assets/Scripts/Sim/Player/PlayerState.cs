@@ -17,6 +17,7 @@ namespace Hollow.Sim
         public float Health;
         public bool Dead;
         public long InvulnerableUntilTick;
+        public long LastHitTick = long.MinValue / 2;
 
         public bool Dashing;
         public Vector2 DashDir;

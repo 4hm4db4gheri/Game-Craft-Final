@@ -19,12 +19,14 @@ namespace Hollow.Sim
     {
         static readonly List<SkillId> Eligible = new(8);
 
+        static bool Unlocked(World w, SkillId id) => id != SkillId.DashMine || w.Phase >= 2;
+
         public static int MaxRank(World w, SkillId id) => w.Profile.Skill(id).Ranks.Count;
 
         public static bool AllSkillsMaxed(World w)
         {
             foreach (var s in w.Profile.Skills)
-                if (w.Player.SkillRank(s.Id) < s.Ranks.Count) return false;
+                if (Unlocked(w, s.Id) && w.Player.SkillRank(s.Id) < s.Ranks.Count) return false;
             return true;
         }
 
@@ -41,7 +43,7 @@ namespace Hollow.Sim
 
             Eligible.Clear();
             foreach (var s in w.Profile.Skills)
-                if (w.Player.SkillRank(s.Id) < s.Ranks.Count) Eligible.Add(s.Id);
+                if (Unlocked(w, s.Id) && w.Player.SkillRank(s.Id) < s.Ranks.Count) Eligible.Add(s.Id);
 
             var card = new PendingChoice();
             int count = Mathf.Min(w.Profile.Xp.ChoicesOffered, Eligible.Count);
@@ -73,7 +75,7 @@ namespace Hollow.Sim
         public static bool Choose(World w, SkillId id)
         {
             var pr = w.Progress;
-            if (pr.Pending == null || !pr.Pending.Options.Contains(id)) return false;
+            if (pr.Pending == null || !pr.Pending.Options.Contains(id) || !Unlocked(w, id)) return false;
             ApplyRank(w, id);
             w.Emit(SimEventType.SkillChosen, PlayerState.EntityId, w.Player.Position, default, w.Player.SkillRank(id), (int)id);
             pr.Pending = null;
@@ -114,6 +116,7 @@ namespace Hollow.Sim
             SkillId.DashDamage => w.Profile.Player.DashDamage,
             SkillId.MaxHealth => w.Profile.Player.MaxHealth,
             SkillId.MagnetRadius => w.Profile.Player.MagnetRadius,
+            SkillId.DashMine => 0f,
             _ => 1f,
         };
     }

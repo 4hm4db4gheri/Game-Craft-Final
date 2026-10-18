@@ -18,6 +18,7 @@ namespace Hollow.Game
         void Start()
         {
             app = GameApp.Ensure();
+            SlotStore.RootOverride = null; // returning from a direct Game-scene test restores the real slots
             AudioBridge.Attach().StopMusic(0.8f); // the menu is quiet
             if (app.States.Current == GameState.Boot) app.States.Transition(GameState.MainMenu);
             menus = ui.gameObject.AddComponent<MenuScreens>();
@@ -45,7 +46,25 @@ namespace Hollow.Game
                 anySave,
                 () => menus.ShowSettings(settings, Main),
                 () => menus.ShowControls(Main),
+                ConfirmResetProgress,
                 () => app.Quit());
+        }
+
+        void ConfirmResetProgress() =>
+            menus.ShowConfirm(Loc.T("reset.title"), Loc.T("reset.body"),
+                (Loc.T("reset.confirm"), ResetProgress), (Loc.T("common.cancel"), Main));
+
+        void ResetProgress()
+        {
+            var result = SlotStore.DeleteAll();
+            if (!result.Ok)
+            {
+                Debug.LogWarning($"Could not clear saved progress: {result.Error}");
+                menus.ShowConfirm(Loc.T("reset.failedTitle"), Loc.T("reset.failedBody"),
+                    (Loc.T("reset.retry"), ResetProgress), (Loc.T("common.back"), Main));
+                return;
+            }
+            NewGame();
         }
     }
 }

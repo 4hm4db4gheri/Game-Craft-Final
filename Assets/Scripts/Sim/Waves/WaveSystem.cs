@@ -33,12 +33,14 @@ namespace Hollow.Sim
 
         public static void StartWave(World w, int wave)
         {
+            bool fromShoppingInterval = w.Waves.Kind == EncounterKind.SafeInterval;
             var data = w.Profile.Wave(w.Phase, wave);
             var ws = w.Waves;
             var p = w.Profile;
             ws.Wave = wave;
             ws.Kind = EncounterKind.Wave;
             w.SafeInterval = false;
+            ShopSystem.SetOpen(w, false);
 
             var test = p.ActiveProfile();
             bool scale = test != null && !data.IsTutorial;
@@ -67,7 +69,7 @@ namespace Hollow.Sim
             ws.BonusPaid = false;
             CaptureHealth(w);
 
-            ShopSystem.RefreshStock(w);
+            if (!fromShoppingInterval) ShopSystem.RefreshStock(w);
             w.Emit(SimEventType.WaveStarted, 0, Vector2.zero, default, wave, w.Phase);
             Checkpoints.Capture(w);
         }
@@ -88,7 +90,7 @@ namespace Hollow.Sim
             }
         }
 
-        /// <summary>Enter during the safe interval starts the next wave early (D30).</summary>
+        /// <summary>Developer/test shortcut. Player-facing safe intervals always run their full timer.</summary>
         public static void SkipSafeInterval(World w)
         {
             if (w.Waves.Kind == EncounterKind.SafeInterval) StartNextEncounter(w);
@@ -101,7 +103,7 @@ namespace Hollow.Sim
             {
                 ws.Kind = EncounterKind.BossPrep;
                 w.SafeInterval = true;
-                ShopSystem.RefreshStock(w);
+                ShopSystem.SetOpen(w, false);
                 return;
             }
             StartWave(w, ws.Wave + 1);
@@ -134,7 +136,7 @@ namespace Hollow.Sim
 
             if (IsTutorialWave(w))
             {
-                if (w.Tutorial == TutorialStage.Purchase) return;
+                if (w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown) return;
                 if (w.Tutorial == TutorialStage.FirstGroup && ws.SpawnedTotal >= w.Profile.Spawning.TutorialFirstGroupCount) return;
             }
 
@@ -290,7 +292,12 @@ namespace Hollow.Sim
             if (IsTutorialWave(w)) { w.Tutorial = TutorialStage.None; w.Progress.ChoicesBlocked = false; }
             ws.Kind = EncounterKind.SafeInterval;
             w.SafeInterval = true;
+            // A stray enemy shot or area effect must not hit while the timed shop is open.
+            w.Projectiles.RemoveAll(p => p.Owner == ProjectileOwner.Enemy);
+            w.Hazards.RemoveAll(h => h.Owner == HazardOwner.Enemy);
+            ShopSystem.RefreshStock(w);
             ws.SafeIntervalEndTick = w.Clock.Tick + w.Ticks(w.Profile.Spawning.SafeIntervalSeconds);
+            ShopSystem.SetOpen(w, true);
         }
 
         static void Shuffle(World w, List<EnemyId> list)

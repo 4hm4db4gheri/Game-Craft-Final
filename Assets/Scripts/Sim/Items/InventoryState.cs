@@ -30,6 +30,7 @@ namespace Hollow.Sim
         public ItemId Selected;
 
         public bool Holding;
+        public bool GrenadeChargeStarted;
         public ItemId Held;
         public long NextUseTick;
         public long ShieldUntilTick;

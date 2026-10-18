@@ -8,15 +8,15 @@ namespace Hollow.UI
 {
     /// <summary>
     /// HUD per GDD §10: lower left health (and companion), lower right weapons with level, magazine,
-    /// unlimited reserve and reload progress, slim XP bar, top wallet / phase / wave / enemies.
+    /// unlimited reserve and individual round markers, slim XP bar, top wallet / area / wave.
     /// Never a raycast target, so it can never swallow a world click.
     /// </summary>
     public sealed class HudView : MonoBehaviour
     {
         UIRoot root;
-        BarView health, companion, xp, reload, bossBar;
+        BarView health, companion, xp, bossBar;
         TextMeshProUGUI bossText;
-        TextMeshProUGUI healthText, companionText, weaponText, xpText, walletText, topText, statusText;
+        TextMeshProUGUI healthText, companionText, weaponText, ammoRounds, xpText, walletText, topText, statusText;
         UnityEngine.UI.Image companionArrow, guideArrow;
         readonly StringBuilder sb = new(128);
         UnityEngine.UI.Button itemButton;
@@ -25,6 +25,9 @@ namespace Hollow.UI
         BarView itemGap;
         ItemId shownItem;
         RectTransform weaponPanel;
+        RectTransform operatorBubble;
+        TextMeshProUGUI operatorBubbleText;
+        readonly Vector3[] guideCorners = new Vector3[4];
 
         /// <summary>The HUD part a hint points at (v0.19 one-time hints).</summary>
         public RectTransform TargetRect(HintTarget target) => target switch
@@ -49,18 +52,20 @@ namespace Hollow.UI
             companionText = UIFactory.Text(companion.transform, "Text", "", t, 16, TextAlignmentOptions.Center);
             companion.gameObject.SetActive(false);
 
-            var weapon = weaponPanel = UIFactory.Rect(hud, "Weapon", new Vector2(1, 0), new Vector2(1, 0), new Vector2(-40, 60), new Vector2(460, 110));
+            var weapon = weaponPanel = UIFactory.Rect(hud, "Weapon", new Vector2(1, 0), new Vector2(1, 0), new Vector2(-40, 60), new Vector2(460, 136));
             UIFactory.Panel(weapon, t);
             weaponText = UIFactory.Text(weapon, "Text", "", t, 24, TextAlignmentOptions.MidlineRight);
             weaponText.margin = new Vector4(16, 8, 16, 8);
-            reload = UIFactory.Bar(weapon, "Reload", t, new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 8), new Vector2(428, 8), t.Accent);
+            weaponText.rectTransform.anchoredPosition += new Vector2(0, 12);
+            var rounds = UIFactory.Rect(weapon, "Rounds", new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 12), new Vector2(430, 28));
+            ammoRounds = UIFactory.Text(rounds, "Text", "", t, 19, TextAlignmentOptions.Center, t.Accent);
 
             xp = UIFactory.Bar(hud, "Xp", t, new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 14), new Vector2(900, 10), t.Xp);
             xpText = UIFactory.Text(xp.transform, "Text", "", t, 16, TextAlignmentOptions.Center, t.TextDim);
             xpText.rectTransform.anchoredPosition = new Vector2(-545, 0); // beside the bar: above it the item buttons would cover it at 1280×720
 
-            var top = UIFactory.Rect(hud, "Top", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -16), new Vector2(900, 48));
-            topText = UIFactory.Text(top, "Text", "", t, 26, TextAlignmentOptions.Center);
+            var top = UIFactory.Rect(hud, "Top", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -16), new Vector2(900, 80));
+            topText = UIFactory.Text(top, "Text", "", t, 24, TextAlignmentOptions.Center);
             var wallet = UIFactory.Rect(hud, "Wallet", new Vector2(1, 1), new Vector2(1, 1), new Vector2(-40, -16), new Vector2(300, 48));
             walletText = UIFactory.Text(wallet, "Text", "", t, 32, TextAlignmentOptions.MidlineRight, t.Coin);
             var status = UIFactory.Rect(hud, "Status", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -175), new Vector2(1200, 90));
@@ -83,6 +88,24 @@ namespace Hollow.UI
             var guide = UIFactory.Rect(hud, "GuideArrow", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(60, 60));
             guideArrow = UIFactory.Triangle(guide, t.Accent);
             guide.gameObject.SetActive(false);
+
+            operatorBubble = UIFactory.Rect(hud, "OperatorBubble", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(370, 62));
+            UIFactory.Panel(operatorBubble, t, new Color(0.06f, 0.08f, 0.12f, 0.88f), raycast: false);
+            operatorBubbleText = UIFactory.Text(operatorBubble, "Text", "", t, 20, TextAlignmentOptions.Center);
+            operatorBubble.gameObject.SetActive(false);
+        }
+
+        public void SetOperatorBubble(string line, Vector2 worldPosition, Camera cam)
+        {
+            operatorBubble.gameObject.SetActive(!string.IsNullOrEmpty(line) && cam != null);
+            if (string.IsNullOrEmpty(line) || cam == null) return;
+            var screen = cam.WorldToScreenPoint(worldPosition + Vector2.up * 1.3f);
+            if (screen.z <= 0) { operatorBubble.gameObject.SetActive(false); return; }
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(root.Hud, screen, null, out var local);
+            var bounds = root.Hud.rect;
+            operatorBubble.anchoredPosition = new Vector2(Mathf.Clamp(local.x, bounds.xMin + 190, bounds.xMax - 190),
+                Mathf.Clamp(local.y, bounds.yMin + 50, bounds.yMax - 50));
+            operatorBubbleText.text = line;
         }
 
         /// <summary>
@@ -92,6 +115,7 @@ namespace Hollow.UI
         public void SetGuide(Vector2? worldTarget, Camera cam)
         {
             var rt = (RectTransform)guideArrow.transform.parent;
+            if (rt.parent != root.Hud) rt.SetParent(root.Hud, false);
             rt.gameObject.SetActive(worldTarget.HasValue && cam != null);
             if (!worldTarget.HasValue || cam == null) return;
             var hudRect = root.Hud.rect;
@@ -110,6 +134,19 @@ namespace Hollow.UI
                 rt.anchoredPosition = new Vector2((above.x - 0.5f) * hudRect.width, (above.y - 0.5f) * hudRect.height);
                 rt.localRotation = Quaternion.Euler(0, 0, 180f); // pointing down at the place
             }
+        }
+
+        public void SetGuideUi(RectTransform target)
+        {
+            var rt = (RectTransform)guideArrow.transform.parent;
+            if (rt.parent != root.Modal) { rt.SetParent(root.Modal, false); rt.SetAsLastSibling(); }
+            rt.gameObject.SetActive(target != null);
+            if (target == null) return;
+            target.GetWorldCorners(guideCorners);
+            Vector2 screen = RectTransformUtility.WorldToScreenPoint(null, (guideCorners[1] + guideCorners[2]) * 0.5f);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(root.Hud, screen, null, out var local);
+            rt.anchoredPosition = local + new Vector2(0, 38 + 8 * Mathf.Sin(Time.unscaledTime * 5));
+            rt.localRotation = Quaternion.Euler(0, 0, 180f);
         }
 
         /// <summary>Boss bar during encounters (§10); the human boss bar is body and equipment together.</summary>
@@ -170,10 +207,16 @@ namespace Hollow.UI
                     AppendWeapon(w, L.Slot1, L.ActiveSlot == 1, 1);
                     if (L.HasPrimary) { sb.Append('\n'); AppendWeapon(w, L.SlotPrimary, L.ActiveSlot == 2, 2); }
                     weaponText.text = sb.ToString();
+                    var active = L.Active;
+                    if (active != null && w.Profile.Weapon(active.Id).Kind == WeaponKind.Gun)
+                    {
+                        int capacity = WeaponSystem.LevelData(w, active).Magazine;
+                        sb.Clear();
+                        for (int i = 0; i < capacity; i++) sb.Append(i < active.Ammo ? "●" : "○");
+                        ammoRounds.text = sb.ToString();
+                    }
+                    else ammoRounds.text = "";
                 }
-                reload.gameObject.SetActive(L.Reloading);
-                if (L.Reloading)
-                    reload.Set(1f - (L.ReloadEndTick - w.Clock.Tick) / (float)Mathf.Max(1, L.ReloadTotalTicks));
             }
 
             int next = XpSystem.NextThreshold(w);

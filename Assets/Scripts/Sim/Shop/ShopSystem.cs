@@ -29,7 +29,7 @@ namespace Hollow.Sim
         public bool Enabled => Lock == LockReason.None;
     }
 
-    public enum TutorialStage { None, FirstGroup, Purchase, SecondGroup }
+    public enum TutorialStage { None, FirstGroup, Purchase, SecondGroup, Grenade, GrenadeThrown }
 
     /// <summary>Shop state that must survive a save (open flag, price snapshot, per-encounter stock).</summary>
     public sealed class ShopState
@@ -46,8 +46,8 @@ namespace Hollow.Sim
     }
 
     /// <summary>
-    /// The live world-station shop (§11): never pauses combat, one-click purchases with no confirmation,
-    /// failed purchases spend nothing, stock refreshes once per wave or boss preparation only.
+    /// The world-station shop: automatically available throughout the timed safe interval. The stations
+    /// remain in the arena, but normal waves and boss fights do not allow shopping.
     /// </summary>
     public static class ShopSystem
     {
@@ -60,6 +60,19 @@ namespace Hollow.Sim
         public static void Step(World w, in PlayerCommand cmd)
         {
             var s = w.Shop;
+            if (w.Waves.Kind == EncounterKind.SafeInterval)
+            {
+                if (!s.Open) SetOpen(w, true);
+                return; // movement, dash and E never close the timed shop
+            }
+            bool tutorialShopping = w.Waves.Kind == EncounterKind.Wave &&
+                (w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade);
+            if ((w.Waves.Kind == EncounterKind.Wave && !tutorialShopping) ||
+                w.Waves.Kind == EncounterKind.Boss || w.Waves.Kind == EncounterKind.PhaseComplete)
+            {
+                if (s.Open) SetOpen(w, false);
+                return;
+            }
             bool inRange = InRange(w);
             if (cmd.InteractPressed && (inRange || s.Open)) SetOpen(w, !s.Open);
             if (s.Open && (!inRange || w.Player.Dashing || w.Player.Dead)) SetOpen(w, false);
@@ -209,11 +222,18 @@ namespace Hollow.Sim
             if (!offer.Enabled) return false;
 
             w.Progress.Wallet -= offer.Price;
+            bool tutorialWeaponBought = false;
             switch (kind)
             {
                 case OfferKind.BuyWeapon:
                     WeaponSystem.Give(w, weapon);
-                    if (w.Tutorial == TutorialStage.Purchase && weapon == w.Profile.Economy.TutorialWeapon) w.Tutorial = TutorialStage.SecondGroup;
+                    if (w.Tutorial == TutorialStage.Purchase && weapon == w.Profile.Economy.TutorialWeapon)
+                    {
+                        w.Inventory.Add(ItemId.Grenade, 1); // one free practice throw before the next group
+                        w.Tutorial = TutorialStage.Grenade;
+                        EnsureGrenadeTarget(w);
+                        tutorialWeaponBought = true;
+                    }
                     break;
                 case OfferKind.EquipWeapon:
                     WeaponSystem.Equip(w, weapon, slot);
@@ -240,7 +260,24 @@ namespace Hollow.Sim
             if (w.Shop.FirstPurchaseTick < 0) w.Shop.FirstPurchaseTick = w.Clock.Tick;
             int id = kind == OfferKind.BuyItem ? (int)item : (int)weapon;
             w.Emit(SimEventType.Purchased, id, w.Player.Position, new Vector2(offer.Level, 0), offer.Price, (int)kind);
+            if (tutorialWeaponBought) Checkpoints.Capture(w); // retry keeps the mandatory purchase and practice grenade
             return true;
+        }
+
+        public static void EnsureGrenadeTarget(World w)
+        {
+            if (w.TutorialGrenadeEnemyId != 0) return;
+            var enemyType = EnemyId.A1_RunnerWolf;
+            float radius = w.Profile.Enemy(enemyType).BodyRadius;
+            var position = w.Arena.NearestFree(w.Player.Position + Vector2.right * 3.5f, radius);
+            foreach (var direction in new[] { Vector2.right, Vector2.up, Vector2.left, Vector2.down })
+            {
+                var candidate = w.Arena.NearestFree(w.Player.Position + direction * 3.5f, radius);
+                if (!w.Arena.LineOfSight(w.Player.Position, candidate)) continue;
+                position = candidate;
+                break;
+            }
+            w.TutorialGrenadeEnemyId = EnemySystem.Spawn(w, enemyType, position, warning: false).Id;
         }
 
         static bool Matches(in ShopOffer o, WeaponId weapon, ItemId item, int slot) => o.Kind switch

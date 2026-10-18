@@ -22,6 +22,10 @@
 
 ## ساختار پروژه
 
+- Resources/Arena/ArenaLayout.json.Landmarks منبع مشترک چیدمان و برخورد هفت سازهٔ جنگل است؛ Resources/ArenaArt/Landmarks آرت‌ها را نگه می‌دارد. ArenaArtImportSettings کیفیت واردکردن و DetailedGround.shader جزئیات نزدیک کف را کنترل می‌کنند.
+
+- Assets/Resources/ArenaArt شامل دو زمین ۳:۲ و اطلس سه prop جنگل است؛ ArenaAuthoring.ApplyComposition نمایش آن‌ها را روی مختصات قبلی انجام می‌دهد. فاز سوم از زمین صنعت با tint سرد استفاده می‌کند.
+
 | مسیر | توضیح |
 |---|---|
 | `Assets/Scenes/` | `Boot` → `MainMenu` (منوی uGUI با پس‌زمینه‌ی parallax) → `Game` |
@@ -35,11 +39,12 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۴۶ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۶۵ تست، ۴۶۰ پاس، ۵ رد از شاخه‌ی gameplay-ux؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
-| `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `ground34.py` زمین‌های بالا به پایین را 3/4 می‌کند (ارتفاع ۷۵٪، بافت ۲۴×۲۴ واحدی بدون تکرار ۸ واحدی) و در Incoming می‌نویسد؛ `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `ground34.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
+| `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
+| `Assets/Editor/VisualTuningWindow.cs` + `docs/VISUAL_DEPTH_PASS.md` | داشبورد `Hollow > Visual Tuning` برای رنگ نور، افکت‌های دوربین و تنوع روشنایی زمین در هر فاز؛ روش تست و محدودیت آرت در سند |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
@@ -58,7 +63,15 @@
 
 ## وضعیت فعلی
 
-- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۴۶ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). زمین و آرنا 3/4 است: زمین کوتاه‌شده با یک sprite تکرارشونده، decal خوابیده روی زمین، سایه‌ی زیر دیوارها و سایه‌ی تماس پررنگ‌تر (D76). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
+- شاخهٔ codex/gameplay-ux-pass اکنون گیم‌پلیِ آموزش/فروشگاه زمان‌دار و آخرین آرت/نقشهٔ main را با هم دارد. تغییرات محلی صحنه و واردکننده‌ها نیز حفظ شده‌اند.
+
+- D79: علت قطع کنترل‌ها خطای برش اطلس کوچک‌شده بود؛ برش نرمال و راه‌اندازی مقاوم شد. هفت آرت جدید جنگل با footprint مشترک collider/شبیه‌سازی و کف دارای جزئیات نزدیک افزوده شدند. راهنما: docs/ARENA_LANDMARKS.md. شروع مرحله در Unity دیده شد؛ بررسی کامل ظاهر پس از توقف Computer Use توسط کاربر باقی است.
+
+- نقشه با دو مرجع تازه بازترکیب شد: زمین یکپارچهٔ جنگل و صنعت، آرت سه‌ربع کنده/الوار/بیل مکانیکی، سایهٔ تماس کوچک‌تر و محوشدن اجسام بلند روی بازیکن. کنترل Composed arena floor در Visual Tuning برای مقایسه حاضر است. راهنما و پرامپت‌ها در docs/ARENA_COMPOSITION.md؛ نمایش نهایی Play Mode هنوز تأیید نشده است.
+
+- پاس عمق بصری D77 برای اسکرین‌شات‌های پنج‌گانه: تنظیم مستقل رنگ نور/کنتراست/کاهش اشباع/تیرگی لبه‌ها برای هر فاز، Bloom ملایم دوربین دنیا، نور موضعی کیوسک‌ها و تنوع نرم روشنایی زمین. داشبورد `Hollow > Visual Tuning` با Apply در Play Mode و Save/Reset افزوده شد؛ بررسی تصویری در Play Mode هنوز لازم است. تغییرات `.meta` آرت که پیش از این تسک موجود بودند متعلق به این کار نیستند و دست نخورده‌اند.
+
+- انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۴۵ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
 - باقی‌مانده: هیچ تسکی از T00–T22 نمانده. کارهای بعدی با طراح/کاربر: اعداد سطح ۲ و ۳ سلاح‌ها، playtest انسانی، آرت AI، گوش دادن به صداها (فهرست در `docs/RELEASE_NOTES.md`).
 ## کارهای باز / ایده‌ها
@@ -264,6 +277,27 @@
 - محدودیت: حرکت‌ها از خم کردن یک تصویر ساخته شده‌اند؛ پای دوپاها در هر قدم جابه‌جا نمی‌شود (هر حلقه یک قدم)، و حالت حمله‌ی اپراتور فاز ۲ فقط لگد سلاح است. حجم sheetها حدود ۳۶ مگابایت (LFS).
 - نکته‌ی تست: `capture_game_view --save_path X` فایل را در `Assets/X` می‌گذارد؛ بعد از برداشتن، پوشه و meta آن را پاک کن.
 
+### 2026-10-17 — پاس عمق بصری و داشبورد نور
+- پنج تصویر کاربر با مرجع v0.19 و نمونه‌های Kill the Crows، Hades و The Ascent بررسی شد. تکرار کاشی زمین، لکه‌های تیره، رنگ نزدیک فازها و placeholderهای صنعتی مسائل اصلی‌اند؛ اولویت این پاس عمق بصری همراه با خوانایی نبرد است.
+- `AtmosphereData` و seed/JSON بالانس با رنگ نور، کنتراست، کاهش اشباع، vignette سه فاز، Bloom و تنوع روشنایی زمین گسترش یافت. `ArenaAtmosphere` حجم post-process دنیا و نور فیروزه‌ای کیوسک‌ها را می‌سازد؛ `ArenaAuthoring` نویز نرم غیرتکراری روی زمین می‌گذارد؛ `GameSession` این‌ها را هنگام شروع/بارگذاری/Apply زنده به‌روزرسانی می‌کند. `VisualTuningWindow` و راهنمای `docs/VISUAL_DEPTH_PASS.md` افزوده شد. برای جلوگیری از حذف shaderهای Volume ساخته‌شده در اجرا، حذف variantهای استفاده‌نشدهٔ Post Processing در تنظیمات URP خاموش شد. تصمیم D77.
+- اسمبلی‌های Data/Presentation/Game/Editor/Tests.EditMode با کامپایلر Unity کامپایل شدند؛ JSON و بازه‌های تنظیم معتبرند. Test Runner به‌دلیل باز بودن پروژه در Editor از CLI اجرا نشد و بازبینی دیداری Play Mode باقی است. فایل‌های `.meta` آرت موجود پیش از این تسک در commit این کار وارد نمی‌شوند.
+
+### 2026-10-18 — ترکیب‌بندی سه‌ربع نقشه براساس مرجع کاربر
+- با imagegen داخلی دو زمین غیرتکراری و اطلس شفاف کنده، الوار و بیل مکانیکی تولید، بررسی و در Resources/ArenaArt ذخیره شد. ApplyComposition زمین‌ها و سه آرت جایگزین را با pivot پایه روی موانع قبلی می‌نشاند. سایه‌ها براساس footprint کوچک شدند و اجسام بلند هنگام پوشاندن بازیکن نرم محو می‌شوند. تنظیم‌های ComposedGround و ContactShadowStrength در seed، JSON و داشبورد حاضرند.
+- اسمبلی‌های Data/Presentation/Game/Editor/Tests.EditMode کامپایل شدند؛ Test Runner به‌علت باز بودن پروژه در Editor اجرا نشد. نمایش واقعی Play Mode هنوز بررسی نشده است. فایل‌های art meta و تصاویر exec موجود پیش از این کار دست نخورده‌اند. تصمیم D78 و راهنمای docs/ARENA_COMPOSITION.md.
+
+### 2026-10-18 — رفع قطع کنترل‌ها و نصب هفت سازهٔ جنگل با برخورد
+- خطای ابعاد اطلس در Editor.log پیدا شد. ImportedAtlasRect برش را با اندازهٔ واردشده مقیاس می‌کند و ApplyArenaVisuals خطای آرت را از مسیر Loading جدا می‌کند. تست رگرسیون برای اندازه‌های واقعی/کوچک‌شده و shader افزوده شد.
+- هفت PNG ارسالی در Resources کپی و با footprintهای معتبر و ماسک گوشه‌ها به ArenaLayout اضافه شدند. نمای Runtime و BoxColliderهای ردیفی از همان دادهٔ برخورد سیم ساخته می‌شوند؛ Bake رکوردها را حفظ می‌کند. ذخیره‌های قدیمی در صورت برخورد با سازهٔ تازه به نقطهٔ آزاد منتقل می‌شوند. کف shader دارای detail و واردکنندهٔ بدون فشرده‌سازی دارد.
+- Sim/Presentation/Game/Editor/Tests.EditMode کامپایل؛ تست اجرایی Mono حرکت چهار جهت، برش و برخورد/خروج پاس؛ بررسی مسیرها در هر سه فاز پاس. ورود از منو به مرحله در Unity بدون خطای قبلی مشاهده شد. کاربر Computer Use را با Escape متوقف کرد؛ اجرای کامل NUnit و بررسی کامل نمای نهایی باقی است. جایگاه خالی سوم برای بررسی استفاده شد، دو جایگاه قبلی دست نخورده‌اند. تصمیم D79؛ docs/ARENA_LANDMARKS.md و نقشهٔ تشخیصی برخورد.
+
+### 2026-10-17 — بازبینی آموزش، فروشگاه، اپراتور و اقتصاد
+- فایل Word مرجع v0.19 خوانده و با `docs/GDD_v0.19.md` و بالانس فعلی سنجیده شد. طبق درخواست کاربر، نمایش بالای HUD فقط محیط و حالت نبرد/استراحت را نشان می‌دهد؛ فروشگاه تب فاز ندارد و پیشنهادهای بازشده تا فاز فعلی را نشان می‌دهد. فلش آموزش به نزدیک‌ترین سکهٔ باقی‌مانده می‌رود. متن شروع با دش آغاز می‌شود و می‌گوید مرگ اپراتور بازی را تمام می‌کند.
+- خرید SMG آموزشی یک نارنجک رایگان می‌دهد؛ گروه دوم تا استفادهٔ موفق از آن صبر می‌کند. اپراتور پس از ۸ ثانیه بی‌آسیب‌ماندن با نرخ ۲ HP/s تا سقف جان خود ترمیم می‌شود؛ این اعداد در seed و Baseline.json هستند. پروفایل‌های ذخیره‌شدهٔ قبل از revision 3 فقط دو فیلد تازه را از baseline می‌گیرند.
+- بررسی عددی: داکیومنت ۵۰۸۹ سکهٔ درآمد سناریویی و ۱۴۲۱ سکه ماندهٔ مسیر خرید نمونه پیش‌بینی می‌کند. خشاب‌ها زمان reload دارند اما مهمات ذخیره محدود نیست. توصیهٔ اولیه حفظ دو اسلات و آزمودن تنظیم سلاح و درآمد پس از دادهٔ playtest؛ گزارش کامل در `docs/BALANCE_REVIEW_2026-10-17.md`. تصمیم D77.
+- فایل‌های تغییرکرده: `Assets/Editor/BaselineSeed.cs`، `Assets/Resources/Balance/Baseline.json`، `Assets/Resources/Localization/fa.json`، `Assets/Scripts/Data/BalanceProfile.cs` و `BalanceProfileStore.cs`، `Assets/Scripts/Game/GameSession.cs`، `Assets/Scripts/Sim/Companion/CompanionSystem.cs`، `Assets/Scripts/Sim/Items/ItemSystem.cs`، `Assets/Scripts/Sim/Shop/ShopSystem.cs`، `Assets/Scripts/Sim/Waves/WaveSystem.cs`، `Assets/Scripts/UI/ShopPanel.cs`، تست‌های ویرایش‌شده، `docs/DECISIONS.md`، گزارش بالانس و `agent.md`.
+- تأیید: پنج اسمبلی `Hollow.Data/Sim/UI/Game/Tests.EditMode` با کامپایلر Unity بدون خطا کامپایل شدند؛ دو JSON معتبرند و کلیدهای تازهٔ فارسی حاضرند. تست‌های NUnit و بررسی ظاهری در Play Mode به اتصال Pipeline ادیتور نیاز دارند و اجرا نشدند. فایل تغییرکردهٔ مستقل `ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json` دست‌نخورده ماند.
+
 ### 2026-10-17 — زمین و آرنای 3/4
 - گزارش کاربر: زمین بازی 3/4 نیست و دوبعدی صاف است. علت: brief زمین را «از بالای بالا» خواسته بود و بافت ۸ واحدی با تکرار شبکه‌ای دیده می‌شد؛ decalهای زمین آزادانه می‌چرخیدند؛ سایه‌ها کم‌رنگ بودند.
 - `Tools/ArtGen/ground34.py`: هر زمین (از نسخه‌ی اصلی در `ArtSource/ArtWave1_Original`) به ۷۵٪ ارتفاع کوتاه می‌شود و یک بافت بی‌درز ۲۴×۲۴ واحدی (۳۰۷۲ پیکسل) ساخته می‌شود: خاک فاز ۱ با کپی‌های آینه‌ای و جابه‌جا زیر ماسک نرم؛ بتن فاز ۳ (و ۲) با تخته‌های ۴×۳ واحدی که جابه‌جا و رنگ‌به‌رنگ می‌شوند. درز زمین P1 حالا اینجا درست می‌شود نه در `fix_art.py`.
@@ -279,3 +313,17 @@
 
 ### 2026-10-18 — commit و push
 - `git pull` (چیز جدیدی نبود)، commit اطلس فونت‌ها و organizationId، و push هر سه commit به `origin/main`. پوشه‌ی `Assets/_Recovery` (نسخه‌ی بازیابی صحنه‌ی یونیتی بعد از crash) commit نشد.
+
+### 2026-10-17 — شروع از منو، آموزش نارنجک، رابط و بالانس مبارزه
+- شاخهٔ `codex/gameplay-ux-pass` از آخرین commit ساخته شد. Play ادیتور از MainMenu آغاز می‌شود. خرید آموزشی با فلش روی دکمهٔ واقعی و چک‌پوینتِ پس از خرید، و نارنجک با دشمن تمرینی ثابت، نگه‌داشتن برای نشانه‌گیری، رهاکردن برای پرتاب، انتظار برای انفجار و جبران پرتاب ناموفق اجرا شد.
+- نوار reload با نشان‌های هر گلوله جایگزین شد؛ مدت بارگذاری به نسبت خشاب خالی است و تیرها یکی‌یکی اضافه می‌شوند. HUD محیط و شمارهٔ موج را نشان می‌دهد. Pause گزینهٔ Load ندارد؛ تنظیمات زیرنویس و جلوهٔ تصویری پنهان‌اند؛ جایگاه‌ها درصد پیشرفت، زمان بازی و آخرین ذخیره را نمایش می‌دهند. متن‌های گذرای اپراتور در بابل بالای سرش با فاصلهٔ ۲۸ تا ۴۴ ثانیه و جدا از دیالوگ داستانی می‌آیند.
+- بازسازی جان بازیکن (۶ ثانیه، ۳ HP/s)، مقاومت اپراتور فاز صنعتی (۲۶۰ HP و ۳۵٪ آسیب)، سقف/سرعت موج‌های انسانی و مهارت مین دش (از فاز ۲، ۰٫۷ ثانیه تأخیر و آسیب رتبه‌ای ۴۰/۶۵/۹۰) در seed و Baseline.json ثبت شد. پروفایل‌ها و ذخیره‌های قدیمی مهاجرت داده می‌شوند. تصمیم D78.
+- همهٔ اسمبلی‌های `Hollow.Core/Data/Sim/App/UI/Game/Editor/Tests.EditMode` با Roslyn یونیتی کامپایل شدند و JSONها معتبرند. `unity test` به‌سبب باز بودن پروژه در Editor بدون اتصال Pipeline اجرا نشد؛ بررسی Play Mode باقی است. تغییر مستقل `ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json` دست‌نخورده ماند.
+
+### 2026-10-18 — ادغام شاخه‌های گیم‌پلی و آرت
+- تغییرات اخیر محلی Unity حفظ شد؛ main و Art-Improvement در codex/gameplay-ux-pass ادغام شدند. تعارض‌ها با اولویت آرت و صحنهٔ تازه و حفظ قابلیت‌های گیم‌پلی حل شدند.
+
+### 2026-10-18 — merge شاخه‌ی codex/gameplay-ux-pass در main
+- conflictها: meta زمین‌های P1 و P3 و اطلس وزیرمتن از main (زمین یک sprite تکی ۱۲۸ پیکسلی طبق D76 است). در `docs/DECISIONS.md` تصمیم D76 (زمین 3/4) از main ماند و تصمیم‌های شاخه از D76–D81 به **D77–D82** شماره‌گذاری دوباره شدند (ارجاع‌های همین فایل هم عوض شد). تاریخچه‌ی هر دو طرف نگه داشته شد.
+- دو روش زمین حالا با هم کار می‌کنند: `ArenaAuthoring.ApplyComposition` وقتی کف ترکیبی (`Atmosphere.ComposedGround`، پیش‌فرض روشن، D78) فعال است، `GroundArt` ساخته‌ی `ArenaTools.PaintGround` را هم خاموش می‌کند؛ با خاموش کردن آن در `Hollow > Visual Tuning` زمین ground34 برمی‌گردد. در Play mode دیده نشده.
+- کامپایل بدون خطا. ۴۶۵ تست، ۴۶۰ پاس؛ ۵ تست ردشده همه از کد شاخه‌اند (روی شاخه NUnit اجرا نشده بود): `LocalizationTests` (کلید ساخته‌شده‌ی `operator.idle` + عدد)، `CompanionTests.PhaseTwoEntryRestoresToTheLowerMaximum` (۱۰۰ در برابر ۲۶۰ HP جدید)، `FullRunTests` (پاداش موج ۱ فاز ۱ با گرگ تمرینی نارنجک: ۳۱ سکه/۲۳ XP به‌جای ۲۹/۲۰)، `NoUnlistedNumberLiteralsInTheSimulation` (`ShopSystem.cs` عدد 3.5f)، `TelemetryRecordsTheTutorialWave` (موج آموزش unfinished).

@@ -32,6 +32,7 @@ namespace Hollow.Sim
         public bool Reloading;
         public long ReloadEndTick;
         public long ReloadTotalTicks;
+        public int ReloadStartAmmo;
 
         public WeaponId ActiveId => ActiveSlot == 2 && HasPrimary ? SlotPrimary : Slot1;
 

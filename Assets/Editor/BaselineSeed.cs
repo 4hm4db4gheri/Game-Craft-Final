@@ -39,13 +39,13 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 2, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 5, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
             {
-                MaxHealth = 100, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
-                DashDistance = 3, DashDuration = 0.18f, DashCooldown = 2.5f, DashDamage = 50,
+                MaxHealth = 100, RegenerationDelay = 6f, RegenerationRate = 3f, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
+                DashDistance = 3, DashDuration = 0.18f, DashCooldown = 2.5f, DashDamage = 50, DashMineDelay = 0.7f, DashMineRadius = 1.8f,
                 PostHitInvulnerability = 0.5f, BodyRadius = 0.35f, MagnetRadius = 1,
                 CoinPullSpeed = 9, ShopInteractRange = 2.2f, CrowdPushShare = 0.3f,
             };
@@ -55,11 +55,12 @@ namespace Hollow.EditorTools
                 Phases = new List<CompanionPhase>
                 {
                     new() { Phase = 1, MaxHealth = 140, ShotDamage = 8, ShotInterval = 1.2f },
-                    new() { Phase = 2, MaxHealth = 100, ShotDamage = 6, ShotInterval = 1.6f },
+                    new() { Phase = 2, MaxHealth = 260, DamageTakenMultiplier = 0.35f, ShotDamage = 6, ShotInterval = 1.6f },
                 },
                 AttackerCap = 3, FireRange = 8, ProjectileSpeed = 22, MoveSpeed = 4.6f, BodyRadius = 0.4f,
                 FollowDistanceMin = 2.5f, FollowDistanceMax = 4, OpportunisticRange = 3, WarningSoundCooldown = 2.5f,
                 ProjectileRange = 10, FollowSideBias = 0.6f, FollowArriveRadius = 0.5f, PathClearance = 0.3f, DangerIndicatorTime = 1.5f, CatchUpSpeedFactor = 1.15f,
+                RegenerationDelay = 8f, RegenerationRate = 2f,
             };
 
             // v0.19 §3: each AI starts with one rank of one skill (the start value is that skill's rank-one value).
@@ -78,7 +79,7 @@ namespace Hollow.EditorTools
                 BatchShares = new List<float> { 0.3f, 0.3f, 0.4f }, NextBatchAtCapFraction = 0.5f, SupportCap = 2,
                 SpawnWarning = 1, NewTypeReadTime = 4, SupportExplosiveSeparation = 8,
                 MinDistancePlayerBodyWidths = 4, MinDistanceCompanionBodyWidths = 3,
-                SafeIntervalSeconds = 8, NoSafePointRetryDelay = 0.25f, TutorialFirstGroupCount = 4,
+                SafeIntervalSeconds = 15, NoSafePointRetryDelay = 0.25f, TutorialFirstGroupCount = 4,
             };
 
             p.Waves = Waves();
@@ -122,6 +123,7 @@ namespace Hollow.EditorTools
                 Skill(SkillId.DashDamage, "Dash damage", 60, 70, 80),
                 Skill(SkillId.MaxHealth, "Maximum health", 120, 140, 160),
                 Skill(SkillId.MagnetRadius, "Magnet radius", 1.3f, 1.6f, 2f),
+                Skill(SkillId.DashMine, "Dash kill mine", 40f, 65f, 90f),
             };
 
             p.Feedback = new FeedbackData
@@ -139,6 +141,12 @@ namespace Hollow.EditorTools
             {
                 LightPhase1 = 1f, LightPhase2 = 0.82f, LightPhase3 = 0.6f, PlayerLightRadius = 8f, PlayerLightIntensity = 0.7f,
                 FogPhase1 = 0.10f, FogPhase2 = 0.08f, FogPhase3 = 0.12f, PhaseFadeTime = 1.5f, EndingFadeTime = 4f,
+                LightColorPhase1 = "#FFF3DE", LightColorPhase2 = "#DFECF1", LightColorPhase3 = "#DCE3F0",
+                ContrastPhase1 = 4f, ContrastPhase2 = 7f, ContrastPhase3 = 10f,
+                DesaturationPhase1 = 2f, DesaturationPhase2 = 7f, DesaturationPhase3 = 12f,
+                VignettePhase1 = 0.07f, VignettePhase2 = 0.10f, VignettePhase3 = 0.13f,
+                BloomIntensity = 0.18f, BloomThreshold = 1f, GroundVariation = 0.12f,
+                ComposedGround = true, ContactShadowStrength = 0.55f,
             };
 
             p.BuildIndex();
@@ -287,11 +295,11 @@ namespace Hollow.EditorTools
             w.Add(Wave(2, 4, 26, 8, 0.32f, bonus, 84, (EnemyId.R1_Crawler, 32), (EnemyId.R2_Shooter, 20), (EnemyId.R3_SawCharger, 14), (EnemyId.R5_Repair, 6), (EnemyId.R6_Suicide, 12)));
             w.Add(Wave(2, 5, 32, 10, 0.25f, bonus, 130, (EnemyId.R1_Crawler, 36), (EnemyId.R2_Shooter, 24), (EnemyId.R3_SawCharger, 16), (EnemyId.R4_ShieldRobot, 12), (EnemyId.R5_Repair, 6), (EnemyId.R6_Suicide, 12), (EnemyId.R7_DroneCarrier, 6)));
 
-            w.Add(Wave(3, 1, 10, 3, 0.75f, bonus, 24, (EnemyId.H1_BatonGuard, 16), (EnemyId.H2_RifleGuard, 8)));
-            w.Add(Wave(3, 2, 18, 5, 0.45f, bonus, 62, (EnemyId.H1_BatonGuard, 30), (EnemyId.H2_RifleGuard, 18), (EnemyId.H3_FastAssaulter, 14)));
-            w.Add(Wave(3, 3, 26, 7, 0.33f, bonus, 88, (EnemyId.H1_BatonGuard, 36), (EnemyId.H2_RifleGuard, 24), (EnemyId.H3_FastAssaulter, 16), (EnemyId.H4_ShieldGuard, 12)));
-            w.Add(Wave(3, 4, 34, 9, 0.25f, bonus, 116, (EnemyId.H1_BatonGuard, 42), (EnemyId.H2_RifleGuard, 28), (EnemyId.H3_FastAssaulter, 20), (EnemyId.H5_Medic, 8), (EnemyId.H6_Grenadier, 18)));
-            w.Add(Wave(3, 5, 42, 12, 0.2f, bonus, 164, (EnemyId.H1_BatonGuard, 48), (EnemyId.H2_RifleGuard, 32), (EnemyId.H3_FastAssaulter, 24), (EnemyId.H4_ShieldGuard, 18), (EnemyId.H5_Medic, 8), (EnemyId.H6_Grenadier, 18), (EnemyId.H7_Engineer, 8)));
+            w.Add(Wave(3, 1, 10, 3, 0.85f, bonus, 24, (EnemyId.H1_BatonGuard, 16), (EnemyId.H2_RifleGuard, 8)));
+            w.Add(Wave(3, 2, 14, 4, 0.6f, bonus, 62, (EnemyId.H1_BatonGuard, 30), (EnemyId.H2_RifleGuard, 18), (EnemyId.H3_FastAssaulter, 14)));
+            w.Add(Wave(3, 3, 18, 5, 0.48f, bonus, 88, (EnemyId.H1_BatonGuard, 36), (EnemyId.H2_RifleGuard, 24), (EnemyId.H3_FastAssaulter, 16), (EnemyId.H4_ShieldGuard, 12)));
+            w.Add(Wave(3, 4, 22, 6, 0.38f, bonus, 116, (EnemyId.H1_BatonGuard, 42), (EnemyId.H2_RifleGuard, 28), (EnemyId.H3_FastAssaulter, 20), (EnemyId.H5_Medic, 8), (EnemyId.H6_Grenadier, 18)));
+            w.Add(Wave(3, 5, 26, 7, 0.32f, bonus, 164, (EnemyId.H1_BatonGuard, 48), (EnemyId.H2_RifleGuard, 32), (EnemyId.H3_FastAssaulter, 24), (EnemyId.H4_ShieldGuard, 18), (EnemyId.H5_Medic, 8), (EnemyId.H6_Grenadier, 18), (EnemyId.H7_Engineer, 8)));
             return w;
         }
 

@@ -9,7 +9,8 @@ namespace Hollow.Sim
 
     /// <summary>
     /// Items (GDD v0.19 §8): one selected type. G selects the next type with stock (skipping empty or locked
-    /// ones), F equips the selected item without using it, a world click uses the held item and restores the weapon, right click
+    /// ones), F equips the selected item without using it; grenades aim while the click is held and throw on release,
+    /// while other items use on click. Right click
     /// or a weapon swap cancels without consuming, an invalid use consumes nothing, and one shared use gap
     /// never blocks weapon swaps or dash. Item damage ignores the general damage skill; grenades and mines
     /// never hurt the player or the companion.
@@ -27,8 +28,14 @@ namespace Hollow.Sim
             if (cmd.CycleItemPressed) Cycle(w);
             if (inv.Holding && (cmd.CancelPressed || cmd.SelectWeaponSlot != 0 || cmd.CycleWeapon != 0)) Cancel(w);
             if (inv.Holding && inv.Count(inv.Held) <= 0) Cancel(w);
-            if (!cmd.FireHeld) inv.SuppressFireUntilRelease = false;
-            if (inv.Holding && cmd.FirePressed)
+            if (!cmd.FireHeld && !cmd.FireReleased) inv.SuppressFireUntilRelease = false;
+            if (inv.Holding && inv.Held == ItemId.Grenade && cmd.FirePressed)
+            {
+                inv.GrenadeChargeStarted = true;
+                inv.SuppressFireUntilRelease = true;
+            }
+            if (inv.Holding && ((inv.Held == ItemId.Grenade && cmd.FireReleased && inv.GrenadeChargeStarted)
+                || (inv.Held != ItemId.Grenade && cmd.FirePressed)))
             {
                 // The click belongs to the item: the weapon must not also fire on it or while it stays held.
                 inv.SuppressFireUntilRelease = true;
@@ -97,7 +104,11 @@ namespace Hollow.Sim
             }
         }
 
-        public static void Cancel(World w) => w.Inventory.Holding = false;
+        public static void Cancel(World w)
+        {
+            w.Inventory.Holding = false;
+            w.Inventory.GrenadeChargeStarted = false;
+        }
 
         public static ItemUseResult Use(World w)
         {
@@ -119,8 +130,11 @@ namespace Hollow.Sim
             inv.Get(inv.Held).Count--;
             inv.NextUseTick = w.Clock.Tick + w.Ticks(w.Profile.Economy.ItemUseGap);
             w.Progress.ItemsUsed++;
+            if (w.Tutorial == TutorialStage.Grenade && inv.Held == ItemId.Grenade)
+                w.Tutorial = TutorialStage.GrenadeThrown;
             w.Emit(SimEventType.ItemUsed, PlayerState.EntityId, w.Player.Position, default, 0, (int)inv.Held);
             inv.Holding = false; // the previous weapon comes back
+            inv.GrenadeChargeStarted = false;
             if (inv.Count(inv.Held) <= 0 && Selection(w) is ItemId next) Select(w, next); // an empty type passes the slot on
             return ItemUseResult.Used;
         }

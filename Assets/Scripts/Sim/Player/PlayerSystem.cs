@@ -15,6 +15,7 @@ namespace Hollow.Sim
             p.Position = p.PrevPosition = position;
             p.Velocity = Vector2.zero;
             p.Health = PlayerStats.MaxHealth(w);
+            p.LastHitTick = long.MinValue / 2;
             p.Dead = false;
             p.Dashing = false;
         }
@@ -25,6 +26,8 @@ namespace Hollow.Sim
             p.PrevPosition = p.Position;
             p.Aim = cmd.AimWorld;
             if (p.Dead) { p.Velocity = Vector2.zero; return; }
+            if (p.Health < PlayerStats.MaxHealth(w) && w.Clock.Tick - p.LastHitTick >= w.Ticks(w.Profile.Player.RegenerationDelay))
+                p.Health = Mathf.Min(PlayerStats.MaxHealth(w), p.Health + w.Profile.Player.RegenerationRate * Core.SimClock.Dt);
 
             Vector2 move = Vector2.ClampMagnitude(cmd.Move, 1f);
             if (move.sqrMagnitude > 1e-4f) p.LastMoveDir = move.normalized;
@@ -105,8 +108,9 @@ namespace Hollow.Sim
         public static bool Damage(World w, float amount, Vector2 travelDir)
         {
             var p = w.Player;
-            if (p.Dead || amount <= 0 || PlayerStats.IsInvulnerable(w)) return false;
+            if (p.Dead || amount <= 0 || w.GodMode || PlayerStats.IsInvulnerable(w)) return false;
             p.Health -= amount;
+            p.LastHitTick = w.Clock.Tick;
             p.InvulnerableUntilTick = w.Clock.Tick + w.Ticks(w.Profile.Player.PostHitInvulnerability);
             w.Emit(SimEventType.PlayerHit, PlayerState.EntityId, p.Position, travelDir, amount);
             if (p.Health <= 0)

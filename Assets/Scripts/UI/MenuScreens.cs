@@ -70,7 +70,7 @@ namespace Hollow.UI
 
         // ---------------------------------------------------------------- main menu
 
-        public void ShowMain(Action newGame, Action continueGame, bool anySave, Action settings, Action controls, Action quit)
+        public void ShowMain(Action newGame, Action continueGame, bool anySave, Action settings, Action controls, Action resetProgress, Action quit)
         {
             // The parallax backdrop stays in view: no dimmer, a translucent column on the right (Persian reads from the right).
             Hide();
@@ -85,6 +85,7 @@ namespace Hollow.UI
             Btn(box, Loc.T("menu.continue"), y, continueGame, anySave); y -= 80;
             Btn(box, Loc.T("menu.settings"), y, settings); y -= 80;
             Btn(box, Loc.T("menu.controls"), y, controls); y -= 80;
+            Btn(box, Loc.T("reset.menu"), y, resetProgress); y -= 80;
             Btn(box, Loc.T("menu.quit"), y, quit);
         }
 
@@ -125,10 +126,15 @@ namespace Hollow.UI
             string where = s.Completed ? Loc.T("slots.completed") : s.Encounter == nameof(EncounterKind.BossPrep) || s.Encounter == nameof(EncounterKind.Boss)
                 ? Loc.F("slots.whereBoss", s.Phase) : Loc.F("slots.whereWave", s.Phase, s.Wave);
             var t = TimeSpan.FromSeconds(s.PlaytimeSeconds);
+            string played = t.TotalHours >= 1 ? Loc.F("slots.hoursMinutes", (int)t.TotalHours, t.Minutes)
+                : Loc.F("slots.minutes", (int)t.TotalMinutes);
+            int progress = s.Completed ? 100 : Math.Min(99, Math.Max(0,
+                (int)Math.Round((((s.Phase - 1) * 6 + Math.Max(0, s.Wave - 1) +
+                (s.Encounter == nameof(EncounterKind.SafeInterval) || s.Encounter == nameof(EncounterKind.BossPrep) || s.Encounter == nameof(EncounterKind.Boss) ? 1 : 0)) / 18.0) * 100)));
             string saved = DateTime.TryParse(s.SavedAtUtc, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var d)
                 ? SolarDate(d.ToLocalTime()) : "";
             if (s.Ai != Hollow.Data.AiId.None) where = Loc.T("ai." + s.Ai) + " · " + where;
-            return Loc.F("slots.describe", where, $"{(int)t.TotalMinutes}:{t.Seconds:00}", Loc.Weapon(s.Weapon), s.WeaponLevel, saved);
+            return Loc.F("slots.describe", where, played, Loc.Weapon(s.Weapon), s.WeaponLevel, saved, progress);
         }
 
         /// <summary>Save times in the Persian (solar hijri) calendar, as the player reads dates.</summary>
@@ -187,13 +193,12 @@ namespace Hollow.UI
 
         // ---------------------------------------------------------------- pause
 
-        public void ShowPause(Action resume, Action save, bool canSave, Action load, Action settings, Action controls, Action mainMenu, string status = null)
+        public void ShowPause(Action resume, Action save, bool canSave, Action settings, Action controls, Action mainMenu, string status = null)
         {
             var box = Begin(Loc.T("pause.title"), status, 0.6f, 620, 760);
             float y = -190;
             Btn(box, Loc.T("pause.resume"), y, resume); y -= 80;
             Btn(box, Loc.T(canSave ? "pause.save" : "pause.saveDisabled"), y, save, canSave); y -= 80;
-            Btn(box, Loc.T("slots.load"), y, load); y -= 80;
             Btn(box, Loc.T("menu.settings"), y, settings); y -= 80;
             Btn(box, Loc.T("menu.controls"), y, controls); y -= 80;
             Btn(box, Loc.T("common.mainMenu"), y, mainMenu);
@@ -218,11 +223,7 @@ namespace Hollow.UI
             Slider(box, Loc.T("settings.voice"), s.VoiceVolume, v => s.VoiceVolume = v, ref y);
             Slider(box, Loc.T("settings.shake"), s.ShakeIntensity, v => s.ShakeIntensity = v, ref y);
             y -= 24; // sliders are top-anchored rows, buttons are centred: keep them apart
-            Toggle(box, Loc.T("settings.subtitles"), s.Subtitles, v => s.Subtitles = v, ref y);
             Toggle(box, Loc.T("settings.fullscreen"), s.Fullscreen, v => s.Fullscreen = v, ref y);
-            Toggle(box, Loc.T("settings.damageNumbers"), s.DamageNumbers, v => s.DamageNumbers = v, ref y);
-            string[] budgets = { Loc.T("settings.budgetLow"), Loc.T("settings.budgetMedium"), Loc.T("settings.budgetHigh") };
-            Btn(box, Loc.F("settings.effectBudget", budgets[s.EffectBudget]), y, () => { s.EffectBudget = (s.EffectBudget + 1) % 3; ShowSettings(s, back); });
             y -= 90;
             Btn(box, Loc.T("common.back"), y, () => { s.Save(); back(); }, true, 300);
         }

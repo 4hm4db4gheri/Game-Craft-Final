@@ -198,6 +198,25 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
+        public void PartialReloadTakesHalfTheTimeAndRoundsReturnOneByOne()
+        {
+            var sim = SimTestUtil.NewSim();
+            var w = sim.World;
+            var shotgun = WeaponSystem.Give(w, WeaponId.DoubleBarrel);
+            sim.Step(new PlayerCommand { SelectWeaponSlot = 2 });
+            sim.Run(12, Idle);
+            shotgun.Ammo = 2;
+            var full = WeaponSystem.ReloadSeconds(w, WeaponSystem.LevelData(w, shotgun));
+            sim.Step(new PlayerCommand { ReloadPressed = true });
+            var L = w.Player.Loadout;
+            Assert.AreEqual(w.Ticks(full * 0.5f), L.ReloadTotalTicks);
+            sim.Run((int)L.ReloadTotalTicks / 2 + 1, Idle);
+            Assert.AreEqual(3, shotgun.Ammo);
+            sim.Run((int)L.ReloadTotalTicks, Idle);
+            Assert.AreEqual(4, shotgun.Ammo);
+        }
+
+        [Test]
         public void UpgradeKeepsCurrentRoundsClampedToTheNewMagazine()
         {
             var sim = WithSmg(out var smg);

@@ -182,5 +182,50 @@ namespace Hollow.Tests.Sim
             Assert.IsFalse(result.Ok);
             Assert.IsNotEmpty(result.Error);
         }
+
+        [Test]
+        public void ClearProgressRemovesEverySlotIncludingCorruptAndTemporarySaves()
+        {
+            Directory.CreateDirectory(tempRoot);
+            for (int slot = 1; slot <= SlotStore.SlotCount; slot++)
+            {
+                File.WriteAllText(SlotStore.PathOf(slot), "corrupt save");
+                File.WriteAllText(SlotStore.PathOf(slot) + ".tmp", "interrupted save");
+            }
+            string unrelated = Path.Combine(tempRoot, "notes.txt");
+            File.WriteAllText(unrelated, "keep");
+
+            var result = SlotStore.DeleteAll();
+
+            Assert.IsTrue(result.Ok, result.Error);
+            for (int slot = 1; slot <= SlotStore.SlotCount; slot++)
+            {
+                Assert.IsFalse(SlotStore.Exists(slot));
+                Assert.IsNull(SlotStore.TryReadSummary(slot));
+                Assert.IsFalse(File.Exists(SlotStore.PathOf(slot) + ".tmp"));
+            }
+            Assert.AreEqual("keep", File.ReadAllText(unrelated));
+            Assert.IsTrue(SlotStore.DeleteAll().Ok, "clearing twice is harmless");
+        }
+
+        [Test]
+        public void ClearProgressBeforeAnySaveSucceeds()
+        {
+            Assert.IsFalse(Directory.Exists(tempRoot));
+            Assert.IsTrue(SlotStore.DeleteAll().Ok);
+        }
+
+        [Test]
+        public void ClearProgressReportsFailureWhenASaveIsLocked()
+        {
+            Directory.CreateDirectory(tempRoot);
+            using (File.Open(SlotStore.PathOf(1), FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            {
+                var result = SlotStore.DeleteAll();
+                Assert.IsFalse(result.Ok);
+                Assert.IsNotEmpty(result.Error);
+            }
+            Assert.IsTrue(SlotStore.DeleteAll().Ok, "retry after releasing the file");
+        }
     }
 }

@@ -55,6 +55,9 @@ namespace Hollow.Sim
             var phase = w.Profile.CompanionFor(w.Phase);
             if (phase == null) return;
 
+            if (c.Health < c.MaxHealth && w.Clock.Tick - c.LastHitTick >= w.Ticks(data.RegenerationDelay))
+                c.Health = Mathf.Min(c.MaxHealth, c.Health + data.RegenerationRate * Core.SimClock.Dt);
+
             Follow(w, c, data);
             Shoot(w, c, data, phase);
 
@@ -108,6 +111,7 @@ namespace Hollow.Sim
             foreach (var e in w.Enemies)
             {
                 if (!e.IsActive) continue;
+                if (e.Id == w.TutorialGrenadeEnemyId && (w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown)) continue;
                 float d = Vector2.Distance(c.Position, e.Position);
                 if (d < bestDist && w.Arena.LineOfSight(c.Position, e.Position)) { best = e; bestDist = d; }
             }
@@ -133,8 +137,8 @@ namespace Hollow.Sim
         public static bool Damage(World w, float amount, Vector2 travelDir)
         {
             var c = w.Companion;
-            if (!Active(w) || amount <= 0) return false;
-            c.Health -= amount;
+            if (!Active(w) || amount <= 0 || w.GodMode) return false;
+            c.Health -= amount * (w.Profile.CompanionFor(w.Phase)?.DamageTakenMultiplier ?? 1f);
             c.LastHitTick = w.Clock.Tick;
             w.Emit(SimEventType.CompanionHit, CompanionState.EntityId, c.Position, travelDir, amount);
             if (c.Health <= 0)

@@ -32,8 +32,16 @@ namespace Hollow.Sim
             var w = World;
             PlayerSystem.Step(w, cmd);
             ShopSystem.Step(w, cmd);
+            if (w.Tutorial == TutorialStage.Grenade) ShopSystem.EnsureGrenadeTarget(w);
             w.Crowd.Rebuild(w.Enemies);
             ItemSystem.Step(w, cmd);
+            if (w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown)
+            {
+                // The training encounter waits for the deliberate throw; only its fuse keeps ticking.
+                HazardSystem.Step(w);
+                w.Clock.Step(activeTimeRunning: false);
+                return;
+            }
             WeaponSystem.Step(w, cmd);
             WaveSystem.Step(w);
             CompanionSystem.Step(w);

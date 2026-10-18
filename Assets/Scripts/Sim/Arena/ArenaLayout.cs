@@ -38,6 +38,8 @@ namespace Hollow.Sim
         public Vector2 ShopPosition;
         /// <summary>v0.19 §13: every service station; they share one wallet, ownership and stock.</summary>
         public List<Vector2> ShopPositions = new();
+        /// <summary>Authored set pieces: art and collision share the same ground footprint.</summary>
+        public List<ArenaLandmark> Landmarks = new();
 
         /// <summary>The stations (falls back to <see cref="ShopPosition"/> for an old layout).</summary>
         public List<Vector2> Shops
@@ -65,8 +67,30 @@ namespace Hollow.Sim
             var cells = new List<int>(BaseBlocked);
             int i = phase - 1;
             if (i >= 0 && i < PhaseBlocked.Count) cells.AddRange(PhaseBlocked[i].Cells);
+            if (Landmarks != null)
+                foreach (var prop in Landmarks)
+                    if (prop.Phase == phase)
+                        for (int y = prop.Cell.y; y < prop.Cell.y + prop.Footprint.y; y++)
+                        for (int x = prop.Cell.x; x < prop.Cell.x + prop.Footprint.x; x++)
+                            if (x >= 0 && y >= 0 && x < Width && y < Height && prop.Occupies(x - prop.Cell.x, y - prop.Cell.y)) cells.Add(CellIndex(x, y));
             return cells;
         }
+    }
+
+    [Serializable]
+    public sealed class ArenaLandmark
+    {
+        public string Id;
+        public int Phase = 1;
+        public Vector2Int Cell;
+        public Vector2Int Footprint;
+        /// <summary>Optional row bitmasks trim footprint corners without colliding against the painted roof.</summary>
+        public List<int> CollisionRows = new();
+        public float ArtWidth;
+        public float GroundInset;
+        public Vector4 ArtCrop = new(0, 0, 1, 1);
+        public bool Occupies(int x, int y) => x >= 0 && y >= 0 && x < Footprint.x && y < Footprint.y &&
+            (CollisionRows == null || CollisionRows.Count == 0 || (y < CollisionRows.Count && (CollisionRows[y] & (1 << x)) != 0));
     }
 
     [Serializable]

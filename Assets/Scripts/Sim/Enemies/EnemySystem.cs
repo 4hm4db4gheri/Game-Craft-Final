@@ -51,6 +51,11 @@ namespace Hollow.Sim
                 var e = w.Enemies[i];
                 if (!e.Alive) continue;
                 e.PrevPosition = e.Position;
+                if (e.Id == w.TutorialGrenadeEnemyId && (w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown))
+                {
+                    e.Velocity = Vector2.zero;
+                    continue;
+                }
 
                 if (e.Ai == EnemyAi.Spawning)
                 {

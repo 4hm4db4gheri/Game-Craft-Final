@@ -20,11 +20,45 @@ namespace Hollow.Data
 #if !UNITY_EDITOR
             if (File.Exists(ActiveProfilePath))
             {
-                try { return new BalanceService(baseline, BalanceJson.FromJson(File.ReadAllText(ActiveProfilePath))); }
+                try
+                {
+                    var active = BalanceJson.FromJson(File.ReadAllText(ActiveProfilePath));
+                    AddCompanionRegeneration(active, baseline);
+                    return new BalanceService(baseline, active);
+                }
                 catch (System.Exception e) { Debug.LogWarning($"[Hollow] Ignoring saved profile: {e.Message}"); }
             }
 #endif
             return new BalanceService(baseline);
+        }
+
+        /// <summary>Older profiles lack the newly added recovery fields; retain every other saved balance choice.</summary>
+        public static void AddCompanionRegeneration(BalanceProfile profile, BalanceProfile baseline)
+        {
+            if (profile.Revision >= baseline.Revision) return;
+            if (profile.Revision < 4)
+            {
+                profile.Player.RegenerationDelay = baseline.Player.RegenerationDelay;
+                profile.Player.RegenerationRate = baseline.Player.RegenerationRate;
+                profile.Player.DashMineDelay = baseline.Player.DashMineDelay;
+                profile.Player.DashMineRadius = baseline.Player.DashMineRadius;
+                if (profile.Skills.Find(s => s.Id == SkillId.DashMine) == null)
+                    profile.Skills.Add(baseline.Skill(SkillId.DashMine));
+                var phaseTwo = profile.CompanionFor(2);
+                if (phaseTwo != null)
+                {
+                    phaseTwo.MaxHealth = baseline.CompanionFor(2).MaxHealth;
+                    phaseTwo.DamageTakenMultiplier = baseline.CompanionFor(2).DamageTakenMultiplier;
+                }
+            }
+            if (profile.Revision < 5)
+                profile.Spawning.SafeIntervalSeconds = baseline.Spawning.SafeIntervalSeconds;
+            if (profile.Revision < 3)
+            {
+                profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;
+                profile.Companion.RegenerationRate = baseline.Companion.RegenerationRate;
+            }
+            profile.Revision = baseline.Revision;
         }
     }
 }
