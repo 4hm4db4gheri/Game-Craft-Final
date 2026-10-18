@@ -51,7 +51,7 @@ namespace Hollow.Presentation
             foreach (var spec in layout.Landmarks)
             {
                 if (spec.Phase < 1 || spec.Phase > Props.Length || Props[spec.Phase - 1] == null) continue;
-                var texture = Resources.Load<Texture2D>("ArenaArt/Landmarks/ENV_P1_" + spec.Id + "_prop");
+                var texture = Resources.Load<Texture2D>("ArenaArt/Landmarks/ENV_P" + spec.Phase + "_" + spec.Id + "_prop");
                 if (texture == null) { Debug.LogWarning("[Hollow] Missing landmark art: " + spec.Id); continue; }
                 var root = new GameObject(spec.Id);
                 root.transform.SetParent(Props[spec.Phase - 1], false);
@@ -97,7 +97,7 @@ namespace Hollow.Presentation
                 var tiles = map.GetComponent<TilemapRenderer>();
                 if (enabled && composedFloors[i] == null)
                 {
-                    string asset = i == 0 ? "Forest" : "Industry";
+                    string asset = i == 0 ? "Forest" : i == 1 ? "Factory" : "Industry";
                     var texture = Resources.Load<Texture2D>("ArenaArt/Floor" + asset);
                     if (texture != null)
                     {
