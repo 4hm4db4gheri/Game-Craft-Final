@@ -246,6 +246,8 @@ namespace Hollow.Data
         [Placeholder, Unit("s")] public float SafeIntervalSeconds;
         [Placeholder, Unit("s")] public float NoSafePointRetryDelay;
         [Gdd("§6")] public int TutorialFirstGroupCount;
+        /// <summary>The tutorial's practice grenade target stands this far from the player.</summary>
+        [Placeholder, Unit("u")] public float TutorialGrenadeTargetDistance = 3.5f;
         /// <summary>Offspring appear behind the producer: this angle from its facing, plus up to the spread.</summary>
         [Placeholder, Unit("deg")] public float ChildSpawnBackAngle = 140f;
         [Placeholder, Unit("deg")] public float ChildSpawnAngleSpread = 80f;

@@ -224,15 +224,17 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void PhaseTwoEntryRestoresToTheLowerMaximum()
+        public void PhaseTwoEntryRestoresToThePhaseTwoMaximum()
         {
             var sim = WithCompanion();
             var w = sim.World;
             w.Companion.Health = 20;
             w.Phase = 2;
             CompanionSystem.SpawnForPhase(w, w.Companion.Position);
-            Assert.AreEqual(100f, w.Companion.MaxHealth);
-            Assert.AreEqual(100f, w.Companion.Health);
+            float max = w.Profile.CompanionFor(2).MaxHealth;
+            Assert.AreNotEqual(w.Profile.CompanionFor(1).MaxHealth, max);
+            Assert.AreEqual(max, w.Companion.MaxHealth);
+            Assert.AreEqual(max, w.Companion.Health);
         }
 
         [Test]

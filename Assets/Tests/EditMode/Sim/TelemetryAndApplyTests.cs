@@ -22,6 +22,15 @@ namespace Hollow.Tests.Sim
                     Combat.DamageEnemy(w, e, 100000, DamageSource.Weapon, Vector2.right);
         }
 
+        /// <summary>The SMG purchase gives a practice grenade; the second group waits until it hits the practice wolf.</summary>
+        static void ThrowPracticeGrenade(World w)
+        {
+            var target = w.Enemies.Find(e => e.Id == w.TutorialGrenadeEnemyId);
+            if (target != null) w.Player.Aim = target.Position;
+            ItemSystem.EquipSelected(w);
+            ItemSystem.Use(w);
+        }
+
         static void StepObserved(Simulation sim, RunTelemetry t)
         {
             sim.Step(PlayerCommand.None);
@@ -46,7 +55,12 @@ namespace Hollow.Tests.Sim
             Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.LightSmg));
             t.Observe(w);
             w.Events.Clear();
-            for (int i = 0; i < 60 * 60 && w.Waves.Kind == EncounterKind.Wave; i++) { StepObserved(sim, t); KillActive(w, 30); }
+            for (int i = 0; i < 60 * 60 && w.Waves.Kind == EncounterKind.Wave; i++)
+            {
+                if (w.Tutorial == TutorialStage.Grenade) ThrowPracticeGrenade(w);
+                StepObserved(sim, t);
+                KillActive(w, 30);
+            }
 
             var o = t.Run.Observed;
             Assert.AreEqual(1, o.Encounters.Count);
@@ -54,7 +68,7 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual((1, 1, "wave", "cleared"), (e.Phase, e.Wave, e.Kind, e.Result));
             Assert.Greater(e.DurationActiveSeconds, 0);
             Assert.Greater(e.AverageFps, 0);
-            Assert.AreEqual(6, e.Kills, "four wolves then two quill shooters");
+            Assert.AreEqual(7, e.Kills, "four wolves, the practice wolf, then two quill shooters");
             Assert.AreEqual(w.Progress.CoinsCollected, o.CoinsCollected + o.WaveBonusCoins, "ground coins and wave bonus are kept apart");
             Assert.GreaterOrEqual(o.CoinsGenerated, 8);
             Assert.AreEqual(w.Profile.Wave(1, 1).CompletionBonus, o.WaveBonusCoins);

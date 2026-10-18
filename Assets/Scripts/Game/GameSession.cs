@@ -541,7 +541,7 @@ namespace Hollow.Game
                 int pick = UnityEngine.Random.Range(0, 7);
                 if (pick == lastOperatorBubble) pick = (pick + 1) % 7;
                 lastOperatorBubble = pick;
-                operatorBubbleLine = Loc.T("operator.idle" + (pick + 1));
+                operatorBubbleLine = Loc.T("operator.idle." + (pick + 1));
                 operatorBubbleUntil = Time.unscaledTime + 3.5f;
                 nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(28f, 44f);
             }

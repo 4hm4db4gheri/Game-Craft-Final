@@ -22,12 +22,14 @@ namespace Hollow.EditorTools
     public static class ArenaTools
     {
         public const string TilesDir = "Assets/Art/Placeholders/Tiles";
+        public const string ArtTilesDir = "Assets/Art/Tiles";
         /// <summary>
         /// 3/4 view: the camera looks down at about 55°, so things lying flat on the ground look shorter than they are
-        /// wide. Ground art (Tools/ArtGen/ground34.py uses the same number) and flat decals are drawn at this height.
+        /// wide. Flat decals are drawn at this height.
         /// </summary>
         public const float GroundSquash = 0.75f;
-        const string GroundArtName = "GroundArt";
+        /// <summary>Left in older scenes by the removed one-sprite ground; PaintGround deletes it.</summary>
+        const string OldGroundArtName = "GroundArt";
         const string EdgeShadeName = "EdgeShade";
         public const string LayoutPath = "Assets/Resources/Arena/ArenaLayout.json";
         /// <summary>The second service station: a spot free in all three phases, 8 units from the east entrance (T28).</summary>
@@ -252,8 +254,9 @@ namespace Hollow.EditorTools
             {
                 var map = a.Grounds[i];
                 map.ClearAllTiles();
-                var art = GroundArtSprite(i + 1) ?? GroundArtSprite(StandIn(i + 1));
-                SetGroundArt(a, map, art);
+                var art = GroundArtTiles(i + 1) ?? GroundArtTiles(StandIn(i + 1));
+                var oldArt = map.transform.Find(OldGroundArtName);
+                if (oldArt != null) Object.DestroyImmediate(oldArt.gameObject);
                 var g = Grounds[i];
                 var baseTiles = new Tile[3];
                 for (int k = 0; k < 3; k++)
@@ -263,7 +266,7 @@ namespace Hollow.EditorTools
                 for (int x = 0; x < a.Size.x; x++)
                 {
                     var cell = new Vector3Int(x, y, 0);
-                    if (art == null) map.SetTile(cell, baseTiles[rng.Next(3)]);
+                    map.SetTile(cell, art != null ? art[x % 8, y % 8] : baseTiles[rng.Next(3)]);
                 }
 
                 var old = map.transform.Find("PlaceholderPatches");
@@ -396,35 +399,25 @@ namespace Hollow.EditorTools
             return null;
         }
 
-        /// <summary>An imported ground texture (one seamless sprite, 128 px per unit), or null when there is none.</summary>
-        static Sprite GroundArtSprite(int phase)
+        /// <summary>Tiles cut from an imported ground texture, or null when there is none.</summary>
+        static Tile[,] GroundArtTiles(int phase)
         {
             if (!AssetDatabase.IsValidFolder(ArtRules.IncomingDir)) return null;
             foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { ArtRules.IncomingDir }))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (!ArtName.TryParse(path, out var n) || n.Category != "ENV" || n.Id != $"P{phase}" || n.State != "ground") continue;
-                var sprite = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().FirstOrDefault();
-                if (sprite != null) return sprite;
+                var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToDictionary(s => s.name);
+                var tiles = new Tile[8, 8];
+                for (int y = 0; y < 8; y++)
+                for (int x = 0; x < 8; x++)
+                {
+                    if (!sprites.TryGetValue($"{n.Name}_{x}_{y}", out var s)) return null;
+                    tiles[x, y] = LoadOrCreateTile(ArtTilesDir, $"ENV_P{phase}_{n.Name}_{x}_{y}", s, Color.white);
+                }
+                return tiles;
             }
             return null;
-        }
-
-        /// <summary>The ground art as one sprite tiled over the whole arena (no grid of cells, no 8-unit repeat).</summary>
-        static void SetGroundArt(ArenaAuthoring a, Tilemap map, Sprite art)
-        {
-            var old = map.transform.Find(GroundArtName);
-            if (art == null) { if (old != null) Object.DestroyImmediate(old.gameObject); return; }
-            var go = old != null ? old.gameObject : new GameObject(GroundArtName);
-            go.transform.SetParent(map.transform, false);
-            go.transform.localPosition = new Vector3(a.Size.x / 2f, a.Size.y / 2f, 0);
-            var r = go.GetComponent<SpriteRenderer>();
-            if (r == null) r = go.AddComponent<SpriteRenderer>();
-            r.sprite = art;
-            r.drawMode = SpriteDrawMode.Tiled;
-            r.tileMode = SpriteTileMode.Continuous;
-            r.size = a.Size;
-            r.sortingOrder = map.GetComponent<TilemapRenderer>().sortingOrder;
         }
 
         /// <summary>

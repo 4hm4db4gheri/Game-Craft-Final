@@ -99,6 +99,7 @@
     "SafeIntervalSeconds": 15.0,
     "NoSafePointRetryDelay": 0.25,
     "TutorialFirstGroupCount": 4,
+    "TutorialGrenadeTargetDistance": 3.5,
     "ChildSpawnBackAngle": 140.0,
     "ChildSpawnAngleSpread": 80.0,
     "ChildSpawnGap": 0.2

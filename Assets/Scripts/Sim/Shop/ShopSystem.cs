@@ -269,10 +269,11 @@ namespace Hollow.Sim
             if (w.TutorialGrenadeEnemyId != 0) return;
             var enemyType = EnemyId.A1_RunnerWolf;
             float radius = w.Profile.Enemy(enemyType).BodyRadius;
-            var position = w.Arena.NearestFree(w.Player.Position + Vector2.right * 3.5f, radius);
+            float distance = w.Profile.Spawning.TutorialGrenadeTargetDistance;
+            var position = w.Arena.NearestFree(w.Player.Position + Vector2.right * distance, radius);
             foreach (var direction in new[] { Vector2.right, Vector2.up, Vector2.left, Vector2.down })
             {
-                var candidate = w.Arena.NearestFree(w.Player.Position + direction * 3.5f, radius);
+                var candidate = w.Arena.NearestFree(w.Player.Position + direction * distance, radius);
                 if (!w.Arena.LineOfSight(w.Player.Position, candidate)) continue;
                 position = candidate;
                 break;

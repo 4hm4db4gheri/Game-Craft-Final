@@ -128,9 +128,6 @@ namespace Hollow.Presentation
                 bool useArt = enabled && composedFloors[i] != null;
                 tiles.enabled = !useArt;
                 if (composedFloors[i] != null) composedFloors[i].gameObject.SetActive(useArt);
-                // The tiled ground art painted by ArenaTools (D76) is the fallback when the composed floor is off.
-                var painted = map.transform.Find("GroundArt");
-                if (painted != null) painted.gameObject.SetActive(!useArt);
             }
             // Keep the ground contact small; the old tall ovals made props appear to float over black stains.
             foreach (var phaseProps in Props)

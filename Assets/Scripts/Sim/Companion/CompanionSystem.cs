@@ -27,7 +27,7 @@ namespace Hollow.Sim
     /// <summary>
     /// Companion behaviour (GDD §4): follows at a limited distance beside/behind the player without blocking
     /// the player's path, fires limited automatic shots (kills still pay the player), takes damage, and its
-    /// death fails the encounter in phases one and two. Phase-two entry restores it to the lower maximum.
+    /// death fails the encounter in phases one and two. Phase-two entry restores it to the phase-two maximum.
     /// </summary>
     public static class CompanionSystem
     {

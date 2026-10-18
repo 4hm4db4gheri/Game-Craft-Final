@@ -80,6 +80,7 @@ namespace Hollow.EditorTools
                 SpawnWarning = 1, NewTypeReadTime = 4, SupportExplosiveSeparation = 8,
                 MinDistancePlayerBodyWidths = 4, MinDistanceCompanionBodyWidths = 3,
                 SafeIntervalSeconds = 15, NoSafePointRetryDelay = 0.25f, TutorialFirstGroupCount = 4,
+                TutorialGrenadeTargetDistance = 3.5f,
             };
 
             p.Waves = Waves();

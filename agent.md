@@ -39,7 +39,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۶۵ تست، ۴۶۰ پاس، ۵ رد از شاخه‌ی gameplay-ux؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۶۳ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
@@ -325,5 +325,11 @@
 
 ### 2026-10-18 — merge شاخه‌ی codex/gameplay-ux-pass در main
 - conflictها: meta زمین‌های P1 و P3 و اطلس وزیرمتن از main (زمین یک sprite تکی ۱۲۸ پیکسلی طبق D76 است). در `docs/DECISIONS.md` تصمیم D76 (زمین 3/4) از main ماند و تصمیم‌های شاخه از D76–D81 به **D77–D82** شماره‌گذاری دوباره شدند (ارجاع‌های همین فایل هم عوض شد). تاریخچه‌ی هر دو طرف نگه داشته شد.
-- دو روش زمین حالا با هم کار می‌کنند: `ArenaAuthoring.ApplyComposition` وقتی کف ترکیبی (`Atmosphere.ComposedGround`، پیش‌فرض روشن، D78) فعال است، `GroundArt` ساخته‌ی `ArenaTools.PaintGround` را هم خاموش می‌کند؛ با خاموش کردن آن در `Hollow > Visual Tuning` زمین ground34 برمی‌گردد. در Play mode دیده نشده.
+- زمین: در commit بعدی به خواست کاربر فقط زمین شاخه ماند (پایین را ببین).
 - کامپایل بدون خطا. ۴۶۵ تست، ۴۶۰ پاس؛ ۵ تست ردشده همه از کد شاخه‌اند (روی شاخه NUnit اجرا نشده بود): `LocalizationTests` (کلید ساخته‌شده‌ی `operator.idle` + عدد)، `CompanionTests.PhaseTwoEntryRestoresToTheLowerMaximum` (۱۰۰ در برابر ۲۶۰ HP جدید)، `FullRunTests` (پاداش موج ۱ فاز ۱ با گرگ تمرینی نارنجک: ۳۱ سکه/۲۳ XP به‌جای ۲۹/۲۰)، `NoUnlistedNumberLiteralsInTheSimulation` (`ShopSystem.cs` عدد 3.5f)، `TelemetryRecordsTheTutorialWave` (موج آموزش unfinished).
+
+### 2026-10-18 — زمین شاخه به‌جای زمین main و رفع ۵ تست
+- به خواست کاربر زمین فقط از شاخه‌ی gameplay-ux است: کف ترکیبی (`ArenaAuthoring.ApplyComposition`، D78) روی tilemap آرت ۸×۸ (۶۴ تایل در `Assets/Art/Tiles`). از زمین main حذف شد: `Tools/ArtGen/ground34.py`، زمین تک‌sprite ۱۲۸ پیکسلی در `ArtImport`/`ArenaTools.PaintGround` (`PaintGround` حالا `GroundArt` قدیمی صحنه را پاک می‌کند)، تست `GroundArtIsOneTiledSpriteAt128PixelsPerUnit`، نسخه‌ی اصلی P3 در `ArtSource`. تصویرهای زمین P1/P3 همان نسخه‌ی شاخه‌اند. decal خوابیده، سایه‌ی زیر دیوار و سایه‌ی تماس main ماندند. صحنه‌ی Game دوباره رنگ شد (۱۹۲ تایل). D76 به‌روز شد.
+- تست‌ها: کلیدهای `operator.idle.<n>` (پیشوند نقطه‌دار مثل `ai.`)؛ تست اپراتور فاز ۲ جان را از پروفایل می‌خواند (۲۶۰)؛ گرگ تمرینی نارنجک kill حساب می‌شود ولی XP و سکه نمی‌دهد (`Rewards.OnEnemyKilled`) تا پاداش موج همان بودجه‌ی GDD بماند؛ فاصله‌ی آن `Spawning.TutorialGrenadeTargetDistance` = 3.5 (seed و JSON)؛ تست telemetry نارنجک تمرینی را پرتاب می‌کند و ۷ kill می‌شمارد. D80 به‌روز شد.
+- ۴۶۳ تست پاس. Play mode از CLI شروع نشد (فوراً stopped، بدون خطا)؛ زمین در Play mode دیده نشده.
+- نکته: یک جلسه‌ی دیگر (VFX/juice) هم‌زمان در همین پوشه کار می‌کند؛ فایل‌های نیمه‌کاره‌ی آن commit نشدند و در فایل‌های مشترک (`BalanceProfile.cs`، `BaselineSeed.cs`، `Baseline.json`) فقط hunkهای این کار stage شد.
