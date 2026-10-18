@@ -437,3 +437,6 @@
 - فیلدهای تازه‌ی `AtmosphereData` (رنگ مه، مه بالا، نفس مه، نوسان نور، brownout، نورافکن، رنگ سایه/روشن، grain، fringe، پالس ضربه)؛ عددهای قبلی هم عوض شدند (bloom، کنتراست، vignette، مه فاز ۳). seed و `Baseline.json` revision 12؛ پروفایل ذخیره‌شده‌ی قبل از آن atmosphere را از baseline می‌گیرد. `VisualTuningWindow` همه را نشان می‌دهد.
 - ۵۰۴ تست پاس. Play mode (صحنه‌ی Game مستقیم، جایگاه‌ها دست نخوردند): هر سه فاز، نورافکن، تغییر نور و پالس ضربه با اسکرین‌شات دیده شد (`docs/screenshots/PostProcess_Phase3.png`). با دست بازی نشده؛ صدا ندارد.
 - فایل‌های تغییرکرده: `Presentation/Arena/ArenaAtmosphere.cs`، `Data/BalanceProfile.cs`، `Data/BalanceProfileStore.cs`، `Game/GameSession.cs`، `Editor/BaselineSeed.cs`، `Editor/ProjectSetup.cs`، `Editor/VisualTuningWindow.cs`، `Resources/Balance/Baseline.json`، `Scenes/Game.unity`، `docs/DECISIONS.md`، `agent.md`.
+
+### 2026-10-18 — push و merge پاس post process
+- `8df8f7e` (D92) و `ee5bbcc` (glyphهای وزیرمتن) روی `main` هستند و به `origin/main` push شدند. commitها به‌اشتباه مستقیم روی `main` نشسته بودند (checkout قبل از commit به main برگشته بود)؛ شاخه‌ی `feature/post-process` به همان commit آورده و push شد، پس merge جداگانه لازم نشد (هر دو شاخه یکی‌اند). `Assets/_Recovery` مثل قبل commit نشد.
