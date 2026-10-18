@@ -9,7 +9,8 @@ namespace Hollow.EditorTools
 {
     /// <summary>
     /// Editor window over the balance profile. Outside Play mode it edits Baseline.json; in Play mode it edits the
-    /// running game's live profile (same panel as the in-game F9 overlay), and "Save" writes it back to Baseline.json.
+    /// running game's live profile (same panel as the in-game F9 overlay). Every Apply or Undo is written to
+    /// Baseline.json at once (BalanceAutoSave), so the change stays for every later run.
     /// </summary>
     public sealed class BalanceWindow : EditorWindow, IBalancePanelHost
     {
@@ -27,6 +28,7 @@ namespace Hollow.EditorTools
             if (service == null) { EditorGUILayout.HelpBox("Baseline.json not found. Run Hollow/Balance/Write Baseline From GDD Seed.", MessageType.Error); return; }
             if (service != boundService) { boundService = service; gui = new BalancePanelGUI(service, this); }
             EditorGUILayout.LabelField(Application.isPlaying ? "PLAY MODE: editing the running game's profile" : "EDIT MODE: editing Baseline.json", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Apply saves to Baseline.json automatically; it stays after Play mode ends.", EditorStyles.miniLabel);
             gui.Draw();
         }
 
@@ -39,6 +41,7 @@ namespace Hollow.EditorTools
             {
                 var p = BalanceJson.FromJson(File.ReadAllText(BaselineSeed.BaselinePath));
                 editService = new BalanceService(p);
+                BalanceAutoSave.Track(editService);
             }
             return editService;
         }
@@ -50,9 +53,7 @@ namespace Hollow.EditorTools
 
         public void Save(BalanceService s)
         {
-            File.WriteAllText(BaselineSeed.BaselinePath, BalanceJson.ToJson(s.Live));
-            AssetDatabase.ImportAsset(BaselineSeed.BaselinePath);
-            status = $"Saved rev {s.Live.Revision} to {BaselineSeed.BaselinePath}";
+            status = BalanceAutoSave.Write(s.Live, out var error) ? $"Saved to {BaselineSeed.BaselinePath}" : "Save blocked: " + error;
             if (!Application.isPlaying) editService = null; // reload so the baseline used for "Reset group" matches the file
         }
 

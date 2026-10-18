@@ -6,13 +6,18 @@ using UnityEngine;
 
 namespace Hollow.EditorTools
 {
-    /// <summary>A focused art-direction dashboard over the Atmosphere section of the balance profile.</summary>
+    /// <summary>
+    /// A focused art-direction dashboard over the Atmosphere section of the balance profile. Every edit is applied to
+    /// the running game and saved to Baseline.json a moment after the slider stops, so it stays for later runs (D96).
+    /// </summary>
     public sealed class VisualTuningWindow : EditorWindow
     {
         AtmosphereData draft;
         int phase;
         string status = "";
         Vector2 scroll;
+        double editedAt = -1;
+        const double SaveDelay = 0.4;
 
         [MenuItem("Hollow/Visual Tuning")]
         public static void Open() => GetWindow<VisualTuningWindow>("Hollow Visuals");
@@ -23,7 +28,27 @@ namespace Hollow.EditorTools
             Reload();
         }
 
-        void OnInspectorUpdate() => Repaint();
+        void OnInspectorUpdate()
+        {
+            if (editedAt >= 0 && EditorApplication.timeSinceStartup - editedAt > SaveDelay)
+            {
+                editedAt = -1;
+                Commit();
+            }
+            Repaint();
+        }
+
+        void OnDisable()
+        {
+            if (editedAt >= 0) { editedAt = -1; Commit(); }
+        }
+
+        /// <summary>The running game shows the edit (which also saves it); outside Play it is saved straight away.</summary>
+        void Commit()
+        {
+            if (Application.isPlaying && GameApp.Instance != null) ApplyPreview();
+            else SaveDefault();
+        }
 
         void Reload()
         {
@@ -41,9 +66,10 @@ namespace Hollow.EditorTools
         {
             if (draft == null) Reload();
             EditorGUILayout.LabelField("Hollow · Visual Tuning", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("Edit the look without changing camera angle or combat rules. In Play Mode, Apply previews the changes immediately; Save writes them to Baseline.json for future runs.", MessageType.Info);
+            EditorGUILayout.HelpBox("Edit the look without changing camera angle or combat rules. Changes show in the running game and are saved to Baseline.json automatically, before or during Play.", MessageType.Info);
             phase = GUILayout.Toolbar(phase, new[] { "Forest", "Industry", "Human Base" });
             scroll = EditorGUILayout.BeginScrollView(scroll);
+            EditorGUI.BeginChangeCheck();
             DrawPhase(phase + 1);
             EditorGUILayout.Space(12);
             EditorGUILayout.LabelField("Shared effects", EditorStyles.boldLabel);
@@ -63,6 +89,7 @@ namespace Hollow.EditorTools
             draft.PlayerLightIntensity = EditorGUILayout.Slider("Player glow intensity", draft.PlayerLightIntensity, 0f, 1.5f);
             draft.GroundVariation = EditorGUILayout.Slider(new GUIContent("Ground variation", "Broad, smooth brightness variation breaks up the repeated 8 x 8 floor art."), draft.GroundVariation, 0f, 0.22f);
             draft.PhaseFadeTime = EditorGUILayout.Slider("Phase transition seconds", draft.PhaseFadeTime, 0f, 5f);
+            if (EditorGUI.EndChangeCheck()) editedAt = EditorApplication.timeSinceStartup;
             EditorGUILayout.EndScrollView();
 
             EditorGUILayout.Space(8);
@@ -71,8 +98,12 @@ namespace Hollow.EditorTools
             if (GUILayout.Button("Save as default", GUILayout.Height(30))) SaveDefault();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Reload current")) Reload();
-            if (GUILayout.Button("Reset to suggested look")) draft = Copy(BaselineSeed.Create().Atmosphere);
+            if (GUILayout.Button("Reload current")) { editedAt = -1; Reload(); }
+            if (GUILayout.Button("Reset to suggested look"))
+            {
+                draft = Copy(BaselineSeed.Create().Atmosphere);
+                editedAt = EditorApplication.timeSinceStartup;
+            }
             EditorGUILayout.EndHorizontal();
             if (!string.IsNullOrEmpty(status)) EditorGUILayout.HelpBox(status, MessageType.None);
         }
@@ -135,7 +166,7 @@ namespace Hollow.EditorTools
             }
             service.Draft.Atmosphere = Copy(draft);
             service.NotifyDraftEdited();
-            status = service.Apply() ? "Applied to the running game. Changes can be undone in Balance Panel." : "The balance validator rejected these values.";
+            status = service.Apply() ? "Applied to the running game and saved to Baseline.json." : "The balance validator rejected these values.";
         }
 
         void SaveDefault()
@@ -153,9 +184,8 @@ namespace Hollow.EditorTools
                 status = "Save blocked: " + errors[0];
                 return;
             }
-            File.WriteAllText(BaselineSeed.BaselinePath, BalanceJson.ToJson(profile));
-            AssetDatabase.ImportAsset(BaselineSeed.BaselinePath);
-            status = "Saved. A new run uses this look; the current run needs Apply to running game.";
+            BalanceAutoSave.Write(profile, out _);
+            status = "Saved to Baseline.json; every run uses this look.";
         }
     }
 }

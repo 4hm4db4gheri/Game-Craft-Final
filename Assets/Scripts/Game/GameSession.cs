@@ -153,8 +153,8 @@ namespace Hollow.Game
             try
             {
                 var save = SlotStore.Read(slot);
-                BalanceProfileStore.AddCompanionRegeneration(save.Profile, app.Balance.Baseline);
-                app.Balance.ResetLive(save.Profile);
+                // The save's own profile snapshot is ignored: tuning saved since (Balance panel, Visual Tuning, F9)
+                // must apply to every slot, old ones included (D96).
                 var world = save.LoadWorld(layout);
                 world.Profile = app.Balance.Live;
                 SetWorld(world);

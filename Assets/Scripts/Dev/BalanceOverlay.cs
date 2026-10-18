@@ -16,6 +16,7 @@ namespace Hollow.Dev
         bool open;
         bool freezeWhileOpen = true;
         string status = "";
+        BalanceService saving;
 
 #if HOLLOW_BALANCE_PANEL
         const bool ForcedOn = true;
@@ -39,7 +40,28 @@ namespace Hollow.Dev
         {
             var app = GameApp.Instance;
             if (app == null) return;
+            KeepSaving(app.Balance);
             if (app.InputSource.TakePress(app.InputSource.BalancePanel)) SetOpen(!open);
+        }
+
+        /// <summary>
+        /// In a build every Apply or Undo becomes the start profile at once, so tuning survives a restart (D96).
+        /// The Editor saves to Baseline.json instead (BalanceAutoSave).
+        /// </summary>
+        void KeepSaving(BalanceService service)
+        {
+            if (Application.isEditor || service == saving) return;
+            if (saving != null) saving.Applied -= SaveApplied;
+            saving = service;
+            if (saving != null) saving.Applied += SaveApplied;
+        }
+
+        void SaveApplied(BalanceProfile live)
+        {
+            // Apply bumps the live revision; keep the build's schema revision so later migrations still run.
+            var copy = BalanceJson.Clone(live);
+            copy.Revision = saving.Baseline.Revision;
+            Write(BalanceProfileStore.ActiveProfileFileName, BalanceJson.ToJson(copy), "Saved; it loads at every start of this build");
         }
 
         void SetOpen(bool value)
@@ -126,6 +148,7 @@ namespace Hollow.Dev
 
         void OnDisable()
         {
+            KeepSaving(null);
             if (open) SetOpen(false);
         }
     }
