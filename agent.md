@@ -519,3 +519,6 @@
 
 ### 2026-10-19 — نام بازی: As Instructed
 - به خواست کاربر نام بازی «As Instructed» شد: `productName` در `ProjectSettings.asset` (عنوان پنجره؛ مسیر `persistentDataPath` و در نتیجه جایگاه‌های ذخیره‌ی قبلی عوض می‌شود)، `menu.title` در `fa.json` («AS INSTRUCTED») و نام فایل build در `BuildTool` (`As Instructed.exe`). namespaceها (`Hollow.*`) و منوی ادیتور `Hollow` دست نخوردند. به خواست کاربر تست و کامپایل اجرا نشد.
+
+### 2026-10-19 — عنوان منوی اصلی بعد از تغییر نام
+- «AS INSTRUCTED» در ستون ۵۲۰ پیکسلی جا نمی‌شد و به دو خط می‌شکست؛ RTLTMPro خط دوم را بالا می‌گذاشت و روی دکمه‌ها می‌افتاد. حالا عنوان (`MenuScreens.ShowMain`) یک خط بدون شکستن با اندازه‌ی خودکار (۲۸ تا ۹۲) است و شعار زیرش متن جدا دارد. کامپایل و Play mode اجرا نشد.

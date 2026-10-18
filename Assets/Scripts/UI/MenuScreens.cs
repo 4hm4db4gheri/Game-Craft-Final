@@ -77,9 +77,15 @@ namespace Hollow.UI
             content = UIFactory.Stretch(layer, "Screen");
             var box = UIFactory.Rect(content, "Column", new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-110, -10), new Vector2(560, 840));
             UIFactory.Panel(box, root.Theme, new Color(0.03f, 0.03f, 0.06f, 0.5f), raycast: true);
-            var head = UIFactory.Rect(box, "Title", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(520, 190));
-            UIFactory.Text(head, "T", $"<b><cspace=0.18em>{Loc.T("menu.title")}</cspace></b>\n<size=24><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{Loc.T("menu.tagline")}</color></size>",
-                root.Theme, 92, TextAlignmentOptions.Top);
+            // The title stays on one line and shrinks to fit: a wrapped right-to-left label puts its second line on top.
+            var head = UIFactory.Rect(box, "Title", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -40), new Vector2(520, 110));
+            var title = UIFactory.Text(head, "T", $"<b><cspace=0.1em>{Loc.T("menu.title")}</cspace></b>", root.Theme, 92, TextAlignmentOptions.Center);
+            title.textWrappingMode = TextWrappingModes.NoWrap;
+            title.enableAutoSizing = true;
+            title.fontSizeMin = 28;
+            title.fontSizeMax = 92;
+            var tagline = UIFactory.Rect(box, "Tagline", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -155), new Vector2(520, 80));
+            UIFactory.Text(tagline, "T", Loc.T("menu.tagline"), root.Theme, 24, TextAlignmentOptions.Top, root.Theme.TextDim);
             float y = -260;
             Btn(box, Loc.T("menu.continue"), y, continueGame, anySave); y -= 80;
             Btn(box, Loc.T("menu.newGame"), y, newGame); y -= 80;
