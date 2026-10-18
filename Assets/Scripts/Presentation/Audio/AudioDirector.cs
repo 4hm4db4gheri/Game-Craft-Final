@@ -395,8 +395,14 @@ namespace Hollow.Presentation
                         Play(AudioCue.EnemyShot, ev.Position, scale);
                     return;
                 }
+                case SimEventType.ArmorBlocked:
+                    // A bright metallic ting instead of the body's hit sound: the shot hit the shield.
+                    shieldHitId = ev.EntityId;
+                    PlayPitched(AudioCue.ImpactMetal, ev.Position, 1.45f);
+                    return;
                 case SimEventType.EnemyHit:
                 {
+                    if (ev.EntityId == shieldHitId) { shieldHitId = int.MinValue; return; }
                     // Shared impact layer, pitched per type so each enemy sounds distinct (v0.19 §20).
                     var cue = IsMetal(w, ev.EntityId) ? AudioCue.ImpactMetal : AudioCue.ImpactFlesh;
                     var p = catalog.Enemy(KeyOf(w, ev.EntityId));
@@ -485,6 +491,9 @@ namespace Hollow.Presentation
                     };
             return AudioCue.TelegraphHuman;
         }
+
+        /// <summary>The enemy whose next EnemyHit was already voiced as a shield ting.</summary>
+        int shieldHitId = int.MinValue;
 
         static bool IsMetal(World w, int entityId)
         {

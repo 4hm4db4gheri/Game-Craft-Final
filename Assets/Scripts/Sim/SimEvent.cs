@@ -38,6 +38,9 @@ namespace Hollow.Sim
         SkillChosen,
         /// <summary>D87: a boss charge broke an obstacle; Position = its middle, Value = cells cleared.</summary>
         ObstacleBroken,
+        /// <summary>A hit landed on an enemy's frontal armour (shield); sent just before its EnemyHit.
+        /// Direction = the hit's travel, Value = share of the damage the armour took, Code = DamageSource.</summary>
+        ArmorBlocked,
     }
 
     /// <summary>

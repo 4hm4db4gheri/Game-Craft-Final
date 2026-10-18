@@ -39,7 +39,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ (۱۰۴ فایل) و موج ۲ (۴۳ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۳ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۴ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد)؛ `fix_wave2.py` موج ۲ را از `ArtSource/ArtWave2_Original` به Incoming می‌آورد و درست می‌کند. ترتیب: `fix_art.py` و `fix_wave2.py`، بعد `animate.py`، بعد `Apply Incoming Art`. موج بعدی: نسخه‌ی اصلی را در `ArtSource/ArtWave<n>_Original` بگذار و اسکریپت مشابه بنویس. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
@@ -62,6 +62,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D91: دشمن زره‌دار که آرت دارد (فعلاً لاک‌پشت) دیگر صفحه‌ی خاکستری جلو ندارد. شلیک به زره (`SimEventType.ArmorBlocked`): برق سرد و حلقه‌ی کوچک جلوی بدن، جرقه‌ی سفید که برمی‌گردد (بدون خون)، صدای «دینگ» فلزی، و عدد آسیب آبی فولادی. در Play mode دیده شد.
 
 - D90 (آرت موج ۲): شش دشمن تازه (گراز، لاک‌پشت، گرگ زوزه‌کش، سوسک انفجاری، بچه‌عنکبوت، نگهبان باتوم‌دار) آرت و انیمیشن دارند؛ sheet دست‌کشیده‌ی دویدن گرگ و راه رفتن بچه‌عنکبوت جای sheet ساخته‌شده را گرفتند. نارنجک پرتاب‌شده با قوس و سایه پرواز می‌کند، لکه‌ی خون/روغن آرت دارد، صحنه‌های داستان پرتره‌ی گوینده دارند، آیکن برنامه گذاشته شد، و دروازه‌ی ورود هر فاز (فقط نمایشی) در سه منطقه‌ی spawn شمال/شرق/غرب است. در Play mode دیده شد؛ با دست بازی نشده است.
 
@@ -419,3 +421,8 @@
 - کد: `VisualCatalog` (نارنجک دشمن و بازیکن، لکه‌ها، پرتره‌ها)؛ `WorldPresenter.SyncGrenades` (قوس، چرخش، سایه، چشمک قرمز روی زمین)؛ `FeedbackDirector.Decal` آرت لکه را می‌گیرد؛ `DialogueView.SetPortrait` و `GameSession.PlayScene` (پرتره سمت راست کادر؛ اپراتور از فاز ۲ زخمی)؛ `ApplyIncomingArt` آیکن برنامه را در PlayerSettings می‌گذارد؛ `ArenaTools.PlaceEntrances` دروازه‌ی هر فاز (×۱.۶) در منطقه‌ی spawn شمال (کنار، نه زیر HUD)، شرق و غرب؛ دروازه‌های کناری روی بازیکن محو می‌شوند.
 - تست: `ReadabilityTests.NoTwoEnemiesOfAPhaseShareAShape` حالا تصویر را با نام texture تشخیص می‌دهد (فریم‌های sheet همه `idle_0` نام دارند)؛ تست تازه‌ی `ArtWaveTwoNamesParse`. ۵۰۳ تست پاس. در Play mode دیده شد: هر شش دشمن، لکه‌ها، نارنجک در پرواز، پرتره در صحنه‌ی Opening، دروازه‌های سه فاز. با دست بازی نشده است.
 - نکته‌ی تست: `capture_game_view`/`capture_scene_view` فقط داخل پروژه ذخیره می‌کنند و مسیر را زیر `Assets/` می‌گذارند؛ بعد از برداشتن فایل و meta را پاک کن. `LookAt` در Scene view اندازه را نادیده گرفت؛ برای دیدن فاز دیگر در Play mode `ArenaAuthoring.ShowPhase(n)` را صدا بزن.
+
+### 2026-10-18 — شیلد روی دشمن‌های آرت‌دار (D91)
+- به خواست کاربر: `ApplyIncomingArt.Wire` صفحه‌ی placeholder جلوی دشمن (`FrontPlate`) را وقتی آرت دارد خاموش می‌کند (لاک‌پشت؛ R4 و H4 تا آمدن آرت صفحه دارند).
+- `Combat.DamageEnemy` هنگام کم شدن آسیب با زره جلو رویداد تازه‌ی `ArmorBlocked` را درست قبل از `EnemyHit` می‌فرستد. `FeedbackDirector.ShieldHit`: برق و حلقه‌ی آبی سرد در سمت تیرانداز، جرقه‌ی سفید برگشتی، بدون خون و جرقه‌ی بدن؛ عدد آسیب آن فریم آبی فولادی. `AudioDirector`: `ImpactMetal` با pitch ۱.۴۵ به‌جای صدای ضربه‌ی بدن. قانون آسیب تغییر نکرد.
+- تست تازه‌ی `OnlyHitsOnTheShieldAreReportedAsBlocked`. ۵۰۴ تست پاس. در Play mode شلیک به جلوی لاک‌پشت دیده شد؛ صدا شنیده نشده است.

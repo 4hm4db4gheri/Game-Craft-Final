@@ -357,6 +357,9 @@ namespace Hollow.EditorTools
                 target.transform.localRotation = Quaternion.identity;
                 target.color = Color.white;
                 target.enabled = true;
+                // Frontal armour is drawn as a placeholder plate; drawn art shows its own shell or shield.
+                var plate = root.transform.Find("FrontPlate");
+                if (plate != null) plate.gameObject.SetActive(false);
                 var first = set.Resolve("idle");
                 if (first != null) target.sprite = first.Frames[0];
 

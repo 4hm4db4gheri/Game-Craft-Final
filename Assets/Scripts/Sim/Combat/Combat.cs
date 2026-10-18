@@ -27,7 +27,9 @@ namespace Hollow.Sim
             if (e.Id == w.TutorialGrenadeEnemyId && w.Tutorial == TutorialStage.GrenadeThrown && source != DamageSource.Explosion) return 0;
             if (e.Id == w.TutorialGrenadeEnemyId && w.Tutorial == TutorialStage.GrenadeThrown)
                 amount = Mathf.Max(amount, e.Health);
-            float dealt = amount * ArmorMultiplier(w, e, travelDir, ignoresArmor);
+            float armor = ArmorMultiplier(w, e, travelDir, ignoresArmor);
+            if (armor < 1f) w.Emit(SimEventType.ArmorBlocked, e.Id, e.Position, travelDir, 1f - armor, (int)source);
+            float dealt = amount * armor;
             // Attacking an enemy draws it away from the companion (§4).
             if (source == DamageSource.Weapon || source == DamageSource.Melee || source == DamageSource.Dash) e.Target = TargetKind.Player;
             e.Health -= dealt;

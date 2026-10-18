@@ -29,7 +29,9 @@ namespace Hollow.Presentation
         [SerializeField] Sprite glowSprite;
         [SerializeField] Sprite blobSprite;
 
-        static readonly Color Blood = new(0.29f, 0.08f, 0.09f, 0.85f);  // dark and desaturated (ART brief)
+        static readonly Color Blood = new(0.29f, 0.08f, 0.09f, 0.85f);
+        static readonly Color ShieldSpark = new(0.92f, 0.96f, 1f);
+        static readonly Color ShieldGlow = new(0.7f, 0.88f, 1f);  // dark and desaturated (ART brief)
         static readonly Color Oil = new(0.04f, 0.04f, 0.05f, 0.8f);
         static readonly Color Scorch = new(0.05f, 0.04f, 0.04f, 0.7f);
         static readonly Color BloodSpray = new(0.52f, 0.06f, 0.07f, 1f);
@@ -90,6 +92,8 @@ namespace Hollow.Presentation
         /// <summary>Small blood/oil stains where the spray lands; Born may lie ahead (the drop is still flying).</summary>
         readonly List<(SpriteRenderer R, float Born, Color Color)> stains = new();
         int nextStain;
+        /// <summary>The enemy whose next EnemyHit landed on its shield (ArmorBlocked comes just before it).</summary>
+        int shieldHitId = int.MinValue;
         Sprite ringSprite;
         Texture2D ringTexture;
         float nextGhostAt;
@@ -99,6 +103,8 @@ namespace Hollow.Presentation
         float numberTokens;
         float lastShotShake = -1f;
         readonly Dictionary<int, (float Sum, Vector2 Pos)> pendingNumbers = new();
+        /// <summary>Enemies whose number this frame includes a shield hit: shown in steel blue (reduced damage).</summary>
+        readonly HashSet<int> shieldedNumbers = new();
         readonly Dictionary<EnemyId, (Sprite Sprite, Color Color, Vector2 Scale, bool Art)> corpseLooks = new();
         FeedbackData data;
 
@@ -319,16 +325,23 @@ namespace Hollow.Presentation
                     }
                     break;
 
+                case SimEventType.ArmorBlocked:
+                    ShieldHit(w, ev, f);
+                    break;
+
                 case SimEventType.EnemyHit:
                 {
                     Vector2 at = ev.Position + Vector2.up * 0.5f;
                     var faction = FactionOf(w, ev.EntityId);
-                    Burst(at, ev.Direction, 60f, f.ImpactSparks, SparkColor(faction), 5f);
-                    if (faction != Faction.Robots && faction != null) Gore(at, ev.Direction, Scaled(3), BloodSpray, BloodChunk, 0.5f);
+                    bool onShield = ev.EntityId == shieldHitId; // the shield took it: sparks off the shield, no blood
+                    shieldHitId = int.MinValue;
+                    if (!onShield) Burst(at, ev.Direction, 60f, f.ImpactSparks, SparkColor(faction), 5f);
+                    if (!onShield && faction != Faction.Robots && faction != null) Gore(at, ev.Direction, Scaled(3), BloodSpray, BloodChunk, 0.5f);
                     if (ev.Value > 0f)
                     {
                         pendingNumbers.TryGetValue(ev.EntityId, out var acc);
                         pendingNumbers[ev.EntityId] = (acc.Sum + ev.Value, ev.Position);
+                        if (onShield) shieldedNumbers.Add(ev.EntityId);
                     }
                     break;
                 }
@@ -507,9 +520,10 @@ namespace Hollow.Presentation
                 {
                     if (numberTokens < 1f) break; // crowds: drop numbers rather than flood the screen (§14)
                     numberTokens -= 1f;
-                    Number(kv.Value.Pos, kv.Value.Sum, Mathf.RoundToInt(f.MaxDamageNumbersOnScreen * scale));
+                    Number(kv.Value.Pos, kv.Value.Sum, Mathf.RoundToInt(f.MaxDamageNumbersOnScreen * scale), shieldedNumbers.Contains(kv.Key));
                 }
             pendingNumbers.Clear();
+            shieldedNumbers.Clear();
 
             var p = w.Player;
             if (p.Dashing && !p.Dead && Time.time >= nextGhostAt)
@@ -681,6 +695,24 @@ namespace Hollow.Presentation
             emit.startLifetime = life;
             emit.startColor = color;
             ps.Emit(emit, 1);
+        }
+
+        /// <summary>
+        /// A hit on frontal armour reads as a shield block: a cold flash and a small ring on the side facing the
+        /// shooter, and bright sparks glancing back off it (the shield plate itself is not drawn on imported art).
+        /// </summary>
+        void ShieldHit(World w, in SimEvent ev, FeedbackData f)
+        {
+            shieldHitId = ev.EntityId;
+            Vector2 travel = ev.Direction.sqrMagnitude > 1e-6f ? ev.Direction.normalized : Vector2.right;
+            float radius = 0.35f;
+            foreach (var e in w.Enemies) if (e.Id == ev.EntityId) { radius = e.Radius; break; }
+            Vector2 at = ev.Position + Vector2.up * 0.45f - travel * radius * 0.9f;
+            // Glancing off: back toward the shooter, tilted to one side.
+            Vector2 glance = Quaternion.Euler(0, 0, Random.value < 0.5f ? -35f : 35f) * -travel;
+            Burst(at, glance, 80f, Mathf.Max(4, f.ImpactSparks + 2), ShieldSpark, 7f);
+            Flash(at, 0.6f, ShieldGlow, 0.1f, 0.85f);
+            Ring(at, 0.1f, 0.55f, 0.16f, new Color(ShieldGlow.r, ShieldGlow.g, ShieldGlow.b, 0.7f), 0.8f);
         }
 
         void Burst(Vector2 at, Vector2 dir, float spreadDegrees, int count, Color color, float speed)
@@ -984,7 +1016,7 @@ namespace Hollow.Presentation
             corpseMotion[i] = (Time.time, from, to, 0f, rot1, color);
         }
 
-        void Number(Vector2 at, float amount, int maxOnScreen)
+        void Number(Vector2 at, float amount, int maxOnScreen, bool shielded = false)
         {
             if (maxOnScreen <= 0) return;
             if (numbers.Count < maxOnScreen)
@@ -1007,7 +1039,7 @@ namespace Hollow.Presentation
             nextNumber = (i + 1) % Mathf.Max(1, maxOnScreen);
             var n = numbers[i].T;
             n.text = PersianText.Number(Mathf.RoundToInt(amount));
-            n.color = new Color(1f, 0.96f, 0.9f, 1f);
+            n.color = shielded ? new Color(0.62f, 0.78f, 0.95f, 1f) : new Color(1f, 0.96f, 0.9f, 1f);
             n.enabled = true;
             var from = new Vector3(at.x + Random.Range(-0.25f, 0.25f), at.y + 1.3f, 0);
             n.transform.position = from;
