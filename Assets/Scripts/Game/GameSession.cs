@@ -32,8 +32,8 @@ namespace Hollow.Game
         ShopPanel shopPanel;
         MenuScreens menus;
         DialogueView dialogue;
-        EndingScreen ending;
         float phaseCompleteAt = -1f;
+        bool finalBossCleared;
         readonly SettingsAdapter settings = new();
 
         GameApp app;
@@ -47,6 +47,7 @@ namespace Hollow.Game
         float nextOperatorBubbleAt;
         float operatorBubbleUntil;
         string operatorBubbleLine;
+        OperatorBubbleLines operatorLines;
         int lastOperatorBubble = -1;
         bool hintHold;
 
@@ -62,6 +63,12 @@ namespace Hollow.Game
             atmosphere.BindCamera(worldCamera);
             atmosphere.AddShopLights(arena);
             layout = ArenaLayoutStore.LoadFromResources();
+            // Retired forest props must leave neither visible art nor invisible simulation obstacles.
+            foreach (var (x, y, width, height) in new[] { (17, 19, 1, 1), (30, 13, 2, 1), (37, 21, 3, 2) })
+                for (int yy = y; yy < y + height; yy++)
+                    for (int xx = x; xx < x + width; xx++)
+                        layout.PhaseBlocked[0].Cells.Remove(layout.CellIndex(xx, yy));
+            arena.RemoveOutdatedForestProps();
 
             hud = ui.gameObject.AddComponent<HudView>();
             hud.Init(ui);
@@ -78,11 +85,10 @@ namespace Hollow.Game
             menus.Init(ui);
             dialogue = ui.gameObject.AddComponent<DialogueView>();
             dialogue.Init(ui, DialogueData.Load());
+            operatorLines = Resources.Load<OperatorBubbleLines>("Narrative/OperatorBubbleLines");
             dialogue.SubtitlesOn = GameSettings.Subtitles;
             dialogue.LineStarted += id => audio.PlayVoiceLine(id);
             dialogue.LinesStopped += () => audio.StopVoice();
-            ending = ui.gameObject.AddComponent<EndingScreen>();
-            ending.Init(ui);
 
             app.Balance.Applied += OnBalanceApplied;
             GameSettings.Changed += ApplyFeelSettings;
@@ -145,13 +151,7 @@ namespace Hollow.Game
                 world.Profile = app.Balance.Live;
                 SetWorld(world);
                 lastSavedHash = WorldSerializer.Hash(W);
-                if (W.Completed)
-                {
-                    // A completed slot shows its results; it never starts an endless mode (§11).
-                    app.States.Transition(GameState.Ending);
-                    ShowResults(montage: false);
-                    return;
-                }
+                W.Completed = false; // old completed slots remain playable until the finale is redesigned
                 telemetry = new RunTelemetry(W, $"loaded slot {slot}", TelemetryFile.Build);
                 menus.ShowLoading(MenuScreens.Describe(save.Summary), () =>
                 {
@@ -181,6 +181,7 @@ namespace Hollow.Game
                 if (world.Arena.CircleOverlaps(enemy.Position, enemy.Radius))
                     enemy.Position = enemy.PrevPosition = world.Arena.NearestFree(enemy.Position, enemy.Radius);
             Sim = new Simulation(world);
+            finalBossCleared = false;
             operatorBubbleUntil = 0;
             nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(18f, 28f);
             dialogue.SetSpeakerName("Assistant", Loc.T("ai." + world.Player.Ai)); // the chosen AI speaks under its own name
@@ -188,7 +189,7 @@ namespace Hollow.Game
             arena.ShowPhase(world.Phase);
             ApplyArenaVisuals(world.Profile.Atmosphere);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
-            if (world.Completed) audio.StopMusic(0.1f);
+            if (world.Boss.Active && !world.Boss.Dead) audio.PlayBossMusic(true);
             else audio.PlayMusic(world.Phase);
         }
 
@@ -239,6 +240,7 @@ namespace Hollow.Game
             state = app.States.Current;
             if (state == GameState.Playing && W.Failure != FailureReason.None)
             {
+                audio.PlayMusic(W.Phase);
                 app.States.Transition(GameState.Failure);
                 shopPanel.Hide();
                 failureScreen.Show(W.Failure);
@@ -294,6 +296,11 @@ namespace Hollow.Game
                 if (state == GameState.Playing || state == GameState.XPChoice || state == GameState.BossPrep) OpenPause();
                 else if (state == GameState.Paused) ClosePause();
             }
+            if (input.TakeShop() && app.States.Current == GameState.Playing &&
+                (W.Waves.Kind == EncounterKind.SafeInterval ||
+                 (ShopSystem.InRange(W) && (W.Waves.Kind == EncounterKind.BossPrep ||
+                  W.Tutorial == TutorialStage.Purchase || W.Tutorial == TutorialStage.Grenade))))
+                ShopSystem.SetOpen(W, !W.Shop.Open);
             if (input.TakeConfirm() && state == GameState.Playing) OnConfirm();
         }
 
@@ -306,6 +313,8 @@ namespace Hollow.Game
             long key = (((long)ws.Kind * 8 + w.Phase) * 1024 + secondsLeft) * 32 + ws.Wave;
             if (key != lastTopKey) { lastTopKey = key; hud.SetTop(TopLine(w)); } // rebuilt only when it changes (T21)
             var b = w.Boss;
+            if (b.Active && !b.Dead) audio.PlayBossMusic();
+            else if (b.Dead) audio.PlayMusic(w.Phase);
             hud.SetBoss(b.Active ? BossName(b.Id) : null, b.Active ? b.Health / b.MaxHealth : 0);
         }
 
@@ -319,7 +328,7 @@ namespace Hollow.Game
                 EncounterKind.SafeInterval => Loc.F("top.areaSafe", place, Mathf.CeilToInt(WaveSystem.SafeIntervalRemaining(w)), w.Waves.Wave),
                 EncounterKind.BossPrep => Loc.F("top.areaBossPrep", place),
                 EncounterKind.Boss => Loc.F("top.areaBoss", place),
-                EncounterKind.PhaseComplete => Loc.F("top.areaWon", place),
+                EncounterKind.PhaseComplete => place,
                 _ => Loc.F("top.areaWave", place, w.Waves.Wave),
             };
         }
@@ -346,6 +355,7 @@ namespace Hollow.Game
             }
 
             if (w.Waves.Kind != EncounterKind.PhaseComplete) { phaseCompleteAt = -1f; return; }
+            if (w.Phase == 3 && finalBossCleared) return;
             // Let the boss's coins reach the player first (D26), then leave safely.
             if (phaseCompleteAt < 0) phaseCompleteAt = Time.unscaledTime;
             if (w.Coins.Count > 0 && Time.unscaledTime - phaseCompleteAt < w.Profile.Economy.PhaseEndCoinWait) return;
@@ -353,7 +363,12 @@ namespace Hollow.Game
             w.Coins.Clear();
             phaseCompleteAt = -1f;
             if (w.Phase < 3) BeginPhaseTransition(w.Phase);
-            else EndGame();
+            else if (!finalBossCleared)
+            {
+                finalBossCleared = true;
+                SaveNow(quiet: true);
+                audio.PlayMusic(w.Phase);
+            }
         }
 
         void ShowBossPrompt() =>
@@ -384,6 +399,7 @@ namespace Hollow.Game
             PlayScene($"Boss{w.Phase}Entrance", () =>
             {
                 BossSystem.StartEncounter(W);
+                audio.PlayBossMusic(true);
                 app.States.Transition(GameState.Playing);
             });
         }
@@ -409,7 +425,6 @@ namespace Hollow.Game
         void ResumeAfterTransition()
         {
             app.States.Transition(GameState.Playing);
-            if (W.Phase == 2) BarkOnce("Phase2Supervise"); // "I will supervise." / "No need."
         }
 
         /// <summary>v0.19 §5: in safety, Equip or Store the donated weapon. Nothing is spent either way.</summary>
@@ -426,37 +441,6 @@ namespace Hollow.Game
                     ResumeAfterTransition();
                 }),
                 (Loc.T("gift.store"), () => { menus.Hide(); ResumeAfterTransition(); }));
-        }
-
-        void EndGame()
-        {
-            W.Completed = true;
-            SaveNow(quiet: true);
-            telemetry?.End("won");
-            app.States.Transition(GameState.Ending);
-            shopPanel.Hide();
-            atmosphere.FadeToDark(W.Profile.Atmosphere); // the world goes dark while the last lines play
-            audio.StopMusic(W.Profile.Atmosphere.EndingFadeTime);
-            PlayScene("Ending", () => ShowResults(montage: true));
-        }
-
-        void ShowResults(bool montage)
-        {
-            ending.Show(montage, Statistics(W), () => audio.PlayVictory(),
-                () => app.GoToMainMenu(),
-                () => { app.OpenNewGamePicker = true; app.GoToMainMenu(); });
-        }
-
-        static string Statistics(World w)
-        {
-            var t = TimeSpan.FromSeconds(w.Clock.Seconds);
-            var weapons = new System.Text.StringBuilder();
-            foreach (var o in w.Player.Loadout.Owned) weapons.Append(Loc.F("results.weapon", Loc.Weapon(o.Id), o.Level)).Append("   ");
-            var skills = new System.Collections.Generic.List<string>();
-            foreach (var s in w.Progress.ChosenSkills) skills.Add(Loc.Skill(s));
-            return Loc.F("results.ai", Loc.T("ai." + w.Player.Ai)) + "\n" + Loc.F("results.line1", $"{(int)t.TotalMinutes}:{t.Seconds:00}", w.Progress.Kills, w.Retries) + "\n" +
-                   Loc.F("results.line2", w.Progress.CoinsGenerated, w.Progress.CoinsCollected, w.Progress.TotalXp, w.Progress.ItemsUsed) + "\n" +
-                   Loc.F("results.skills", string.Join("، ", skills)) + "\n" + Loc.F("results.weapons", weapons);
         }
 
         void PlayScene(string id, Action done)
@@ -525,7 +509,6 @@ namespace Hollow.Game
             if (app.States.Current != GameState.Playing || !W.Shop.Open) return;
             bool bought = ShopSystem.Purchase(W, offer.Kind, offer.Weapon, offer.Item, offer.Slot);
             audio.Play(bought ? AudioCue.Purchase : AudioCue.Denied);
-            if (bought && offer.Kind == OfferKind.BuyWeapon) BarkOnce("FirstPurchase");
         }
 
         /// <summary>Optional incidental lines (v0.19 §17); warnings never depend on them.</summary>
@@ -538,23 +521,14 @@ namespace Hollow.Game
             if (!allowed) return;
             if (Time.unscaledTime >= nextOperatorBubbleAt)
             {
-                int pick = UnityEngine.Random.Range(0, 7);
-                if (pick == lastOperatorBubble) pick = (pick + 1) % 7;
+                if (operatorLines == null || operatorLines.Lines.Count == 0) return;
+                int pick = UnityEngine.Random.Range(0, operatorLines.Lines.Count);
+                if (pick == lastOperatorBubble && operatorLines.Lines.Count > 1) pick = (pick + 1) % operatorLines.Lines.Count;
                 lastOperatorBubble = pick;
-                operatorBubbleLine = Loc.T("operator.idle" + (pick + 1));
-                operatorBubbleUntil = Time.unscaledTime + 3.5f;
-                nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(28f, 44f);
+                operatorBubbleLine = operatorLines.Lines[pick];
+                operatorBubbleUntil = Time.unscaledTime + operatorLines.DisplaySeconds;
+                nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(operatorLines.MinimumGap, Mathf.Max(operatorLines.MinimumGap, operatorLines.MaximumGap));
             }
-            foreach (var e in w.Events)
-                if (e.Type == SimEventType.CompanionHit) { dialogue.ShowBark("CompanionWarning"); break; } // its own cooldown
-        }
-
-        void BarkOnce(string id)
-        {
-            string key = "bark:" + id;
-            if (W.Narrative.SeenScenes.Contains(key)) return;
-            W.Narrative.SeenScenes.Add(key);
-            dialogue.ShowBark(id);
         }
 
         // ---------------------------------------------------------------- XP choice (world fully paused)
@@ -585,17 +559,21 @@ namespace Hollow.Game
         void OpenPause()
         {
             app.States.Transition(GameState.Paused);
+            audio.SetPaused(true);
             xpScreen.Hide();
             ShowPauseMenu();
         }
 
         void ShowPauseMenu(string status = null) =>
             menus.ShowPause(ClosePause, () => { SaveNow(); ShowPauseMenu(flashMessage); }, CanSave(),
-                () => menus.ShowSettings(settings, () => ShowPauseMenu()), () => menus.ShowControls(() => ShowPauseMenu()), ExitToMenu, status);
+                PauseSettings, () => menus.ShowControls(PauseSettings), ExitToMenu, status);
+
+        void PauseSettings() => menus.ShowSettings(settings, () => ShowPauseMenu(), () => menus.ShowControls(PauseSettings));
 
         void ClosePause()
         {
             menus.Hide();
+            audio.SetPaused(false);
             app.States.Resume();
             if (app.States.Current == GameState.BossPrep) ShowBossPrompt();
             if (app.States.Current == GameState.XPChoice && W.Progress.Pending != null)

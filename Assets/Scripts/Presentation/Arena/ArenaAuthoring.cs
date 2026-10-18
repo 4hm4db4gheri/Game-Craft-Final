@@ -44,6 +44,14 @@ namespace Hollow.Presentation
         readonly List<(SpriteRenderer Renderer, Transform Anchor, Color Color)> foreground = new();
         bool landmarksBuilt;
 
+        public void RemoveOutdatedForestProps()
+        {
+            if (Props == null || Props.Length == 0 || Props[0] == null) return;
+            foreach (var prop in Props[0].GetComponentsInChildren<ArenaProp>(true))
+                if (prop.PropName == "Stumps" || prop.PropName == "LogPile" || prop.PropName == "Excavator")
+                    prop.gameObject.SetActive(false);
+        }
+
         public void BuildLandmarks(ArenaLayout layout)
         {
             if (landmarksBuilt || layout.Landmarks == null) return;
@@ -89,7 +97,6 @@ namespace Hollow.Presentation
         /// <summary>Full-arena artwork creates connected paths instead of a repeating carpet of tiles.</summary>
         public void ApplyComposition(bool enabled, float shadowStrength)
         {
-            var propAtlas = Resources.Load<Texture2D>("ArenaArt/ForestProps");
             for (int i = 0; i < Grounds.Length; i++)
             {
                 var map = Grounds[i];
@@ -135,7 +142,6 @@ namespace Hollow.Presentation
                 if (phaseProps == null) continue;
                 foreach (var prop in phaseProps.GetComponentsInChildren<ArenaProp>(true))
                 {
-                    ApplyPropArt(prop, propAtlas);
                     var shadow = prop.transform.Find("Shadow");
                     if (shadow == null) continue;
                     shadow.localPosition = new Vector3(0, prop.Footprint.y * 0.22f, 0);
@@ -157,36 +163,6 @@ namespace Hollow.Presentation
                                 foreground.Add((renderer, prop.transform, renderer.color));
                     }
                 }
-        }
-
-        void ApplyPropArt(ArenaProp prop, Texture2D atlas)
-        {
-            if (atlas == null || prop.Phase != 1) return;
-            var body = prop.transform.Find("Body");
-            if (body == null || body.Find("RefinedProp") != null) return;
-            Rect crop;
-            float width;
-            switch (prop.PropName)
-            {
-                case "Stumps": crop = new Rect(22, 81, 654, 393); width = 1.3f; break;
-                case "LogPile": crop = new Rect(724, 78, 675, 426); width = 2.2f; break;
-                case "Excavator": crop = new Rect(1438, 83, 713, 601); width = 3.6f; break;
-                default: return;
-            }
-            Material material = null;
-            foreach (var old in body.GetComponentsInChildren<SpriteRenderer>(true))
-            {
-                if (material == null) material = old.sharedMaterial;
-            }
-            crop = ImportedAtlasRect(crop, atlas.width, atlas.height);
-            var sprite = Sprite.Create(atlas, crop, new Vector2(0.5f, 0), crop.width / width, 0, SpriteMeshType.FullRect);
-            foreach (var old in body.GetComponentsInChildren<SpriteRenderer>(true)) old.enabled = false;
-            ownedFloorSprites.Add(sprite);
-            var go = new GameObject("RefinedProp");
-            go.transform.SetParent(body, false);
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            if (material != null) renderer.sharedMaterial = material;
         }
 
         /// <summary>Unity may downscale the atlas for quality/platform settings. Keep crops in source coordinates.</summary>

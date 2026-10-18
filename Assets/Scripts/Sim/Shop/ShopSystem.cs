@@ -60,11 +60,7 @@ namespace Hollow.Sim
         public static void Step(World w, in PlayerCommand cmd)
         {
             var s = w.Shop;
-            if (w.Waves.Kind == EncounterKind.SafeInterval)
-            {
-                if (!s.Open) SetOpen(w, true);
-                return; // movement, dash and E never close the timed shop
-            }
+            if (w.Waves.Kind == EncounterKind.SafeInterval) return;
             bool tutorialShopping = w.Waves.Kind == EncounterKind.Wave &&
                 (w.Tutorial == TutorialStage.Purchase || w.Tutorial == TutorialStage.Grenade);
             if ((w.Waves.Kind == EncounterKind.Wave && !tutorialShopping) ||
@@ -73,9 +69,7 @@ namespace Hollow.Sim
                 if (s.Open) SetOpen(w, false);
                 return;
             }
-            bool inRange = InRange(w);
-            if (cmd.InteractPressed && (inRange || s.Open)) SetOpen(w, !s.Open);
-            if (s.Open && (!inRange || w.Player.Dashing || w.Player.Dead)) SetOpen(w, false);
+            if (s.Open && (!InRange(w) || w.Player.Dashing || w.Player.Dead)) SetOpen(w, false);
         }
 
         /// <summary>Near any service station (v0.19 §13): each one opens the same shop.</summary>

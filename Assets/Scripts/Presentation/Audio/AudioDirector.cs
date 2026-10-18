@@ -10,7 +10,7 @@ namespace Hollow.Presentation
     /// the camera, music per phase with crossfade, ducking of music and effects for big moments while the
     /// Warnings bus (attack telegraphs, companion warning) is never ducked and has its own voices.
     /// Cues without an imported file play a named silent stub that is logged once.
-    /// Buses are mixed in code: Unity's AudioMixer assets cannot be authored from scripts (D55).
+    /// Buses are mixed in code; MusicMixSettings exposes their levels in the Unity Inspector.
     /// </summary>
     public sealed class AudioDirector : MonoBehaviour
     {
@@ -31,11 +31,14 @@ namespace Hollow.Presentation
         readonly Dictionary<AudioCue, float> lastPlayed = new();
         readonly Dictionary<AudioCue, AudioClip> stubs = new();
         AudioSource musicA, musicB;
+        MusicMixSettings mix;
         AudioCue? currentMusic;
         float musicVolume = 0.7f, effectsVolume = 0.8f;
         float duck = 1f, duckUntil;
         float musicFadeStart, musicFadeTime, musicOutStart;
         bool musicFading;
+        float pauseGain = 1f;
+        bool paused;
 
         /// <summary>Cues that have no audio file yet and play silent stubs.</summary>
         public readonly List<AudioCue> MissingCues = new();
@@ -62,6 +65,7 @@ namespace Hollow.Presentation
         void Init(AudioCatalog c)
         {
             catalog = c != null ? c : ScriptableObject.CreateInstance<AudioCatalog>();
+            mix = Resources.Load<MusicMixSettings>("Audio/MusicMixSettings");
             // v0.19 §20: at most MaxOneShots world sounds, MaxWarnings of them important warnings.
             CreateVoices(AudioBus.Effects, Mathf.Max(1, catalog.MaxOneShots - catalog.MaxWarnings));
             CreateVoices(AudioBus.Warnings, Mathf.Max(1, catalog.MaxWarnings));
@@ -73,7 +77,8 @@ namespace Hollow.Presentation
             foreach (AudioCue cue in System.Enum.GetValues(typeof(AudioCue)))
             {
                 var d = catalog.Get(cue);
-                if (d == null || d.Clips.Count == 0 || d.Clips.TrueForAll(x => x == null)) MissingCues.Add(cue);
+                if ((d == null || d.Clips.Count == 0 || d.Clips.TrueForAll(x => x == null)) &&
+                    (mix == null || mix.Clip(cue) == null)) MissingCues.Add(cue);
             }
             if (MissingCues.Count > 0)
                 Debug.Log($"[Hollow audio] {MissingCues.Count} cue(s) use silent stubs until files are added: {string.Join(", ", MissingCues)}");
@@ -206,7 +211,7 @@ namespace Hollow.Presentation
 
         float BusGain(AudioBus bus) => bus switch
         {
-            AudioBus.Music => musicVolume * duck,
+            AudioBus.Music => musicVolume * duck * pauseGain,
             AudioBus.Effects => effectsVolume * duck,
             _ => effectsVolume, // Warnings and interface are never ducked
         };
@@ -219,19 +224,34 @@ namespace Hollow.Presentation
         public void PlayMusic(int phase)
         {
             var cue = phase switch { 1 => AudioCue.MusicPhase1, 2 => AudioCue.MusicPhase2, _ => AudioCue.MusicPhase3 };
-            if (currentMusic == cue && (musicA.isPlaying || musicB.isPlaying)) return;
+            StartMusic(cue);
+        }
+
+        public void PlayMenuMusic() => StartMusic(AudioCue.MusicMenu);
+        public void PlayBossMusic(bool restart = false) => StartMusic(AudioCue.MusicBoss, restart);
+        public void SetPaused(bool value) => paused = value;
+
+        void StartMusic(AudioCue cue, bool restart = false)
+        {
+            if (!restart && currentMusic == cue && (musicA.isPlaying || musicB.isPlaying)) return;
+            if (restart) { musicA.Stop(); musicB.Stop(); }
             currentMusic = cue;
             // Crossfade: the old loop fades out on B while the new one fades in on A.
             (musicA, musicB) = (musicB, musicA);
             musicOutStart = musicB.volume;
-            var d = catalog.Get(cue);
-            musicA.clip = PickClip(cue, d);
+            musicA.clip = MusicClip(cue);
             Played.Add(cue);
             musicA.volume = 0f;
             musicA.Play();
             musicFadeStart = Time.unscaledTime;
             musicFadeTime = 1.5f;
             musicFading = true;
+        }
+
+        AudioClip MusicClip(AudioCue cue)
+        {
+            var clip = mix != null ? mix.Clip(cue) : null;
+            return clip != null ? clip : PickClip(cue, catalog.Get(cue));
         }
 
         public void StopMusic(float fadeSeconds)
@@ -255,12 +275,14 @@ namespace Hollow.Presentation
 
         void Update()
         {
+            pauseGain = Mathf.MoveTowards(pauseGain, paused ? (mix != null ? mix.PauseMusicLevel : 0.18f) : 1f,
+                Time.unscaledDeltaTime * 2.5f);
             duck = Mathf.MoveTowards(duck, Time.unscaledTime < duckUntil ? catalog.DuckLevel : 1f, Time.unscaledDeltaTime * 3f);
             foreach (var kv in voices)
                 foreach (var v in kv.Value)
                     if (v.Source.isPlaying) v.Source.volume = v.BaseVolume * BusGain(kv.Key);
 
-            float target = currentMusic.HasValue ? (catalog.Get(currentMusic.Value)?.Volume ?? 0.6f) : 0f;
+            float target = currentMusic.HasValue ? MusicGain(currentMusic.Value) : 0f;
             if (musicFading)
             {
                 float k = Mathf.Clamp01((Time.unscaledTime - musicFadeStart) / musicFadeTime);
@@ -270,6 +292,8 @@ namespace Hollow.Presentation
             }
             else if (musicA.isPlaying) musicA.volume = target * BusGain(AudioBus.Music);
         }
+
+        float MusicGain(AudioCue cue) => mix != null ? mix.Level(cue) : 0.65f;
 
         // ------------------------------------------------------------------ enemy profiles (v0.19 §20)
 

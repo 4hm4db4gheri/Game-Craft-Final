@@ -19,7 +19,9 @@ namespace Hollow.Game
         {
             app = GameApp.Ensure();
             SlotStore.RootOverride = null; // returning from a direct Game-scene test restores the real slots
-            AudioBridge.Attach().StopMusic(0.8f); // the menu is quiet
+            var audio = AudioBridge.Attach();
+            audio.SetPaused(false);
+            audio.PlayMenuMusic();
             if (app.States.Current == GameState.Boot) app.States.Transition(GameState.MainMenu);
             menus = ui.gameObject.AddComponent<MenuScreens>();
             menus.Init(ui);
@@ -44,15 +46,17 @@ namespace Hollow.Game
                 NewGame,
                 () => menus.ShowSlots(SlotPickMode.Continue, slot => app.LoadGame(slot), Main),
                 anySave,
-                () => menus.ShowSettings(settings, Main),
+                Settings,
                 () => menus.ShowControls(Main),
                 ConfirmResetProgress,
                 () => app.Quit());
         }
 
+        void Settings() => menus.ShowSettings(settings, Main, () => menus.ShowControls(Settings), ConfirmResetProgress);
+
         void ConfirmResetProgress() =>
             menus.ShowConfirm(Loc.T("reset.title"), Loc.T("reset.body"),
-                (Loc.T("reset.confirm"), ResetProgress), (Loc.T("common.cancel"), Main));
+                (Loc.T("reset.confirm"), ResetProgress), (Loc.T("common.cancel"), Settings));
 
         void ResetProgress()
         {
@@ -61,7 +65,7 @@ namespace Hollow.Game
             {
                 Debug.LogWarning($"Could not clear saved progress: {result.Error}");
                 menus.ShowConfirm(Loc.T("reset.failedTitle"), Loc.T("reset.failedBody"),
-                    (Loc.T("reset.retry"), ResetProgress), (Loc.T("common.back"), Main));
+                    (Loc.T("reset.retry"), ResetProgress), (Loc.T("common.back"), Settings));
                 return;
             }
             NewGame();

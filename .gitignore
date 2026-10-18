@@ -117,3 +117,7 @@ InitTestScene*.unity*
 /Assets/Temp/
 /Assets/Temp.meta
 
+# Keep original uncompressed music exports locally; the game uses streaming MP3s.
+/Assets/Music/*.wav
+/Assets/Music/*.wav.meta
+

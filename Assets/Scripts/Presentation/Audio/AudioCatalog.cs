@@ -23,8 +23,8 @@ namespace Hollow.Presentation
         Explosion, GrenadeThrow, Push, MinePlace, Emp, Shield,
         // Flow
         WaveStart, WaveClear, BossEntry, BossDefeated, UiClick, Victory,
-        // Music (one loop per phase)
-        MusicPhase1, MusicPhase2, MusicPhase3,
+        // Music (menu, phase and boss loops)
+        MusicPhase1, MusicPhase2, MusicPhase3, MusicMenu, MusicBoss,
     }
 
     /// <summary>Mixing buses. Warnings are never ducked, so telegraph sounds always cut through (T19).</summary>

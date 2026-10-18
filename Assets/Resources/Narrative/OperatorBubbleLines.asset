@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ee327734dd740d5a5c96b85c944ce13, type: 3}
+  m_Name: OperatorBubbleLines
+  m_EditorClassIdentifier: Hollow.UI::Hollow.UI.OperatorBubbleLines
+  Lines:
+  - "این یکی را در گزارش نمی‌نویسم!"
+  - "نقشه می‌گوید همین طرف... تقریباً."
+  - "اگر زنده ماندیم، قهوه با من."
+  - "من حواسم به پشت‌سرمان هست."
+  - "این‌جا جای مناسبی برای پیک‌نیک نیست."
+  - "عجب روز آرامی بود... تا الان."
+  - "اگر برنامه‌ای داری، الان وقت گفتنش است."
+  MinimumGap: 28
+  MaximumGap: 44
+  DisplaySeconds: 3.5

@@ -114,7 +114,7 @@ namespace Hollow.EditorTools
             new[] // Animals: open readable tutorial space, cover at the edges
             {
                 ("Hedge", 9, 22), ("Hedge", 36, 9), ("Rock", 14, 7), ("Rock", 32, 23), ("Tree", 8, 15), ("Tree", 40, 17),
-                ("Tree", 20, 25), ("Tree", 28, 6), ("Stumps", 17, 19), ("LogPile", 30, 13), ("Excavator", 37, 21),
+                ("Tree", 20, 25), ("Tree", 28, 6),
             },
             new[] // Robots: lanes and cover for ranged threats
             {
