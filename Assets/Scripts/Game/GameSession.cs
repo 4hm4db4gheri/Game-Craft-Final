@@ -288,7 +288,7 @@ namespace Hollow.Game
             var state = app.States.Current;
             if (dialogue.Playing)
             {
-                if (input.TakeConfirm()) dialogue.Next();
+                if (input.TakeConfirm() | app.Router.InteractDownThisFrame) dialogue.Next(); // E, like the hint cards
                 if (input.TakePause()) dialogue.Skip();
                 return;
             }

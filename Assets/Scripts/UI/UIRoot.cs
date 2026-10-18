@@ -25,12 +25,15 @@ namespace Hollow.UI
             scaler.matchWidthOrHeight = 0.5f;
             gameObject.AddComponent<GraphicRaycaster>();
 
-            if (EventSystem.current == null)
+            var events = EventSystem.current;
+            if (events == null)
             {
                 var es = new GameObject("EventSystem");
-                es.AddComponent<EventSystem>();
+                events = es.AddComponent<EventSystem>();
                 es.AddComponent<InputSystemUIInputModule>().AssignDefaultActions();
             }
+            // Menus and the shop are mouse only: WASD must not move the selection and Space must not press the selected button.
+            events.sendNavigationEvents = false;
 
             Hud = UIFactory.Stretch(transform, "HUD");
             Modal = UIFactory.Stretch(transform, "Modal");

@@ -344,7 +344,7 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void RobotBurstFansSweepsTheWholeConeAndTracksThePlayer()
+        public void RobotBurstFansSweepsTheWholeConeAndStaysWhereItWarned()
         {
             var sim = Fight(2);
             var w = sim.World;
@@ -353,7 +353,7 @@ namespace Hollow.Tests.Sim
             NextMove(w, BossMove.Burst);
             Assert.IsTrue(RunUntil(sim, BossAi.BurstWarning));
             Vector2 start = w.Boss.AttackDir;
-            // Step aside: the cone turns after the player, no faster than the track rate.
+            // Step aside: the warned cone stays put (D88).
             w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(6, -2), w.Profile.Player.BodyRadius);
             var shots = new List<Vector2>();
             for (int t = 0; t < 60 * 4 && w.Boss.Ai != BossAi.BurstRecover; t++)
@@ -365,9 +365,7 @@ namespace Hollow.Tests.Sim
             }
             int volleys = Mathf.CeilToInt(d.BurstDuration / d.BurstShotInterval);
             Assert.GreaterOrEqual(shots.Count, (volleys - 1) * d.BurstFanCount, "every volley fans");
-            float turned = Vector2.Angle(start, w.Boss.AttackDir);
-            Assert.Greater(turned, 10f, "it tracks");
-            Assert.LessOrEqual(turned, d.BurstTrackRate * (d.BurstWarning + d.BurstDuration) + 1f, "but no faster than the rate");
+            Assert.Less(Vector2.Angle(start, w.Boss.AttackDir), 0.01f, "the cone does not follow the player");
             float widest = 0;
             foreach (var a in shots) foreach (var c in shots) widest = Mathf.Max(widest, Vector2.Angle(a, c));
             Assert.Greater(widest, d.BurstSpread * 0.8f, "the sweep covers the wide cone");

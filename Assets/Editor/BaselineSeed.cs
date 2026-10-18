@@ -39,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 9, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 10, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -370,11 +370,11 @@ namespace Hollow.EditorTools
                     },
                     MoveSpeed = 1.8f, BodyRadius = 1.6f, HitHeight = HitHeight(4.15f, 1.6f), AttackInterval = 4f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3.5f,
                     BurstWarning = 0.8f, BurstDuration = 1.8f, BurstRecovery = 1.3f, BurstShotInterval = 0.15f, BurstSpread = 70, ProjectileSpeed = 10,
-                    BurstFanCount = 3, BurstFanSpacing = 9f, BurstSweeps = 2, BurstTrackRate = 40f,
+                    BurstFanCount = 3, BurstFanSpacing = 9f, BurstSweeps = 2, BurstTrackRate = 0f,
                     BlastWarning = 1.0f, BlastRadius = 3, BlastThrowRange = 9, BlastRecovery = 1.5f, HealCapFraction = 0.1f,
                     BurstShotDamage = 18, ProjectileRange = 16, AddSpawnGap = 0.35f, EmpAffects = true,
                     Reinforcements = Adds((EnemyId.R1_Crawler, 3), (EnemyId.R2_Shooter, 2), (EnemyId.R3_SawCharger, 1)), ReinforceInterval = 8f,
-                    Moves = Moves(BossMove.Burst, BossMove.Blast, BossMove.Leap), Armor = 0.4f, ExposedArmor = 0f,
+                    Moves = Moves(BossMove.Burst, BossMove.Blast, BossMove.Burst, BossMove.Blast, BossMove.Leap), Armor = 0.4f, ExposedArmor = 0f,
                     LeapRiseTime = 0.45f, LeapTrackTime = 1.8f, LeapTrackSpeed = 7f, LeapLockTime = 0.9f, LeapRadius = 3.4f, LeapDamage = 40f, LeapRecovery = 1.6f,
                 },
                 new()

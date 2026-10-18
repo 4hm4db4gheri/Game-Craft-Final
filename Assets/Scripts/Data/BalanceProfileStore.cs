@@ -84,6 +84,12 @@ namespace Hollow.Data
                 profile.Bosses = BalanceJson.Clone(baseline).Bosses;
                 profile.BuildIndex();
             }
+            if (profile.Revision < 10)
+            {
+                // D88: the robot boss leaps once in five moves and its burst cone stays where it was warned.
+                foreach (var b in profile.Bosses)
+                    if (baseline.Bosses.Find(x => x.Id == b.Id) is { } bb) { b.Moves = new(bb.Moves); b.BurstTrackRate = bb.BurstTrackRate; }
+            }
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;
