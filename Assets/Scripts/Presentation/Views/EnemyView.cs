@@ -31,6 +31,8 @@ namespace Hollow.Presentation
         Vector3 bodyBaseLocal;
         Vector2 kickDir;
         float recoil;
+        string actState;
+        float actUntil;
 
         void Awake()
         {
@@ -44,6 +46,7 @@ namespace Hollow.Presentation
         {
             flashUntil = 0;
             recoil = 0;
+            actUntil = 0;
             telegraphLine.enabled = false;
             telegraphArc.Hide();
             if (countdown != null) countdown.enabled = false;
@@ -57,6 +60,23 @@ namespace Hollow.Presentation
         {
             kickDir = shotDirection.normalized;
             recoil = 1f;
+        }
+
+        /// <summary>
+        /// A support action the simulation does without a state of its own (a medic heals, a carrier or engineer
+        /// makes a unit): plays the first of these drawn states once, if the art has it. Visual only.
+        /// </summary>
+        public void Act(params string[] states)
+        {
+            if (anim == null || anim.Set == null) return;
+            foreach (var s in states)
+            {
+                var found = anim.Set.Find(s);
+                if (found == null) continue;
+                actState = s;
+                actUntil = Time.time + Mathf.Max(0.5f, found.Frames.Count / Mathf.Max(1f, found.Rate(anim.Set)));
+                return;
+            }
         }
 
         /// <summary>Hit reaction: white flash plus a short squash. Visual only; the hitbox never changes (§14).</summary>
@@ -117,7 +137,8 @@ namespace Hollow.Presentation
                 hpFill.transform.localPosition = new Vector3(-full * 0.5f * (1f - frac), hpFill.transform.localPosition.y, 0);
             }
 
-            if (anim != null) anim.SetState(AnimState(e));
+            if (anim != null) anim.SetState(Time.time < actUntil && e.Ai is not (EnemyAi.Windup or EnemyAi.Attack or EnemyAi.Charge or EnemyAi.Spawning)
+                ? actState : AnimState(e));
             DrawTelegraph(w, e, d, pos, telegraphColor);
         }
 

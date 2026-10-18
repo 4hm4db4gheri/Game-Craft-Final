@@ -121,7 +121,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &535334623524194481
 Transform:
   m_ObjectHideFlags: 0
@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 7253478374338488198}
   - component: {fileID: 576449572362151901}
   - component: {fileID: 6904627021519857050}
+  - component: {fileID: 5317501062090394357}
   m_Layer: 0
   m_Name: PH_Enemy_R4_ShieldRobot
   m_TagString: Untagged
@@ -216,6 +217,30 @@ MonoBehaviour:
   telegraphArc: {fileID: 4152700397730198144}
   countdown: {fileID: 0}
   hpBarWidth: 1.2
+  recoilPushBack: 0.09
+  recoilReturn: 14
+--- !u!114 &5317501062090394357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118761575084382057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859555f4964a8bd409f045ea3b7d4118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSetAnimator
+  set: {fileID: 11400000, guid: 72df3863d52e0d4418c2b430be282f11, type: 2}
+  target: {fileID: 5088364473412073869}
+  stepMotion: 1
+  strideFraction: 0.35
+  minStepsPerSecond: 1.6
+  maxStepsPerSecond: 7
+  hopFraction: 0.025
+  rockDegrees: 4
+  movingSpeed: 0.3
+  blendRate: 10
 --- !u!1 &3067379258807835518
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,8 +759,8 @@ Transform:
   m_GameObject: {fileID: 8456120834315128495}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.55, z: 0}
-  m_LocalScale: {x: 1, y: 1.1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6226908965794922806}
@@ -789,8 +814,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: a8cf8281e9fa599468e504d4139ffa93, type: 3}
-  m_Color: {r: 0.36, g: 0.38, b: 0.42, a: 1}
+  m_Sprite: {fileID: 8793639957104055765, guid: 1e862137d465dfe4990a26df64fed861, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

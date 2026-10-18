@@ -38,12 +38,12 @@
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
-| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ (۱۰۴ فایل) و موج ۲ (۴۳ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
+| `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ (۱۰۴ فایل)، موج ۲ (۴۳ فایل) و موج ۳ (۵۸ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
 | `ArtSource/GameIcons/` + `Tools/ArtGen/game_icons.py` | آیکن‌های سفید game-icons.net (CC BY 3.0) برای فروشگاه؛ اسکریپت آن‌ها را رنگ و سایه می‌دهد و `ICO_*` در Incoming می‌سازد. بعد `ApplyIncomingArt.ApplyIcons()` (یا Apply Incoming Art) آیکن‌ها را در `VisualCatalog` می‌گذارد |
 | `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۴ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
-| `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد)؛ `fix_wave2.py` موج ۲ را از `ArtSource/ArtWave2_Original` به Incoming می‌آورد و درست می‌کند. ترتیب: `fix_art.py` و `fix_wave2.py`، بعد `animate.py`، بعد `Apply Incoming Art`. موج بعدی: نسخه‌ی اصلی را در `ArtSource/ArtWave<n>_Original` بگذار و اسکریپت مشابه بنویس. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
+| `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد)؛ `fix_wave2.py` و `fix_wave3.py` موج ۲ و ۳ را از `ArtSource/ArtWave<n>_Original` به Incoming می‌آورند و درست می‌کنند. ترتیب: `fix_art.py`، `fix_wave2.py` و `fix_wave3.py`، بعد `animate.py`، بعد `Apply Incoming Art`. موج بعدی: نسخه‌ی اصلی را در `ArtSource/ArtWave<n>_Original` بگذار و اسکریپت مشابه بنویس. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Editor/VisualTuningWindow.cs` + `docs/VISUAL_DEPTH_PASS.md` | داشبورد `Hollow > Visual Tuning` برای رنگ نور، افکت‌های دوربین و تنوع روشنایی زمین در هر فاز؛ روش تست و محدودیت آرت در سند |
 | `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle با دود و پوکه، جرقه، خون/روغن پاشیده با لکه‌های کوچک، جسد/لکه با سقف، حلقه‌ها، ردّ دش، جلوه‌ی level up و مرگ بازیکن، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse). چهار ParticleSystem (sparks، gore با جاذبه، puffs، motes رو به بالا) و حلقه‌ی ساخته‌شده با کد. لگد سلاح در `PlayerView.Kick`، `CompanionView.Fired(dir)` و `EnemyView.Kick` |
@@ -63,6 +63,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D94 (آرت موج ۳): ربات‌ها (R3، R4، R6، R7، R7c)، انسان‌ها (H3 تا H7، H7c) و باس ۳ آرت و انیمیشن ساخته‌شده دارند؛ حاشیه‌ی صورتی پاک شد و سپر شفاف H4 شیشه‌ای آبی شد. درمان، ساختن پهپاد و ساختن برجک فریم خودشان را لحظه‌ای نشان می‌دهند. فقط A7 (عنکبوت مادر) و R5 (تعمیرکار) هنوز آرت ندارند. در Play mode دیده شد؛ با دست بازی نشده است.
 
 - D93: منوی اصلی حالا پهپاد خود بازیکن را (با فریم‌های idle بازی) به‌جای دستیار کشیده‌شده نشان می‌دهد. فروشگاه بازطراحی شد (طبق تصویر مرجع کاربر): ستون قاب‌دار سمت راست، کیف پول با آیکن سکه، دو کارت اسلات با عکس سلاح، فهرست قابل اسکرول با عکس هر ردیف، و دکمه‌ی پایین «تجهیزات و درمان» که بین دو بخش فهرست می‌پرد. ۱۰ آیکن نبوده از game-icons.net (CC BY 3.0) دانلود و رنگ شد. در Play mode دیده شد؛ با دست بازی نشده است.
 
@@ -102,7 +104,7 @@
 - **GDD v0.19**: همه‌ی بخش‌ها جز موبایل (F13، فقط اگر وقت بماند) انجام شد. با کاربر/تیم: گوش دادن به صداهای سنتزشده‌ی دشمن‌ها، ضبط صداپیشگی طبق `docs/VOICE_LINES.md`، بازبینی متن فارسی و فیلم‌نامه توسط آرتیست، playtest انسانی.
 
 - همه‌ی حالت‌های شخصیت‌ها، دشمن‌ها و دو باس حالا sheet انیمیشن ساخته‌شده (`Tools/ArtGen`) دارند؛ وقتی sheetهای دست‌کشیده‌ی موج ۲ برسند، خودکار جایگزین می‌شوند. باس ۱ هنوز ظاهر بین خرس و گراز دارد (از آرت است، با کد درست نمی‌شود).
-- آرت موج ۱ و ۲ اعمال شد. هنوز آرت ندارند (placeholder می‌مانند): ۱۲ نوع دشمن (A7، R3–R7، R7c، H3–H7، H7c)، باس ۳، propها و decorهای فاز ۲ و propهای Stumps/LogPile/Excavator/LightPost، سلاح‌های BAT/IRF/MSG/HAM/ERF/ESG/EBL، آیتم‌ها جز نارنجک. از آرت موج ۱ هنوز استفاده نمی‌شود: آیکن‌ها (`ICO_*`)، دکمه/پنل/اسلات UI، `PKP_GRN` (رابط با کد ساخته شده و جای آیکن ندارد).
+- آرت موج ۱، ۲ و ۳ اعمال شد. هنوز آرت ندارند (placeholder می‌مانند): A7 و R5، propها و decorهای فاز ۲ و propهای Stumps/LogPile/Excavator/LightPost، سلاح‌های BAT/IRF/MSG/HAM/ERF/ESG/EBL، آیتم‌ها جز نارنجک. از آرت موج ۱ هنوز استفاده نمی‌شود: آیکن‌ها (`ICO_*`)، دکمه/پنل/اسلات UI، `PKP_GRN` (رابط با کد ساخته شده و جای آیکن ندارد).
 ---
 
 ## تاریخچه‌ی کارها
@@ -450,3 +452,11 @@
 - آیکن: `ApplyIncomingArt.SetIcon/ApplyIcons` برای `ICO_<کد سلاح/آیتم>`، `ICO_GEN_Coin`، `ICO_SKL_MaxHealth` (تعمیر). با اجازه‌ی کاربر ۱۰ آیکن از game-icons.net دانلود شد (دو مورد اول اشتباه بودند و با جایگزین از همان سایت عوض شدند)؛ `docs/CREDITS.md`.
 - ۵۰۴ تست پاس. Play mode (صحنه‌ی Game مستقیم، dev_saves): فروشگاه با ۸ و ۱۵۰ سکه، با سلاح‌های خریده‌شده، دکمه‌ی پرش و جابه‌جا دیده شد؛ منو با پهپاد دیده شد. با ماوس واقعی (اسکرول چرخ، hover) آزموده نشده.
 - نکته: هم‌زمان یک جلسه‌ی دیگر آرت موج ۳ را در همین پوشه اعمال می‌کرد؛ فایل‌های آن commit نشدند.
+
+### 2026-10-18 — آرت موج ۳ (D94)
+- کاربر پوشه‌ی `Art Images 3` (۵۸ PNG، `HANDOFF_wave3.md`، کارت‌ها) را اضافه کرد. نسخه‌ی اصلی در `ArtSource/ArtWave3_Original`، یادداشت‌ها در `docs/art/HANDOFF_wave3.md` و `ASSET_CARDS_wave3.txt`؛ پوشه‌ی `Art Images 3` پاک شد.
+- `Tools/ArtGen/fix_wave3.py`: حاشیه‌ی مژنتا روی همه‌ی فریم‌های ربات و انسان جدا شد (`fix_wave2.unkey_magenta`)؛ سپر H4 که پس‌زمینه‌ی مژنتا از پشت آن دیده می‌شد حالا شیشه‌ی آبی فولادی کمی شفاف است (`glass_shield`)؛ `windup_throw` باس ۳ (کپی throw) استفاده نمی‌شود. فریم‌هایی که به لبه‌ی سلول خورده‌اند دست نخوردند.
+- `animate.py`: بدن‌های R3/R4/R6/R7/R7c/H3–H7/H7c/B3. اره‌ای و توپ انتحاری بدون تاب پا (لرزش و غلت)؛ پهپاد در همه‌ی حالت‌ها شناور؛ حمله‌ی charger (R3، H3) حلقه‌ای؛ recover نارنجک‌انداز از فریم پرتاب؛ heal، produce و build؛ باس ۳: windup_charge/charge (pounce)، windup_strike/strike (leap)، throw، burst، stunned. recover عمومی حالا فریم recover کشیده‌شده را اگر باشد می‌گیرد (A3 دوباره ساخته شد).
+- `EnemyView.Act` و `WorldPresenter`: با `EnemyHealed` (Code = درمانگر) حالت heal و با `EnemySpawned` فرزند (`ParentId`) حالت produce یا build لحظه‌ای پخش می‌شود. صفحه‌ی سپر R4 و H4 خاموش شد (D91).
+- ۵۰۴ تست پاس. در Play mode هر ۱۱ دشمن در فاز ۲ و ۳ و باس ۳ (هشدار رگبار) دیده شد؛ heal/produce/build دیده نشده و با دست بازی نشده است.
+- نکته: هم‌زمان یک جلسه‌ی دیگر روی آیکن‌های فروشگاه و منو در همین پوشه و همین ادیتور کار می‌کرد (`ShopPanel`، `UIFactory`، `MenuBackdrop*`، `ApplyIncomingArt` بخش آیکن، `VisualCatalog`، `GameSession`، `fa.json`، `MainMenu.unity`، `ICO_*`، `ArtSource/GameIcons`)؛ آن فایل‌ها در commit این کار نیستند.

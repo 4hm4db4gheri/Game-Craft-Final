@@ -236,6 +236,19 @@ BODIES = {
     "ENM_A6_ExplosiveBeetle": Body("quad", belly=0.25, split=0.6, front=0.75, back=0.35, leg=10),
     "ENM_A7c_Spiderling": Body("quad", belly=0.5, split=0.5, front=0.7, back=0.3, leg=10),
     "ENM_H1_BatonGuard": Body("biped", belly=0.46, split=0.5, front=0.55, back=0.45, leg=16),
+    # Art wave 3 (docs/art/HANDOFF_wave3.md). Wheels and a ball have no legs to swing: leg 0 keeps the body rigid.
+    "ENM_R3_SawCharger": Body("quad", belly=0.35, split=0.5, front=0.7, back=0.3, leg=0, heavy=0.8),
+    "ENM_R4_ShieldRobot": Body("biped", belly=0.42, split=0.5, front=0.55, back=0.45, leg=10, heavy=0.8),
+    "ENM_R6_Suicide": Body("quad", belly=0.2, leg=0, heavy=0.6),
+    "ENM_R7_DroneCarrier": Body("quad", belly=0.4, split=0.5, front=0.72, back=0.28, leg=12, heavy=0.8),
+    "ENM_R7c_Drone": Body("hover", ranged=True),
+    "ENM_H3_FastAssaulter": Body("biped", belly=0.46, split=0.5, front=0.55, back=0.45, leg=18),
+    "ENM_H4_ShieldGuard": Body("biped", belly=0.46, split=0.45, front=0.5, back=0.4, leg=12),
+    "ENM_H5_Medic": Body("biped", belly=0.46, split=0.5, front=0.55, back=0.45, leg=14),
+    "ENM_H6_Grenadier": Body("biped", belly=0.46, split=0.5, front=0.55, back=0.45, leg=15),
+    "ENM_H7_Engineer": Body("biped", belly=0.46, split=0.5, front=0.55, back=0.45, leg=14),
+    "ENM_H7c_Turret": Body("quad", belly=0.4, leg=0, ranged=True, heavy=0.5),
+    "BOS_B3_FormerCompanion": Body("biped", belly=0.42, split=0.5, front=0.58, back=0.42, leg=10, ranged=True, heavy=0.7),
     "BOS_B1_LargeBeast": Body("quad", belly=0.42, split=0.55, front=0.7, back=0.3, leg=9, heavy=0.8),
     "BOS_B2_IndustrialRobot": Body("biped", belly=0.4, split=0.5, front=0.6, back=0.4, leg=8, ranged=True, heavy=0.6),
 }
@@ -274,7 +287,7 @@ def plan(key):
     if key.startswith("ENM"):
         add("windup", src("windup"), windup(body))
         add("attack", src("attack"), attack(body))
-        add("recover", idle_img, recover(body))
+        add("recover", src("recover") or idle_img, recover(body))
     if key.startswith("CHR_OPR"):
         add("attack", src("attack") or idle_img, attack(body))
 
@@ -310,6 +323,45 @@ def plan(key):
         rear = [Pose(sy=1 + 0.015 * i, rot=-1.5 * i) for i in range(4)]
         add("windup_strike", src("windup_strike"), rear)
         add("strike", src("strike"), [Pose(sy=0.9, sx=1.07, dx=0.03), Pose(sy=0.95, sx=1.03), Pose(sy=1.01), Pose()])
+    if key.startswith("ENM") and body.kind == "hover":
+        # A flying unit never drops to the ground line while it winds up, fires or recovers.
+        for state, img, poses in (("windup", src("windup"), windup(body)), ("attack", src("attack"), attack(body)),
+                                  ("recover", idle_img, recover(body))):
+            add(state, img, [replace(p, ground=False) for p in poses])
+    if key in ("ENM_R3_SawCharger", "ENM_H3_FastAssaulter"):
+        # Chargers: the attack is the run along the warned line and loops (ApplyIncomingArt.Chargers).
+        rush = replace(body, leg=body.leg + 6, heavy=1.3)
+        add("attack", src("attack"), move(rush) if body.leg else [Pose(dy=-0.012 * (i % 2), pitch=1.5 * (-1) ** i, sx=1.02) for i in range(4)])
+    if key == "ENM_R6_Suicide":
+        # Rolling ball: a rocking roll instead of steps; the fuse swells and throbs like the beetle.
+        add("move", move_img, [Pose(rot=4 * math.sin(TAU * i / 6), dy=-0.015 * abs(math.sin(TAU * i / 6))) for i in range(6)])
+        add("windup", src("windup"), [Pose(sx=1 + 0.01 * i, sy=1 + 0.008 * i, glow=1 + (0.6 if i % 2 else 0.15) * (1 + i / 4)) for i in range(8)])
+    if key == "ENM_R3_SawCharger":
+        add("move", move_img, [Pose(dy=-0.01 * (i % 2), pitch=0.8 * math.sin(TAU * i / 6), sx=1 + 0.01 * math.sin(TAU * i / 6)) for i in range(6)])
+    if key == "ENM_H6_Grenadier" and src("attack") is not None:
+        # The throw happens as the wind-up ends: the follow-through is the drawn attack frame.
+        add("recover", src("attack"), [Pose(dx=0.02, rot=3), Pose(dx=0.01, rot=1.5), Pose()])
+    # Support actions (EnemyView.Act): shown briefly when the medic heals or a producer makes a unit.
+    if src("heal") is not None:
+        add("heal", src("heal"), [Pose(glow=1 + 0.4 * math.sin(math.pi * i / 5), breath=0.01 * math.sin(math.pi * i / 5)) for i in range(6)])
+    if src("produce") is not None:
+        add("produce", src("produce"), [Pose(sy=1 + 0.012 * math.sin(math.pi * i / 5), glow=1 + 0.6 * math.sin(math.pi * i / 5)) for i in range(6)])
+    if src("build") is not None:
+        add("build", src("build"), [Pose(rot=2.5 * (i % 2), dy=0.006 * (i % 2)) for i in range(6)])
+
+    if key == "BOS_B3_FormerCompanion":
+        crouch = [Pose(sy=1 - 0.03 * i, sx=1 + 0.015 * i, rot=-1.5 * i) for i in range(4)]
+        add("windup_charge", idle_img, crouch)  # pounce wind-up
+        add("charge", move_img, [Pose(rot=8, sx=1.04, sy=0.97), Pose(rot=10, sx=1.05, sy=0.96)])  # mid-pounce (BossView lifts it)
+        add("recover", idle_img, recover(body))
+        add("windup_burst", src("windup_burst"), windup(body))
+        add("burst", src("burst"), [Pose(dx=-0.012, rot=-0.8), Pose(dx=0.004), Pose(dx=-0.009, rot=-0.5), Pose(dx=0.002)])
+        # Grenade throw: leans back with the launcher, then snaps forward and settles.
+        add("throw", src("throw"), [Pose(rot=-2), Pose(rot=-4, dx=-0.01), Pose(rot=-5, dx=-0.015), Pose(rot=3, dx=0.02),
+                                    Pose(rot=1.5, dx=0.01), Pose()])
+        add("windup_strike", idle_img, crouch + [Pose(sy=1.05, sx=0.97)])  # leap: crouch, then spring up
+        add("strike", idle_img, [Pose(sy=0.9, sx=1.07), Pose(sy=0.95, sx=1.03), Pose(sy=1.01), Pose()])  # leap landing
+        add("stunned", src("stunned"), shake())
     if key == "BOS_B2_IndustrialRobot":
         add("windup_burst", src("windup_burst"), windup(body))
         add("burst", src("burst"), [Pose(dx=-0.012, rot=-0.8), Pose(dx=0.004), Pose(dx=-0.009, rot=-0.5), Pose(dx=0.002)])

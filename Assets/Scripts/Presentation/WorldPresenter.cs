@@ -262,6 +262,18 @@ namespace Hollow.Presentation
                     case SimEventType.EnemyAttack when ev.Code >= 0 && ev.Direction.sqrMagnitude > 0.01f && FeedbackDirector.FiresAGun(w, (EnemyId)ev.Code):
                         if (enemies.TryGet(ev.EntityId, out var shooter)) shooter.Kick(ev.Direction);
                         break;
+                    // Support actions have their own drawings (heal, produce, build): shown for a moment.
+                    case SimEventType.EnemyHealed:
+                        if (enemies.TryGet(ev.Code, out var medic)) medic.Act("heal");
+                        break;
+                    case SimEventType.EnemySpawned:
+                        foreach (var child in w.Enemies)
+                            if (child.Id == ev.EntityId)
+                            {
+                                if (child.ParentId != 0 && enemies.TryGet(child.ParentId, out var maker)) maker.Act("produce", "build");
+                                break;
+                            }
+                        break;
                     case SimEventType.MeleeSwing:
                         float reach = ev.Direction.magnitude;
                         swingArc.Flash(ev.Position, ev.Direction, reach, ev.Value, new Color(0.7f, 0.95f, 1f, 0.35f), 0.1f);
