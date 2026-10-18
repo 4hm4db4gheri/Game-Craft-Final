@@ -406,3 +406,6 @@
 - باس ۳: `Moves` = Burst، Pounce، Blast، Pounce، Leap؛ فیلد تازه‌ی `PounceChain` (۲، در جان کم ۳)؛ pounce سریع‌تر. رگبار: `BurstDuration` 1، آسیب 26، `BurstTrackRate` 160، فیلد تازه‌ی `BurstHoming` 50 (`ProjectileState.Homing`، `ProjectileSystem.Home` جهت را با سرعت ثابت می‌چرخاند). نارنجک: `BlastCount/BlastGap/BlastLead/BlastPlayerGap/BlastSideAngle`؛ `BossSystem.ThrowNextBlast` هر نارنجک را هنگام پرتاب از جای و جهت حرکت بازیکن می‌گذارد (`BossState.BlastsLeft/BlastIndex/NextBlastTick`، ذخیره می‌شوند).
 - revision 11 مهارت‌ها و باس‌های پروفایل ذخیره‌شده را از baseline می‌گیرد. seed و `Baseline.json` یکی‌اند.
 - تست‌های تازه: `HeavyMovesBreakTheObstaclesInTheirZone` (۷ حالت)، `ShotsAndRegularEnemyBlastsBreakNothing`، `FormerCompanionPouncesTwiceInARow`، `FormerCompanionBurstTurnsAndBendsTowardThePlayer`، `FormerCompanionGrenadesHemThePlayerInButNeverLandOnThem`. ۵۰۲ تست پاس. در Play mode دیده نشده و با دست بازی نشده است.
+
+### 2026-10-18 — commit و push
+- تغییرات خودکار یونیتی (glyphهای تازه‌ی اطلس وزیرمتن، یک rid در تنظیمات سراسری URP) commit شد و همراه `0dd6e5a` و `f120231` به `origin/main` push شد. `Assets/_Recovery` مثل قبل commit نشد.
