@@ -24,7 +24,7 @@ namespace Hollow.EditorTools
             var options = new BuildPlayerOptions
             {
                 scenes = scenes,
-                locationPathName = Path.Combine(OutputDir, "Hollow.exe"),
+                locationPathName = Path.Combine(OutputDir, "As Instructed.exe"),
                 target = BuildTarget.StandaloneWindows64,
                 options = development ? BuildOptions.Development : BuildOptions.None,
             };

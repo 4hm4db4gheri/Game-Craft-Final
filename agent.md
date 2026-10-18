@@ -9,7 +9,7 @@
 
 ## خلاصه‌ی پروژه
 
-- **نام:** Game Craft Final — بازی **Hollow** (جم دو روزه). شوتر دوبعدی با دید 3/4 از بالا مثل Kill The Crows (نه پیکسل‌آرت)، سه فاز (حیوانات، ربات‌ها، انسان‌ها)، ۵ موج + ۱ باس در هر فاز.
+- **نام:** Game Craft Final — بازی **As Instructed** (قبلاً Hollow) (جم دو روزه). شوتر دوبعدی با دید 3/4 از بالا مثل Kill The Crows (نه پیکسل‌آرت)، سه فاز (حیوانات، ربات‌ها، انسان‌ها)، ۵ موج + ۱ باس در هر فاز.
 - **مرجع طراحی:** GDD جدید **v0.19** است: `docs/GDD_v0.19.md` (تبدیل از `Assets/GDD/Hollow_Game_Design_v0.19_EN.docx`). کد حالا بر اساس v0.19 است (به‌جز موبایل)؛ `docs/GDD.md` نسخه‌ی قدیمی v0.12 برای مرجع است. فهرست تفاوت‌ها و وضعیت هر کدام در `docs/GDD_CHANGES_v0.19.md`. پرامپت اصلی کاربر شامل تسک‌های T00 تا T22 است؛ وضعیت در `docs/TASKS.md`.
 - **Unity:** `6000.6.0f1`، URP با Renderer2D (sort axis = Y برای مرتب‌سازی بر اساس پا)، Input System جدید (actionها در کد، `UnityInputSource`)، Cinemachine 6.6 و AI Navigation (کاربر نصب کرده؛ Navigation استفاده نمی‌شود)، Newtonsoft JSON.
 - **git:** شاخه‌ی `main`، یک commit برای هر تسک، بدون push مگر کاربر بخواهد.
@@ -516,3 +516,6 @@
 
 ### 2026-10-18 — دکمه‌ی خروج در منوی اصلی
 - به خواست کاربر دکمه‌ی «خروج» (`menu.quit`) زیر «تنظیمات» در `MenuScreens.ShowMain` برگشت؛ `GameApp.Quit` را صدا می‌زند (در Editor Play را متوقف می‌کند). کامپایل بدون خطا؛ Play mode دیده نشده.
+
+### 2026-10-19 — نام بازی: As Instructed
+- به خواست کاربر نام بازی «As Instructed» شد: `productName` در `ProjectSettings.asset` (عنوان پنجره؛ مسیر `persistentDataPath` و در نتیجه جایگاه‌های ذخیره‌ی قبلی عوض می‌شود)، `menu.title` در `fa.json` («AS INSTRUCTED») و نام فایل build در `BuildTool` (`As Instructed.exe`). namespaceها (`Hollow.*`) و منوی ادیتور `Hollow` دست نخوردند. به خواست کاربر تست و کامپایل اجرا نشد.
