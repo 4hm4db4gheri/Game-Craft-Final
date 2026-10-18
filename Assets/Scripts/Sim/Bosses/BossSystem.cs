@@ -4,7 +4,11 @@ using UnityEngine;
 
 namespace Hollow.Sim
 {
-    public enum BossAi { Rest, ChargeWindup, Charging, ChargeRecover, StrikeWindup, StrikeRecover, BurstWarning, Bursting, BurstRecover, BlastWarning, BlastRecover }
+    public enum BossAi
+    {
+        Rest, ChargeWindup, Charging, ChargeRecover, StrikeWindup, StrikeRecover, BurstWarning, Bursting, BurstRecover, BlastWarning, BlastRecover,
+        PounceWindup, Pouncing, PounceRecover, LeapRise, LeapAir, LeapLock, LeapRecover,
+    }
 
     public sealed class BossState
     {
@@ -33,6 +37,10 @@ namespace Hollow.Sim
         public bool ChargeHit;
         public long NextShotTick;
         public long BurstStartTick;
+        /// <summary>Pounce and leap: where the jump left from, when the current part of it began, pounces still to follow.</summary>
+        public Vector2 LeapFrom;
+        public long MoveStartTick;
+        public int ChainLeft;
 
         public long StunnedUntilTick;
         public long EmpResistantUntilTick;
@@ -53,6 +61,9 @@ namespace Hollow.Sim
     /// readable telegraphed patterns that mostly target the player, shorter rests (never removed warnings)
     /// at low health, healing capped at a share of max health, EMP interrupt + resistance, and a fixed
     /// reward pool so a quick kill never earns less than a slow one.
+    /// D86: armour blocks a share of every hit except in the exposed windows (recovering or stunned); the attack cycle
+    /// comes from the data and adds the pounce (a hop onto the player's marked position) and the leap (off the map,
+    /// the landing zone follows the player, locks, then a slam); the burst can fan, sweep there and back and track.
     /// </summary>
     public static class BossSystem
     {
@@ -81,6 +92,7 @@ namespace Hollow.Sim
             b.PoolXpPaid = b.PoolCoinsPaid = 0;
             b.HealedTotal = 0;
             b.StunnedUntilTick = b.EmpResistantUntilTick = 0;
+            b.ChainLeft = 0;
 
             w.Waves.Kind = EncounterKind.Boss;
             w.SafeInterval = false;
@@ -138,6 +150,25 @@ namespace Hollow.Sim
 
         static bool LowHealth(BossState b, BossData d) => b.Health / b.MaxHealth <= d.LowHealthFraction;
 
+        /// <summary>Mid-jump (pounce or leap): bodies do not collide with it.</summary>
+        public static bool InAir(BossState b) => b.Ai is BossAi.Pouncing or BossAi.LeapRise or BossAi.LeapAir or BossAi.LeapLock;
+
+        /// <summary>Off the map during a leap: no shot, blade, blast, mine or pulse can reach it.</summary>
+        public static bool OffMap(BossState b) => b.Ai is BossAi.LeapRise or BossAi.LeapAir or BossAi.LeapLock;
+
+        /// <summary>The boss can be hit (and targeted) right now.</summary>
+        public static bool Targetable(BossState b) => b.Active && !b.Dead && !OffMap(b);
+
+        /// <summary>The punish windows: recovering after an attack, or stunned (D86).</summary>
+        public static bool Exposed(World w, BossState b) => w.Clock.Tick < b.StunnedUntilTick ||
+            b.Ai is BossAi.ChargeRecover or BossAi.StrikeRecover or BossAi.BurstRecover or BossAi.BlastRecover or BossAi.PounceRecover or BossAi.LeapRecover;
+
+        /// <summary>Share of a hit the boss's armour blocks right now.</summary>
+        public static float ArmorNow(World w) => Exposed(w, w.Boss) ? Data(w).ExposedArmor : Data(w).Armor;
+
+        /// <summary>0..1 through the current timed part of a pounce or leap (the view draws the jump from it).</summary>
+        public static float MoveProgress(World w) => Flight(w.Clock.Tick, w.Boss);
+
         static void StepAi(World w, BossState b, BossData d)
         {
             long now = w.Clock.Tick;
@@ -171,7 +202,56 @@ namespace Hollow.Sim
                 case BossAi.StrikeRecover:
                 case BossAi.BurstRecover:
                 case BossAi.BlastRecover:
+                case BossAi.LeapRecover:
                     if (now >= b.AiUntilTick) Rest(w, b, d);
+                    break;
+                case BossAi.PounceRecover:
+                    if (now < b.AiUntilTick) break;
+                    if (b.ChainLeft > 0) { b.ChainLeft--; StartPounce(w, b, d); }
+                    else Rest(w, b, d);
+                    break;
+
+                case BossAi.PounceWindup:
+                    if (now >= b.AiUntilTick)
+                    {
+                        b.Ai = BossAi.Pouncing;
+                        b.LeapFrom = b.Position;
+                        b.MoveStartTick = now;
+                        b.AiUntilTick = now + System.Math.Max(1, w.Ticks(d.PounceFlightTime));
+                        Attack(w, b);
+                    }
+                    break;
+                case BossAi.Pouncing:
+                    b.Position = Vector2.Lerp(b.LeapFrom, b.AttackPoint, Flight(now, b));
+                    if (now >= b.AiUntilTick) Land(w, b, d.PounceRadius, d.PounceDamage, BossAi.PounceRecover, d.PounceRecovery);
+                    break;
+
+                case BossAi.LeapRise:
+                    if (now >= b.AiUntilTick)
+                    {
+                        b.Ai = BossAi.LeapAir;
+                        b.MoveStartTick = now;
+                        b.AiUntilTick = now + w.Ticks(d.LeapTrackTime);
+                    }
+                    break;
+                case BossAi.LeapAir:
+                {
+                    // Off the map, so walls and bodies do not matter: the landing zone simply follows the player.
+                    Vector2 to = player - b.Position;
+                    float step = d.LeapTrackSpeed * Core.SimClock.Dt;
+                    b.Position = to.magnitude <= step ? player : b.Position + to.normalized * step;
+                    if (now >= b.AiUntilTick)
+                    {
+                        b.Position = b.AttackPoint = w.Arena.NearestFree(b.Position, b.Radius);
+                        b.Ai = BossAi.LeapLock;
+                        b.MoveStartTick = now;
+                        b.AiUntilTick = now + System.Math.Max(1, w.Ticks(d.LeapLockTime));
+                        w.Emit(SimEventType.EnemyTelegraph, BossState.EntityId, b.Position, Vector2.right * d.LeapRadius, d.LeapLockTime, (int)TelegraphShape.Circle);
+                    }
+                    break;
+                }
+                case BossAi.LeapLock:
+                    if (now >= b.AiUntilTick) Land(w, b, d.LeapRadius, d.LeapDamage, BossAi.LeapRecover, d.LeapRecovery);
                     break;
 
                 case BossAi.StrikeWindup:
@@ -186,6 +266,7 @@ namespace Hollow.Sim
                     break;
 
                 case BossAi.BurstWarning:
+                    Track(w, b, d);
                     if (now >= b.AiUntilTick)
                     {
                         b.Ai = BossAi.Bursting;
@@ -196,12 +277,18 @@ namespace Hollow.Sim
                     }
                     break;
                 case BossAi.Bursting:
+                    Track(w, b, d);
                     if (now >= b.NextShotTick && now < b.AiUntilTick)
                     {
-                        // Sweeps across the warned cone, never outside it.
+                        // Sweeps across the warned cone (there and back for several sweeps), never outside it.
                         float t = (now - b.BurstStartTick) / (float)System.Math.Max(1, b.AiUntilTick - b.BurstStartTick);
-                        Vector2 dir = SimMath.Rotate(b.AttackDir, Mathf.Lerp(-d.BurstSpread * 0.5f, d.BurstSpread * 0.5f, t));
-                        FireShot(w, b, d, dir);
+                        float s = t * System.Math.Max(1, d.BurstSweeps);
+                        int pass = (int)s;
+                        float f = s - pass;
+                        if ((pass & 1) == 1) f = 1f - f;
+                        Vector2 center = SimMath.Rotate(b.AttackDir, Mathf.Lerp(-d.BurstSpread * 0.5f, d.BurstSpread * 0.5f, f));
+                        int fan = System.Math.Max(1, d.BurstFanCount);
+                        for (int k = 0; k < fan; k++) FireShot(w, b, d, SimMath.Rotate(center, (k - (fan - 1) * 0.5f) * d.BurstFanSpacing));
                         b.NextShotTick = now + System.Math.Max(1, w.Ticks(d.BurstShotInterval));
                     }
                     if (now >= b.AiUntilTick) { b.Ai = BossAi.BurstRecover; b.AiUntilTick = now + w.Ticks(d.BurstRecovery); }
@@ -221,43 +308,92 @@ namespace Hollow.Sim
             b.AttackDir = SimMath.SafeNormal(player - b.Position, b.Facing);
             b.Facing = b.AttackDir;
             b.AttackStartTick = now;
-            int pattern = b.PatternIndex++ % 2;
-            switch (d.Id)
+            var move = d.Moves.Count > 0 ? d.Moves[b.PatternIndex++ % d.Moves.Count] : BossMove.Charge;
+            if (move == BossMove.Strike && Vector2.Distance(b.Position, player) > d.StrikeRadius * d.StrikeTriggerFactor)
+                move = d.Moves.Contains(BossMove.Pounce) ? BossMove.Pounce : BossMove.Charge; // too far: close in instead
+            switch (move)
             {
-                case BossId.LargeBeast:
-                    bool close = Vector2.Distance(b.Position, player) <= d.StrikeRadius * d.StrikeTriggerFactor;
-                    if (pattern == 0 || !close)
-                    {
-                        b.Ai = BossAi.ChargeWindup;
-                        b.AiUntilTick = now + w.Ticks(d.ChargeTelegraph);
-                        b.ChargeLength = Mathf.Min(Vector2.Distance(b.Position, player) + d.ChargeOvershoot, d.ChargeMaxDistance);
-                        Telegraph(w, b, TelegraphShape.Lane, b.ChargeLength, d.ChargeTelegraph);
-                    }
-                    else
-                    {
-                        b.Ai = BossAi.StrikeWindup;
-                        b.AiUntilTick = now + w.Ticks(d.StrikeWindup);
-                        Telegraph(w, b, TelegraphShape.Circle, d.StrikeRadius, d.StrikeWindup);
-                    }
+                case BossMove.Charge:
+                    b.Ai = BossAi.ChargeWindup;
+                    b.AiUntilTick = now + w.Ticks(d.ChargeTelegraph);
+                    b.ChargeLength = Mathf.Min(Vector2.Distance(b.Position, player) + d.ChargeOvershoot, d.ChargeMaxDistance);
+                    Telegraph(w, b, TelegraphShape.Lane, b.ChargeLength, d.ChargeTelegraph);
                     break;
 
-                default: // industrial robot and former companion: burst, then marked blast / grenade
-                    if (pattern == 0)
-                    {
-                        b.Ai = BossAi.BurstWarning;
-                        b.AiUntilTick = now + w.Ticks(d.BurstWarning);
-                        Telegraph(w, b, TelegraphShape.Line, d.ProjectileRange, d.BurstWarning);
-                        // The former companion combines patterns at low health; the marked zone keeps an escape.
-                        if (d.Id == BossId.FormerCompanion && LowHealth(b, d)) Blast(w, b, d);
-                    }
-                    else
-                    {
-                        Blast(w, b, d);
-                        b.Ai = BossAi.BlastWarning;
-                        b.AiUntilTick = now + w.Ticks(d.BlastWarning);
-                    }
+                case BossMove.Strike:
+                    b.Ai = BossAi.StrikeWindup;
+                    b.AiUntilTick = now + w.Ticks(d.StrikeWindup);
+                    Telegraph(w, b, TelegraphShape.Circle, d.StrikeRadius, d.StrikeWindup);
+                    break;
+
+                case BossMove.Burst:
+                    b.Ai = BossAi.BurstWarning;
+                    b.AiUntilTick = now + w.Ticks(d.BurstWarning);
+                    Telegraph(w, b, TelegraphShape.Line, d.ProjectileRange, d.BurstWarning);
+                    // The former companion combines patterns at low health; the marked zone keeps an escape.
+                    if (d.Id == BossId.FormerCompanion && LowHealth(b, d)) Blast(w, b, d);
+                    break;
+
+                case BossMove.Blast:
+                    Blast(w, b, d);
+                    b.Ai = BossAi.BlastWarning;
+                    b.AiUntilTick = now + w.Ticks(d.BlastWarning);
+                    break;
+
+                case BossMove.Pounce:
+                    b.ChainLeft = LowHealth(b, d) ? System.Math.Max(0, d.PounceChainLowHealth - 1) : 0;
+                    StartPounce(w, b, d);
+                    break;
+
+                case BossMove.Leap:
+                    b.Ai = BossAi.LeapRise;
+                    b.LeapFrom = b.Position;
+                    b.MoveStartTick = now;
+                    b.AiUntilTick = now + System.Math.Max(1, w.Ticks(d.LeapRiseTime));
+                    Attack(w, b);
+                    w.Emit(SimEventType.EnemyTelegraph, BossState.EntityId, b.Position, Vector2.right * d.LeapRadius,
+                        d.LeapRiseTime + d.LeapTrackTime + d.LeapLockTime, (int)TelegraphShape.Circle);
                     break;
             }
+        }
+
+        /// <summary>Marks the landing zone on the player's position (within reach) for the telegraph and the flight.</summary>
+        static void StartPounce(World w, BossState b, BossData d)
+        {
+            long now = w.Clock.Tick;
+            Vector2 to = w.Player.Position - b.Position;
+            if (to.magnitude > d.PounceRange) to = to.normalized * d.PounceRange;
+            b.AttackPoint = w.Arena.NearestFree(b.Position + to, b.Radius);
+            b.AttackDir = SimMath.SafeNormal(b.AttackPoint - b.Position, b.Facing);
+            b.Facing = b.AttackDir;
+            b.Ai = BossAi.PounceWindup;
+            b.AiUntilTick = now + System.Math.Max(1, w.Ticks(d.PounceTelegraph));
+            w.Emit(SimEventType.EnemyTelegraph, BossState.EntityId, b.AttackPoint, Vector2.right * d.PounceRadius,
+                d.PounceTelegraph + d.PounceFlightTime, (int)TelegraphShape.Circle);
+        }
+
+        static void Land(World w, BossState b, float radius, float damage, BossAi recover, float recovery)
+        {
+            b.Position = b.AttackPoint;
+            Attack(w, b);
+            w.Emit(SimEventType.Explosion, BossState.EntityId, b.Position, default, radius, (int)HazardOwner.Enemy);
+            AreaDamage(w, b.Position, radius, damage);
+            b.Ai = recover;
+            b.AiUntilTick = w.Clock.Tick + w.Ticks(recovery);
+        }
+
+        /// <summary>0..1 through the current timed part of a pounce or leap.</summary>
+        static float Flight(long now, BossState b) =>
+            Mathf.Clamp01((now - b.MoveStartTick) / (float)System.Math.Max(1, b.AiUntilTick - b.MoveStartTick));
+
+        /// <summary>The warned burst cone turns toward the player, no faster than the data allows.</summary>
+        static void Track(World w, BossState b, BossData d)
+        {
+            if (d.BurstTrackRate <= 0f) return;
+            Vector2 want = SimMath.SafeNormal(w.Player.Position - b.Position, b.AttackDir);
+            float max = d.BurstTrackRate * Core.SimClock.Dt;
+            b.AttackDir = SimMath.Rotate(b.AttackDir, Mathf.Clamp(Vector2.SignedAngle(b.AttackDir, want), -max, max));
+            b.Facing = b.AttackDir;
         }
 
         static void Blast(World w, BossState b, BossData d)
@@ -336,11 +472,12 @@ namespace Hollow.Sim
         public static float Damage(World w, float amount, DamageSource source, Vector2 dir)
         {
             var b = w.Boss;
-            if (!b.Active || b.Dead || amount <= 0) return 0;
-            b.Health -= amount;
-            w.Emit(SimEventType.EnemyHit, BossState.EntityId, b.Position, dir, amount, (int)source);
+            if (!Targetable(b) || amount <= 0) return 0;
+            float dealt = amount * (1f - ArmorNow(w));
+            b.Health -= dealt;
+            w.Emit(SimEventType.EnemyHit, BossState.EntityId, b.Position, dir, dealt, (int)source);
             if (b.Health <= 0) Defeat(w);
-            return amount;
+            return dealt;
         }
 
         /// <summary>Healing of the boss (repair robots, medics) never exceeds HealCapFraction of max health in total.</summary>
@@ -359,7 +496,8 @@ namespace Hollow.Sim
         public static void Emp(World w, float stun, float resistance)
         {
             var b = w.Boss;
-            if (!b.Active || b.Dead || !Data(w).EmpAffects || w.Clock.Tick < b.EmpResistantUntilTick) return;
+            if (!Targetable(b) || !Data(w).EmpAffects || w.Clock.Tick < b.EmpResistantUntilTick) return;
+            if (b.Ai == BossAi.Pouncing) b.Position = w.Arena.NearestFree(b.Position, b.Radius); // dropped mid-hop
             b.StunnedUntilTick = w.Clock.Tick + w.Ticks(stun);
             b.EmpResistantUntilTick = b.StunnedUntilTick + w.Ticks(resistance);
             b.Ai = BossAi.Rest;

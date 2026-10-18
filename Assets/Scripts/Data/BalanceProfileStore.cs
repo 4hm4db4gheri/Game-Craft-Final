@@ -72,6 +72,14 @@ namespace Hollow.Data
                 foreach (var b in profile.Bosses)
                     if (baseline.Bosses.Find(x => x.Id == b.Id) is { } bb) b.HitHeight = bb.HitHeight;
             }
+            if (profile.Revision < 8)
+            {
+                // D86 difficulty pass: boss armour, health and new moves; automatic rifles toned down with spread bloom.
+                var fresh = BalanceJson.Clone(baseline);
+                profile.Bosses = fresh.Bosses;
+                profile.Weapons = fresh.Weapons;
+                profile.BuildIndex();
+            }
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;

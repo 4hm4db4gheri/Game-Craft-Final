@@ -97,7 +97,7 @@ namespace Hollow.Sim
             Hits.Sort((a, b) => a.t != b.t ? a.t.CompareTo(b.t) : a.e.Id.CompareTo(b.e.Id));
 
             var boss = w.Boss;
-            if (boss.Active && !boss.Dead && !p.HitIds.Contains(BossState.EntityId))
+            if (BossSystem.Targetable(boss) && !p.HitIds.Contains(BossState.EntityId))
             {
                 float tb = SimMath.SegmentCapsuleHit(from, to, boss.Position, BossSystem.Data(w).HitHeight, boss.Radius + p.Radius);
                 if (tb >= 0 && tb <= wallT)

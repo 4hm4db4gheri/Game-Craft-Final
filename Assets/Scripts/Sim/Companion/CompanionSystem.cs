@@ -118,7 +118,7 @@ namespace Hollow.Sim
             Vector2 targetPos;
             var boss = w.Boss;
             if (best != null) targetPos = best.Position;
-            else if (boss.Active && !boss.Dead && Vector2.Distance(c.Position, boss.Position) < data.FireRange && w.Arena.LineOfSight(c.Position, boss.Position)) targetPos = boss.Position;
+            else if (BossSystem.Targetable(boss) && Vector2.Distance(c.Position, boss.Position) < data.FireRange && w.Arena.LineOfSight(c.Position, boss.Position)) targetPos = boss.Position;
             else return;
 
             Vector2 dir = SimMath.SafeNormal(targetPos - c.Position, c.Facing);

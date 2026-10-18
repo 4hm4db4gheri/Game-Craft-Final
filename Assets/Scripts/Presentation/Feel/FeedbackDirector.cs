@@ -549,7 +549,7 @@ namespace Hollow.Presentation
             }
 
             var b = w.Boss;
-            if (b.Active && !b.Dead && Moved(b.Position, b.PrevPosition, ticks, out Vector2 bd, out float bdist))
+            if (b.Active && !b.Dead && !BossSystem.InAir(b) && Moved(b.Position, b.PrevPosition, ticks, out Vector2 bd, out float bdist))
             {
                 bool machine = BossSystem.Data(w).IsMachine;
                 for (int i = Steps(bdist, Stride(b.Radius)); i > 0; i--)

@@ -17,6 +17,12 @@ namespace Hollow.Data
 
     public enum BossId { LargeBeast, IndustrialRobot, FormerCompanion }
 
+    /// <summary>
+    /// One boss attack (D86). Strike is only used when the player is close; otherwise the boss closes in with
+    /// a pounce (or a charge if it has no pounce). Leap = off the map, the landing zone tracks the player, then a slam.
+    /// </summary>
+    public enum BossMove { Charge, Strike, Burst, Blast, Pounce, Leap }
+
     /// <summary>The playable AI (v0.19 §3). None = no character chosen (tests and tools only).</summary>
     public enum AiId { None, Gpt, Claude, Grok, DeepSeek }
 

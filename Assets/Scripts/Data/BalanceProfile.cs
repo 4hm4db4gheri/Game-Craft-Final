@@ -283,6 +283,13 @@ namespace Hollow.Data
         [Gdd("§7")] public float LowHealthFraction;
         [Gdd("v0.19 §12"), Unit("s")] public float LowHealthAttackInterval;
 
+        /// <summary>D86: the attack cycle, in order.</summary>
+        [Placeholder] public List<BossMove> Moves = new();
+        /// <summary>D86: share of every incoming hit the armour blocks (weapons, melee, dash, explosions)…</summary>
+        [Placeholder] public float Armor;
+        /// <summary>…and while exposed: recovering after an attack, or stunned. The punish windows stay worth it.</summary>
+        [Placeholder] public float ExposedArmor;
+
         [Gdd("§7"), Unit("s")] public float ChargeTelegraph;
         [Gdd("v0.19 §12"), Unit("u/s")] public float ChargeSpeed;
         /// <summary>D63: like regular chargers, the lane reaches past the recorded player position by this much…</summary>
@@ -303,6 +310,13 @@ namespace Hollow.Data
         [Gdd("§7"), Unit("s")] public float BurstRecovery;
         [Gdd("v0.19 §12"), Unit("s")] public float BurstShotInterval;
         [Placeholder, Unit("deg")] public float BurstSpread;
+        /// <summary>D86: bullets in each volley, side by side this far apart (1 = a single bullet).</summary>
+        [Placeholder] public int BurstFanCount = 1;
+        [Placeholder, Unit("deg")] public float BurstFanSpacing;
+        /// <summary>D86: passes across the cone during one burst (2 = there and back).</summary>
+        [Placeholder] public int BurstSweeps = 1;
+        /// <summary>D86: the warned cone turns toward the player at most this fast, during the warning and the burst.</summary>
+        [Placeholder, Unit("deg/s")] public float BurstTrackRate;
         [Gdd("v0.19 §12"), Unit("u/s")] public float ProjectileSpeed;
         /// <summary>Time from marking the blast zone to the explosion (for the former companion: throw delay + fuse).</summary>
         [Gdd("§7"), Unit("s")] public float BlastWarning;
@@ -312,6 +326,27 @@ namespace Hollow.Data
         [Placeholder, Unit("u")] public float BlastThrowRange;
         /// <summary>The boss stays in place this long after its blast goes off.</summary>
         [Gdd("v0.19 §12"), Unit("s")] public float BlastRecovery;
+
+        /// <summary>D86 pounce: the landing zone is marked on the player for the telegraph and the flight…</summary>
+        [Placeholder, Unit("s")] public float PounceTelegraph;
+        [Placeholder, Unit("s")] public float PounceFlightTime;
+        /// <summary>…never farther than this from the boss.</summary>
+        [Placeholder, Unit("u")] public float PounceRange;
+        [Placeholder, Unit("u")] public float PounceRadius;
+        [Placeholder] public float PounceDamage;
+        [Placeholder, Unit("s")] public float PounceRecovery;
+        /// <summary>Pounces in a row at low health (each with its full warning).</summary>
+        [Placeholder] public int PounceChainLowHealth = 1;
+
+        /// <summary>D86 leap: the boss rises off the map, its landing zone follows the player, locks, then it slams down.</summary>
+        [Placeholder, Unit("s")] public float LeapRiseTime;
+        [Placeholder, Unit("s")] public float LeapTrackTime;
+        [Placeholder, Unit("u/s")] public float LeapTrackSpeed;
+        /// <summary>Time from the zone locking to the slam: the escape window.</summary>
+        [Placeholder, Unit("s")] public float LeapLockTime;
+        [Placeholder, Unit("u")] public float LeapRadius;
+        [Placeholder] public float LeapDamage;
+        [Placeholder, Unit("s")] public float LeapRecovery;
 
         [Gdd("§7")] public float HealCapFraction;
         [Gdd("v0.19 §12")] public float BurstShotDamage;
@@ -362,6 +397,12 @@ namespace Hollow.Data
         public bool ReloadSurvivesDash;
         /// <summary>GDD §5: the energy blade ignores frontal resistance.</summary>
         [Gdd("§5")] public bool IgnoresFrontalArmor;
+        /// <summary>D86: held automatic fire loses accuracy. Each shot widens the spread by this much…</summary>
+        [Placeholder, Unit("deg")] public float BloomPerShot;
+        [Placeholder, Unit("deg")] public float BloomMax;
+        /// <summary>…and it settles back at this rate once no shot has been fired for the delay (bursts stay accurate).</summary>
+        [Placeholder, Unit("deg/s")] public float BloomRecovery;
+        [Placeholder, Unit("s")] public float BloomRecoveryDelay;
         [Gdd("§8")] public List<WeaponLevel> Levels = new();
     }
 

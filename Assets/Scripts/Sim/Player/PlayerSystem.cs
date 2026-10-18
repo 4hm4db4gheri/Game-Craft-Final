@@ -86,7 +86,7 @@ namespace Hollow.Sim
             }
 
             var boss = w.Boss;
-            if (boss.Active && !boss.Dead && !p.DashHitIds.Contains(BossState.EntityId))
+            if (BossSystem.Targetable(boss) && !p.DashHitIds.Contains(BossState.EntityId))
             {
                 float br = boss.Radius + data.BodyRadius;
                 if (SimMath.SegmentPointDistanceSq(from, p.Position, boss.Position) <= br * br)

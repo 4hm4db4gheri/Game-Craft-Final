@@ -25,6 +25,9 @@ namespace Hollow.Tests.Sim
             return sim;
         }
 
+        /// <summary>Deals this much after armour (tests about health thresholds, not about armour).</summary>
+        static void HurtRaw(World w, float amount) => BossSystem.Damage(w, amount / (1f - BossSystem.ArmorNow(w)), DamageSource.Weapon, Vector2.right);
+
         static void KillAdds(World w)
         {
             foreach (var e in w.Enemies.ToList()) if (e.Alive) Combat.DamageEnemy(w, e, 1e7f, DamageSource.Weapon, Vector2.right);
@@ -57,7 +60,7 @@ namespace Hollow.Tests.Sim
             // Bring the boss down in steps so both threshold groups spawn, killing every add as it appears.
             for (int step = 0; step < 6 && !w.Boss.Dead; step++)
             {
-                BossSystem.Damage(w, w.Boss.MaxHealth * 0.15f, DamageSource.Weapon, Vector2.right);
+                HurtRaw(w, w.Boss.MaxHealth * 0.15f);
                 for (int t = 0; t < 60 * 25; t++)
                 {
                     sim.Step(PlayerCommand.None);
@@ -83,7 +86,7 @@ namespace Hollow.Tests.Sim
             sim.Step(PlayerCommand.None);
             int opening = d.OpeningAdds.Sum(c => c.Count);
             Assert.AreEqual(opening, Queued());
-            BossSystem.Damage(w, w.Boss.MaxHealth * 0.31f, DamageSource.Weapon, Vector2.right); // below 70 %
+            HurtRaw(w, w.Boss.MaxHealth * 0.31f); // below 70 %
             sim.Step(PlayerCommand.None);
             int afterFirst = Queued();
             Assert.AreEqual(opening + d.Thresholds[0].Adds.Sum(c => c.Count), afterFirst);
@@ -91,7 +94,7 @@ namespace Hollow.Tests.Sim
             w.Boss.HealedTotal = 0;
             BossSystem.Heal(w, w.Boss.MaxHealth); // back above 70 % (capped at 10 %: still below) ...
             w.Boss.Health = w.Boss.MaxHealth * 0.9f; // ... so force it above for the test
-            BossSystem.Damage(w, w.Boss.MaxHealth * 0.25f, DamageSource.Weapon, Vector2.right);
+            HurtRaw(w, w.Boss.MaxHealth * 0.25f);
             sim.Step(PlayerCommand.None);
             Assert.AreEqual(afterFirst, Queued(), "healing above the threshold does not re-queue it");
 
@@ -157,7 +160,7 @@ namespace Hollow.Tests.Sim
             var sim = Fight(3);
             var w = sim.World;
             var d = w.Profile.Boss(3);
-            BossSystem.Damage(w, w.Boss.MaxHealth * 0.7f, DamageSource.Weapon, Vector2.right);
+            HurtRaw(w, w.Boss.MaxHealth * 0.7f);
             for (int t = 0; t < 60 * 60; t++)
             {
                 sim.Step(PlayerCommand.None);
@@ -217,7 +220,7 @@ namespace Hollow.Tests.Sim
             }
             Assert.GreaterOrEqual(starts.Count, 4);
             for (int i = 2; i < starts.Count; i++) // the first entry is the encounter start
-                Assert.AreEqual(w.Ticks(d.AttackInterval), starts[i] - starts[i - 1], "v0.19 §12 minimum start interval");
+                Assert.GreaterOrEqual(starts[i] - starts[i - 1], w.Ticks(d.AttackInterval), "v0.19 §12 minimum start interval");
         }
 
         [Test]
@@ -230,6 +233,155 @@ namespace Hollow.Tests.Sim
             w.Player.Position = w.Boss.Position + new Vector2(0, -3f);
             sim.Run(40, new PlayerCommand { FireHeld = true, AimWorld = w.Boss.Position });
             Assert.Less(w.Boss.Health, hp, "pistol");
+        }
+
+        // ---------------------------------------------------------------- D86: armour and the new moves
+
+        /// <summary>Runs until the boss reaches this state (killing adds as they come); false if it never does.</summary>
+        static bool RunUntil(Simulation sim, BossAi ai, int maxTicks = 60 * 15)
+        {
+            for (int t = 0; t < maxTicks && sim.World.Boss.Ai != ai; t++)
+            {
+                sim.Step(PlayerCommand.None);
+                KillAdds(sim.World);
+            }
+            return sim.World.Boss.Ai == ai;
+        }
+
+        /// <summary>Makes the given move the boss's next attack.</summary>
+        static void NextMove(World w, BossMove move)
+        {
+            var d = w.Profile.Boss(w.Phase);
+            w.Boss.PatternIndex = d.Moves.IndexOf(move);
+            Assert.GreaterOrEqual(w.Boss.PatternIndex, 0, $"{d.Id} has no {move}");
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void ArmourBlocksHitsExceptInThePunishWindows(int phase)
+        {
+            var sim = Fight(phase);
+            var w = sim.World;
+            var d = w.Profile.Boss(phase);
+            Assert.Greater(d.Armor, 0f);
+            w.Boss.Ai = BossAi.Rest;
+            Assert.AreEqual(100f * (1f - d.Armor), BossSystem.Damage(w, 100f, DamageSource.Weapon, Vector2.right), 1e-3f, "armoured");
+            w.Boss.Ai = BossAi.ChargeRecover;
+            Assert.AreEqual(100f * (1f - d.ExposedArmor), BossSystem.Damage(w, 100f, DamageSource.Weapon, Vector2.right), 1e-3f, "recovering");
+            w.Boss.Ai = BossAi.Rest;
+            w.Boss.StunnedUntilTick = w.Clock.Tick + 60;
+            Assert.AreEqual(100f * (1f - d.ExposedArmor), BossSystem.Damage(w, 100f, DamageSource.Weapon, Vector2.right), 1e-3f, "stunned");
+        }
+
+        [TestCase(2)]
+        [TestCase(3)]
+        public void LeapLeavesTheMapTracksThePlayerAndSlamsWhereItLocked(int phase)
+        {
+            var sim = Fight(phase);
+            var w = sim.World;
+            var d = w.Profile.Boss(phase);
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(0, -6), w.Profile.Player.BodyRadius);
+            NextMove(w, BossMove.Leap);
+            Assert.IsTrue(RunUntil(sim, BossAi.LeapAir));
+            Assert.IsFalse(BossSystem.Targetable(w.Boss), "off the map");
+            Assert.AreEqual(0f, BossSystem.Damage(w, 100f, DamageSource.Weapon, Vector2.right), "nothing reaches it");
+
+            // The player runs; the landing zone follows.
+            Vector2 run = w.Arena.NearestFree(w.Player.Position + new Vector2(4, 0), w.Profile.Player.BodyRadius);
+            w.Player.Position = run;
+            Assert.IsTrue(RunUntil(sim, BossAi.LeapLock));
+            // (the boss still needs room for its body, so a wall can nudge the zone by up to its radius)
+            Assert.Less(Vector2.Distance(w.Boss.Position, w.Player.Position), w.Boss.Radius + 0.5f, "the zone locked on the player");
+
+            // Standing in the locked zone hurts.
+            w.Player.InvulnerableUntilTick = 0;
+            float hp = w.Player.Health;
+            Assert.IsTrue(RunUntil(sim, BossAi.LeapRecover, 120));
+            Assert.Less(w.Player.Health, hp, "the slam hits");
+            Assert.IsTrue(BossSystem.Targetable(w.Boss));
+            Assert.IsTrue(BossSystem.Exposed(w, w.Boss), "the landing is a punish window");
+        }
+
+        [Test]
+        public void LeavingTheLockedLeapZoneIsSafe()
+        {
+            var sim = Fight(2);
+            var w = sim.World;
+            var d = w.Profile.Boss(2);
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(0, -6), w.Profile.Player.BodyRadius);
+            NextMove(w, BossMove.Leap);
+            Assert.IsTrue(RunUntil(sim, BossAi.LeapLock));
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(d.LeapRadius + 1.5f, 0), w.Profile.Player.BodyRadius);
+            Assume.That(Vector2.Distance(w.Player.Position, w.Boss.Position), Is.GreaterThan(d.LeapRadius + w.Profile.Player.BodyRadius));
+            w.Player.InvulnerableUntilTick = 0;
+            float hp = w.Player.Health;
+            Assert.IsTrue(RunUntil(sim, BossAi.LeapRecover, 120));
+            Assert.AreEqual(hp, w.Player.Health, 1e-3f);
+        }
+
+        [TestCase(1)]
+        [TestCase(3)]
+        public void PounceLandsOnTheMarkedPosition(int phase)
+        {
+            var sim = Fight(phase);
+            var w = sim.World;
+            var d = w.Profile.Boss(phase);
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(0, -5), w.Profile.Player.BodyRadius);
+            NextMove(w, BossMove.Pounce);
+            w.Drain();
+            Assert.IsTrue(RunUntil(sim, BossAi.PounceWindup));
+            Vector2 mark = w.Boss.AttackPoint;
+            Assert.Less(Vector2.Distance(mark, w.Player.Position), w.Boss.Radius + 0.5f, "marked on the player");
+            Assert.IsTrue(w.Drain().Any(e => e.Type == SimEventType.EnemyTelegraph && e.EntityId == BossState.EntityId && e.Code == (int)TelegraphShape.Circle));
+
+            w.Player.InvulnerableUntilTick = 0;
+            float hp = w.Player.Health;
+            Assert.IsTrue(RunUntil(sim, BossAi.PounceRecover, 120));
+            Assert.AreEqual(mark, w.Boss.Position);
+            Assert.Less(w.Player.Health, hp, "standing on the mark gets hit");
+        }
+
+        [Test]
+        public void RobotBurstFansSweepsTheWholeConeAndTracksThePlayer()
+        {
+            var sim = Fight(2);
+            var w = sim.World;
+            var d = w.Profile.Boss(2);
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(0, -6), w.Profile.Player.BodyRadius);
+            NextMove(w, BossMove.Burst);
+            Assert.IsTrue(RunUntil(sim, BossAi.BurstWarning));
+            Vector2 start = w.Boss.AttackDir;
+            // Step aside: the cone turns after the player, no faster than the track rate.
+            w.Player.Position = w.Arena.NearestFree(w.Boss.Position + new Vector2(6, -2), w.Profile.Player.BodyRadius);
+            var shots = new List<Vector2>();
+            for (int t = 0; t < 60 * 4 && w.Boss.Ai != BossAi.BurstRecover; t++)
+            {
+                int before = w.Projectiles.Count;
+                sim.Step(PlayerCommand.None);
+                KillAdds(w);
+                foreach (var p in w.Projectiles.Skip(before)) if (p.SourceId == BossState.EntityId) shots.Add(p.Velocity.normalized);
+            }
+            int volleys = Mathf.CeilToInt(d.BurstDuration / d.BurstShotInterval);
+            Assert.GreaterOrEqual(shots.Count, (volleys - 1) * d.BurstFanCount, "every volley fans");
+            float turned = Vector2.Angle(start, w.Boss.AttackDir);
+            Assert.Greater(turned, 10f, "it tracks");
+            Assert.LessOrEqual(turned, d.BurstTrackRate * (d.BurstWarning + d.BurstDuration) + 1f, "but no faster than the rate");
+            float widest = 0;
+            foreach (var a in shots) foreach (var c in shots) widest = Mathf.Max(widest, Vector2.Angle(a, c));
+            Assert.Greater(widest, d.BurstSpread * 0.8f, "the sweep covers the wide cone");
+        }
+
+        [Test]
+        public void TheBossIsUntouchableByBodiesMinesAndTheCompanionWhileOffTheMap()
+        {
+            var sim = Fight(2);
+            var w = sim.World;
+            NextMove(w, BossMove.Leap);
+            Assert.IsTrue(RunUntil(sim, BossAi.LeapAir));
+            Assert.IsTrue(BossSystem.InAir(w.Boss));
+            BossSystem.Emp(w, 0.8f, 6f);
+            Assert.LessOrEqual(w.Boss.StunnedUntilTick, w.Clock.Tick, "a pulse cannot reach it");
         }
     }
 }

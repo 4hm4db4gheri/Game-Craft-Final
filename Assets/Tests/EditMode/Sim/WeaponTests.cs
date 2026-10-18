@@ -50,8 +50,9 @@ namespace Hollow.Tests.Sim
             sim.Step(new PlayerCommand { SelectWeaponSlot = 2, AimWorld = AimRight });
             sim.Run(12, Idle);
             Assert.IsTrue(L.Reloading, "returning to the empty gun restarts the automatic reload");
-            sim.Run(80, Idle);
-            Assert.AreEqual(sim.World.Profile.Weapon(WeaponId.LightSmg).Levels[0].Magazine, smg.Ammo);
+            var smgLevel = sim.World.Profile.Weapon(WeaponId.LightSmg).Levels[0];
+            sim.Run((int)sim.World.Ticks(smgLevel.ReloadTime) + 5, Idle);
+            Assert.AreEqual(smgLevel.Magazine, smg.Ammo);
         }
 
         [Test]
@@ -113,7 +114,7 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void ShotgunPelletsFallToAboutHalfAtMaxRange()
+        public void ShotgunPelletsFallToTheirFalloffAtMaxRange()
         {
             float NearAndFar(float distance)
             {
@@ -134,13 +135,14 @@ namespace Hollow.Tests.Sim
                 return hits.Average();
             }
 
-            float pellet = 9f;
+            var level = TestData.Baseline().Weapon(WeaponId.DoubleBarrel).Levels[0];
+            float pellet = level.Damage;
             float near = NearAndFar(1.0f);
             float mid = NearAndFar(3.3f); // hits the body edge at ~2.95, before half range (3.5): still full (v0.19 §6)
             float far = NearAndFar(7.2f); // pellets meet the body edge just inside the 7-unit range
             Assert.AreEqual(pellet, near, 1e-3f);
             Assert.AreEqual(pellet, mid, 1e-3f);
-            Assert.AreEqual(pellet * 0.5f, far, pellet * 0.06f);
+            Assert.AreEqual(pellet * level.FalloffAtMaxRange, far, pellet * 0.06f);
         }
 
         [Test]
@@ -241,6 +243,29 @@ namespace Hollow.Tests.Sim
             target.StunnedUntilTick = long.MaxValue;
             sim.Run(60, Hold);
             Assert.AreEqual(1000f, target.Health);
+        }
+
+        [Test]
+        public void HeldAutomaticFireBloomsAndSettlesBack()
+        {
+            var sim = WithSmg(out _);
+            var w = sim.World;
+            var data = w.Profile.Weapon(WeaponId.LightSmg);
+            Assert.Greater(data.BloomPerShot, 0f, "D86: the SMG blooms");
+            sim.Run(60, Hold);
+            float held = WeaponSystem.CurrentBloom(w, data);
+            Assert.Greater(held, data.BloomPerShot * 3f, "held fire widens the spread");
+            Assert.LessOrEqual(held, data.BloomMax + 1e-4f);
+            sim.Run(60, Idle);
+            Assert.AreEqual(0f, WeaponSystem.CurrentBloom(w, data), 1e-4f, "a second's pause settles it");
+        }
+
+        [Test]
+        public void ThePistolAndShotgunsNeverBloom()
+        {
+            var w = SimTestUtil.NewSim().World;
+            foreach (var id in new[] { WeaponId.Pistol, WeaponId.DoubleBarrel, WeaponId.MagazineShotgun, WeaponId.EnergyShotgun })
+                Assert.AreEqual(0f, w.Profile.Weapon(id).BloomPerShot, id.ToString());
         }
     }
 }

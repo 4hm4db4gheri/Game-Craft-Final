@@ -178,7 +178,7 @@ namespace Hollow.Sim
             {
                 if (!m.Alive || w.Clock.Tick < m.ArmedTick) continue;
                 var boss = w.Boss;
-                if (boss.Active && !boss.Dead && Vector2.Distance(boss.Position, m.Position) <= d.TriggerRadius + boss.Radius)
+                if (BossSystem.Targetable(boss) && Vector2.Distance(boss.Position, m.Position) <= d.TriggerRadius + boss.Radius)
                 {
                     m.Alive = false;
                     var hb = HazardSystem.Create(w, HazardOwner.Player, m.Position, m.Position, d.Radius, d.Damage, 0f);

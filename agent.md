@@ -39,7 +39,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۷۲ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۸۵ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
@@ -62,6 +62,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D86 (سختی): باس‌ها زره دارند (۳۰/۴۰/۴۵٪، جز وقت recovery یا stun) و جان بیشتر (3400/8000/13500)؛ چرخه‌ی حمله از داده (`BossData.Moves`) با دو حرکت تازه: pounce (پرش روی جای علامت‌خورده‌ی بازیکن) و leap (بیرون رفتن از نقشه، دایره‌ی فرود بازیکن را دنبال می‌کند، قفل، کوبیدن). رگبار باس ۲ پهن، سه‌تایی، رفت‌وبرگشتی و دنبال‌کننده است. تفنگ‌های رگباری ضعیف‌تر شدند و bloom دارند (رتیکل باز می‌شود). در Play mode دیده شد؛ با دست بازی نشده است.
 
 - D85: آتش سر تفنگ پررنگ‌تر شد. E کنار هر ایستگاه فروشگاه را باز می‌کند (در موج و باس هم؛ D82 که خرید در نبرد را می‌بست جایگزین شد). فروشگاه زمان‌دار بین موج‌ها خودکار باز می‌شود و حالا با E بسته می‌شود؛ بالای آن نوشته «برای بستن E را بزن». کارت‌های راهنما خط «برای بستن راهنما E را بزن» دارند و E آن‌ها را زودتر می‌بندد.
 
@@ -369,4 +371,13 @@
 - `ShopSystem.Step`: E کنار ایستگاه در هر encounter به‌جز PhaseComplete فروشگاه را باز و بسته می‌کند. فروشگاه زمان‌دار هنوز در `WaveSystem` خودکار باز می‌شود؛ دیگر هر تیک دوباره باز نمی‌شود، E آن را می‌بندد و حرکت و دش نه. `ShopPanel`: خط بالا در فروشگاه زمان‌دار با رنگ accent «{N} ثانیه تا موج بعد · برای بستن E را بزن». `GameSession`: «برای باز کردن فروشگاه E را بزن» حالا کنار هر ایستگاه بسته دیده می‌شود.
 - `HintCoach`: کارت بلندتر با خط «برای بستن راهنما E را بزن» (`hint.close`)؛ `InputRouter.InteractDownThisFrame` فشردن E را حتی وقتی ورودی دنیا بسته است می‌دهد و `HintCoach.Sync` با آن کارت را می‌بندد.
 - تست `WaveTests` به قانون تازه به‌روز شد. ۴۷۲ تست پاس. Play mode: فروشگاه زمان‌دار با متن تازه، بسته شدن آن با E، باز شدن با E کنار ایستگاه در موج، و بسته شدن کارت راهنما با E (۰.۲۵ ثانیه بعد از فشردن) دیده شد. تصمیم D85.
+
+### 2026-10-18 — سخت‌تر کردن بازی: زره و حرکت‌های تازه‌ی باس‌ها، متعادل کردن سلاح‌ها (D86)
+- زره باس: `BossData.Armor` سهمی از هر ضربه را می‌گیرد، جز در پنجره‌های exposed (هر recovery بعد از حمله یا stun با EMP) که `ExposedArmor` = 0 است. جان باس‌ها 3400/8000/13500. `BossSystem.ArmorNow/Exposed/Targetable/InAir/OffMap`.
+- `BossMove` و `BossData.Moves`: چرخه‌ی حمله از داده. Pounce (`BossAi.PounceWindup/Pouncing/PounceRecover`، زیر ۳۵٪ دو بار پشت‌سرهم) برای باس ۱ و ۳؛ Leap (`LeapRise/LeapAir/LeapLock/LeapRecover`) برای باس ۲ و ۳. در هوا باس هدف هیچ چیزی نیست (همه‌ی بررسی‌های `boss.Active && !boss.Dead` در Projectile/Melee/Dash/Hazard/Mine/Companion حالا `BossSystem.Targetable`) و با بدن‌ها برخورد ندارد. `BossView` بدن را بالا می‌برد، سایه می‌ماند و کوچک می‌شود؛ دایره‌ی فرود رسم می‌شود.
+- رگبار باس ۲: `BurstFanCount/BurstFanSpacing/BurstSweeps/BurstTrackRate`؛ مخروط ۷۰ درجه، سه گلوله هر ۰.۱۵ ثانیه، رفت‌وبرگشت در ۱.۸ ثانیه، دنبال کردن ۴۰ درجه بر ثانیه، ۱۸ آسیب. مخروط هنگام شلیک هم رسم می‌شود.
+- سلاح‌ها: SMG، تفنگ صنعتی و انرژی آسیب و خشاب کمتر و reload طولانی‌تر؛ `WeaponData.Bloom*` (پخش شدن با شلیک نگه‌داشته، برگشت بعد از مکث؛ `WeaponSystem.CurrentBloom`، `LoadoutState.Bloom/BloomTime`)؛ `ReticleView` با bloom باز می‌شود. تپانچه سطح ۲–۳ و شاتگان‌ها کمی قوی‌تر (falloff 0.6). revision 8 پروفایل ذخیره‌شده باس‌ها و سلاح‌ها را از baseline می‌گیرد.
+- دو باگ قدیمی: save وسط reload از خشاب خالی بعد از load شروع reload را اشتباه می‌گرفت (`LoadoutState.ReloadByRound`)؛ `ArcMesh` meshهای نابودشده‌ی Play قبلی را در cache استاتیک نگه می‌داشت (Domain Reload خاموش) و مخروط/دایره‌ی هشدار باس بعد از اولین Play دیده نمی‌شد.
+- تست‌ها: زره، leap (ترک نقشه، دنبال کردن، کوبیدن، فرار از دایره‌ی قفل)، pounce، رگبار پهن و دنبال‌کننده، EMP در هوا، bloom، save وسط reload. `FullRunTests` حالا محل اختلاف JSON را نشان می‌دهد. ۴۸۵ تست پاس. Play mode: leap، رگبار و pounce با اسکرین‌شات دیده شد (`docs/screenshots/Boss2_LeapTracking.png`، `Boss2_LeapLocked.png`، `Boss2_FanBurst.png`، `Boss1_Pounce.png`). با دست بازی نشده؛ اعداد باید با playtest تنظیم شوند.
+- نکته‌ی تست Play mode: با `GameApp.Instance.ToolFreeze = true` و `session.Sim.Step(...)` در eval می‌شود شبیه‌سازی را دقیقاً تا یک حالت باس جلو برد و با `capture_game_view --source camera` عکس گرفت (حالت screen وقتی ادیتور فوکوس ندارد فریم قدیمی می‌دهد).
 

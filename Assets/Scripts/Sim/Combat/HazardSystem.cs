@@ -73,7 +73,7 @@ namespace Hollow.Sim
             }
 
             var boss = w.Boss;
-            if (boss.Active && !boss.Dead && Vector2.Distance(boss.Position, h.Position) <= h.Radius + boss.Radius)
+            if (BossSystem.Targetable(boss) && Vector2.Distance(boss.Position, h.Position) <= h.Radius + boss.Radius)
                 BossSystem.Damage(w, h.Damage, DamageSource.Explosion, SimMath.SafeNormal(boss.Position - h.Position, Vector2.up));
             w.Crowd.Rebuild(w.Enemies);
             w.Crowd.Query(h.Position, h.Radius + ProjectileSystem.MaxEnemyRadius(w), Candidates);

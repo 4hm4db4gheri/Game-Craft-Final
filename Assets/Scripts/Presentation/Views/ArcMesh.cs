@@ -8,11 +8,15 @@ namespace Hollow.Presentation
     {
         static readonly Dictionary<int, Mesh> Cache = new();
 
+        // Enter Play Mode skips the domain reload (D72): meshes from the last session are destroyed, so start empty.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => Cache.Clear();
+
         /// <summary>A unit-radius fan of the given angle, centred on +X.</summary>
         public static Mesh Get(float arcDegrees)
         {
             int key = Mathf.RoundToInt(arcDegrees);
-            if (Cache.TryGetValue(key, out var mesh)) return mesh;
+            if (Cache.TryGetValue(key, out var mesh) && mesh != null) return mesh;
             int segments = Mathf.Max(4, key / 6);
             var verts = new Vector3[segments + 2];
             var uvs = new Vector2[verts.Length];
