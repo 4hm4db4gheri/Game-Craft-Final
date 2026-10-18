@@ -8,6 +8,8 @@ How to use it:
 4. Save the image under the exact file name from the request into `Assets/Art/Incoming/`. The project's importer reads the name and sets scale, pivot, slicing and background removal automatically. Then run the Unity menu **Hollow > Art > Apply Incoming Art**: the art replaces the placeholder in the game (characters, enemies, bosses, coin, held weapons, arena props and decor, the shop kiosk, and the ground of each phase). Rebuilding the scene keeps it.
 5. If the tool cannot make a transparent background, the brief asks it for a flat pure magenta (#FF00FF) background; the importer removes it.
 
+For animation sheets of characters that already have still frames, use `docs/ART_ANIMATION_BRIEF.md` after this brief (it also allows grid sheets, e.g. 6 frames as 3 × 2 in a 3:2 image).
+
 The brief is written for any image model (GPT image, Midjourney, Gemini, Stable Diffusion/Scenario, Leonardo…). If a tool ignores the ASSET CARD text part, that's fine: the file name is what the project needs.
 
 ---

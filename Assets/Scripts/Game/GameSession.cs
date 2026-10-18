@@ -48,6 +48,7 @@ namespace Hollow.Game
         float operatorBubbleUntil;
         string operatorBubbleLine;
         int lastOperatorBubble = -1;
+        bool hintHold;
 
         public Simulation Sim { get; private set; }
         World W => Sim.World;
@@ -58,6 +59,8 @@ namespace Hollow.Game
             // Played directly (Editor tests, stress runs): saves go to a separate folder, never the player's slots.
             if (app.EnterGameDirectly()) SlotStore.RootOverride = System.IO.Path.Combine(Application.persistentDataPath, "dev_saves");
             app.WorldCamera = worldCamera;
+            atmosphere.BindCamera(worldCamera);
+            atmosphere.AddShopLights(arena);
             layout = ArenaLayoutStore.LoadFromResources();
 
             hud = ui.gameObject.AddComponent<HudView>();
@@ -94,6 +97,7 @@ namespace Hollow.Game
 
         void OnDestroy()
         {
+            if (app != null) SetHintHold(false);
             if (app != null && app.Balance != null) app.Balance.Applied -= OnBalanceApplied;
             GameSettings.Changed -= ApplyFeelSettings;
             if (telemetry != null && telemetry.Run.Observed.Outcome == "running")
@@ -114,6 +118,7 @@ namespace Hollow.Game
         {
             if (Sim == null) return;
             W.Profile = profile;
+            ApplyArenaVisuals(profile.Atmosphere);
             if (!W.Completed) atmosphere.SetPhase(profile.Atmosphere, W.Phase, instant: false);
         }
 
@@ -167,15 +172,39 @@ namespace Hollow.Game
 
         void SetWorld(World world)
         {
+            // A save from an earlier layout may place an actor inside a newly authored landmark.
+            if (world.Arena.CircleOverlaps(world.Player.Position, world.Profile.Player.BodyRadius))
+                world.Player.Position = world.Player.PrevPosition = world.Arena.NearestFree(world.Player.Position, world.Profile.Player.BodyRadius);
+            if (world.Companion.Present && world.Arena.CircleOverlaps(world.Companion.Position, world.Profile.Companion.BodyRadius))
+                world.Companion.Position = world.Companion.PrevPosition = world.Arena.NearestFree(world.Companion.Position, world.Profile.Companion.BodyRadius);
+            foreach (var enemy in world.Enemies)
+                if (world.Arena.CircleOverlaps(enemy.Position, enemy.Radius))
+                    enemy.Position = enemy.PrevPosition = world.Arena.NearestFree(enemy.Position, enemy.Radius);
             Sim = new Simulation(world);
             operatorBubbleUntil = 0;
             nextOperatorBubbleAt = Time.unscaledTime + UnityEngine.Random.Range(18f, 28f);
             dialogue.SetSpeakerName("Assistant", Loc.T("ai." + world.Player.Ai)); // the chosen AI speaks under its own name
             presenter.ResetViews();
             arena.ShowPhase(world.Phase);
+            ApplyArenaVisuals(world.Profile.Atmosphere);
             atmosphere.SetPhase(world.Profile.Atmosphere, world.Phase, instant: true);
             if (world.Completed) audio.StopMusic(0.1f);
             else audio.PlayMusic(world.Phase);
+        }
+
+        void ApplyArenaVisuals(AtmosphereData settings)
+        {
+            try
+            {
+                arena.BuildLandmarks(layout);
+                arena.ApplyGroundVariation(settings.GroundVariation);
+                arena.ApplyComposition(settings.ComposedGround, settings.ContactShadowStrength);
+            }
+            catch (Exception error)
+            {
+                // Cosmetic asset errors must not strand the session in Loading with world input disabled.
+                Debug.LogWarning("[Hollow] Arena artwork could not be applied; continuing gameplay. " + error.Message);
+            }
         }
 
         /// <summary>Dev tools (stress run): replaces player input with a scripted command for each tick.</summary>
@@ -216,11 +245,12 @@ namespace Hollow.Game
             }
             else if (state == GameState.Playing && W.Progress.Pending != null) OpenXpChoice();
 
-            if (!app.ToolFreeze) driver.Update(Time.unscaledDeltaTime);
+            if (!app.ToolFreeze && !hintHold) driver.Update(Time.unscaledDeltaTime);
 
             var w = W;
             float alpha = driver.InterpolationAlpha;
             presenter.Sync(w, alpha);
+            arena.SyncForeground(Vector2.Lerp(w.Player.PrevPosition, w.Player.Position, alpha));
             cameraRig.Sync(w, alpha);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput);
             hud.Sync(w, worldCamera);
@@ -231,6 +261,7 @@ namespace Hollow.Game
             bool tutorialBusy = w.Tutorial == TutorialStage.FirstGroup || w.Tutorial == TutorialStage.Purchase ||
                 w.Tutorial == TutorialStage.Grenade || w.Tutorial == TutorialStage.GrenadeThrown;
             hints.Sync(w, app.States.Current == GameState.Playing && !w.Shop.Open && !dialogue.Playing && w.Failure == FailureReason.None && !tutorialBusy);
+            SetHintHold(hints.Showing);
             if (telemetry != null)
             {
                 telemetry.Observe(w);
@@ -238,6 +269,14 @@ namespace Hollow.Game
                 if (telemetry.Dirty) TelemetryFile.Write(telemetry);
             }
             w.Events.Clear();
+        }
+
+        /// <summary>A hint on screen freezes the game: no simulation steps, and world input is held like under a modal.</summary>
+        void SetHintHold(bool hold)
+        {
+            if (hold == hintHold) return;
+            hintHold = hold;
+            if (hold) app.PushModal(); else app.PopModal();
         }
 
         void HandleKeys()

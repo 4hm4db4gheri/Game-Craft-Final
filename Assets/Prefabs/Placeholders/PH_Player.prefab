@@ -316,7 +316,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3022924788078470307}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -395,7 +395,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5444147076246781154}
@@ -449,8 +449,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 2ebc7c36c0e22c349a4564539965b9fe, type: 3}
-  m_Color: {r: 0.85, g: 0.95, b: 1, a: 1}
+  m_Sprite: {fileID: 8793639957104055765, guid: 0902a1e18d3d3b640bc4ebcc58099636, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -597,6 +597,7 @@ GameObject:
   - component: {fileID: 8367025962137810804}
   - component: {fileID: 8228741758107776569}
   - component: {fileID: 1856925713869532674}
+  - component: {fileID: 1170250817050615006}
   m_Layer: 0
   m_Name: PH_Player
   m_TagString: Untagged
@@ -659,11 +660,33 @@ MonoBehaviour:
   dashBarWidth: 1.2
   bobHeight: 0.06
   bobSpeed: 3
-  floatHeight: 0.35
+  floatHeight: 0
   leanDegrees: 10
-  normalColor: {r: 0.85, g: 0.95, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
   hurtColor: {r: 1, g: 0.35, b: 0.35, a: 1}
   dashColor: {r: 0.5, g: 0.9, b: 1, a: 0.6}
+--- !u!114 &1170250817050615006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7292893419955581549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859555f4964a8bd409f045ea3b7d4118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSetAnimator
+  set: {fileID: 11400000, guid: 4bffa6f50c835a740b1f51cfc52a1189, type: 2}
+  target: {fileID: 6585675529173268117}
+  stepMotion: 1
+  strideFraction: 0.35
+  minStepsPerSecond: 1.6
+  maxStepsPerSecond: 7
+  hopFraction: 0.025
+  rockDegrees: 4
+  movingSpeed: 0.3
+  blendRate: 10
 --- !u!1 &7698869775632941271
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,7 +727,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7698869775632941271}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

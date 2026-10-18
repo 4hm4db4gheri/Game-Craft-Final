@@ -141,6 +141,12 @@ namespace Hollow.EditorTools
             {
                 LightPhase1 = 1f, LightPhase2 = 0.82f, LightPhase3 = 0.6f, PlayerLightRadius = 8f, PlayerLightIntensity = 0.7f,
                 FogPhase1 = 0.10f, FogPhase2 = 0.08f, FogPhase3 = 0.12f, PhaseFadeTime = 1.5f, EndingFadeTime = 4f,
+                LightColorPhase1 = "#FFF3DE", LightColorPhase2 = "#DFECF1", LightColorPhase3 = "#DCE3F0",
+                ContrastPhase1 = 4f, ContrastPhase2 = 7f, ContrastPhase3 = 10f,
+                DesaturationPhase1 = 2f, DesaturationPhase2 = 7f, DesaturationPhase3 = 12f,
+                VignettePhase1 = 0.07f, VignettePhase2 = 0.10f, VignettePhase3 = 0.13f,
+                BloomIntensity = 0.18f, BloomThreshold = 1f, GroundVariation = 0.12f,
+                ComposedGround = true, ContactShadowStrength = 0.55f,
             };
 
             p.BuildIndex();

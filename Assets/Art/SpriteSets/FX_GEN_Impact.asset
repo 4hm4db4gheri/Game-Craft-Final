@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28821693a4694649ae006f66323edd4, type: 3}
+  m_Name: FX_GEN_Impact
+  m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSet
+  FramesPerSecond: 24
+  States:
+  - State: burst
+    Frames:
+    - {fileID: 7515357072684481883, guid: 8d19a96810d07ca478a942c383640aac, type: 3}
+    - {fileID: -4921743515574907004, guid: 8d19a96810d07ca478a942c383640aac, type: 3}
+    - {fileID: -3985803507129442065, guid: 8d19a96810d07ca478a942c383640aac, type: 3}
+    - {fileID: 503023373425029793, guid: 8d19a96810d07ca478a942c383640aac, type: 3}
+    Loop: 1
+    FramesPerSecond: 0

@@ -10,6 +10,10 @@ namespace Hollow.Presentation
         public string State;
         public List<Sprite> Frames = new();
         public bool Loop = true;
+        /// <summary>0 = the set's rate.</summary>
+        public float FramesPerSecond;
+
+        public float Rate(SpriteSet set) => FramesPerSecond > 0 ? FramesPerSecond : set.FramesPerSecond;
     }
 
     /// <summary>

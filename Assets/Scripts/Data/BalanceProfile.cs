@@ -522,12 +522,34 @@ namespace Hollow.Data
         [Placeholder] public float FogPhase1;
         [Placeholder] public float FogPhase2;
         [Placeholder] public float FogPhase3;
+        /// <summary>Hex RGB color of the global 2D light in each phase.</summary>
+        [Placeholder] public string LightColorPhase1 = "#FFF3DE";
+        [Placeholder] public string LightColorPhase2 = "#DFECF1";
+        [Placeholder] public string LightColorPhase3 = "#DCE3F0";
+        [Placeholder] public float ContrastPhase1 = 4f;
+        [Placeholder] public float ContrastPhase2 = 7f;
+        [Placeholder] public float ContrastPhase3 = 10f;
+        [Placeholder] public float DesaturationPhase1 = 2f;
+        [Placeholder] public float DesaturationPhase2 = 7f;
+        [Placeholder] public float DesaturationPhase3 = 12f;
+        [Placeholder] public float VignettePhase1 = 0.07f;
+        [Placeholder] public float VignettePhase2 = 0.10f;
+        [Placeholder] public float VignettePhase3 = 0.13f;
+        [Placeholder] public float BloomIntensity = 0.18f;
+        [Placeholder] public float BloomThreshold = 1f;
+        [Placeholder] public float GroundVariation = 0.12f;
+        [Placeholder] public bool ComposedGround = true;
+        [Placeholder] public float ContactShadowStrength = 0.55f;
         [Placeholder, Unit("s")] public float PhaseFadeTime;
         /// <summary>The world goes dark during the ending scene.</summary>
         [Placeholder, Unit("s")] public float EndingFadeTime;
 
         public float Light(int phase) => phase switch { 1 => LightPhase1, 2 => LightPhase2, _ => LightPhase3 };
         public float Fog(int phase) => phase switch { 1 => FogPhase1, 2 => FogPhase2, _ => FogPhase3 };
+        public string LightColor(int phase) => phase switch { 1 => LightColorPhase1, 2 => LightColorPhase2, _ => LightColorPhase3 };
+        public float Contrast(int phase) => phase switch { 1 => ContrastPhase1, 2 => ContrastPhase2, _ => ContrastPhase3 };
+        public float Desaturation(int phase) => phase switch { 1 => DesaturationPhase1, 2 => DesaturationPhase2, _ => DesaturationPhase3 };
+        public float Vignette(int phase) => phase switch { 1 => VignettePhase1, 2 => VignettePhase2, _ => VignettePhase3 };
     }
 
     [Serializable]

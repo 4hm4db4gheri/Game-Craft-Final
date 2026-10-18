@@ -229,6 +229,7 @@ namespace Hollow.EditorTools
                 new() { Side = SpawnSide.West, Min = new Vector2(-hx + 2, -6), Max = new Vector2(-hx + 4, 6) },
             };
             ScatterDecor(a, prefabs);
+            PlaceBorders(a);
             a.ShowPhase(1);
             return a;
         }
@@ -245,7 +246,7 @@ namespace Hollow.EditorTools
             {
                 var map = a.Grounds[i];
                 map.ClearAllTiles();
-                var art = GroundArtTiles(i + 1);
+                var art = GroundArtTiles(i + 1) ?? GroundArtTiles(StandIn(i + 1));
                 var g = Grounds[i];
                 var baseTiles = new Tile[3];
                 for (int k = 0; k < 3; k++)
@@ -282,6 +283,77 @@ namespace Hollow.EditorTools
         }
 
         static Color Shade(Color c, float k) => new(c.r * k, c.g * k, c.b * k, c.a);
+
+        /// <summary>Phase whose art stands in while a phase has none yet (art wave 1: phase 2 reuses phase 3).</summary>
+        static int StandIn(int phase) => phase == 2 ? 3 : phase;
+
+        /// <summary>
+        /// Imported border art (ENV_P&lt;n&gt;_BorderH_prop 4 × 2, ENV_P&lt;n&gt;_BorderV_prop 1 × 4) repeated along the
+        /// wall ring of each phase. Visual only: the Walls Tilemap still blocks. Without art the walls stay plain.
+        /// </summary>
+        public static void PlaceBorders(ArenaAuthoring a)
+        {
+            if (a.Borders == null || a.Borders.Length != 3) a.Borders = new Transform[3];
+            // The plain wall tiles stay underneath (they block in the bake); borders are drawn over them.
+            if (a.Walls != null) a.Walls.GetComponent<TilemapRenderer>().sortingOrder = -6;
+            for (int i = 0; i < 3; i++)
+            {
+                if (a.Borders[i] == null)
+                {
+                    a.Borders[i] = new GameObject($"Border_P{i + 1}").transform;
+                    a.Borders[i].SetParent(a.Grid.transform, false);
+                }
+                var parent = a.Borders[i];
+                for (int k = parent.childCount - 1; k >= 0; k--) Object.DestroyImmediate(parent.GetChild(k).gameObject);
+                var h = BorderSprite(i + 1, "BorderH") ?? BorderSprite(StandIn(i + 1), "BorderH");
+                var v = BorderSprite(i + 1, "BorderV") ?? BorderSprite(StandIn(i + 1), "BorderV");
+                Vector2 o = a.Grid.transform.position;
+                int w = a.Size.x, ht = a.Size.y;
+                if (h != null)
+                {
+                    float sw = h.bounds.size.x;
+                    for (float x = 0; x < w; x += sw)
+                    {
+                        // Top strip sits on the top wall row (drawn behind everything below it, Y-sorted);
+                        // bottom strip covers the bottom wall row and is drawn in front.
+                        Border(parent, "Top", h, o + new Vector2(Mathf.Min(x, w - sw), ht - 1), 0);
+                        Border(parent, "Bottom", h, o + new Vector2(Mathf.Min(x, w - sw), -1), 0);
+                    }
+                }
+                if (v != null)
+                {
+                    float sh = v.bounds.size.y;
+                    for (float y = 1; y < ht - 1; y += sh)
+                    {
+                        float y0 = Mathf.Min(y, ht - 1 - sh);
+                        Border(parent, "Left", v, o + new Vector2(0, y0), -5);
+                        Border(parent, "Right", v, o + new Vector2(w - v.bounds.size.x, y0), -5);
+                    }
+                }
+                parent.gameObject.SetActive(a.Props[i] == null || a.Props[i].gameObject.activeSelf);
+            }
+        }
+
+        static void Border(Transform parent, string side, Sprite sprite, Vector2 bottomLeft, int order)
+        {
+            var go = new GameObject($"{side} {bottomLeft.x:0.#},{bottomLeft.y:0.#}");
+            go.transform.SetParent(parent, false);
+            go.transform.position = (Vector3)(bottomLeft - (Vector2)sprite.bounds.min);
+            var r = go.AddComponent<SpriteRenderer>();
+            r.sprite = sprite;
+            r.sortingOrder = order;
+        }
+
+        static Sprite BorderSprite(int phase, string name)
+        {
+            if (!AssetDatabase.IsValidFolder(ArtRules.IncomingDir)) return null;
+            foreach (var guid in AssetDatabase.FindAssets($"ENV_P{phase}_{name}_prop t:Texture2D", new[] { ArtRules.IncomingDir }))
+            {
+                var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(AssetDatabase.GUIDToAssetPath(guid));
+                if (sprite != null) return sprite;
+            }
+            return null;
+        }
 
         /// <summary>Tiles cut from an imported ground texture, or null when there is none.</summary>
         static Tile[,] GroundArtTiles(int phase)
@@ -455,6 +527,9 @@ namespace Hollow.EditorTools
                 SpawnZones = new List<SpawnZone>(a.SpawnZones),
             };
             foreach (var shop in a.AllShops()) layout.ShopPositions.Add(shop.position);
+            // Runtime set pieces are authored in the layout file; preserve them when rebaking scene props.
+            if (File.Exists(LayoutPath))
+                layout.Landmarks = ArenaLayoutStore.FromJson(File.ReadAllText(LayoutPath)).Landmarks ?? new List<ArenaLandmark>();
             CollectCells(a.Walls, layout, layout.BaseBlocked);
 
             // Every service station is solid in every phase.

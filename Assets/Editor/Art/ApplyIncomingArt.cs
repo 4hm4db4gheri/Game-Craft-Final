@@ -34,22 +34,34 @@ namespace Hollow.EditorTools
         public static Dictionary<string, Dictionary<string, List<Sprite>>> Collect()
         {
             var map = new Dictionary<string, Dictionary<string, List<Sprite>>>();
+            var ranks = new Dictionary<string, int>();
             if (!AssetDatabase.IsValidFolder(ArtRules.IncomingDir)) return map;
             foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { ArtRules.IncomingDir }))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (!ArtName.TryParse(path, out var n)) continue;
                 // The companion has P1 and P2 looks, and each phase has several props: their keys include the name.
-                string key = n.Category is "CHR" or "ENV" ? $"{n.Key}_{n.Name}" : n.Key;
+                string key = n.Category is "CHR" or "ENV" or "PRJ" or "FX" or "UI" or "ICO" ? $"{n.Key}_{n.Name}" : n.Key;
                 var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
                     .OrderBy(s => FrameIndex(s.name)).ToList();
                 if (sprites.Count == 0) continue;
                 if (!map.TryGetValue(key, out var states)) map[key] = states = new Dictionary<string, List<Sprite>>();
                 string state = n.Variant != null ? $"{n.State}_{n.Variant}" : n.State;
-                states[state] = sprites;
+                // A hand-drawn sheet beats a generated one (Tools/ArtGen), which beats a single drawn frame.
+                int rank = Rank(path, sprites.Count);
+                string slot = $"{key}/{state}";
+                if (!states.ContainsKey(state) || rank > ranks[slot] || (rank == ranks[slot] && sprites.Count > states[state].Count))
+                {
+                    states[state] = sprites;
+                    ranks[slot] = rank;
+                }
             }
             return map;
         }
+
+        public const string GeneratedDir = ArtRules.IncomingDir + "/Generated";
+
+        public static int Rank(string path, int frames) => frames <= 1 ? 0 : path.StartsWith(GeneratedDir) ? 1 : 2;
 
         static int FrameIndex(string spriteName)
         {
@@ -65,6 +77,7 @@ namespace Hollow.EditorTools
             var catalog = AssetDatabase.LoadAssetAtPath<VisualCatalog>(EnemyPrefabBuilder.CatalogPath);
             int applied = 0;
             bool ground = false;
+            SpriteSet companionPhaseTwo = null;
             foreach (var (key, states) in map)
             {
                 string[] k = key.Split('_');
@@ -76,6 +89,10 @@ namespace Hollow.EditorTools
                         break;
                     case "CHR" when id == "OPR" && k.Length > 2 && k[2] == "P1":
                         applied += Wire($"{PrefabBuilder.Dir}/PH_Companion.prefab", "Body/Overalls", Set(key, states));
+                        break;
+                    case "CHR" when id == "OPR" && k.Length > 2 && k[2] == "P2":
+                        companionPhaseTwo = Set(key, states);
+                        applied++;
                         break;
                     case "ENM":
                         var enemy = Enum.GetNames(typeof(EnemyId)).FirstOrDefault(e => e.StartsWith(id + "_"));
@@ -89,11 +106,43 @@ namespace Hollow.EditorTools
                         break;
                     case "ENV" when k.Length > 2:
                         if (states.ContainsKey("ground")) { ground = true; applied++; }
+                        else if (k[2] is "BorderH" or "BorderV") { ground = true; applied++; } // placed in the scene with the ground
                         else if (states.ContainsKey("prop")) applied += Wire($"{PrefabBuilder.Dir}/PH_Prop_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
                         else if (states.Keys.Any(s => s.StartsWith("decor"))) applied += Wire($"{PrefabBuilder.Dir}/PH_Decor_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
                         break;
                     case "PKP" when id == "COIN":
                         applied += Wire($"{PrefabBuilder.Dir}/PH_Coin.prefab", "Coin", Set(key, states));
+                        break;
+                    case "PRJ" when catalog != null:
+                    {
+                        var sprite = states.Values.First()[0];
+                        switch (id, k.Length > 2 ? k[2] : "")
+                        {
+                            case ("PLY", "Bullet"): catalog.PlayerBulletArt = sprite; break;
+                            case ("PLY", "Pellet"): catalog.PlayerPelletArt = sprite; break;
+                            case ("ENM", "Quill"): SetEnemyShot(catalog, 0, sprite); break;
+                            case ("ENM", "Bolt"): SetEnemyShot(catalog, 1, sprite); break;
+                            case ("ENM", "Bullet"): SetEnemyShot(catalog, 2, sprite); break;
+                            default: continue;
+                        }
+                        EditorUtility.SetDirty(catalog);
+                        applied++;
+                        break;
+                    }
+                    case "FX" when catalog != null && k.Length > 2:
+                    {
+                        // Frame rates are cosmetic: a flash is over in a tenth of a second, an explosion lingers.
+                        var set = Set(key, states, k[2] switch { "MuzzleFlash" => 30f, "Impact" => 24f, _ => 16f });
+                        if (k[2] == "MuzzleFlash") catalog.MuzzleFlashFx = set;
+                        else if (k[2] == "Impact") catalog.ImpactFx = set;
+                        else if (k[2] == "Explosion") catalog.ExplosionFx = set;
+                        else continue;
+                        EditorUtility.SetDirty(catalog);
+                        applied++;
+                        break;
+                    }
+                    case "UI" when k.Length > 2 && k[2] == "Reticle":
+                        applied += SetReticle(states.Values.First()[0]);
                         break;
                     case "WPN":
                         if (catalog != null && WeaponIds.TryGetValue(id, out var weapon) && states.TryGetValue("held", out var held))
@@ -105,6 +154,7 @@ namespace Hollow.EditorTools
                                 wv.Color = Color.white;
                                 wv.Size = held[0].bounds.size;
                                 wv.PivotAtGrip = true;
+                                wv.MuzzleLocal = BarrelTip(held[0]);
                                 EditorUtility.SetDirty(catalog);
                                 applied++;
                             }
@@ -112,6 +162,8 @@ namespace Hollow.EditorTools
                         break;
                 }
             }
+            if (companionPhaseTwo != null) SetCompanionPhaseTwo(companionPhaseTwo);
+            HidePlaceholderDecor(map);
             if (ground) RepaintGroundInOpenScene();
             AssetDatabase.SaveAssets();
             Debug.Log($"[Hollow art] Applied {applied} art set(s) from {ArtRules.IncomingDir}.");
@@ -123,11 +175,105 @@ namespace Hollow.EditorTools
             var arena = UnityEngine.Object.FindAnyObjectByType<ArenaAuthoring>(FindObjectsInactive.Include);
             if (arena == null) { Debug.Log("[Hollow art] Ground art found; open the Game scene and apply again (or rebuild the scene) to paint it."); return; }
             ArenaTools.PaintGround(arena);
+            ArenaTools.PlaceBorders(arena);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(arena.gameObject.scene);
             UnityEditor.SceneManagement.EditorSceneManager.SaveScene(arena.gameObject.scene);
         }
 
-        static SpriteSet Set(string key, Dictionary<string, List<Sprite>> states)
+        /// <summary>
+        /// Placeholder decor (flat tinted blobs) clashes with painted ground: on a phase whose ground has art, decor
+        /// without art is hidden. Decor is visual only; props without art stay, since they block.
+        /// </summary>
+        static void HidePlaceholderDecor(Dictionary<string, Dictionary<string, List<Sprite>>> map)
+        {
+            for (int phase = 1; phase <= 3; phase++)
+            {
+                int groundPhase = map.Keys.Any(k => k.StartsWith($"ENV_P{phase}_") && map[k].ContainsKey("ground")) ? phase
+                    : phase == 2 && map.Keys.Any(k => k.StartsWith("ENV_P3_") && map[k].ContainsKey("ground")) ? 3 : 0;
+                if (groundPhase == 0) continue;
+                foreach (var path in Directory.GetFiles(PrefabBuilder.Dir, $"PH_Decor_P{phase}_*.prefab"))
+                {
+                    string name = Path.GetFileNameWithoutExtension(path).Substring($"PH_Decor_P{phase}_".Length);
+                    if (map.ContainsKey($"ENV_P{phase}_{name}")) continue;
+                    var root = PrefabUtility.LoadPrefabContents(path);
+                    try
+                    {
+                        foreach (var r in root.GetComponentsInChildren<SpriteRenderer>(true)) r.enabled = false;
+                        PrefabUtility.SaveAsPrefabAsset(root, path.Replace('\\', '/'));
+                    }
+                    finally { PrefabUtility.UnloadPrefabContents(root); }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Where the drawn barrel ends: the rightmost opaque column of the sprite (weapons point right), at the
+        /// middle of its opaque pixels, in units from the pivot. AI canvases leave empty space past the barrel.
+        /// </summary>
+        static Vector2 BarrelTip(Sprite sprite)
+        {
+            var tex = sprite.texture;
+            var r = sprite.rect;
+            var px = tex.GetPixels32();
+            int w = tex.width;
+            for (int x = (int)r.xMax - 1; x >= (int)r.xMin; x--)
+            {
+                int sum = 0, count = 0;
+                for (int y = (int)r.yMin; y < (int)r.yMax; y++)
+                    if (px[y * w + x].a > 128) { sum += y; count++; }
+                if (count == 0) continue;
+                float tipX = x + 1 - r.xMin, tipY = sum / (float)count - r.yMin;
+                return new Vector2(tipX - sprite.pivot.x, tipY - sprite.pivot.y) / sprite.pixelsPerUnit;
+            }
+            return Vector2.zero;
+        }
+
+        static void SetEnemyShot(VisualCatalog catalog, int phaseIndex, Sprite sprite)
+        {
+            if (catalog.EnemyShotArt == null || catalog.EnemyShotArt.Length != 3) catalog.EnemyShotArt = new Sprite[3];
+            catalog.EnemyShotArt[phaseIndex] = sprite;
+        }
+
+        /// <summary>The reticle art, shown at the placeholder's size.</summary>
+        static int SetReticle(Sprite sprite)
+        {
+            string path = $"{PrefabBuilder.Dir}/PH_Reticle.prefab";
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var r = root.transform.Find("Reticle")?.GetComponent<SpriteRenderer>();
+                if (r == null) return 0;
+                float size = r.bounds.size.x > 0 ? r.bounds.size.x : 0.45f;
+                if (r.sprite != sprite)
+                {
+                    r.sprite = sprite;
+                    float s = size * 1.4f / sprite.bounds.size.x; // a thin ring reads larger than the old dot
+                    r.transform.localScale = new Vector3(s, s, 1);
+                }
+                r.color = Color.white;
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+                return 1;
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+
+        static void SetCompanionPhaseTwo(SpriteSet set)
+        {
+            string path = $"{PrefabBuilder.Dir}/PH_Companion.prefab";
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var view = root.GetComponent<CompanionView>();
+                if (view == null) return;
+                var so = new SerializedObject(view);
+                so.FindProperty("phaseTwoSet").objectReferenceValue = set;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+
+        static SpriteSet Set(string key, Dictionary<string, List<Sprite>> states, float framesPerSecond = 10f)
         {
             string path = $"{SetsDir}/{key}.asset";
             var set = AssetDatabase.LoadAssetAtPath<SpriteSet>(path);
@@ -137,8 +283,15 @@ namespace Hollow.EditorTools
                 AssetDatabase.CreateAsset(set, path);
             }
             set.States.Clear();
+            set.FramesPerSecond = framesPerSecond;
             foreach (var (state, frames) in states)
-                set.States.Add(new SpriteState { State = state, Frames = new List<Sprite>(frames), Loop = state is "idle" or "move" or "spin" });
+                set.States.Add(new SpriteState
+                {
+                    State = state, Frames = new List<Sprite>(frames),
+                    Loop = state is "idle" or "move" or "spin" or "charge" or "burst" or "stunned",
+                    // Breathing reads calmer than walking: idle plays at 60 % speed.
+                    FramesPerSecond = state == "idle" && frames.Count > 1 ? framesPerSecond * 0.6f : 0f,
+                });
             EditorUtility.SetDirty(set);
             return set;
         }
@@ -159,6 +312,7 @@ namespace Hollow.EditorTools
                 target.transform.localScale = Vector3.one;
                 target.transform.localRotation = Quaternion.identity;
                 target.color = Color.white;
+                target.enabled = true;
                 var first = set.Resolve("idle");
                 if (first != null) target.sprite = first.Frames[0];
 
@@ -175,6 +329,7 @@ namespace Hollow.EditorTools
                     var view = root.GetComponent<PlayerView>();
                     var vso = new SerializedObject(view);
                     vso.FindProperty("floatHeight").floatValue = 0f; // the art already floats above its ground point
+                    vso.FindProperty("normalColor").colorValue = Color.white; // the art has its own colours
                     vso.ApplyModifiedPropertiesWithoutUndo();
                 }
                 foreach (var tr in root.GetComponentsInChildren<Transform>(true)) GameObjectUtility.RemoveMonoBehavioursWithMissingScript(tr.gameObject);
