@@ -13,4 +13,60 @@ MonoBehaviour:
   m_Name: ENM_H7
   m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.SpriteSet
   FramesPerSecond: 10
-  States: []
+  States:
+  - State: build
+    Frames:
+    - {fileID: 7137212878804457893, guid: 38b8572e03e7b444f9175c72f6a42eae, type: 3}
+    - {fileID: 9012728174236408742, guid: 38b8572e03e7b444f9175c72f6a42eae, type: 3}
+    - {fileID: -4040180589743589195, guid: 38b8572e03e7b444f9175c72f6a42eae, type: 3}
+    - {fileID: 5558177147482420279, guid: 38b8572e03e7b444f9175c72f6a42eae, type: 3}
+    - {fileID: -5416289589313128719, guid: 38b8572e03e7b444f9175c72f6a42eae, type: 3}
+    - {fileID: 974577820823019610, guid: 38b8572e03e7b444f9175c72f6a42eae, type: 3}
+    Loop: 0
+    FramesPerSecond: 0
+  - State: death
+    Frames:
+    - {fileID: -9192638271177797499, guid: 8ee81dc8f98ca484b91080e1452260bb, type: 3}
+    - {fileID: 8559509556701815258, guid: 8ee81dc8f98ca484b91080e1452260bb, type: 3}
+    - {fileID: -5286180679089938723, guid: 8ee81dc8f98ca484b91080e1452260bb, type: 3}
+    - {fileID: -1891855120789479077, guid: 8ee81dc8f98ca484b91080e1452260bb, type: 3}
+    - {fileID: -5582970244224541034, guid: 8ee81dc8f98ca484b91080e1452260bb, type: 3}
+    - {fileID: 830680230883465780, guid: 8ee81dc8f98ca484b91080e1452260bb, type: 3}
+    Loop: 0
+    FramesPerSecond: 0
+  - State: idle
+    Frames:
+    - {fileID: 8793639957104055765, guid: 74da0855d57a4754da39226363959802, type: 3}
+    - {fileID: 6084859605308855041, guid: 74da0855d57a4754da39226363959802, type: 3}
+    - {fileID: 8603369663158992956, guid: 74da0855d57a4754da39226363959802, type: 3}
+    - {fileID: -5906421172241655209, guid: 74da0855d57a4754da39226363959802, type: 3}
+    - {fileID: 5704420531145803721, guid: 74da0855d57a4754da39226363959802, type: 3}
+    - {fileID: -148617073940163930, guid: 74da0855d57a4754da39226363959802, type: 3}
+    - {fileID: 4729606205655721961, guid: 74da0855d57a4754da39226363959802, type: 3}
+    - {fileID: -2073685336235588006, guid: 74da0855d57a4754da39226363959802, type: 3}
+    Loop: 1
+    FramesPerSecond: 6
+  - State: move
+    Frames:
+    - {fileID: -3527056022417232336, guid: be5c823872150bb47a04c66301a6ced6, type: 3}
+    - {fileID: 1559915471669483522, guid: be5c823872150bb47a04c66301a6ced6, type: 3}
+    - {fileID: -2447649416737202741, guid: be5c823872150bb47a04c66301a6ced6, type: 3}
+    - {fileID: -6256732298934330293, guid: be5c823872150bb47a04c66301a6ced6, type: 3}
+    - {fileID: 1672106482186590498, guid: be5c823872150bb47a04c66301a6ced6, type: 3}
+    - {fileID: 1097377042340866633, guid: be5c823872150bb47a04c66301a6ced6, type: 3}
+    Loop: 1
+    FramesPerSecond: 0
+  - State: hit
+    Frames:
+    - {fileID: -59066101396820148, guid: e63036d187ca73c45894ac3e3d7a860f, type: 3}
+    - {fileID: -9037724387597929990, guid: e63036d187ca73c45894ac3e3d7a860f, type: 3}
+    - {fileID: 8501104746477335304, guid: e63036d187ca73c45894ac3e3d7a860f, type: 3}
+    Loop: 0
+    FramesPerSecond: 0
+  - State: recover
+    Frames:
+    - {fileID: -1345905325429513124, guid: fbf6d85a7a643a54eb2a38bd9df5310b, type: 3}
+    - {fileID: -3316270265626614221, guid: fbf6d85a7a643a54eb2a38bd9df5310b, type: 3}
+    - {fileID: -1198808612262077299, guid: fbf6d85a7a643a54eb2a38bd9df5310b, type: 3}
+    Loop: 0
+    FramesPerSecond: 0
