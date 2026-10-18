@@ -39,7 +39,7 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۶۳ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۷۲ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
@@ -62,6 +62,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D84: تیر حالا به کل بدن دشمن‌ها و باس‌ها می‌خورد (کپسول عمودی با `HitHeight` در بالانس، نه فقط دایره‌ی پا). همه‌ی شخصیت‌ها موقع راه رفتن ردّ ذره دارند (پهپاد بازیکن: جرقه‌ی فیروزه‌ای؛ بقیه: گرد و خاک به رنگ زمین هر فاز، جرقه‌ی ربات‌ها، سنگ‌ریزه‌ی انسان‌ها). در Play mode هر سه فاز دیده شد؛ با دست بازی نشده است.
 
 - پاس juice (D83): گلوله‌ها درست می‌چرخند، هشدار قرمز فقط برای charger و باس (کم‌رنگ‌تر)، پالس رانش حذف شد، لگد سلاح و muzzle برای بازیکن/اپراتور/دشمن تفنگ‌دار، shake شلیک و باتوم، جلوه‌ی دش، level up، مرگ دشمن و مرگ بازیکن. در Play mode دیده شد؛ هنوز کسی آن را با دست بازی نکرده است.
 
@@ -348,3 +350,10 @@
 
 ### 2026-10-18 — commit و push پاس juice
 - `cebf9cb` (پاس juice) و `5fbfe32` (تغییرات خودکار یونیتی: spriteIDهای تازه با internalID ثابت، ورودی WebGL در meta تصویرها، glyphهای اضافه‌شده‌ی فونت وزیرمتن) روی `main` به `origin/main` push شدند. `Assets/_Recovery` مثل قبل commit نشد.
+
+### 2026-10-18 — برخورد تیر با کل بدن و ردّ راه رفتن
+- گزارش کاربر: در فاز ۳ تیر به شکم به بالای تیراندازها نمی‌خورد و از آن‌ها رد می‌شد. علت: شبیه‌سازی تیر را روی خط زمین می‌برد و نمایش آن را ۰.۳۵ واحد بالاتر می‌کشد، ولی بدن فقط دایره‌ای دور پا بود؛ برای همه‌ی دشمن‌های بلند (و باس‌ها) همین بود. حالا بدن یک کپسول عمودی است: `SimMath.SegmentCapsuleHit` (دایره‌ی پا که به اندازه‌ی `HitHeight` رو به بالای صفحه کشیده می‌شود). `HitHeight` فیلد تازه‌ی `EnemyData` و `BossData` است؛ در seed از جدول `BodyTops` (بالای بدن کشیده‌شده، اندازه‌گیری‌شده روی آرت) منهای ۰.۳۵ و شعاع حساب می‌شود. revision 7 پروفایل ذخیره‌شده را مهاجرت می‌دهد. تیری که از داخل بخش بالایی بدن شروع شود فقط وقتی به سمت بدن برود می‌خورد. بدن بازیکن و اپراتور عوض نشد.
+- ردّ راه رفتن (`FeedbackDirector.Walking`، فقط نمایشی): دو ParticleSystem تازه روی لایه‌ی Default زیر همه‌ی بدن‌ها (`WalkDust`، `WalkGlints`). پهپاد بازیکن جرقه‌ی فیروزه‌ای از زیرش می‌ریزد؛ اپراتور، حیوان‌ها، ربات‌ها، انسان‌ها و باس‌ها گرد و خاک به رنگ زمین هر فاز بلند می‌کنند؛ ربات‌ها جرقه‌ی سایش (شارژرها بیشتر)، انسان‌ها سنگ‌ریزه، پهپاد فرزند R7c دود گرم موتور. بر اساس مسافت طی‌شده در تیک‌های شبیه‌سازی (هنگام توقف بازی چیزی نمی‌سازد).
+- تست‌های تازه‌ی `HitShapeTests` (شلیک به سینه‌ی H1/H2/H6/R2 آسیب می‌زند، بالای سر نمی‌خورد، کپسول باس، شلیک رو به بیرون از بدنی که روی تیرانداز افتاده). ۴۷۲ تست پاس. seed و `Baseline.json` دقیقاً یکی‌اند. Play mode (صحنه‌ی Game مستقیم، بدون دست زدن به جایگاه‌ها): ردّ هر سه فاز دیده شد و شلیک به سینه‌ی نگهبان تفنگ‌دار آسیب زد. تصمیم D84.
+- نکته‌ی تست: `playModeStartScene` بعد از هر recompile دوباره MainMenu می‌شود (`ProjectSetup`)؛ برای اجرای مستقیم صحنه‌ی Game قبل از هر Play آن را null کن.
+- فایل‌های تغییرکرده: `Sim/SimMath.cs`، `Sim/Combat/ProjectileSystem.cs`، `Data/BalanceProfile.cs`، `Data/BalanceProfileStore.cs`، `Editor/BaselineSeed.cs`، `Resources/Balance/Baseline.json`، `Presentation/Feel/FeedbackDirector.cs`، `Tests/EditMode/Sim/HitShapeTests.cs`، `docs/DECISIONS.md`، `agent.md`.

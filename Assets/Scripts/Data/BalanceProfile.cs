@@ -159,6 +159,9 @@ namespace Hollow.Data
 
         [Gdd("v0.19 §9"), Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u")] public float BodyRadius;
+        /// <summary>3/4 view: shots hit a capsule from the feet circle this far up the screen, matching the drawn body
+        /// (shots are drawn above their ground line, so this is the body's top minus that lift and the radius).</summary>
+        [Placeholder, Unit("u")] public float HitHeight;
         /// <summary>v0.19 §9 "Reach": melee reach, ranged firing range, or the distance at which a charger commits.</summary>
         [Gdd("v0.19 §9"), Unit("u")] public float AttackRange;
         [Gdd("v0.19 §9"), Unit("s")] public float AttackWindup;
@@ -271,6 +274,8 @@ namespace Hollow.Data
 
         [Placeholder, Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u")] public float BodyRadius;
+        /// <summary>Like EnemyData.HitHeight: how far up the screen from the feet circle shots still hit the boss.</summary>
+        [Placeholder, Unit("u")] public float HitHeight;
         /// <summary>v0.19 §12: minimum time between the starts of two attacks; warnings are never shortened.</summary>
         [Gdd("v0.19 §12"), Unit("s")] public float AttackInterval;
         /// <summary>Delay before the first attack after the entrance (the opening adds arrive first).</summary>

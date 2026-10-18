@@ -64,6 +64,14 @@ namespace Hollow.Data
                 profile.Feedback.DeathSparks = baseline.Feedback.DeathSparks;
                 profile.Feedback.DeathGore = baseline.Feedback.DeathGore;
             }
+            if (profile.Revision < 7)
+            {
+                // Upright hit capsules: shots aimed at a body's chest or head now connect.
+                foreach (var e in profile.Enemies)
+                    if (baseline.Enemies.Find(b => b.Id == e.Id) is { } be) e.HitHeight = be.HitHeight;
+                foreach (var b in profile.Bosses)
+                    if (baseline.Bosses.Find(x => x.Id == b.Id) is { } bb) b.HitHeight = bb.HitHeight;
+            }
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;

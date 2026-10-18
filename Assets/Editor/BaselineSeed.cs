@@ -39,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 6, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 7, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -213,8 +213,27 @@ namespace Hollow.EditorTools
             var turret = Machine(Ranged(EnemyId.H7c_Turret, Faction.Humans, 70, 8, 0, 0, speed: 0f, radius: 0.45f, range: 9f, windup: 0.45f, recovery: 0.6f, interval: 1.3f, projSpeed: 9f, burst: 1, burstGap: 0f));
             turret.IsChild = true; turret.KnockbackResistance = 1f; list.Add(turret);
 
+            foreach (var e in list) e.HitHeight = HitHeight(BodyTops[e.Id], e.BodyRadius);
             return list;
         }
+
+        /// <summary>
+        /// Top of each drawn body above its feet, in units (measured on the imported art; placeholders by cell size).
+        /// Shots fly 0.35 above their ground line (ProjectileView), so the hit capsule rises to the top minus that lift
+        /// and the body radius.
+        /// </summary>
+        static readonly Dictionary<EnemyId, float> BodyTops = new()
+        {
+            [EnemyId.A1_RunnerWolf] = 0.9f, [EnemyId.A2_QuillShooter] = 1f, [EnemyId.A3_ChargingBoar] = 1.3f, [EnemyId.A4_ArmoredTortoise] = 1.2f,
+            [EnemyId.A5_HowlingWolf] = 0.95f, [EnemyId.A6_ExplosiveBeetle] = 0.5f, [EnemyId.A7_MotherSpider] = 1.3f, [EnemyId.A7c_Spiderling] = 0.4f,
+            [EnemyId.R1_Crawler] = 0.9f, [EnemyId.R2_Shooter] = 1.5f, [EnemyId.R3_SawCharger] = 1.2f, [EnemyId.R4_ShieldRobot] = 2f,
+            [EnemyId.R5_Repair] = 1.3f, [EnemyId.R6_Suicide] = 0.6f, [EnemyId.R7_DroneCarrier] = 1.9f, [EnemyId.R7c_Drone] = 0.7f,
+            [EnemyId.H1_BatonGuard] = 1.75f, [EnemyId.H2_RifleGuard] = 1.75f, [EnemyId.H3_FastAssaulter] = 1.75f, [EnemyId.H4_ShieldGuard] = 1.75f,
+            [EnemyId.H5_Medic] = 1.75f, [EnemyId.H6_Grenadier] = 1.75f, [EnemyId.H7_Engineer] = 1.75f, [EnemyId.H7c_Turret] = 1f,
+        };
+        const float ShotLift = 0.35f;
+
+        static float HitHeight(float bodyTop, float radius) => Mathf.Max(0f, Mathf.Round((bodyTop - ShotLift - radius) * 100f) / 100f);
 
         static EnemyData Base(EnemyId id, Faction f, EnemyRole role, float hp, float dmg, int xp, int coins, float speed, float radius) =>
             new() { Id = id, Faction = f, Role = role, Health = hp, Damage = dmg, Xp = xp, Coins = coins, MoveSpeed = speed, BodyRadius = radius,
@@ -330,7 +349,7 @@ namespace Hollow.EditorTools
                         new() { HealthFraction = 0.65f, Adds = Adds((EnemyId.A1_RunnerWolf, 6), (EnemyId.A3_ChargingBoar, 2)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.A2_QuillShooter, 4), (EnemyId.A5_HowlingWolf, 2), (EnemyId.A6_ExplosiveBeetle, 4)) },
                     },
-                    MoveSpeed = 2.4f, BodyRadius = 1.4f, AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
+                    MoveSpeed = 2.4f, BodyRadius = 1.4f, HitHeight = HitHeight(3.5f, 1.4f), AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
                     ChargeTelegraph = 0.8f, ChargeSpeed = 9, ChargeRecovery = 1.2f,
                     StrikeWindup = 0.9f, StrikeRadius = 2.8f, StrikeRecovery = 1.3f, AddSpawnGap = 0.5f,
                 },
@@ -343,7 +362,7 @@ namespace Hollow.EditorTools
                         new() { HealthFraction = 0.7f, Adds = Adds((EnemyId.R2_Shooter, 4), (EnemyId.R3_SawCharger, 4), (EnemyId.R5_Repair, 2)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.R3_SawCharger, 4), (EnemyId.R6_Suicide, 6), (EnemyId.R7_DroneCarrier, 2)) },
                     },
-                    MoveSpeed = 1.8f, BodyRadius = 1.6f, AttackInterval = 4f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3.5f,
+                    MoveSpeed = 1.8f, BodyRadius = 1.6f, HitHeight = HitHeight(4.15f, 1.6f), AttackInterval = 4f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3.5f,
                     BurstWarning = 0.7f, BurstDuration = 1.2f, BurstRecovery = 1.3f, BurstShotInterval = 0.3f, BurstSpread = 30, ProjectileSpeed = 10,
                     BlastWarning = 1.0f, BlastRadius = 3, BlastThrowRange = 9, BlastRecovery = 1.5f, HealCapFraction = 0.1f,
                     BurstShotDamage = 28, ProjectileRange = 16, AddSpawnGap = 0.45f, EmpAffects = true,
@@ -358,7 +377,7 @@ namespace Hollow.EditorTools
                         new() { HealthFraction = 0.7f, Adds = Adds((EnemyId.H2_RifleGuard, 6), (EnemyId.H5_Medic, 2), (EnemyId.H6_Grenadier, 4)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.H3_FastAssaulter, 6), (EnemyId.H4_ShieldGuard, 6), (EnemyId.H7_Engineer, 2)) },
                     },
-                    MoveSpeed = 2.2f, BodyRadius = 0.9f, AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
+                    MoveSpeed = 2.2f, BodyRadius = 0.9f, HitHeight = HitHeight(3.0f, 0.9f), AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
                     BurstWarning = 0.7f, BurstDuration = 0.6f, BurstRecovery = 1.2f, BurstShotInterval = 0.2f, BurstSpread = 20, ProjectileSpeed = 11,
                     BlastWarning = 1.6f, BlastFlightFraction = 0.5f, BlastRadius = 2.6f, BlastThrowRange = 9, BlastRecovery = 0f, HealCapFraction = 0.1f,
                     BurstShotDamage = 32, ProjectileRange = 15, AddSpawnGap = 0.4f, EmpAffects = true,

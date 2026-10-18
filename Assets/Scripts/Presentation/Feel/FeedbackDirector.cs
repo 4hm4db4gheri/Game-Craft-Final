@@ -14,6 +14,8 @@ namespace Hollow.Presentation
     /// 6 sound — the audio director listens to the same events (T19),
     /// 7 aftermath — blood or oil spray, capped corpses, decals and small ground stains, 8 — pooled, rate-limited damage numbers.
     /// Extra moments: dash dust, ring and afterimages; level-up rings and rising motes; the player's death burst.
+    /// Walking: the drone sheds glints from under its core, feet kick up dust tinted for each arena's ground,
+    /// robots grind sparks, boots throw grit and hovering drones leave exhaust (all by distance moved).
     /// Camera shake is short, scaled by the player's shake setting, and never a hit-stop.
     /// Everything here is on the Effects sorting layer, under the Telegraphs layer.
     /// </summary>
@@ -40,17 +42,31 @@ namespace Hollow.Presentation
         static readonly Color Dust = new(0.72f, 0.66f, 0.56f, 0.35f);
         static readonly Color DashCyan = new(0.45f, 0.92f, 1f, 1f);
         static readonly Color Gold = new(1f, 0.84f, 0.35f, 1f);
+        // Walking dust per arena, a little lighter than its ground so it reads (unlit, so already toned to each
+        // phase's light): dry forest earth, factory concrete, cold industrial grit.
+        static readonly Color[] GroundDust =
+        {
+            new(0.82f, 0.72f, 0.55f, 0.8f), new(0.72f, 0.72f, 0.69f, 0.7f), new(0.58f, 0.62f, 0.68f, 0.65f),
+        };
+        static readonly Color Grit = new(0.2f, 0.2f, 0.22f, 1f);
+        static readonly Color GrindSpark = new(1f, 0.66f, 0.3f, 1f);
+        static readonly Color Exhaust = new(1f, 0.5f, 0.25f, 0.8f);
 
         // Cosmetic timing of the extra layers (not gameplay; tuned by eye).
         const float GhostInterval = 0.035f, GhostLife = 0.24f;
         const float StainHold = 4f, StainFade = 1.5f;
         const int RingPool = 16, GhostPool = 14, StainPool = 48;
+        /// <summary>Distance between two glints of the drone's trail; footfall spacing is StrideBase plus StridePerRadius × body radius.</summary>
+        const float GlintStride = 0.09f, StrideBase = 0.3f, StridePerRadius = 0.8f;
+        /// <summary>Moves longer than this in one tick are teleports (load, phase change), not walking.</summary>
+        const float TeleportStep = 1f;
 
         float shakeIntensity = 1f;
         bool numbersOn = true;
         int budgetLevel = 2;
 
-        ParticleSystem sparks, gore, puffs, motes;
+        ParticleSystem sparks, gore, puffs, motes, dust, glints;
+        long lastWalkTick = -1;
         ParticleSystem.EmitParams emit = new() { applyShapeToPosition = false };
         readonly List<(SpriteRenderer R, float Until, float Length)> flashes = new();
         int nextFlash;
@@ -107,6 +123,11 @@ namespace Hollow.Presentation
             gore = MakeSystem("Gore", blobSprite, 1.5f, 1.2f, AnimationCurve.Linear(0, 1, 1, 0.6f), true, 12);
             puffs = MakeSystem("Puffs", glowSprite, -0.04f, 3.5f, AnimationCurve.EaseInOut(0, 0.5f, 1, 1.8f), true, 8);
             motes = MakeSystem("Motes", sparkSprite, -0.3f, 0.8f, AnimationCurve.Linear(0, 1, 1, 0), true, 30);
+            // Walking dust stays on the ground layer, under every body and wall; the drone's glints fall from under it.
+            dust = MakeSystem("WalkDust", glowSprite, -0.02f, 2.5f, AnimationCurve.EaseInOut(0, 0.6f, 1, 1.7f), true, -40);
+            dust.GetComponent<ParticleSystemRenderer>().sortingLayerName = "Default";
+            glints = MakeSystem("WalkGlints", glowSprite, 0.12f, 1.5f, AnimationCurve.Linear(0, 1, 1, 0.2f), true, -38);
+            glints.GetComponent<ParticleSystemRenderer>().sortingLayerName = "Default";
             ringSprite = MakeRingSprite(out ringTexture);
         }
 
@@ -193,6 +214,10 @@ namespace Hollow.Presentation
             puffMain.maxParticles = Mathf.Max(16, cap / 4);
             var moteMain = motes.main;
             moteMain.maxParticles = Mathf.Max(16, cap / 4);
+            var dustMain = dust.main;
+            dustMain.maxParticles = Mathf.Max(16, cap / 3);
+            var glintMain = glints.main;
+            glintMain.maxParticles = Mathf.Max(16, cap / 8);
             Resize(decals, Mathf.RoundToInt(f.MaxDecals * scale), "Decal", -95);
             Resize(corpses, Mathf.RoundToInt(f.MaxCorpses * scale), "Corpse", -60);
             while (corpseMotion.Count > corpses.Count) corpseMotion.RemoveAt(corpseMotion.Count - 1);
@@ -230,6 +255,9 @@ namespace Hollow.Presentation
             gore.Clear();
             puffs.Clear();
             motes.Clear();
+            dust.Clear();
+            glints.Clear();
+            lastWalkTick = -1;
             primed = false; // a loaded card is not a fresh level-up
         }
 
@@ -467,12 +495,150 @@ namespace Hollow.Presentation
                 Motes((Vector2)playerView.transform.position + Vector2.up * 0.35f, Scaled(2), DashCyan, 0.3f);
             }
 
+            Walking(w);
+
             // A level-up is the moment an XP card becomes due.
             bool pendingCard = w.Progress.Pending != null;
             if (primed && pendingCard && !hadPendingCard) LevelUp(playerView.transform.position);
             hadPendingCard = pendingCard;
             primed = true;
         }
+
+        // ------------------------------------------------------------------ walking
+
+        /// <summary>
+        /// Movement trails for everything that walks, by distance covered in the ticks simulated since the last frame
+        /// (nothing while the game is paused). Footfalls are scattered stochastically along the way.
+        /// </summary>
+        void Walking(World w)
+        {
+            long tick = w.Clock.Tick;
+            long ticks = lastWalkTick < 0 ? 0 : tick - lastWalkTick;
+            lastWalkTick = tick;
+            if (ticks <= 0) return;
+
+            Color ground = GroundDust[Mathf.Clamp(w.Phase - 1, 0, GroundDust.Length - 1)];
+
+            var p = w.Player;
+            if (!p.Dead && Moved(p.Position, p.PrevPosition, ticks, out Vector2 pd, out float pdist))
+                for (int i = Steps(pdist, GlintStride); i > 0; i--) DroneGlint(p.Position, pd);
+
+            var c = w.Companion;
+            if (c.Present && !c.Dead && Moved(c.Position, c.PrevPosition, ticks, out Vector2 cd, out float cdist))
+            {
+                float r = w.Profile.Companion.BodyRadius;
+                for (int i = Steps(cdist, Stride(r)); i > 0; i--) FootDust(c.Position, cd, r, ground);
+            }
+
+            foreach (var e in w.Enemies)
+            {
+                if (!e.Alive || e.Ai == EnemyAi.Spawning) continue;
+                if (!Moved(e.Position, e.PrevPosition, ticks, out Vector2 ed, out float edist)) continue;
+                var d = w.Profile.Enemy(e.Type);
+                for (int i = Steps(edist, Stride(e.Radius)); i > 0; i--) EnemyStep(e.Type, d, e.Position, ed, e.Radius, ground);
+            }
+
+            var b = w.Boss;
+            if (b.Active && !b.Dead && Moved(b.Position, b.PrevPosition, ticks, out Vector2 bd, out float bdist))
+            {
+                bool machine = BossSystem.Data(w).IsMachine;
+                for (int i = Steps(bdist, Stride(b.Radius)); i > 0; i--)
+                {
+                    FootDust(b.Position, bd, b.Radius, ground);
+                    if (machine && Random.value < 0.5f) Grind(b.Position, bd, b.Radius);
+                }
+            }
+        }
+
+        static float Stride(float radius) => StrideBase + radius * StridePerRadius;
+
+        static bool Moved(Vector2 now, Vector2 before, long ticks, out Vector2 dir, out float distance)
+        {
+            Vector2 step = now - before;
+            float len = step.magnitude;
+            dir = len > 1e-5f ? step / len : Vector2.zero;
+            distance = len * ticks;
+            return len > 1e-4f && len < TeleportStep;
+        }
+
+        /// <summary>Whole footfalls in this distance, plus one more with the leftover as its chance.</summary>
+        static int Steps(float distance, float stride)
+        {
+            float n = distance / Mathf.Max(0.01f, stride);
+            int whole = (int)n;
+            return whole + (Random.value < n - whole ? 1 : 0);
+        }
+
+        /// <summary>The drone hovers: a cyan glint drips from under its core and drifts back along its path.</summary>
+        void DroneGlint(Vector2 at, Vector2 dir)
+        {
+            Vector2 from = at + Vector2.up * Random.Range(0.3f, 0.45f) + new Vector2(Random.Range(-0.18f, 0.18f), 0f);
+            var v = -dir * Random.Range(0.3f, 0.9f) + Vector2.down * Random.Range(0.4f, 1f) + Random.insideUnitCircle * 0.2f;
+            var col = Color.Lerp(DashCyan, Color.white, Random.Range(0f, 0.5f));
+            col.a = Random.Range(0.75f, 1f);
+            Emit(glints, from, v, Random.Range(0.14f, 0.3f), Random.Range(0.4f, 0.7f), col);
+        }
+
+        /// <summary>A soft puff of the arena's ground kicked up behind a footfall; heavier bodies raise bigger clouds.</summary>
+        void FootDust(Vector2 at, Vector2 dir, float radius, Color ground)
+        {
+            float size = 0.3f + radius * 0.7f;
+            Vector2 side = new Vector2(-dir.y, dir.x) * Random.Range(-radius, radius) * 0.6f;
+            Vector2 foot = at + side + new Vector2(0f, Random.Range(-0.05f, 0.08f));
+            var v = -dir * Random.Range(0.3f, 0.8f) + Vector2.up * Random.Range(0.1f, 0.35f) + Random.insideUnitCircle * 0.15f;
+            var col = ground;
+            col.a *= Random.Range(0.7f, 1.1f);
+            Emit(dust, foot, v, size * Random.Range(0.8f, 1.2f), Random.Range(0.6f, 1.05f), col);
+            // A smaller, denser puff right at the heel.
+            Emit(dust, foot - dir * 0.05f, v * 0.4f, size * 0.55f, Random.Range(0.35f, 0.55f), col);
+        }
+
+        /// <summary>Metal feet and treads on concrete: a couple of short orange sparks low behind the body.</summary>
+        void Grind(Vector2 at, Vector2 dir, float radius)
+        {
+            if (budgetLevel <= 0) return;
+            Vector2 foot = at + new Vector2(Random.Range(-radius, radius) * 0.7f, Random.Range(0f, 0.12f));
+            for (int i = 0; i < 2; i++)
+            {
+                var v = Rotate(-dir, Random.Range(-40f, 40f)) * Random.Range(1.5f, 3.2f) + Vector2.up * Random.Range(0.3f, 1.2f);
+                Emit(sparks, foot, v, Random.Range(0.04f, 0.08f), Random.Range(0.1f, 0.22f), GrindSpark);
+            }
+        }
+
+        /// <summary>Boots on gravel: a pebble hops out of the dust.</summary>
+        void Pebble(Vector2 at, Vector2 dir)
+        {
+            if (budgetLevel <= 0) return;
+            var v = -dir * Random.Range(0.4f, 1.1f) + Vector2.up * Random.Range(1f, 1.8f) + Random.insideUnitCircle * 0.3f;
+            Emit(gore, at + Random.insideUnitCircle * 0.1f, v, Random.Range(0.04f, 0.07f), Random.Range(0.25f, 0.4f), Grit);
+        }
+
+        /// <summary>A hovering robot's warm exhaust, dropping from its belly.</summary>
+        void Thruster(Vector2 at, Vector2 dir)
+        {
+            Vector2 from = at + Vector2.up * Random.Range(0.25f, 0.4f) + new Vector2(Random.Range(-0.1f, 0.1f), 0f);
+            var v = -dir * Random.Range(0.3f, 0.8f) + Vector2.down * Random.Range(0.3f, 0.8f);
+            var col = Color.Lerp(Exhaust, Gold, Random.Range(0f, 0.5f));
+            Emit(glints, from, v, Random.Range(0.08f, 0.16f), Random.Range(0.25f, 0.45f), col);
+        }
+
+        void EnemyStep(EnemyId id, EnemyData d, Vector2 at, Vector2 dir, float radius, Color ground)
+        {
+            if (Hovers(id)) { Thruster(at, dir); return; }
+            FootDust(at, dir, radius, ground);
+            switch (d.Faction)
+            {
+                case Faction.Robots:
+                    if (Random.value < (d.Role == EnemyRole.Charger ? 0.9f : 0.4f)) Grind(at, dir, radius);
+                    break;
+                case Faction.Humans:
+                    if (Random.value < 0.5f) Pebble(at, dir);
+                    break;
+            }
+        }
+
+        /// <summary>Enemies that fly instead of walking (no dust).</summary>
+        static bool Hovers(EnemyId id) => id == EnemyId.R7c_Drone;
 
         // ------------------------------------------------------------------ layers
 
