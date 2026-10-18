@@ -107,8 +107,7 @@ namespace Hollow.UI
             advance.onClick.AddListener(Next);
             sceneLayer.gameObject.SetActive(false);
 
-            var barkRt = UIFactory.Rect(root.Hud, "Bark", new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 230), new Vector2(1200, 60));
-            bark = UIFactory.Text(barkRt, "B", "", t, 30, TextAlignmentOptions.Center);
+            // Incidental lines appear in the bubble above the operator.
         }
 
         /// <summary>Plays a scene; <paramref name="canSkip"/> when the scene was already seen in this slot.</summary>
@@ -164,14 +163,7 @@ namespace Hollow.UI
 
         public void ShowBark(string id)
         {
-            var b = data.Bark(id);
-            if (b == null) return;
-            if (b.Cooldown > 0 && barkTimes.TryGetValue(id, out float last) && Time.unscaledTime - last < b.Cooldown) return;
-            barkTimes[id] = Time.unscaledTime;
-            bark.text = SubtitlesOn ? Format(b.Speaker, b.Text) : "";
-            LineStarted?.Invoke("bark_" + id);
-            barkEnds = Time.unscaledTime + b.Seconds;
-            barkNext = b.Next;
+            // Retired bottom-of-screen barks. Authored conversation scenes remain available.
         }
 
         string Format(string speakerId, string text)

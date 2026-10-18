@@ -41,8 +41,18 @@ namespace Hollow.Presentation
         readonly SpriteRenderer[] composedFloors = new SpriteRenderer[3];
         readonly List<Sprite> ownedFloorSprites = new();
         readonly List<Material> ownedGroundMaterials = new();
+        Texture2D contactShadowTexture;
+        Sprite contactShadowSprite;
         readonly List<(SpriteRenderer Renderer, Transform Anchor, Color Color)> foreground = new();
         bool landmarksBuilt;
+
+        public void RemoveOutdatedForestProps()
+        {
+            if (Props == null || Props.Length == 0 || Props[0] == null) return;
+            foreach (var prop in Props[0].GetComponentsInChildren<ArenaProp>(true))
+                if (prop.PropName == "Stumps" || prop.PropName == "LogPile" || prop.PropName == "Excavator")
+                    prop.gameObject.SetActive(false);
+        }
 
         public void BuildLandmarks(ArenaLayout layout)
         {
@@ -51,7 +61,8 @@ namespace Hollow.Presentation
             foreach (var spec in layout.Landmarks)
             {
                 if (spec.Phase < 1 || spec.Phase > Props.Length || Props[spec.Phase - 1] == null) continue;
-                var texture = Resources.Load<Texture2D>("ArenaArt/Landmarks/ENV_P1_" + spec.Id + "_prop");
+                string suffix = string.IsNullOrEmpty(spec.ArtSuffix) ? "prop" : spec.ArtSuffix;
+                var texture = Resources.Load<Texture2D>("ArenaArt/Landmarks/ENV_P" + spec.Phase + "_" + spec.Id + "_" + suffix);
                 if (texture == null) { Debug.LogWarning("[Hollow] Missing landmark art: " + spec.Id); continue; }
                 var root = new GameObject(spec.Id);
                 root.transform.SetParent(Props[spec.Phase - 1], false);
@@ -59,6 +70,13 @@ namespace Hollow.Presentation
                 root.AddComponent<SortingGroup>();
                 var prop = root.AddComponent<ArenaProp>();
                 prop.Phase = spec.Phase; prop.PropName = spec.Id; prop.Cell = spec.Cell; prop.Footprint = spec.Footprint;
+                var shadow = new GameObject("Shadow"); shadow.transform.SetParent(root.transform, false);
+                shadow.transform.localPosition = new Vector3(0, spec.Footprint.y * 0.22f, 0);
+                shadow.transform.localScale = new Vector3(spec.Footprint.x * 1.15f, spec.Footprint.y * 1.4f, 1);
+                var shadowRenderer = shadow.AddComponent<SpriteRenderer>();
+                shadowRenderer.sprite = ContactShadowSprite();
+                shadowRenderer.sortingOrder = -1;
+                shadowRenderer.color = new Color(0.02f, 0.025f, 0.03f, 0.24f);
                 // This box matches the simulation grid footprint, not the roof/smoke above it.
                 for (int y = 0; y < spec.Footprint.y; y++)
                 {
@@ -89,7 +107,6 @@ namespace Hollow.Presentation
         /// <summary>Full-arena artwork creates connected paths instead of a repeating carpet of tiles.</summary>
         public void ApplyComposition(bool enabled, float shadowStrength)
         {
-            var propAtlas = Resources.Load<Texture2D>("ArenaArt/ForestProps");
             for (int i = 0; i < Grounds.Length; i++)
             {
                 var map = Grounds[i];
@@ -97,7 +114,7 @@ namespace Hollow.Presentation
                 var tiles = map.GetComponent<TilemapRenderer>();
                 if (enabled && composedFloors[i] == null)
                 {
-                    string asset = i == 0 ? "Forest" : "Industry";
+                    string asset = i == 0 ? "Forest" : i == 1 ? "Factory" : "Industry";
                     var texture = Resources.Load<Texture2D>("ArenaArt/Floor" + asset);
                     if (texture != null)
                     {
@@ -135,13 +152,14 @@ namespace Hollow.Presentation
                 if (phaseProps == null) continue;
                 foreach (var prop in phaseProps.GetComponentsInChildren<ArenaProp>(true))
                 {
-                    ApplyPropArt(prop, propAtlas);
                     var shadow = prop.transform.Find("Shadow");
                     if (shadow == null) continue;
                     shadow.localPosition = new Vector3(0, prop.Footprint.y * 0.22f, 0);
-                    shadow.localScale = new Vector3(prop.Footprint.x * 1.15f, prop.Footprint.y * 0.72f, 1);
+                    shadow.localScale = new Vector3(prop.Footprint.x * 1.15f, prop.Footprint.y * 1.4f, 1);
                     var renderer = shadow.GetComponent<SpriteRenderer>();
-                    if (renderer != null) renderer.color = new Color(1, 1, 1, Mathf.Clamp01(shadowStrength));
+                    if (renderer != null) renderer.color = renderer.sprite == contactShadowSprite
+                        ? new Color(0.02f, 0.025f, 0.03f, Mathf.Clamp01(shadowStrength) * 0.32f)
+                        : new Color(1, 1, 1, Mathf.Clamp01(shadowStrength));
                 }
             }
             if (foreground.Count == 0)
@@ -168,36 +186,6 @@ namespace Hollow.Presentation
                                 foreground.Add((r, child, r.color));
                     }
             }
-        }
-
-        void ApplyPropArt(ArenaProp prop, Texture2D atlas)
-        {
-            if (atlas == null || prop.Phase != 1) return;
-            var body = prop.transform.Find("Body");
-            if (body == null || body.Find("RefinedProp") != null) return;
-            Rect crop;
-            float width;
-            switch (prop.PropName)
-            {
-                case "Stumps": crop = new Rect(22, 81, 654, 393); width = 1.3f; break;
-                case "LogPile": crop = new Rect(724, 78, 675, 426); width = 2.2f; break;
-                case "Excavator": crop = new Rect(1438, 83, 713, 601); width = 3.6f; break;
-                default: return;
-            }
-            Material material = null;
-            foreach (var old in body.GetComponentsInChildren<SpriteRenderer>(true))
-            {
-                if (material == null) material = old.sharedMaterial;
-            }
-            crop = ImportedAtlasRect(crop, atlas.width, atlas.height);
-            var sprite = Sprite.Create(atlas, crop, new Vector2(0.5f, 0), crop.width / width, 0, SpriteMeshType.FullRect);
-            foreach (var old in body.GetComponentsInChildren<SpriteRenderer>(true)) old.enabled = false;
-            ownedFloorSprites.Add(sprite);
-            var go = new GameObject("RefinedProp");
-            go.transform.SetParent(body, false);
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            if (material != null) renderer.sharedMaterial = material;
         }
 
         /// <summary>Unity may downscale the atlas for quality/platform settings. Keep crops in source coordinates.</summary>
@@ -230,6 +218,31 @@ namespace Hollow.Presentation
         {
             foreach (var sprite in ownedFloorSprites) if (sprite != null) Destroy(sprite);
             foreach (var material in ownedGroundMaterials) if (material != null) Destroy(material);
+            if (contactShadowSprite != null) Destroy(contactShadowSprite);
+            if (contactShadowTexture != null) Destroy(contactShadowTexture);
+        }
+
+        Sprite ContactShadowSprite()
+        {
+            if (contactShadowSprite != null) return contactShadowSprite;
+            const int width = 64, height = 32;
+            contactShadowTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            contactShadowTexture.name = "Arena contact shadow";
+            contactShadowTexture.wrapMode = TextureWrapMode.Clamp;
+            contactShadowTexture.filterMode = FilterMode.Bilinear;
+            var pixels = new Color[width * height];
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+            {
+                float nx = (x + 0.5f - width * 0.5f) / (width * 0.5f);
+                float ny = (y + 0.5f - height * 0.5f) / (height * 0.5f);
+                float alpha = Mathf.Pow(Mathf.Clamp01(1f - nx * nx - ny * ny), 2f);
+                pixels[y * width + x] = new Color(1, 1, 1, alpha);
+            }
+            contactShadowTexture.SetPixels(pixels);
+            contactShadowTexture.Apply(false, true);
+            contactShadowSprite = Sprite.Create(contactShadowTexture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), width);
+            return contactShadowSprite;
         }
 
         long brokenSignature = long.MinValue;

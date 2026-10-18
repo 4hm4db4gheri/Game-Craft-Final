@@ -81,12 +81,9 @@ namespace Hollow.UI
             UIFactory.Text(head, "T", $"<b><cspace=0.18em>{Loc.T("menu.title")}</cspace></b>\n<size=24><color=#{ColorUtility.ToHtmlStringRGB(root.Theme.TextDim)}>{Loc.T("menu.tagline")}</color></size>",
                 root.Theme, 92, TextAlignmentOptions.Top);
             float y = -260;
-            Btn(box, Loc.T("menu.newGame"), y, newGame); y -= 80;
             Btn(box, Loc.T("menu.continue"), y, continueGame, anySave); y -= 80;
+            Btn(box, Loc.T("menu.newGame"), y, newGame); y -= 80;
             Btn(box, Loc.T("menu.settings"), y, settings); y -= 80;
-            Btn(box, Loc.T("menu.controls"), y, controls); y -= 80;
-            Btn(box, Loc.T("reset.menu"), y, resetProgress); y -= 80;
-            Btn(box, Loc.T("menu.quit"), y, quit);
         }
 
         // ---------------------------------------------------------------- slots
@@ -200,7 +197,6 @@ namespace Hollow.UI
             Btn(box, Loc.T("pause.resume"), y, resume); y -= 80;
             Btn(box, Loc.T(canSave ? "pause.save" : "pause.saveDisabled"), y, save, canSave); y -= 80;
             Btn(box, Loc.T("menu.settings"), y, settings); y -= 80;
-            Btn(box, Loc.T("menu.controls"), y, controls); y -= 80;
             Btn(box, Loc.T("common.mainMenu"), y, mainMenu);
         }
 
@@ -214,9 +210,9 @@ namespace Hollow.UI
 
         // ---------------------------------------------------------------- settings
 
-        public void ShowSettings(ISettingsModel s, Action back)
+        public void ShowSettings(ISettingsModel s, Action back, Action controls = null, Action resetProgress = null)
         {
-            var box = Begin(Loc.T("menu.settings"), null, 0.7f, 760, 920);
+            var box = Begin(Loc.T("menu.settings"), null, 0.7f, 760, 1080);
             float y = -160;
             Slider(box, Loc.T("settings.music"), s.MusicVolume, v => s.MusicVolume = v, ref y);
             Slider(box, Loc.T("settings.effects"), s.EffectsVolume, v => s.EffectsVolume = v, ref y);
@@ -224,7 +220,9 @@ namespace Hollow.UI
             Slider(box, Loc.T("settings.shake"), s.ShakeIntensity, v => s.ShakeIntensity = v, ref y);
             y -= 24; // sliders are top-anchored rows, buttons are centred: keep them apart
             Toggle(box, Loc.T("settings.fullscreen"), s.Fullscreen, v => s.Fullscreen = v, ref y);
-            y -= 90;
+            if (controls != null) { y -= 70; Btn(box, Loc.T("menu.controls"), y, () => { s.Save(); controls(); }); }
+            if (resetProgress != null) { y -= 76; Btn(box, Loc.T("reset.menu"), y, () => { s.Save(); resetProgress(); }); }
+            y -= 82;
             Btn(box, Loc.T("common.back"), y, () => { s.Save(); back(); }, true, 300);
         }
 

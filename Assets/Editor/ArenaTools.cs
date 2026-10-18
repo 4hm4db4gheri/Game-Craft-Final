@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 namespace Hollow.EditorTools
 {
     /// <summary>
-    /// The arena in three states (D13, §14): 48 × 32 cells, four edge spawn zones, shop south of centre, and per
+    /// The arena in three states (D13, §14): 48 × 32 cells, four edge spawn zones, shops on opposite sides, and per
     /// phase its own ground, walk-over decor and named blocking props (docs/ART_ASSET_LIST.md). Props are prefabs
     /// (PH_Prop_P&lt;n&gt;_&lt;Name&gt;) so imported AI art replaces them; their footprints are baked into
     /// ArenaLayout.json, which is the only thing the simulation reads.
@@ -32,9 +32,9 @@ namespace Hollow.EditorTools
         const string OldGroundArtName = "GroundArt";
         const string EdgeShadeName = "EdgeShade";
         public const string LayoutPath = "Assets/Resources/Arena/ArenaLayout.json";
-        /// <summary>The second service station: a spot free in all three phases, 8 units from the east entrance (T28).</summary>
+        /// <summary>The eastern service station; the first is on the opposite side of the arena.</summary>
         public const string SecondShopName = "ShopStation2";
-        public static readonly Vector2 SecondShopPosition = new(12f, 0.5f);
+        public static readonly Vector2 SecondShopPosition = new(19f, 4.5f);
 
         /// <summary>T28: adds the second service station (marker and kiosk) to the open Game scene, then bakes.</summary>
         [MenuItem("Hollow/Arena/Add Second Service Station")]
@@ -122,7 +122,7 @@ namespace Hollow.EditorTools
             new[] // Animals: open readable tutorial space, cover at the edges
             {
                 ("Hedge", 9, 22), ("Hedge", 36, 9), ("Rock", 14, 7), ("Rock", 32, 23), ("Tree", 8, 15), ("Tree", 40, 17),
-                ("Tree", 20, 25), ("Tree", 28, 6), ("Stumps", 17, 19), ("LogPile", 30, 13), ("Excavator", 37, 21),
+                ("Tree", 20, 25), ("Tree", 28, 6),
             },
             new[] // Robots: lanes and cover for ranged threats
             {
@@ -224,7 +224,7 @@ namespace Hollow.EditorTools
 
             a.PlayerStart = Marker(gridGo, "PlayerStart", new Vector2(0, 0));
             a.CompanionStart = Marker(gridGo, "CompanionStart", new Vector2(-1.5f, -0.6f));
-            a.Shop = Marker(gridGo, "ShopStation", new Vector2(0, -6.5f));
+            a.Shop = Marker(gridGo, "ShopStation", new Vector2(-19f, -4.5f));
             a.ExtraShops = new List<Transform> { Marker(gridGo, SecondShopName, SecondShopPosition) }; // v0.19 §13
             a.ShopFootprint = new Vector2Int(2, 1);
 
