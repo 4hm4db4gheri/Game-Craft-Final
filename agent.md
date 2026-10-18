@@ -357,3 +357,6 @@
 - تست‌های تازه‌ی `HitShapeTests` (شلیک به سینه‌ی H1/H2/H6/R2 آسیب می‌زند، بالای سر نمی‌خورد، کپسول باس، شلیک رو به بیرون از بدنی که روی تیرانداز افتاده). ۴۷۲ تست پاس. seed و `Baseline.json` دقیقاً یکی‌اند. Play mode (صحنه‌ی Game مستقیم، بدون دست زدن به جایگاه‌ها): ردّ هر سه فاز دیده شد و شلیک به سینه‌ی نگهبان تفنگ‌دار آسیب زد. تصمیم D84.
 - نکته‌ی تست: `playModeStartScene` بعد از هر recompile دوباره MainMenu می‌شود (`ProjectSetup`)؛ برای اجرای مستقیم صحنه‌ی Game قبل از هر Play آن را null کن.
 - فایل‌های تغییرکرده: `Sim/SimMath.cs`، `Sim/Combat/ProjectileSystem.cs`، `Data/BalanceProfile.cs`، `Data/BalanceProfileStore.cs`، `Editor/BaselineSeed.cs`، `Resources/Balance/Baseline.json`، `Presentation/Feel/FeedbackDirector.cs`، `Tests/EditMode/Sim/HitShapeTests.cs`، `docs/DECISIONS.md`، `agent.md`.
+
+### 2026-10-18 — تنظیم ردّ راه رفتن
+- به خواست کاربر: ردّ جرقه‌ی پهپاد بازیکن حدود نصف شد (`GlintStride` 0.17، کوچک‌تر و کم‌رنگ‌تر). گرد و خاک NPCها و اپراتور بزرگ‌تر و پخش‌تر شد و هر پف به‌طور تصادفی کوچک (۰.۵–۰.۷۵)، معمولی (۰.۹–۱.۱) یا بزرگ (۱.۳۵–۱.۷۵) است؛ پف‌های بزرگ کم‌رنگ‌تر و ماندگارترند (`FeedbackDirector.FootDust`). در Play mode فاز ۱ دیده شد. ۴۷۲ تست پاس. D84 به‌روز شد.

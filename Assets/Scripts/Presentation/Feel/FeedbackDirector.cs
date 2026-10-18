@@ -57,7 +57,7 @@ namespace Hollow.Presentation
         const float StainHold = 4f, StainFade = 1.5f;
         const int RingPool = 16, GhostPool = 14, StainPool = 48;
         /// <summary>Distance between two glints of the drone's trail; footfall spacing is StrideBase plus StridePerRadius × body radius.</summary>
-        const float GlintStride = 0.09f, StrideBase = 0.3f, StridePerRadius = 0.8f;
+        const float GlintStride = 0.17f, StrideBase = 0.3f, StridePerRadius = 0.8f;
         /// <summary>Moves longer than this in one tick are teleports (load, phase change), not walking.</summary>
         const float TeleportStep = 1f;
 
@@ -575,20 +575,25 @@ namespace Hollow.Presentation
             Vector2 from = at + Vector2.up * Random.Range(0.3f, 0.45f) + new Vector2(Random.Range(-0.18f, 0.18f), 0f);
             var v = -dir * Random.Range(0.3f, 0.9f) + Vector2.down * Random.Range(0.4f, 1f) + Random.insideUnitCircle * 0.2f;
             var col = Color.Lerp(DashCyan, Color.white, Random.Range(0f, 0.5f));
-            col.a = Random.Range(0.75f, 1f);
-            Emit(glints, from, v, Random.Range(0.14f, 0.3f), Random.Range(0.4f, 0.7f), col);
+            col.a = Random.Range(0.6f, 0.9f);
+            Emit(glints, from, v, Random.Range(0.12f, 0.24f), Random.Range(0.35f, 0.6f), col);
         }
 
-        /// <summary>A soft puff of the arena's ground kicked up behind a footfall; heavier bodies raise bigger clouds.</summary>
+        /// <summary>
+        /// A soft puff of the arena's ground kicked up behind a footfall; heavier bodies raise bigger clouds. Each puff
+        /// is drawn at random as a small, a regular or a large one, so footfalls never look stamped.
+        /// </summary>
         void FootDust(Vector2 at, Vector2 dir, float radius, Color ground)
         {
-            float size = 0.3f + radius * 0.7f;
-            Vector2 side = new Vector2(-dir.y, dir.x) * Random.Range(-radius, radius) * 0.6f;
-            Vector2 foot = at + side + new Vector2(0f, Random.Range(-0.05f, 0.08f));
-            var v = -dir * Random.Range(0.3f, 0.8f) + Vector2.up * Random.Range(0.1f, 0.35f) + Random.insideUnitCircle * 0.15f;
+            float tier = Random.value;
+            float scale = tier < 0.33f ? Random.Range(0.5f, 0.75f) : tier < 0.67f ? Random.Range(0.9f, 1.1f) : Random.Range(1.35f, 1.75f);
+            float size = (0.42f + radius * 0.95f) * scale;
+            Vector2 side = new Vector2(-dir.y, dir.x) * Random.Range(-radius, radius) * 0.8f;
+            Vector2 foot = at + side + new Vector2(0f, Random.Range(-0.06f, 0.1f));
+            var v = (-dir * Random.Range(0.35f, 0.9f) + Vector2.up * Random.Range(0.1f, 0.4f) + Random.insideUnitCircle * 0.25f) * Mathf.Sqrt(scale);
             var col = ground;
-            col.a *= Random.Range(0.7f, 1.1f);
-            Emit(dust, foot, v, size * Random.Range(0.8f, 1.2f), Random.Range(0.6f, 1.05f), col);
+            col.a *= Random.Range(0.7f, 1.1f) / Mathf.Sqrt(scale); // big clouds are thinner
+            Emit(dust, foot, v, size, Random.Range(0.6f, 1.05f) * Mathf.Lerp(1f, scale, 0.5f), col);
             // A smaller, denser puff right at the heel.
             Emit(dust, foot - dir * 0.05f, v * 0.4f, size * 0.55f, Random.Range(0.35f, 0.55f), col);
         }
