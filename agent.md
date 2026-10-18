@@ -525,3 +525,7 @@
 
 ### 2026-10-19 — build بدون save قبلی
 - گزارش کاربر: build جایگاه‌های پر از بازی‌های قبلی (Editor و buildهای قبلی) نشان می‌داد، چون هر دو از `persistentDataPath/saves` می‌خواندند. حالا `SlotStore.Root` در player پوشه‌ی جدای `build_saves` دارد و در اولین دسترسی هر اجرا `Application.buildGUID` را با `build_saves/build.txt` مقایسه می‌کند؛ اگر فرق کند (build تازه) سه فایل جایگاه پاک و GUID نوشته می‌شود. ذخیره‌های همان build بین اجراها می‌مانند. Editor همان `saves` را دارد. ادیتور باز نبود؛ کامپایل و تست اجرا نشد.
+
+### 2026-10-19 — merge شاخه‌ی salam در main
+- `origin/salam` (commit `36395fd` «Improve» از MaPirate) فقط ۲۶۰ فایل `.meta` آرت را عوض کرده بود: `spriteID`های تازه‌ی یونیتی و بلوک تنظیمات پلتفرم Android (بدون override) برای ۱۵۱ texture. هیچ کد، صحنه یا داده‌ای عوض نشده بود و تعارضی با main نبود.
+- ۱۹۳ فایل `.meta` که روی دیسک تغییر commit‌نشده داشتند (آن‌ها هم فقط `spriteID` بازسازی‌شده بودند) به خواست کاربر دور ریخته شدند و نسخه‌ی salam ماند؛ بلوک‌های Android هم به خواست کاربر ماندند. merge با `--no-ff` (`0257d5c`). فونت‌ها و `Assets/_Recovery` دست نخوردند. push نشده.
