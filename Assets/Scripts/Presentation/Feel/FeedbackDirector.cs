@@ -57,7 +57,7 @@ namespace Hollow.Presentation
         const float StainHold = 4f, StainFade = 1.5f;
         const int RingPool = 16, GhostPool = 14, StainPool = 48;
         /// <summary>Distance between two glints of the drone's trail; footfall spacing is StrideBase plus StridePerRadius × body radius.</summary>
-        const float GlintStride = 0.17f, StrideBase = 0.3f, StridePerRadius = 0.8f;
+        const float GlintStride = 0.17f, StrideBase = 0.45f, StridePerRadius = 1.2f;
         /// <summary>Moves longer than this in one tick are teleports (load, phase change), not walking.</summary>
         const float TeleportStep = 1f;
 
@@ -594,8 +594,8 @@ namespace Hollow.Presentation
             var col = ground;
             col.a *= Random.Range(0.7f, 1.1f) / Mathf.Sqrt(scale); // big clouds are thinner
             Emit(dust, foot, v, size, Random.Range(0.6f, 1.05f) * Mathf.Lerp(1f, scale, 0.5f), col);
-            // A smaller, denser puff right at the heel.
-            Emit(dust, foot - dir * 0.05f, v * 0.4f, size * 0.55f, Random.Range(0.35f, 0.55f), col);
+            // Now and then a smaller, denser puff right at the heel.
+            if (Random.value < 0.4f) Emit(dust, foot - dir * 0.05f, v * 0.4f, size * 0.55f, Random.Range(0.35f, 0.55f), col);
         }
 
         /// <summary>Metal feet and treads on concrete: a couple of short orange sparks low behind the body.</summary>
