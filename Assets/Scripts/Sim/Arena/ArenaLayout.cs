@@ -88,6 +88,8 @@ namespace Hollow.Sim
         public List<int> CollisionRows = new();
         public float ArtWidth;
         public float GroundInset;
+        /// <summary>Resource filename suffix; habitat artwork uses decor instead of prop.</summary>
+        public string ArtSuffix = "prop";
         public Vector4 ArtCrop = new(0, 0, 1, 1);
         public bool Occupies(int x, int y) => x >= 0 && y >= 0 && x < Footprint.x && y < Footprint.y &&
             (CollisionRows == null || CollisionRows.Count == 0 || (y < CollisionRows.Count && (CollisionRows[y] & (1 << x)) != 0));
