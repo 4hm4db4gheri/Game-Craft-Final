@@ -26,8 +26,7 @@ namespace Hollow.Sim
             p.PrevPosition = p.Position;
             p.Aim = cmd.AimWorld;
             if (p.Dead) { p.Velocity = Vector2.zero; return; }
-            if (p.Health < PlayerStats.MaxHealth(w) && w.Clock.Tick - p.LastHitTick >= w.Ticks(w.Profile.Player.RegenerationDelay))
-                p.Health = Mathf.Min(PlayerStats.MaxHealth(w), p.Health + w.Profile.Player.RegenerationRate * Core.SimClock.Dt);
+            // D87: the player's health never comes back by itself; only the shop's heal restores it.
 
             Vector2 move = Vector2.ClampMagnitude(cmd.Move, 1f);
             if (move.sqrMagnitude > 1e-4f) p.LastMoveDir = move.normalized;
@@ -86,7 +85,7 @@ namespace Hollow.Sim
             }
 
             var boss = w.Boss;
-            if (boss.Active && !boss.Dead && !p.DashHitIds.Contains(BossState.EntityId))
+            if (BossSystem.Targetable(boss) && !p.DashHitIds.Contains(BossState.EntityId))
             {
                 float br = boss.Radius + data.BodyRadius;
                 if (SimMath.SegmentPointDistanceSq(from, p.Position, boss.Position) <= br * br)

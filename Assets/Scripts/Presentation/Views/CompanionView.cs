@@ -18,6 +18,10 @@ namespace Hollow.Presentation
         [SerializeField] SpriteSet phaseTwoSet;
         /// <summary>How long the firing pose stays up after each shot.</summary>
         [SerializeField] float attackPoseTime = 0.3f;
+        /// <summary>Recoil: the drawn rifle is part of the body art, so the whole body kicks back from each shot.</summary>
+        [SerializeField] float recoilPushBack = 0.07f;
+        [SerializeField] float recoilLift = 0.03f;
+        [SerializeField] float recoilReturn = 14f;
 
         /// <summary>Tip of the Operator's rifle on screen (the rifle sits at hip height in front of the body).</summary>
         public Vector2 Muzzle(Vector2 shotDirection) =>
@@ -26,18 +30,27 @@ namespace Hollow.Presentation
         Color[] baseColors;
         SpriteSetAnimator anim;
         float flashUntil, attackUntil;
+        Vector3 bodyBaseLocal;
+        Vector2 kickDir;
+        float recoil;
 
         void Awake()
         {
             anim = GetComponent<SpriteSetAnimator>();
             baseColors = new Color[bodyRenderers.Length];
             for (int i = 0; i < bodyRenderers.Length; i++) baseColors[i] = bodyRenderers[i].color;
+            if (body != null) bodyBaseLocal = body.localPosition;
         }
 
         public void Flash(float seconds) => flashUntil = Time.time + seconds;
 
-        /// <summary>The Operator just fired: hold the firing pose for a moment.</summary>
-        public void Fired() => attackUntil = Time.time + attackPoseTime;
+        /// <summary>The Operator just fired: hold the firing pose for a moment and kick back from the shot.</summary>
+        public void Fired(Vector2 shotDirection)
+        {
+            attackUntil = Time.time + attackPoseTime;
+            kickDir = shotDirection.sqrMagnitude > 1e-4f ? shotDirection.normalized : Vector2.zero;
+            recoil = 1f;
+        }
 
         public void Sync(World w, float alpha)
         {
@@ -52,6 +65,8 @@ namespace Hollow.Presentation
             if (art && weaker && phaseTwoSet != null) anim.UseSet(phaseTwoSet);
             bool tint = weaker && !(art && phaseTwoSet != null);
             body.localScale = new Vector3(c.Facing.x < -0.05f ? -1 : 1, 1, 1) * (weaker ? phaseTwoScale : 1f);
+            recoil *= Mathf.Exp(-recoilReturn * Time.deltaTime);
+            body.localPosition = bodyBaseLocal + (Vector3)(-kickDir * recoilPushBack * recoil + Vector2.up * recoilLift * recoil);
             bool flashing = Time.time < flashUntil;
             for (int i = 0; i < bodyRenderers.Length; i++)
             {

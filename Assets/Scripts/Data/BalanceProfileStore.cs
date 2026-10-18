@@ -38,8 +38,6 @@ namespace Hollow.Data
             if (profile.Revision >= baseline.Revision) return;
             if (profile.Revision < 4)
             {
-                profile.Player.RegenerationDelay = baseline.Player.RegenerationDelay;
-                profile.Player.RegenerationRate = baseline.Player.RegenerationRate;
                 profile.Player.DashMineDelay = baseline.Player.DashMineDelay;
                 profile.Player.DashMineRadius = baseline.Player.DashMineRadius;
                 if (profile.Skills.Find(s => s.Id == SkillId.DashMine) == null)
@@ -53,6 +51,53 @@ namespace Hollow.Data
             }
             if (profile.Revision < 5)
                 profile.Spawning.SafeIntervalSeconds = baseline.Spawning.SafeIntervalSeconds;
+            if (profile.Revision < 6)
+            {
+                // The push pulse was removed from the game; stronger shot shake and the new melee, dash and death kicks.
+                profile.Items.RemoveAll(i => i.Id == ItemId.PushPulse);
+                profile.Feedback.ShakeOnShot = baseline.Feedback.ShakeOnShot;
+                profile.Feedback.ShakeOnMelee = baseline.Feedback.ShakeOnMelee;
+                profile.Feedback.ShakeOnDash = baseline.Feedback.ShakeOnDash;
+                profile.Feedback.ShakeOnPlayerDeath = baseline.Feedback.ShakeOnPlayerDeath;
+                profile.Feedback.DeathSparks = baseline.Feedback.DeathSparks;
+                profile.Feedback.DeathGore = baseline.Feedback.DeathGore;
+            }
+            if (profile.Revision < 7)
+            {
+                // Upright hit capsules: shots aimed at a body's chest or head now connect.
+                foreach (var e in profile.Enemies)
+                    if (baseline.Enemies.Find(b => b.Id == e.Id) is { } be) e.HitHeight = be.HitHeight;
+                foreach (var b in profile.Bosses)
+                    if (baseline.Bosses.Find(x => x.Id == b.Id) is { } bb) b.HitHeight = bb.HitHeight;
+            }
+            if (profile.Revision < 8)
+            {
+                // D86 difficulty pass: boss armour, health and new moves; automatic rifles toned down with spread bloom.
+                var fresh = BalanceJson.Clone(baseline);
+                profile.Bosses = fresh.Bosses;
+                profile.Weapons = fresh.Weapons;
+                profile.BuildIndex();
+            }
+            if (profile.Revision < 9)
+            {
+                // D87: bosses bring endless reinforcements and a bigger crowd, and a charge breaks obstacles.
+                profile.Bosses = BalanceJson.Clone(baseline).Bosses;
+                profile.BuildIndex();
+            }
+            if (profile.Revision < 10)
+            {
+                // D88: the robot boss leaps once in five moves and its burst cone stays where it was warned.
+                foreach (var b in profile.Bosses)
+                    if (baseline.Bosses.Find(x => x.Id == b.Id) is { } bb) { b.Moves = new(bb.Moves); b.BurstTrackRate = bb.BurstTrackRate; }
+            }
+            if (profile.Revision < 11)
+            {
+                // D89: stronger movement-speed and reload skills; every heavy boss move breaks obstacles; the final boss
+                // pounces more, tracks with its burst and throws grenade volleys around the player.
+                profile.Skills = BalanceJson.Clone(baseline).Skills;
+                profile.Bosses = BalanceJson.Clone(baseline).Bosses;
+                profile.BuildIndex();
+            }
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;

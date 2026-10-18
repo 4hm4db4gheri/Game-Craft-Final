@@ -21,6 +21,8 @@ namespace Hollow.Sim
         /// <summary>Damage multiplier reached at maximum range (shotguns ≈ 0.5, others 1).</summary>
         public float FalloffAtMaxRange = 1f;
         public int TargetsLeft = 1;
+        /// <summary>D89: enemy shots that bend toward the player, at most this many degrees per second.</summary>
+        public float Homing;
         public bool IgnoresArmor;
         public bool Alive = true;
         public WeaponId Weapon;

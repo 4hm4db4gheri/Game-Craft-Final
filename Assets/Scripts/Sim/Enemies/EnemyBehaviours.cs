@@ -303,6 +303,8 @@ namespace Hollow.Sim
             long now = w.Clock.Tick;
             if (!d.HasChild || e.ChildrenProduced >= d.ProduceMax || now < e.NextProduceTick) return;
             if (w.Waves.Kind == EncounterKind.Wave && WaveSystem.AliveCount(w) >= w.Waves.ActiveCap) return;
+            // The boss cap holds for children too (it includes the boss itself).
+            if (w.Waves.Kind == EncounterKind.Boss && WaveSystem.AliveCount(w) + 1 >= BossSystem.Data(w).ActiveCap) return;
 
             var childData = w.Profile.Enemy(d.Child);
             Vector2 offset = SimMath.Rotate(e.Facing, w.Profile.Spawning.ChildSpawnBackAngle + w.Profile.Spawning.ChildSpawnAngleSpread * w.Rng.Value) * (e.Radius + childData.BodyRadius + w.Profile.Spawning.ChildSpawnGap);

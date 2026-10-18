@@ -17,6 +17,9 @@ namespace Hollow.Core.Input
 
         public bool WorldAcceptsInput => worldAcceptsInput;
 
+        /// <summary>E went down this frame, whether or not the world takes input (closes a hint card that holds the world).</summary>
+        public bool InteractDownThisFrame { get; private set; }
+
         /// <summary>Called by the app when the game state or a modal panel changes.</summary>
         public void SetWorldAcceptsInput(bool accepts)
         {
@@ -32,6 +35,7 @@ namespace Hollow.Core.Input
         {
             bool fireReleased = lastFireHeld && !s.FireHeld && !fireLatched && !s.PointerOverUI;
             lastFireHeld = s.FireHeld;
+            InteractDownThisFrame = s.InteractDown;
 
             if (s.FireDown && (s.PointerOverUI || !worldAcceptsInput))
                 fireLatched = true;

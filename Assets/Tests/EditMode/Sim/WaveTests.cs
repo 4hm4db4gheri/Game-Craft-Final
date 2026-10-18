@@ -198,8 +198,13 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(w.Ticks(15), w.Waves.SafeIntervalEndTick);
             w.Progress.Wallet = 1000;
             Assert.IsTrue(ShopSystem.Purchase(w, OfferKind.BuyWeapon, WeaponId.DoubleBarrel));
-            sim.Step(new PlayerCommand { Move = Vector2.right, DashPressed = true, InteractPressed = true });
-            Assert.IsTrue(w.Shop.Open, "E, dash and movement cannot close the timed shop");
+            sim.Step(new PlayerCommand { Move = Vector2.right, DashPressed = true });
+            Assert.IsTrue(w.Shop.Open, "dash and movement cannot close the timed shop");
+            sim.Step(new PlayerCommand { InteractPressed = true });
+            Assert.IsFalse(w.Shop.Open, "E closes it");
+            w.Player.Position = w.Player.PrevPosition = w.Arena.NearestFree(w.Layout.NearestShop(w.Player.Position) + Vector2.down * 1.2f, w.Profile.Player.BodyRadius);
+            sim.Step(new PlayerCommand { InteractPressed = true });
+            Assert.IsTrue(w.Shop.Open, "E at a station reopens it");
             int remaining = (int)(w.Waves.SafeIntervalEndTick - w.Clock.Tick);
             sim.Run(remaining, PlayerCommand.None);
             Assert.AreEqual(EncounterKind.SafeInterval, w.Waves.Kind);

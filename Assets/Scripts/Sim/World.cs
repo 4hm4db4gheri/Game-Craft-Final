@@ -39,6 +39,8 @@ namespace Hollow.Sim
         public WaveState Waves = new();
         public BossState Boss = new();
         public NarrativeState Narrative = new();
+        /// <summary>D87: obstacle cells a boss charge broke in the current phase (cleared on entering a phase).</summary>
+        public List<int> BrokenCells = new();
 
         /// <summary>Death checkpoint: the world as it was at the start of the current wave or boss fight.</summary>
         public string CheckpointJson;
@@ -67,6 +69,7 @@ namespace Hollow.Sim
             Profile = profile;
             Layout = layout;
             Arena = ArenaGrid.FromLayout(layout, Phase);
+            foreach (int c in BrokenCells) Arena.SetBlocked(c % Arena.Width, c / Arena.Width, false);
             PlayerField = new FlowField(Arena);
             CompanionField = new FlowField(Arena);
             Crowd = new SpatialHash(2f);

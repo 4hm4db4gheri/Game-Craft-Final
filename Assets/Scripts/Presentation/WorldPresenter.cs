@@ -58,6 +58,10 @@ namespace Hollow.Presentation
             if (feedback != null) feedback.Clear();
         }
 
+        /// <summary>Tip of the Operator's rifle for a shot in this direction (muzzle flash position).</summary>
+        public Vector2 CompanionMuzzle(Vector2 shotDirection, Vector2 fallback) =>
+            companionView != null && companionView.isActiveAndEnabled ? companionView.Muzzle(shotDirection) : fallback;
+
         /// <summary>Colour of a projectile that is still shown (its impact sparks use it).</summary>
         public bool TryProjectileColor(int id, out Color color)
         {
@@ -88,7 +92,7 @@ namespace Hollow.Presentation
                 var pool = p.Owner == ProjectileOwner.Enemy ? enemyShots : playerShots;
                 var v = projectiles.GetOrCreate(p.Id, pool, out bool created);
                 if (created) v.Begin(p, ProjectileColor(p), MuzzleOf(w, p), catalog.ProjectileArt(p, w.Phase));
-                if (created && p.Owner == ProjectileOwner.Companion && companionView != null) companionView.Fired();
+                if (created && p.Owner == ProjectileOwner.Companion && companionView != null) companionView.Fired(p.Velocity);
                 v.Sync(p, alpha);
             }
             projectiles.ReleaseUnseen();
@@ -107,7 +111,7 @@ namespace Hollow.Presentation
                 var v = hazards.GetOrCreate(h.Id, arcPool, out _);
                 float progress = Mathf.Clamp01((w.Clock.Tick - h.CreatedTick) / (float)Mathf.Max(1, h.DetonateTick - h.CreatedTick));
                 var c = h.Owner == HazardOwner.Enemy ? catalog.Telegraph : new Color(0.6f, 0.95f, 1f);
-                c.a = Mathf.Lerp(0.15f, 0.55f, progress);
+                c.a = h.Owner == HazardOwner.Enemy ? Mathf.Lerp(0.1f, 0.4f, progress) : Mathf.Lerp(0.15f, 0.55f, progress);
                 v.Set(h.Position, Vector2.right, h.Radius, 360f, c, 400, SortingLayers.Telegraphs);
             }
             hazards.ReleaseUnseen();
@@ -202,6 +206,9 @@ namespace Hollow.Presentation
                         break;
                     case SimEventType.CompanionHit:
                         if (companionView != null) companionView.Flash(flash);
+                        break;
+                    case SimEventType.EnemyAttack when ev.Code >= 0 && ev.Direction.sqrMagnitude > 0.01f && FeedbackDirector.FiresAGun(w, (EnemyId)ev.Code):
+                        if (enemies.TryGet(ev.EntityId, out var shooter)) shooter.Kick(ev.Direction);
                         break;
                     case SimEventType.MeleeSwing:
                         float reach = ev.Direction.magnitude;

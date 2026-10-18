@@ -87,7 +87,11 @@ namespace Hollow.Tests.Sim
             var w = sim.World;
             var copy = new Simulation(SaveFile.FromJson(SaveFile.Create(w, 0).ToJson()).LoadWorld(Layout));
             copy.World.Profile = w.Profile;
-            Assert.AreEqual(WorldSerializer.Hash(w), WorldSerializer.Hash(copy.World), $"{label}: state changed by save/load");
+            string a = WorldSerializer.ToJson(w), b = WorldSerializer.ToJson(copy.World);
+            int at = 0;
+            while (at < a.Length && at < b.Length && a[at] == b[at]) at++;
+            string Around(string s) => s.Substring(System.Math.Max(0, at - 120), System.Math.Min(240, s.Length - System.Math.Max(0, at - 120)));
+            Assert.AreEqual(a, b, $"{label}: state changed by save/load near\n{Around(a)}\nvs\n{Around(b)}");
             return copy;
         }
 

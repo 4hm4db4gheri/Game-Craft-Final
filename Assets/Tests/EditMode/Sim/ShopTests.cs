@@ -169,10 +169,11 @@ namespace Hollow.Tests.Sim
         {
             var sim = Rich();
             var w = sim.World;
-            ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.PushPulse);
-            ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.PushPulse);
+            w.Phase = 2;
+            ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.Mine);
+            ShopSystem.Purchase(w, OfferKind.BuyItem, item: ItemId.Mine);
             ShopSystem.RefreshStock(w);
-            Assert.AreEqual(LockReason.CarryFull, Find(w, OfferKind.BuyItem, item: ItemId.PushPulse).Lock);
+            Assert.AreEqual(LockReason.CarryFull, Find(w, OfferKind.BuyItem, item: ItemId.Mine).Lock);
         }
 
         [Test]

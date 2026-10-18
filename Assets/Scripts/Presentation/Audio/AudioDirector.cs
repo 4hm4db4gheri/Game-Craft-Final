@@ -468,6 +468,7 @@ namespace Hollow.Presentation
                     Play(AudioCue.CompanionWarning, ev.Position, OnScreen(ev.Position) ? 0.7f : 1f);
                     break;
                 case SimEventType.Explosion: Play(AudioCue.Explosion, ev.Position); break;
+                case SimEventType.ObstacleBroken: Play(AudioCue.ImpactWall, ev.Position); Play(AudioCue.Explosion, ev.Position, 0.5f); break;
                 case SimEventType.ItemUsed: Play(ItemCue((ItemId)ev.Code)); break;
                 case SimEventType.WaveStarted: Play(AudioCue.WaveStart); break;
                 case SimEventType.WaveCompleted: Play(AudioCue.WaveClear); break;
@@ -490,7 +491,6 @@ namespace Hollow.Presentation
         static AudioCue ItemCue(ItemId id) => id switch
         {
             ItemId.Grenade => AudioCue.GrenadeThrow,
-            ItemId.PushPulse => AudioCue.Push,
             ItemId.Mine => AudioCue.MinePlace,
             ItemId.EmpPulse => AudioCue.Emp,
             _ => AudioCue.Shield,

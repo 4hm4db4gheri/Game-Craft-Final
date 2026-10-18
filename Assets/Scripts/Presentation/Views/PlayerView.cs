@@ -5,7 +5,7 @@ namespace Hollow.Presentation
 {
     /// <summary>
     /// Draws the player from simulation state. Purely visual: nothing here feeds back into gameplay,
-    /// and the cosmetic numbers (bob, lean) live on the prefab so an artist can tune or replace them.
+    /// and the cosmetic numbers (bob, lean, recoil) live on the prefab so an artist can tune or replace them.
     /// </summary>
     public sealed class PlayerView : MonoBehaviour
     {
@@ -25,15 +25,36 @@ namespace Hollow.Presentation
         [SerializeField] Color normalColor = new(0.85f, 0.95f, 1f);
         [SerializeField] Color hurtColor = new(1f, 0.35f, 0.35f);
         [SerializeField] Color dashColor = new(0.5f, 0.9f, 1f, 0.6f);
+        /// <summary>Body stretch along the dash (x) and squash across it (y) while dashing.</summary>
+        [SerializeField] Vector2 dashStretch = new(1.18f, 0.86f);
+        [Header("Recoil (visual only; shots still leave along the true aim)")]
+        /// <summary>Barrel kick upward per full-strength shot, in degrees.</summary>
+        [SerializeField] float recoilDegrees = 11f;
+        /// <summary>Weapon pushed back along the barrel per full-strength shot, in units.</summary>
+        [SerializeField] float recoilPushBack = 0.1f;
+        /// <summary>How fast the weapon settles back (per second, exponential).</summary>
+        [SerializeField] float recoilReturn = 16f;
+        [SerializeField] float recoilMax = 1.6f;
 
         WeaponVisual shownWeapon;
         SpriteSetAnimator anim;
+        Vector3 weaponBaseLocal;
+        Vector3 bodyBaseScale = Vector3.one;
+        float recoil;
 
         void Awake()
         {
             anim = GetComponent<SpriteSetAnimator>();
             if (anim != null) anim.StepMotion = false; // the drone hovers with its own bob
+            if (body != null) bodyBaseScale = body.localScale;
+            if (weaponRenderer != null) weaponBaseLocal = weaponRenderer.transform.localPosition;
         }
+
+        /// <summary>The renderer showing the drone right now (imported art when present).</summary>
+        public SpriteRenderer DrawnBody => anim != null && anim.HasArt && anim.Target != null ? anim.Target : bodyRenderer;
+
+        /// <summary>A shot kicks the weapon up and back; strength 1 is a full shotgun blast.</summary>
+        public void Kick(float strength) => recoil = Mathf.Min(recoilMax, recoil + strength);
 
         /// <summary>Tip of the held weapon in world space (muzzle flash position).</summary>
         public Vector2 Muzzle
@@ -60,7 +81,7 @@ namespace Hollow.Presentation
                 weaponRenderer.color = weapon.Color;
                 var size = weaponRenderer.sprite.bounds.size;
                 weaponRenderer.transform.localScale = new Vector3(weapon.Size.x / size.x, weapon.Size.y / size.y, 1);
-                weaponRenderer.transform.localPosition = new Vector3(weapon.PivotAtGrip ? 0.2f : 0.2f + weapon.Size.x * 0.5f, 0, 0);
+                weaponBaseLocal = new Vector3(weapon.PivotAtGrip ? 0.2f : 0.2f + weapon.Size.x * 0.5f, 0, 0);
             }
             var p = w.Player;
             Vector2 pos = Vector2.Lerp(p.PrevPosition, p.Position, alpha);
@@ -70,15 +91,23 @@ namespace Hollow.Presentation
             body.localPosition = new Vector3(0, floatHeight + bob, 0);
             float speed01 = Mathf.Clamp01(p.Velocity.magnitude / Mathf.Max(0.01f, w.Profile.Player.MoveSpeed));
             body.localRotation = Quaternion.Euler(0, 0, -Mathf.Sign(p.Velocity.x) * leanDegrees * speed01);
+            body.localScale = p.Dashing ? Vector3.Scale(bodyBaseScale, new Vector3(dashStretch.x, dashStretch.y, 1)) : bodyBaseScale;
 
             // Same direction the simulation fires in (from the player's ground position), so shots leave along the barrel.
             Vector2 aimDir = p.Aim - pos;
             float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
             weaponPivot.localPosition = body.localPosition;
             // Reloading tilts the weapon down; purely visual, never delays input (§4).
-            float reloadTilt = p.Loadout.Reloading ? -35f * Mathf.Sign(aimDir.x == 0 ? 1 : aimDir.x) : 0f;
-            weaponPivot.localRotation = Quaternion.Euler(0, 0, angle + reloadTilt);
-            if (weaponRenderer != null) weaponRenderer.flipY = aimDir.x < 0;
+            float facing = Mathf.Sign(aimDir.x == 0 ? 1 : aimDir.x);
+            float reloadTilt = p.Loadout.Reloading ? -35f * facing : 0f;
+            recoil *= Mathf.Exp(-recoilReturn * Time.deltaTime);
+            float kick = recoilDegrees * recoil * facing; // the barrel always kicks up on screen
+            weaponPivot.localRotation = Quaternion.Euler(0, 0, angle + reloadTilt + kick);
+            if (weaponRenderer != null)
+            {
+                weaponRenderer.flipY = aimDir.x < 0;
+                weaponRenderer.transform.localPosition = weaponBaseLocal - new Vector3(recoilPushBack * recoil, 0, 0);
+            }
 
             bool hurt = w.Clock.Tick < p.InvulnerableUntilTick && !p.Dashing;
             bodyRenderer.color = p.Dashing ? dashColor : hurt && (Time.frameCount / 4) % 2 == 0 ? hurtColor : normalColor;

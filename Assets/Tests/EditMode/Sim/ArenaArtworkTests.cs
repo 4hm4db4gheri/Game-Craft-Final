@@ -1,5 +1,6 @@
 using Hollow.Presentation;
 using NUnit.Framework;
+using System.Linq;
 using UnityEngine;
 
 namespace Hollow.Tests.Sim
@@ -39,15 +40,18 @@ namespace Hollow.Tests.Sim
         public void AuthoredLandmarkFootprintsBlockSimulationCells()
         {
             var layout = WaveTests.RealArena();
-            Assert.AreEqual(7, layout.Landmarks.Count);
+            Assert.AreEqual(7, layout.Landmarks.Count(x => x.Phase == 1));
+            Assert.AreEqual(8, layout.Landmarks.Count(x => x.Phase == 2));
             foreach (var landmark in layout.Landmarks)
             {
+                Assert.IsNotNull(Resources.Load<Texture2D>($"ArenaArt/Landmarks/ENV_P{landmark.Phase}_{landmark.Id}_prop"), landmark.Id);
                 var grid = Hollow.Sim.ArenaGrid.FromLayout(layout, landmark.Phase);
                 for (int y = 0; y < landmark.Footprint.y; y++)
                 for (int x = 0; x < landmark.Footprint.x; x++)
                     if (landmark.Occupies(x, y))
                         Assert.IsTrue(grid.IsBlockedCell(landmark.Cell.x + x, landmark.Cell.y + y), landmark.Id);
             }
+            Assert.IsNotNull(Resources.Load<Texture2D>("ArenaArt/FloorFactory"));
         }
     }
 }

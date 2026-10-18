@@ -45,8 +45,9 @@ namespace Hollow.Sim
             StepMines(w);
         }
 
+        /// <summary>A type with no data (the removed push pulse in an old save) is never usable.</summary>
         public static bool Available(World w, ItemId id) =>
-            w.Inventory.Count(id) > 0 && w.Profile.Item(id).UnlockPhase <= w.Phase;
+            w.Inventory.Count(id) > 0 && w.Profile.HasItem(id) && w.Profile.Item(id).UnlockPhase <= w.Phase;
 
         static readonly ItemId[] AllTypes = (ItemId[])System.Enum.GetValues(typeof(ItemId));
 
@@ -119,7 +120,6 @@ namespace Hollow.Sim
             bool ok = inv.Held switch
             {
                 ItemId.Grenade => ThrowGrenade(w, data),
-                ItemId.PushPulse => Push(w, data),
                 ItemId.Mine => PlaceMine(w, data),
                 ItemId.EmpPulse => Emp(w, data),
                 ItemId.PersonalShield => Shield(w, data),
@@ -157,20 +157,6 @@ namespace Hollow.Sim
             return true;
         }
 
-        static bool Push(World w, ItemData d)
-        {
-            var p = w.Player;
-            w.Crowd.Rebuild(w.Enemies);
-            w.Crowd.Query(p.Position, d.Radius + ProjectileSystem.MaxEnemyRadius(w), Candidates);
-            foreach (var e in Candidates)
-            {
-                if (!e.Alive || Vector2.Distance(e.Position, p.Position) > d.Radius + e.Radius) continue;
-                EnemySystem.Knockback(w, e, SimMath.SafeNormal(e.Position - p.Position, Vector2.up), d.Knockback);
-            }
-            w.Emit(SimEventType.Explosion, PlayerState.EntityId, p.Position, default, d.Radius, -1);
-            return true;
-        }
-
         static bool PlaceMine(World w, ItemData d)
         {
             var inv = w.Inventory;
@@ -192,7 +178,7 @@ namespace Hollow.Sim
             {
                 if (!m.Alive || w.Clock.Tick < m.ArmedTick) continue;
                 var boss = w.Boss;
-                if (boss.Active && !boss.Dead && Vector2.Distance(boss.Position, m.Position) <= d.TriggerRadius + boss.Radius)
+                if (BossSystem.Targetable(boss) && Vector2.Distance(boss.Position, m.Position) <= d.TriggerRadius + boss.Radius)
                 {
                     m.Alive = false;
                     var hb = HazardSystem.Create(w, HazardOwner.Player, m.Position, m.Position, d.Radius, d.Damage, 0f);

@@ -119,7 +119,7 @@ namespace Hollow.Tests.Sim
             Assert.AreEqual(1.16f, before, 1e-6f);
             Assert.AreEqual(1.24f, after, 1e-6f);
             var (mb, ma) = XpSystem.Preview(w, SkillId.MoveSpeed);
-            Assert.AreEqual(5f, mb); Assert.AreEqual(5.3f, ma, 1e-6f);
+            Assert.AreEqual(5f, mb); Assert.AreEqual(5.6f, ma, 1e-6f);
         }
 
         [Test]

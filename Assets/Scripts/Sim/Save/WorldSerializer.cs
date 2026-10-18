@@ -35,8 +35,15 @@ namespace Hollow.Sim
             else if (w.Player.SkillRanks.Length < Enum.GetValues(typeof(SkillId)).Length)
                 Array.Resize(ref w.Player.SkillRanks, Enum.GetValues(typeof(SkillId)).Length);
             var loadout = w.Player.Loadout;
-            if (loadout.Reloading && loadout.ReloadStartAmmo == 0 && loadout.Active != null && loadout.Active.Ammo > 0)
+            if (loadout.Reloading && !loadout.ReloadByRound && loadout.Active != null)
+            {
                 loadout.ReloadStartAmmo = loadout.Active.Ammo; // saves written before round-by-round reload
+                loadout.ReloadByRound = true;
+            }
+            // Shop stock is kept per item in profile order; a save from before an item was removed (the push pulse)
+            // has one entry too many, so drop the removed item's entry to keep the rest aligned.
+            var stock = w.Shop.ItemStockLeft;
+            if (stock.Count == profile.Items.Count + 1 && !profile.HasItem(ItemId.PushPulse)) stock.RemoveAt((int)ItemId.PushPulse);
             w.Bind(profile, layout);
             return w;
         }

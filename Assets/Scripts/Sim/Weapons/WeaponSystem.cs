@@ -133,17 +133,33 @@ namespace Hollow.Sim
             }
         }
 
+        /// <summary>Extra spread from held fire right now (D86): it settles back linearly once the trigger pauses.</summary>
+        public static float CurrentBloom(World w, WeaponData data)
+        {
+            var L = w.Player.Loadout;
+            if (data.BloomPerShot <= 0f) return 0f;
+            float pause = Mathf.Max(0f, (float)(w.Clock.Seconds - L.BloomTime) - data.BloomRecoveryDelay);
+            return Mathf.Max(0f, L.Bloom - data.BloomRecovery * pause);
+        }
+
         static void Fire(World w, OwnedWeapon active, WeaponLevel l)
         {
             var p = w.Player;
+            var data = w.Profile.Weapon(active.Id);
             Vector2 dir = SimMath.SafeNormal(p.Aim - p.Position, p.LastMoveDir);
             int count = Mathf.Max(1, l.ProjectileCount);
             float damage = ShotDamage(w, l);
+            float spread = l.SpreadDeg + CurrentBloom(w, data);
+            if (data.BloomPerShot > 0f)
+            {
+                p.Loadout.Bloom = Mathf.Min(data.BloomMax, CurrentBloom(w, data) + data.BloomPerShot);
+                p.Loadout.BloomTime = w.Clock.Seconds;
+            }
             for (int i = 0; i < count; i++)
             {
                 float angle = count == 1
-                    ? w.Rng.Range(-l.SpreadDeg * 0.5f, l.SpreadDeg * 0.5f)
-                    : -l.SpreadDeg * 0.5f + l.SpreadDeg * (i + w.Rng.Value) / count;
+                    ? w.Rng.Range(-spread * 0.5f, spread * 0.5f)
+                    : -spread * 0.5f + spread * (i + w.Rng.Value) / count;
                 Vector2 d = SimMath.Rotate(dir, angle);
                 w.Projectiles.Add(new ProjectileState
                 {
@@ -163,6 +179,7 @@ namespace Hollow.Sim
             var L = w.Player.Loadout;
             L.Reloading = true;
             L.ReloadStartAmmo = active.Ammo;
+            L.ReloadByRound = true;
             float duration = ReloadSeconds(w, l) * (l.Magazine - active.Ammo) / Mathf.Max(1f, l.Magazine);
             L.ReloadTotalTicks = Math.Max(1, w.Ticks(duration));
             L.ReloadEndTick = w.Clock.Tick + L.ReloadTotalTicks;
@@ -182,6 +199,7 @@ namespace Hollow.Sim
             var L = w.Player.Loadout;
             CancelReload(w);
             L.ActiveSlot = slot;
+            L.Bloom = 0f;
             L.SwapReadyTick = w.Clock.Tick + w.Ticks(w.Profile.Combat.WeaponSwapTime);
             w.Emit(SimEventType.WeaponSwapped, PlayerState.EntityId, w.Player.Position, default, slot, (int)L.ActiveId);
         }

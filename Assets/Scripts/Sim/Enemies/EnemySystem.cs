@@ -333,7 +333,7 @@ namespace Hollow.Sim
 
             var p = w.Player;
             var boss = w.Boss;
-            if (boss.Active && !boss.Dead)
+            if (boss.Active && !boss.Dead && !BossSystem.InAir(boss))
             {
                 // The boss does not yield: push the player and adds out of its body.
                 float br = boss.Radius + w.Profile.Player.BodyRadius;

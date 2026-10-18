@@ -10,10 +10,10 @@ namespace Hollow.Tests.Sim
     {
         static World NewWorld(AiId ai) => Simulation.NewWorld(TestData.Baseline(), SimTestUtil.OpenArena(), 1, ai);
 
-        [TestCase(AiId.Gpt, SkillId.ReloadMultiplier, 0.92f)]
+        [TestCase(AiId.Gpt, SkillId.ReloadMultiplier, 0.8f)]
         [TestCase(AiId.Claude, SkillId.MagnetRadius, 1.3f)]
         [TestCase(AiId.Grok, SkillId.DashDamage, 60f)]
-        [TestCase(AiId.DeepSeek, SkillId.MoveSpeed, 5.3f)]
+        [TestCase(AiId.DeepSeek, SkillId.MoveSpeed, 5.6f)]
         public void EachAiStartsWithRankOneOfItsSkill(AiId ai, SkillId skill, float startValue)
         {
             var w = NewWorld(ai);
@@ -31,9 +31,9 @@ namespace Hollow.Tests.Sim
         public void TheStartingRankAppliesOnceAndCountsTowardTheCap()
         {
             var w = NewWorld(AiId.DeepSeek);
-            Assert.AreEqual(5.3f, PlayerStats.MoveSpeed(w), 1e-4f, "set once, not added to the base");
+            Assert.AreEqual(5.6f, PlayerStats.MoveSpeed(w), 1e-4f, "set once, not added to the base");
             w.Player.SkillRanks[(int)SkillId.MoveSpeed] = XpSystem.MaxRank(w, SkillId.MoveSpeed);
-            Assert.AreEqual(5.9f, PlayerStats.MoveSpeed(w), 1e-4f, "rank three is the cap");
+            Assert.AreEqual(6.8f, PlayerStats.MoveSpeed(w), 1e-4f, "rank three is the cap");
         }
 
         [Test]

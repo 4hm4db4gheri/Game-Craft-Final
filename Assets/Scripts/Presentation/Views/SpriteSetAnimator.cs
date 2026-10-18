@@ -34,6 +34,8 @@ namespace Hollow.Presentation
 
         public bool HasArt => set != null && target != null;
         public SpriteSet Set => set;
+        /// <summary>The renderer the art is drawn on (dash afterimages copy it).</summary>
+        public SpriteRenderer Target => target;
 
         /// <summary>Turns the step motion off (the hovering player drone has its own bob).</summary>
         public bool StepMotion { get => stepMotion; set => stepMotion = value; }

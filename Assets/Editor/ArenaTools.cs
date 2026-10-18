@@ -23,6 +23,14 @@ namespace Hollow.EditorTools
     {
         public const string TilesDir = "Assets/Art/Placeholders/Tiles";
         public const string ArtTilesDir = "Assets/Art/Tiles";
+        /// <summary>
+        /// 3/4 view: the camera looks down at about 55°, so things lying flat on the ground look shorter than they are
+        /// wide. Flat decals are drawn at this height.
+        /// </summary>
+        public const float GroundSquash = 0.75f;
+        /// <summary>Left in older scenes by the removed one-sprite ground; PaintGround deletes it.</summary>
+        const string OldGroundArtName = "GroundArt";
+        const string EdgeShadeName = "EdgeShade";
         public const string LayoutPath = "Assets/Resources/Arena/ArenaLayout.json";
         /// <summary>The second service station: a spot free in all three phases, 8 units from the east entrance (T28).</summary>
         public const string SecondShopName = "ShopStation2";
@@ -247,6 +255,8 @@ namespace Hollow.EditorTools
                 var map = a.Grounds[i];
                 map.ClearAllTiles();
                 var art = GroundArtTiles(i + 1) ?? GroundArtTiles(StandIn(i + 1));
+                var oldArt = map.transform.Find(OldGroundArtName);
+                if (oldArt != null) Object.DestroyImmediate(oldArt.gameObject);
                 var g = Grounds[i];
                 var baseTiles = new Tile[3];
                 for (int k = 0; k < 3; k++)
@@ -330,8 +340,42 @@ namespace Hollow.EditorTools
                         Border(parent, "Right", v, o + new Vector2(w - v.bounds.size.x, y0), -5);
                     }
                 }
+                EdgeShade(parent, a);
                 parent.gameObject.SetActive(a.Props[i] == null || a.Props[i].gameObject.activeSelf);
             }
+        }
+
+        /// <summary>
+        /// 3/4 depth: the walls stand up, so the ground right under them is in their shade. A soft dark band runs
+        /// along the inside of the wall ring, deepest under the north wall (its face is the tall one we see).
+        /// Drawn over ground and decor, under shadows, props and characters.
+        /// </summary>
+        static void EdgeShade(Transform parent, ArenaAuthoring a)
+        {
+            var sprite = PlaceholderArt.Load("PH_EdgeShade");
+            if (sprite == null) { PlaceholderArt.GenerateAll(); sprite = PlaceholderArt.Load("PH_EdgeShade"); }
+            if (sprite == null) return;
+            var root = new GameObject(EdgeShadeName).transform;
+            root.SetParent(parent, false);
+            Vector2 o = a.Grid.transform.position;
+            float w = a.Size.x, h = a.Size.y, len = sprite.bounds.size.y, thin = sprite.bounds.size.x;
+            void Band(string name, Vector2 centre, float along, float depth, float angle, float alpha)
+            {
+                var go = new GameObject(name);
+                go.transform.SetParent(root, false);
+                go.transform.position = centre;
+                go.transform.rotation = Quaternion.Euler(0, 0, angle);
+                go.transform.localScale = new Vector3(along / thin, depth / len, 1);
+                var r = go.AddComponent<SpriteRenderer>();
+                r.sprite = sprite;
+                r.color = new Color(1, 1, 1, alpha);
+                r.sortingOrder = -50;
+            }
+            const float north = 2.4f, side = 0.9f, south = 0.5f;
+            Band("North", o + new Vector2(w / 2, h - 1 - north / 2), w - 2, north, 0, 0.7f);
+            Band("West", o + new Vector2(1 + side / 2, h / 2), h - 2, side, 90, 0.45f);
+            Band("East", o + new Vector2(w - 1 - side / 2, h / 2), h - 2, side, -90, 0.45f);
+            Band("South", o + new Vector2(w / 2, 1 + south / 2), w - 2, south, 180, 0.35f);
         }
 
         static void Border(Transform parent, string side, Sprite sprite, Vector2 bottomLeft, int order)
@@ -376,6 +420,33 @@ namespace Hollow.EditorTools
             return null;
         }
 
+        /// <summary>
+        /// Lays walk-over decals flat on the 3/4 ground: their spin goes on the art child and the decal itself is
+        /// drawn GroundSquash tall, so a rotated crack still looks like it lies on the floor. Upright decor (grass
+        /// tufts, never spun) is left alone. Safe to run again.
+        /// </summary>
+        public static int FlattenDecor(ArenaAuthoring a)
+        {
+            int changed = 0;
+            foreach (var parent in a.Decor)
+            {
+                if (parent == null) continue;
+                foreach (Transform t in parent)
+                {
+                    float spin = t.localEulerAngles.z;
+                    if (Mathf.Approximately(spin, 0f)) continue;
+                    var body = t.Find("Body");
+                    if (body == null) continue;
+                    body.localRotation = Quaternion.Euler(0, 0, spin);
+                    t.localRotation = Quaternion.identity;
+                    var sc = t.localScale;
+                    t.localScale = new Vector3(sc.x, Mathf.Abs(sc.x) * GroundSquash, 1);
+                    changed++;
+                }
+            }
+            return changed;
+        }
+
         static void ScatterDecor(ArenaAuthoring a, Dictionary<(int, string), GameObject> prefabs)
         {
             for (int phase = 1; phase <= 3; phase++)
@@ -403,6 +474,7 @@ namespace Hollow.EditorTools
                         go.transform.localScale = new Vector3(rng.Next(2) == 0 ? s : -s, s, 1);
                     }
             }
+            FlattenDecor(a);
         }
 
         // ------------------------------------------------------------------ prefabs

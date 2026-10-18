@@ -33,6 +33,11 @@ namespace Hollow.Sim
         public long ReloadEndTick;
         public long ReloadTotalTicks;
         public int ReloadStartAmmo;
+        /// <summary>The reload refills round by round from ReloadStartAmmo (false only in saves from before that).</summary>
+        public bool ReloadByRound;
+        /// <summary>Extra spread from held automatic fire (D86), as it stood at BloomTime; it settles back from there.</summary>
+        public float Bloom;
+        public double BloomTime;
 
         public WeaponId ActiveId => ActiveSlot == 2 && HasPrimary ? SlotPrimary : Slot1;
 

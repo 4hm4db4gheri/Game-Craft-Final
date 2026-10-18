@@ -39,12 +39,12 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 5, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 11, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
             {
-                MaxHealth = 100, RegenerationDelay = 6f, RegenerationRate = 3f, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
+                MaxHealth = 100, MoveSpeed = 5, Acceleration = 80, Deceleration = 100,
                 DashDistance = 3, DashDuration = 0.18f, DashCooldown = 2.5f, DashDamage = 50, DashMineDelay = 0.7f, DashMineRadius = 1.8f,
                 PostHitInvulnerability = 0.5f, BodyRadius = 0.35f, MagnetRadius = 1,
                 CoinPullSpeed = 9, ShopInteractRange = 2.2f, CrowdPushShare = 0.3f,
@@ -80,6 +80,7 @@ namespace Hollow.EditorTools
                 SpawnWarning = 1, NewTypeReadTime = 4, SupportExplosiveSeparation = 8,
                 MinDistancePlayerBodyWidths = 4, MinDistanceCompanionBodyWidths = 3,
                 SafeIntervalSeconds = 15, NoSafePointRetryDelay = 0.25f, TutorialFirstGroupCount = 4,
+                TutorialGrenadeTargetDistance = 3.5f,
             };
 
             p.Waves = Waves();
@@ -117,8 +118,9 @@ namespace Hollow.EditorTools
             p.Skills = new List<SkillData>
             {
                 Skill(SkillId.WeaponDamage, "Weapon damage", 1.08f, 1.16f, 1.24f),
-                Skill(SkillId.MoveSpeed, "Movement speed", 5.3f, 5.6f, 5.9f),
-                Skill(SkillId.ReloadMultiplier, "Reload time", 0.92f, 0.84f, 0.76f),
+                // D89: +6/12/18 % speed and -8/16/24 % reload were not felt; now +12/24/36 % and -20/38/55 % (the reload floor still holds).
+                Skill(SkillId.MoveSpeed, "Movement speed", 5.6f, 6.2f, 6.8f),
+                Skill(SkillId.ReloadMultiplier, "Reload time", 0.8f, 0.62f, 0.45f),
                 Skill(SkillId.DashCooldown, "Dash cooldown", 2.25f, 2f, 1.75f),
                 Skill(SkillId.DashDamage, "Dash damage", 60, 70, 80),
                 Skill(SkillId.MaxHealth, "Maximum health", 120, 140, 160),
@@ -128,11 +130,11 @@ namespace Hollow.EditorTools
 
             p.Feedback = new FeedbackData
             {
-                ShakeOnShot = 0.04f, ShakeOnPlayerHit = 0.25f, ShakeOnExplosion = 0.35f, ShakeOnBossImpact = 0.5f,
+                ShakeOnShot = 0.09f, ShakeOnMelee = 0.12f, ShakeOnDash = 0.06f, ShakeOnPlayerDeath = 0.6f, ShakeOnPlayerHit = 0.25f, ShakeOnExplosion = 0.35f, ShakeOnBossImpact = 0.5f,
                 HitFlashDuration = 0.08f, HitKnockback = 0.12f, DamageNumbersDefaultOn = true, DamageNumbersMaxPerSecond = 40,
                 MaxParticles = 1500, MaxDecals = 20, MaxCorpses = 30,
                 ShakeOnBossDefeated = 0.7f, ShotShakeMinInterval = 0.08f, ShakeDuration = 0.18f, MuzzleFlashTime = 0.05f,
-                ImpactSparks = 5, DeathSparks = 14, ExplosionSparks = 24, DamageNumberLifetime = 0.65f, MaxDamageNumbersOnScreen = 40,
+                ImpactSparks = 5, DeathSparks = 22, DeathGore = 26, ExplosionSparks = 24, DamageNumberLifetime = 0.65f, MaxDamageNumbersOnScreen = 40,
                 HitSquash = 0.14f, BudgetLowScale = 0.3f, BudgetMediumScale = 0.6f,
             };
 
@@ -212,8 +214,27 @@ namespace Hollow.EditorTools
             var turret = Machine(Ranged(EnemyId.H7c_Turret, Faction.Humans, 70, 8, 0, 0, speed: 0f, radius: 0.45f, range: 9f, windup: 0.45f, recovery: 0.6f, interval: 1.3f, projSpeed: 9f, burst: 1, burstGap: 0f));
             turret.IsChild = true; turret.KnockbackResistance = 1f; list.Add(turret);
 
+            foreach (var e in list) e.HitHeight = HitHeight(BodyTops[e.Id], e.BodyRadius);
             return list;
         }
+
+        /// <summary>
+        /// Top of each drawn body above its feet, in units (measured on the imported art; placeholders by cell size).
+        /// Shots fly 0.35 above their ground line (ProjectileView), so the hit capsule rises to the top minus that lift
+        /// and the body radius.
+        /// </summary>
+        static readonly Dictionary<EnemyId, float> BodyTops = new()
+        {
+            [EnemyId.A1_RunnerWolf] = 0.9f, [EnemyId.A2_QuillShooter] = 1f, [EnemyId.A3_ChargingBoar] = 1.3f, [EnemyId.A4_ArmoredTortoise] = 1.2f,
+            [EnemyId.A5_HowlingWolf] = 0.95f, [EnemyId.A6_ExplosiveBeetle] = 0.5f, [EnemyId.A7_MotherSpider] = 1.3f, [EnemyId.A7c_Spiderling] = 0.4f,
+            [EnemyId.R1_Crawler] = 0.9f, [EnemyId.R2_Shooter] = 1.5f, [EnemyId.R3_SawCharger] = 1.2f, [EnemyId.R4_ShieldRobot] = 2f,
+            [EnemyId.R5_Repair] = 1.3f, [EnemyId.R6_Suicide] = 0.6f, [EnemyId.R7_DroneCarrier] = 1.9f, [EnemyId.R7c_Drone] = 0.7f,
+            [EnemyId.H1_BatonGuard] = 1.75f, [EnemyId.H2_RifleGuard] = 1.75f, [EnemyId.H3_FastAssaulter] = 1.75f, [EnemyId.H4_ShieldGuard] = 1.75f,
+            [EnemyId.H5_Medic] = 1.75f, [EnemyId.H6_Grenadier] = 1.75f, [EnemyId.H7_Engineer] = 1.75f, [EnemyId.H7c_Turret] = 1f,
+        };
+        const float ShotLift = 0.35f;
+
+        static float HitHeight(float bodyTop, float radius) => Mathf.Max(0f, Mathf.Round((bodyTop - ShotLift - radius) * 100f) / 100f);
 
         static EnemyData Base(EnemyId id, Faction f, EnemyRole role, float hp, float dmg, int xp, int coins, float speed, float radius) =>
             new() { Id = id, Faction = f, Role = role, Health = hp, Damage = dmg, Xp = xp, Coins = coins, MoveSpeed = speed, BodyRadius = radius,
@@ -322,48 +343,70 @@ namespace Hollow.EditorTools
             {
                 new()
                 {
-                    Id = BossId.LargeBeast, Phase = 1, Health = 2600, Damage = 20, ActiveCap = 18, RewardXp = 210, RewardCoins = 180,
+                    // D86: more health and armour than v0.19 (2600), and a pounce that closes the distance.
+                    Id = BossId.LargeBeast, Phase = 1, Health = 3400, Damage = 20, ActiveCap = 24, RewardXp = 210, RewardCoins = 180,
                     OpeningAdds = Adds((EnemyId.A1_RunnerWolf, 8), (EnemyId.A2_QuillShooter, 4)),
                     Thresholds = new List<BossThreshold>
                     {
                         new() { HealthFraction = 0.65f, Adds = Adds((EnemyId.A1_RunnerWolf, 6), (EnemyId.A3_ChargingBoar, 2)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.A2_QuillShooter, 4), (EnemyId.A5_HowlingWolf, 2), (EnemyId.A6_ExplosiveBeetle, 4)) },
                     },
-                    MoveSpeed = 2.4f, BodyRadius = 1.4f, AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
+                    MoveSpeed = 2.4f, BodyRadius = 1.4f, HitHeight = HitHeight(3.5f, 1.4f), AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
                     ChargeTelegraph = 0.8f, ChargeSpeed = 9, ChargeRecovery = 1.2f,
-                    StrikeWindup = 0.9f, StrikeRadius = 2.8f, StrikeRecovery = 1.3f, AddSpawnGap = 0.5f,
+                    StrikeWindup = 0.9f, StrikeRadius = 2.8f, StrikeRecovery = 1.3f, AddSpawnGap = 0.4f,
+                    // D87: a fresh pack every 8 s while the boss lives (no reward; the pool above stays fixed).
+                    Reinforcements = Adds((EnemyId.A1_RunnerWolf, 3), (EnemyId.A2_QuillShooter, 1), (EnemyId.A3_ChargingBoar, 1)), ReinforceInterval = 8f,
+                    Moves = Moves(BossMove.Charge, BossMove.Strike, BossMove.Pounce), Armor = 0.3f, ExposedArmor = 0f,
+                    PounceTelegraph = 0.6f, PounceFlightTime = 0.5f, PounceRange = 8f, PounceRadius = 2.6f, PounceDamage = 22f, PounceRecovery = 1f, PounceChainLowHealth = 2,
                 },
                 new()
                 {
-                    Id = BossId.IndustrialRobot, Phase = 2, Health = 6500, Damage = 28, ActiveCap = 26, RewardXp = 358, RewardCoins = 324, IsMachine = true,
+                    // D86: v0.19 had 6500 health and a 30° single-bullet sweep that one step sideways escaped.
+                    Id = BossId.IndustrialRobot, Phase = 2, Health = 8000, Damage = 28, ActiveCap = 32, RewardXp = 358, RewardCoins = 324, IsMachine = true,
                     OpeningAdds = Adds((EnemyId.R1_Crawler, 6), (EnemyId.R2_Shooter, 4)),
                     Thresholds = new List<BossThreshold>
                     {
                         new() { HealthFraction = 0.7f, Adds = Adds((EnemyId.R2_Shooter, 4), (EnemyId.R3_SawCharger, 4), (EnemyId.R5_Repair, 2)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.R3_SawCharger, 4), (EnemyId.R6_Suicide, 6), (EnemyId.R7_DroneCarrier, 2)) },
                     },
-                    MoveSpeed = 1.8f, BodyRadius = 1.6f, AttackInterval = 4f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3.5f,
-                    BurstWarning = 0.7f, BurstDuration = 1.2f, BurstRecovery = 1.3f, BurstShotInterval = 0.3f, BurstSpread = 30, ProjectileSpeed = 10,
+                    MoveSpeed = 1.8f, BodyRadius = 1.6f, HitHeight = HitHeight(4.15f, 1.6f), AttackInterval = 4f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3.5f,
+                    BurstWarning = 0.8f, BurstDuration = 1.8f, BurstRecovery = 1.3f, BurstShotInterval = 0.15f, BurstSpread = 70, ProjectileSpeed = 10,
+                    BurstFanCount = 3, BurstFanSpacing = 9f, BurstSweeps = 2, BurstTrackRate = 0f,
                     BlastWarning = 1.0f, BlastRadius = 3, BlastThrowRange = 9, BlastRecovery = 1.5f, HealCapFraction = 0.1f,
-                    BurstShotDamage = 28, ProjectileRange = 16, AddSpawnGap = 0.45f, EmpAffects = true,
+                    BurstShotDamage = 18, ProjectileRange = 16, AddSpawnGap = 0.35f, EmpAffects = true,
+                    Reinforcements = Adds((EnemyId.R1_Crawler, 3), (EnemyId.R2_Shooter, 2), (EnemyId.R3_SawCharger, 1)), ReinforceInterval = 8f,
+                    Moves = Moves(BossMove.Burst, BossMove.Blast, BossMove.Burst, BossMove.Blast, BossMove.Leap), Armor = 0.4f, ExposedArmor = 0f,
+                    LeapRiseTime = 0.45f, LeapTrackTime = 1.8f, LeapTrackSpeed = 7f, LeapLockTime = 0.9f, LeapRadius = 3.4f, LeapDamage = 40f, LeapRecovery = 1.6f,
                 },
                 new()
                 {
                     // Burst: three shots 0.2 apart (duration 0.6). Grenade: thrown 0.6 after marking, one-second fuse → 1.6 marked.
-                    Id = BossId.FormerCompanion, Phase = 3, Health = 11000, Damage = 32, ActiveCap = 34, RewardXp = 356, RewardCoins = 486,
+                    // D86: v0.19 had 11000 health; the final boss now uses every kind of move.
+                    Id = BossId.FormerCompanion, Phase = 3, Health = 13500, Damage = 32, ActiveCap = 40, RewardXp = 356, RewardCoins = 486,
                     OpeningAdds = Adds((EnemyId.H1_BatonGuard, 8), (EnemyId.H2_RifleGuard, 6)),
                     Thresholds = new List<BossThreshold>
                     {
                         new() { HealthFraction = 0.7f, Adds = Adds((EnemyId.H2_RifleGuard, 6), (EnemyId.H5_Medic, 2), (EnemyId.H6_Grenadier, 4)) },
                         new() { HealthFraction = 0.35f, Adds = Adds((EnemyId.H3_FastAssaulter, 6), (EnemyId.H4_ShieldGuard, 6), (EnemyId.H7_Engineer, 2)) },
                     },
-                    MoveSpeed = 2.2f, BodyRadius = 0.9f, AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
-                    BurstWarning = 0.7f, BurstDuration = 0.6f, BurstRecovery = 1.2f, BurstShotInterval = 0.2f, BurstSpread = 20, ProjectileSpeed = 11,
-                    BlastWarning = 1.6f, BlastFlightFraction = 0.5f, BlastRadius = 2.6f, BlastThrowRange = 9, BlastRecovery = 0f, HealCapFraction = 0.1f,
-                    BurstShotDamage = 32, ProjectileRange = 15, AddSpawnGap = 0.4f, EmpAffects = true,
+                    MoveSpeed = 2.2f, BodyRadius = 0.9f, HitHeight = HitHeight(3.0f, 0.9f), AttackInterval = 3.5f, LowHealthFraction = 0.35f, LowHealthAttackInterval = 3f,
+                    // D89: a longer burst whose cone turns to the player quickly and whose bullets bend after them (same range).
+                    BurstWarning = 0.7f, BurstDuration = 1f, BurstRecovery = 1.2f, BurstShotInterval = 0.2f, BurstSpread = 20, ProjectileSpeed = 11,
+                    BurstShotDamage = 26, ProjectileRange = 15, AddSpawnGap = 0.35f, EmpAffects = true, BurstTrackRate = 160f, BurstHoming = 50f,
+                    // D89: three grenades 0.3 s apart around where the player is heading, never on them (see BossSystem.ThrowNextBlast).
+                    BlastWarning = 1.4f, BlastFlightFraction = 0.5f, BlastRadius = 2.4f, BlastThrowRange = 9, BlastRecovery = 0f, HealCapFraction = 0.1f,
+                    BlastCount = 3, BlastGap = 0.3f, BlastLead = 0.9f, BlastPlayerGap = 0.35f, BlastSideAngle = 100f,
+                    Reinforcements = Adds((EnemyId.H1_BatonGuard, 2), (EnemyId.H2_RifleGuard, 2), (EnemyId.H3_FastAssaulter, 1)), ReinforceInterval = 8f,
+                    // D89: pounces twice as often, two in a row (three at low health), and quicker.
+                    Moves = Moves(BossMove.Burst, BossMove.Pounce, BossMove.Blast, BossMove.Pounce, BossMove.Leap), Armor = 0.45f, ExposedArmor = 0f,
+                    PounceTelegraph = 0.45f, PounceFlightTime = 0.35f, PounceRange = 8f, PounceRadius = 2.2f, PounceDamage = 28f, PounceRecovery = 0.7f,
+                    PounceChain = 2, PounceChainLowHealth = 3,
+                    LeapRiseTime = 0.4f, LeapTrackTime = 1.6f, LeapTrackSpeed = 7.5f, LeapLockTime = 0.85f, LeapRadius = 3f, LeapDamage = 40f, LeapRecovery = 1.4f,
                 },
             };
         }
+
+        static List<BossMove> Moves(params BossMove[] moves) => new(moves);
 
         static List<EnemyCount> Adds(params (EnemyId id, int n)[] adds)
         {
@@ -374,44 +417,46 @@ namespace Hollow.EditorTools
 
         // ---------------- Weapons (v0.19 §6: every level designer-defined). Projectile speed 60 direct, 45 shotgun. ----------------
         // Level 1 cost is the purchase price; level 2/3 costs are the sequential upgrade prices.
+        // D86: automatic rifles (SMG, industrial, energy) lost damage, magazine and accuracy under held fire (bloom), so
+        // safe long-range fire no longer out-damages the close-range shotguns; the pistol and shotguns gained a little.
 
         static List<WeaponData> Weapons()
         {
-            const float Direct = 60, Shot = 45, Fall = 0.5f;
+            const float Direct = 60, Shot = 45, Fall = 0.6f;
             return new List<WeaponData>
             {
                 Gun(WeaponId.Pistol, "Pistol", WeaponFamily.Sidearm, 0, reloadSurvivesDash: true,
                     G(1, true, 0, 18, 3, 1, 2, 8, 0.9f, 14, 1, Direct, 1),
-                    G(2, true, 25, 23, 3.3f, 1, 1.6f, 10, 0.85f, 15, 1, Direct, 1),
-                    G(3, true, 50, 30, 3.5f, 1, 1.3f, 12, 0.8f, 16, 1, Direct, 1)),
-                Gun(WeaponId.LightSmg, "Light SMG", WeaponFamily.Direct, 1, false,
-                    G(1, true, 80, 12, 9, 1, 8, 24, 1.2f, 10, 1, Direct, 1),
-                    G(2, true, 60, 15, 9.5f, 1, 7, 30, 1.1f, 10.5f, 1, Direct, 1),
-                    G(3, true, 120, 18, 10, 1, 6, 36, 1f, 11, 1, Direct, 1)),
+                    G(2, true, 25, 24, 3.3f, 1, 1.6f, 10, 0.85f, 15, 1, Direct, 1),
+                    G(3, true, 50, 32, 3.5f, 1, 1.2f, 12, 0.8f, 16, 1, Direct, 1)),
+                Bloom(Gun(WeaponId.LightSmg, "Light SMG", WeaponFamily.Direct, 1, false,
+                    G(1, true, 80, 10, 9, 1, 8, 24, 1.4f, 10, 1, Direct, 1),
+                    G(2, true, 60, 12, 9.5f, 1, 7, 28, 1.3f, 10.5f, 1, Direct, 1),
+                    G(3, true, 120, 14, 10, 1, 6, 30, 1.25f, 11, 1, Direct, 1)), perShot: 0.8f, max: 10f, recovery: 30f, delay: 0.2f),
                 Gun(WeaponId.DoubleBarrel, "Double-barrel shotgun", WeaponFamily.Spread, 1, false,
-                    G(1, true, 120, 9, 1.5f, 8, 28, 4, 1.6f, 7, 1, Shot, Fall),
-                    G(2, true, 90, 11, 1.6f, 8, 27, 6, 1.5f, 7.5f, 1, Shot, Fall),
-                    G(3, true, 180, 12, 1.7f, 10, 26, 6, 1.4f, 8, 1, Shot, Fall)),
+                    G(1, true, 120, 10, 1.5f, 8, 26, 4, 1.5f, 7, 1, Shot, Fall),
+                    G(2, true, 90, 12, 1.6f, 8, 24, 6, 1.4f, 7.5f, 1, Shot, Fall),
+                    G(3, true, 180, 14, 1.7f, 10, 22, 6, 1.3f, 8, 1, Shot, Fall)),
                 Melee(WeaponId.Baton, "Baton", 1,
                     M(1, true, 90, 50, 2.2f, 1.7f, 100, 0.8f),
                     M(2, true, 60, 65, 2.35f, 1.85f, 110, 1f),
                     M(3, true, 120, 80, 2.5f, 2f, 120, 1.2f)),
-                Gun(WeaponId.IndustrialRifle, "Industrial rifle", WeaponFamily.Direct, 2, false,
-                    G(1, true, 260, 28, 7, 1, 3, 24, 1.4f, 16, 1, Direct, 1),
-                    G(2, true, 130, 34, 7.2f, 1, 2.5f, 30, 1.3f, 17, 1, Direct, 1),
-                    G(3, true, 240, 40, 7.5f, 1, 2, 36, 1.2f, 18, 1, Direct, 1)),
+                Bloom(Gun(WeaponId.IndustrialRifle, "Industrial rifle", WeaponFamily.Direct, 2, false,
+                    G(1, true, 260, 24, 6.5f, 1, 3, 24, 1.6f, 16, 1, Direct, 1),
+                    G(2, true, 130, 28, 6.8f, 1, 2.5f, 26, 1.5f, 17, 1, Direct, 1),
+                    G(3, true, 240, 32, 7, 1, 2, 30, 1.4f, 18, 1, Direct, 1)), perShot: 0.6f, max: 7f, recovery: 25f, delay: 0.25f),
                 Gun(WeaponId.MagazineShotgun, "Magazine shotgun", WeaponFamily.Spread, 2, false,
                     G(1, true, 320, 18, 1.8f, 7, 26, 8, 1.8f, 8, 1, Shot, Fall),
-                    G(2, true, 160, 20, 1.9f, 8, 25, 10, 1.7f, 8.5f, 1, Shot, Fall),
-                    G(3, true, 280, 23, 2f, 9, 24, 12, 1.6f, 9, 1, Shot, Fall)),
+                    G(2, true, 160, 21, 1.9f, 8, 24, 10, 1.65f, 8.5f, 1, Shot, Fall),
+                    G(3, true, 280, 24, 2f, 9, 22, 12, 1.5f, 9, 1, Shot, Fall)),
                 Melee(WeaponId.IndustrialHammer, "Industrial hammer", 2,
                     M(1, true, 280, 125, 1.2f, 2f, 120, 1.4f),
                     M(2, true, 140, 155, 1.3f, 2.15f, 130, 1.6f),
                     M(3, true, 250, 190, 1.35f, 2.3f, 140, 1.8f)),
-                Gun(WeaponId.EnergyRifle, "Energy rifle", WeaponFamily.Direct, 3, false,
-                    G(1, true, 650, 48, 8, 1, 2, 28, 1.5f, 18, 2, Direct, 1),
-                    G(2, true, 280, 55, 8.5f, 1, 1.7f, 32, 1.4f, 19, 2, Direct, 1),
-                    G(3, true, 450, 62, 9, 1, 1.4f, 36, 1.3f, 20, 3, Direct, 1)),
+                Bloom(Gun(WeaponId.EnergyRifle, "Energy rifle", WeaponFamily.Direct, 3, false,
+                    G(1, true, 650, 38, 7, 1, 2, 24, 1.7f, 18, 2, Direct, 1),
+                    G(2, true, 280, 42, 7.5f, 1, 1.7f, 26, 1.6f, 19, 2, Direct, 1),
+                    G(3, true, 450, 46, 8, 1, 1.4f, 28, 1.5f, 20, 2, Direct, 1)), perShot: 0.5f, max: 6f, recovery: 22f, delay: 0.25f),
                 Gun(WeaponId.EnergyShotgun, "Energy shotgun", WeaponFamily.Spread, 3, false,
                     G(1, true, 750, 24, 2, 8, 30, 8, 1.8f, 9, 2, Shot, Fall),
                     G(2, true, 330, 27, 2.1f, 9, 29, 10, 1.65f, 9.5f, 2, Shot, Fall),
@@ -421,6 +466,12 @@ namespace Hollow.EditorTools
                     M(2, true, 300, 210, 1.95f, 2.45f, 165, 0.75f),
                     M(3, true, 480, 245, 2.1f, 2.6f, 180, 0.9f)),
             };
+        }
+
+        static WeaponData Bloom(WeaponData w, float perShot, float max, float recovery, float delay)
+        {
+            w.BloomPerShot = perShot; w.BloomMax = max; w.BloomRecovery = recovery; w.BloomRecoveryDelay = delay;
+            return w;
         }
 
         static WeaponData Gun(WeaponId id, string name, WeaponFamily family, int phase, bool reloadSurvivesDash, params WeaponLevel[] levels) =>
@@ -447,7 +498,6 @@ namespace Hollow.EditorTools
             return new List<ItemData>
             {
                 new() { Id = ItemId.Grenade, DisplayName = "Grenade", UnlockPhase = 1, Price = 20, Carry = 3, StockPerEncounter = 3, Damage = 160, Radius = 2.4f, FuseTime = 0.8f, ThrowRange = 9 },
-                new() { Id = ItemId.PushPulse, DisplayName = "Push pulse", UnlockPhase = 1, Price = 15, Carry = 2, StockPerEncounter = 2, Radius = 3, Knockback = 2.5f },
                 new() { Id = ItemId.Mine, DisplayName = "Mine", UnlockPhase = 2, Price = 30, Carry = 2, StockPerEncounter = 2, Damage = 260, Radius = 2.7f, ArmingTime = 0.6f, TriggerRadius = 1.2f, MaxActivePerPhase = 4 },
                 new() { Id = ItemId.EmpPulse, DisplayName = "EMP pulse", UnlockPhase = 2, Price = 45, Carry = 2, StockPerEncounter = 2, Radius = 4, StunRegular = 2, StunBoss = 0.8f, BossResistance = 6 },
                 new() { Id = ItemId.PersonalShield, DisplayName = "Personal shield", UnlockPhase = 3, Price = 80, Carry = 1, StockPerEncounter = 1, Duration = 3 },

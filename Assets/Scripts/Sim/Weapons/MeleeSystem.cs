@@ -45,7 +45,7 @@ namespace Hollow.Sim
                 hits++;
             }
             var boss = w.Boss;
-            if (boss.Active && !boss.Dead && InArc(p.Position, dir, l.Range, l.ArcDeg, boss.Position, boss.Radius) && w.Arena.LineOfSight(p.Position, boss.Position))
+            if (BossSystem.Targetable(boss) && InArc(p.Position, dir, l.Range, l.ArcDeg, boss.Position, boss.Radius) && w.Arena.LineOfSight(p.Position, boss.Position))
             {
                 BossSystem.Damage(w, damage, DamageSource.Melee, dir);
                 hits++;

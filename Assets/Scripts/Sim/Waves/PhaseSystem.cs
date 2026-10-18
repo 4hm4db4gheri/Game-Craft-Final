@@ -13,6 +13,7 @@ namespace Hollow.Sim
         {
             w.Phase = phase;
             ItemSystem.ClearMines(w);
+            w.BrokenCells.Clear();
             w.Arena = ArenaGrid.FromLayout(w.Layout, phase);
             w.PlayerField = new FlowField(w.Arena);
             w.CompanionField = new FlowField(w.Arena);

@@ -52,6 +52,7 @@ namespace Hollow.Data
             return weaponIndex.TryGetValue(id, out var w) ? w : throw new KeyNotFoundException($"No weapon data for {id}");
         }
 
+        public bool HasItem(ItemId id) => Items.Exists(i => i.Id == id);
         public ItemData Item(ItemId id) => Items.Find(i => i.Id == id) ?? throw new KeyNotFoundException($"No item data for {id}");
         public SkillData Skill(SkillId id) => Skills.Find(s => s.Id == id) ?? throw new KeyNotFoundException($"No skill data for {id}");
         public CharacterData Character(AiId id) => Characters.Find(c => c.Id == id);
@@ -88,8 +89,6 @@ namespace Hollow.Data
     public sealed class PlayerData
     {
         [Gdd("§4")] public float MaxHealth;
-        [Placeholder, Unit("s")] public float RegenerationDelay;
-        [Placeholder, Unit("HP/s")] public float RegenerationRate;
         [Gdd("§4"), Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u/s²")] public float Acceleration;
         [Placeholder, Unit("u/s²")] public float Deceleration;
@@ -158,6 +157,9 @@ namespace Hollow.Data
 
         [Gdd("v0.19 §9"), Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u")] public float BodyRadius;
+        /// <summary>3/4 view: shots hit a capsule from the feet circle this far up the screen, matching the drawn body
+        /// (shots are drawn above their ground line, so this is the body's top minus that lift and the radius).</summary>
+        [Placeholder, Unit("u")] public float HitHeight;
         /// <summary>v0.19 §9 "Reach": melee reach, ranged firing range, or the distance at which a charger commits.</summary>
         [Gdd("v0.19 §9"), Unit("u")] public float AttackRange;
         [Gdd("v0.19 §9"), Unit("s")] public float AttackWindup;
@@ -246,6 +248,8 @@ namespace Hollow.Data
         [Placeholder, Unit("s")] public float SafeIntervalSeconds;
         [Placeholder, Unit("s")] public float NoSafePointRetryDelay;
         [Gdd("§6")] public int TutorialFirstGroupCount;
+        /// <summary>The tutorial's practice grenade target stands this far from the player.</summary>
+        [Placeholder, Unit("u")] public float TutorialGrenadeTargetDistance = 3.5f;
         /// <summary>Offspring appear behind the producer: this angle from its facing, plus up to the spread.</summary>
         [Placeholder, Unit("deg")] public float ChildSpawnBackAngle = 140f;
         [Placeholder, Unit("deg")] public float ChildSpawnAngleSpread = 80f;
@@ -262,18 +266,31 @@ namespace Hollow.Data
         [Gdd("§7")] public List<EnemyCount> OpeningAdds = new();
         [Gdd("§7")] public List<BossThreshold> Thresholds = new();
         [Gdd("§7")] public int ActiveCap;
+        /// <summary>D87: after the opening adds, this group joins again every ReinforceInterval active seconds while the
+        /// boss lives (inside the same cap). Reinforcements give no XP or coins, so the fixed reward pool (§9) holds.</summary>
+        [Placeholder] public List<EnemyCount> Reinforcements = new();
+        [Placeholder, Unit("s")] public float ReinforceInterval;
         [Gdd("§9")] public int RewardXp;
         [Gdd("§9")] public int RewardCoins;
         public bool IsMachine;
 
         [Placeholder, Unit("u/s")] public float MoveSpeed;
         [Placeholder, Unit("u")] public float BodyRadius;
+        /// <summary>Like EnemyData.HitHeight: how far up the screen from the feet circle shots still hit the boss.</summary>
+        [Placeholder, Unit("u")] public float HitHeight;
         /// <summary>v0.19 §12: minimum time between the starts of two attacks; warnings are never shortened.</summary>
         [Gdd("v0.19 §12"), Unit("s")] public float AttackInterval;
         /// <summary>Delay before the first attack after the entrance (the opening adds arrive first).</summary>
         [Placeholder, Unit("s")] public float FirstAttackDelay = 1f;
         [Gdd("§7")] public float LowHealthFraction;
         [Gdd("v0.19 §12"), Unit("s")] public float LowHealthAttackInterval;
+
+        /// <summary>D86: the attack cycle, in order.</summary>
+        [Placeholder] public List<BossMove> Moves = new();
+        /// <summary>D86: share of every incoming hit the armour blocks (weapons, melee, dash, explosions)…</summary>
+        [Placeholder] public float Armor;
+        /// <summary>…and while exposed: recovering after an attack, or stunned. The punish windows stay worth it.</summary>
+        [Placeholder] public float ExposedArmor;
 
         [Gdd("§7"), Unit("s")] public float ChargeTelegraph;
         [Gdd("v0.19 §12"), Unit("u/s")] public float ChargeSpeed;
@@ -282,6 +299,9 @@ namespace Hollow.Data
         /// <summary>…but never longer than this.</summary>
         [Placeholder, Unit("u")] public float ChargeMaxDistance = 14f;
         [Gdd("§7"), Unit("s")] public float ChargeRecovery;
+        /// <summary>D87/D89: every heavy move breaks the phase obstacles it touches (walls and stations stay): a charge
+        /// smashes through, and an area strike, a pounce or leap landing and a blast clear their whole zone. Shots never do.</summary>
+        [Placeholder] public bool HeavyMovesBreakObstacles = true;
         [Gdd("§7"), Unit("s")] public float StrikeWindup;
         [Gdd("v0.19 §12"), Unit("u")] public float StrikeRadius;
         /// <summary>The area strike is chosen when the player is within StrikeRadius × this.</summary>
@@ -295,7 +315,16 @@ namespace Hollow.Data
         [Gdd("§7"), Unit("s")] public float BurstRecovery;
         [Gdd("v0.19 §12"), Unit("s")] public float BurstShotInterval;
         [Placeholder, Unit("deg")] public float BurstSpread;
+        /// <summary>D86: bullets in each volley, side by side this far apart (1 = a single bullet).</summary>
+        [Placeholder] public int BurstFanCount = 1;
+        [Placeholder, Unit("deg")] public float BurstFanSpacing;
+        /// <summary>D86: passes across the cone during one burst (2 = there and back).</summary>
+        [Placeholder] public int BurstSweeps = 1;
+        /// <summary>D86: the warned cone turns toward the player at most this fast, during the warning and the burst.</summary>
+        [Placeholder, Unit("deg/s")] public float BurstTrackRate;
         [Gdd("v0.19 §12"), Unit("u/s")] public float ProjectileSpeed;
+        /// <summary>D89: burst bullets bend toward the player at most this fast while they fly (same range).</summary>
+        [Placeholder, Unit("deg/s")] public float BurstHoming;
         /// <summary>Time from marking the blast zone to the explosion (for the former companion: throw delay + fuse).</summary>
         [Gdd("§7"), Unit("s")] public float BlastWarning;
         /// <summary>Thrown blasts (former companion) fly for BlastWarning × this before the zone shows its full danger.</summary>
@@ -304,6 +333,39 @@ namespace Hollow.Data
         [Placeholder, Unit("u")] public float BlastThrowRange;
         /// <summary>The boss stays in place this long after its blast goes off.</summary>
         [Gdd("v0.19 §12"), Unit("s")] public float BlastRecovery;
+        /// <summary>D89: blasts per attack, thrown this far apart in time. One blast lands on the player; a volley never does:
+        /// the first lands ahead of where the player is heading, the others to either side, each with a gap to the player
+        /// so standing clear is possible but a straight run is not.</summary>
+        [Placeholder] public int BlastCount = 1;
+        [Placeholder, Unit("s")] public float BlastGap;
+        /// <summary>The first blast of a volley aims where the player will be this long from now (at least the gap away).</summary>
+        [Placeholder, Unit("s")] public float BlastLead;
+        /// <summary>Free space between the player's body and the edge of each volley zone when it is thrown.</summary>
+        [Placeholder, Unit("u")] public float BlastPlayerGap;
+        /// <summary>The side blasts land this far around from the player's heading.</summary>
+        [Placeholder, Unit("deg")] public float BlastSideAngle;
+
+        /// <summary>D86 pounce: the landing zone is marked on the player for the telegraph and the flight…</summary>
+        [Placeholder, Unit("s")] public float PounceTelegraph;
+        [Placeholder, Unit("s")] public float PounceFlightTime;
+        /// <summary>…never farther than this from the boss.</summary>
+        [Placeholder, Unit("u")] public float PounceRange;
+        [Placeholder, Unit("u")] public float PounceRadius;
+        [Placeholder] public float PounceDamage;
+        [Placeholder, Unit("s")] public float PounceRecovery;
+        /// <summary>Pounces in a row (each with its full warning), and at low health.</summary>
+        [Placeholder] public int PounceChain = 1;
+        [Placeholder] public int PounceChainLowHealth = 1;
+
+        /// <summary>D86 leap: the boss rises off the map, its landing zone follows the player, locks, then it slams down.</summary>
+        [Placeholder, Unit("s")] public float LeapRiseTime;
+        [Placeholder, Unit("s")] public float LeapTrackTime;
+        [Placeholder, Unit("u/s")] public float LeapTrackSpeed;
+        /// <summary>Time from the zone locking to the slam: the escape window.</summary>
+        [Placeholder, Unit("s")] public float LeapLockTime;
+        [Placeholder, Unit("u")] public float LeapRadius;
+        [Placeholder] public float LeapDamage;
+        [Placeholder, Unit("s")] public float LeapRecovery;
 
         [Gdd("§7")] public float HealCapFraction;
         [Gdd("v0.19 §12")] public float BurstShotDamage;
@@ -354,6 +416,12 @@ namespace Hollow.Data
         public bool ReloadSurvivesDash;
         /// <summary>GDD §5: the energy blade ignores frontal resistance.</summary>
         [Gdd("§5")] public bool IgnoresFrontalArmor;
+        /// <summary>D86: held automatic fire loses accuracy. Each shot widens the spread by this much…</summary>
+        [Placeholder, Unit("deg")] public float BloomPerShot;
+        [Placeholder, Unit("deg")] public float BloomMax;
+        /// <summary>…and it settles back at this rate once no shot has been fired for the delay (bursts stay accurate).</summary>
+        [Placeholder, Unit("deg/s")] public float BloomRecovery;
+        [Placeholder, Unit("s")] public float BloomRecoveryDelay;
         [Gdd("§8")] public List<WeaponLevel> Levels = new();
     }
 
@@ -453,6 +521,10 @@ namespace Hollow.Data
     public sealed class FeedbackData
     {
         [Placeholder] public float ShakeOnShot;
+        /// <summary>Baton swing kick, a little stronger than a shot (one swing, not a stream).</summary>
+        [Placeholder] public float ShakeOnMelee;
+        [Placeholder] public float ShakeOnDash;
+        [Placeholder] public float ShakeOnPlayerDeath;
         [Placeholder] public float ShakeOnPlayerHit;
         [Placeholder] public float ShakeOnExplosion;
         [Placeholder] public float ShakeOnBossImpact;
@@ -478,6 +550,8 @@ namespace Hollow.Data
         [Gdd("v0.19 §19"), Unit("s")] public float CorpseFadeTime = 1f;
         [Placeholder] public int ImpactSparks;
         [Placeholder] public int DeathSparks;
+        /// <summary>Blood or oil droplets thrown along the killing hit (plus a few heavier chunks and ground stains).</summary>
+        [Placeholder] public int DeathGore;
         [Placeholder] public int ExplosionSparks;
         [Placeholder, Unit("s")] public float DamageNumberLifetime;
         [Placeholder] public int MaxDamageNumbersOnScreen;

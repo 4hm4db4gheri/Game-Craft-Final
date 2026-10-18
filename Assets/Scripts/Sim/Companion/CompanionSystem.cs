@@ -27,7 +27,7 @@ namespace Hollow.Sim
     /// <summary>
     /// Companion behaviour (GDD §4): follows at a limited distance beside/behind the player without blocking
     /// the player's path, fires limited automatic shots (kills still pay the player), takes damage, and its
-    /// death fails the encounter in phases one and two. Phase-two entry restores it to the lower maximum.
+    /// death fails the encounter in phases one and two. Phase-two entry restores it to the phase-two maximum.
     /// </summary>
     public static class CompanionSystem
     {
@@ -118,7 +118,7 @@ namespace Hollow.Sim
             Vector2 targetPos;
             var boss = w.Boss;
             if (best != null) targetPos = best.Position;
-            else if (boss.Active && !boss.Dead && Vector2.Distance(c.Position, boss.Position) < data.FireRange && w.Arena.LineOfSight(c.Position, boss.Position)) targetPos = boss.Position;
+            else if (BossSystem.Targetable(boss) && Vector2.Distance(c.Position, boss.Position) < data.FireRange && w.Arena.LineOfSight(c.Position, boss.Position)) targetPos = boss.Position;
             else return;
 
             Vector2 dir = SimMath.SafeNormal(targetPos - c.Position, c.Facing);

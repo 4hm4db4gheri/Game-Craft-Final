@@ -50,18 +50,14 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void PlayerRecoversOnlyAfterConfiguredNoHitDelay()
+        public void PlayerHealthNeverComesBackByItself()
         {
+            // D87: only the shop's heal restores the player.
             var sim = WithCompanion();
             var w = sim.World;
-            w.Profile.Player.RegenerationDelay = 1f;
-            w.Profile.Player.RegenerationRate = 12f;
             Assert.IsTrue(PlayerSystem.Damage(w, 20, Vector2.left));
-            sim.Run(30, PlayerCommand.None);
+            sim.Run(60 * 30, PlayerCommand.None);
             Assert.AreEqual(80f, w.Player.Health, 0.01f);
-            sim.Run(60, PlayerCommand.None);
-            Assert.Greater(w.Player.Health, 80f);
-            Assert.LessOrEqual(w.Player.Health, 100f);
         }
 
         [Test]
@@ -224,15 +220,17 @@ namespace Hollow.Tests.Sim
         }
 
         [Test]
-        public void PhaseTwoEntryRestoresToTheLowerMaximum()
+        public void PhaseTwoEntryRestoresToThePhaseTwoMaximum()
         {
             var sim = WithCompanion();
             var w = sim.World;
             w.Companion.Health = 20;
             w.Phase = 2;
             CompanionSystem.SpawnForPhase(w, w.Companion.Position);
-            Assert.AreEqual(100f, w.Companion.MaxHealth);
-            Assert.AreEqual(100f, w.Companion.Health);
+            float max = w.Profile.CompanionFor(2).MaxHealth;
+            Assert.AreNotEqual(w.Profile.CompanionFor(1).MaxHealth, max);
+            Assert.AreEqual(max, w.Companion.MaxHealth);
+            Assert.AreEqual(max, w.Companion.Health);
         }
 
         [Test]

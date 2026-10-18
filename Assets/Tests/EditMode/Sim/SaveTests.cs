@@ -227,5 +227,21 @@ namespace Hollow.Tests.Sim
             }
             Assert.IsTrue(SlotStore.DeleteAll().Ok, "retry after releasing the file");
         }
+
+        [Test]
+        public void AReloadFromEmptyKeepsItsProgressThroughSaveAndLoad()
+        {
+            var sim = SimTestUtil.NewSim();
+            var w = sim.World;
+            var smg = WeaponSystem.Give(w, WeaponId.LightSmg);
+            var aim = new Vector2(10, 0);
+            sim.Step(new PlayerCommand { SelectWeaponSlot = 2, AimWorld = aim });
+            for (int i = 0; i < 600 && !w.Player.Loadout.Reloading; i++) sim.Step(new PlayerCommand { FireHeld = true, AimWorld = aim });
+            Assume.That(w.Player.Loadout.ReloadStartAmmo, Is.EqualTo(0));
+            sim.Run(30, new PlayerCommand { AimWorld = aim });
+            Assume.That(smg.Ammo, Is.GreaterThan(0), "part-way through the reload");
+            string json = WorldSerializer.ToJson(w);
+            Assert.AreEqual(json, WorldSerializer.ToJson(WorldSerializer.FromJson(json, w.Profile, w.Layout)));
+        }
     }
 }

@@ -39,13 +39,13 @@
 | `Assets/Scripts/Dev/` | `Hollow.Dev`: پنل بالانس IMGUI (`BalancePanelGUI`، `BalanceOverlay` روی F9) |
 | `Assets/Editor/` | `ProjectSetup` (ساخت صحنه‌ها)، `BuildTool`، `BaselineSeed`، `BalanceWindow`، `PrefabBuilder`/`EnemyPrefabBuilder` (prefabهای PH_)، `ArenaTools`، `Art/` (importer آرت AI) |
 | `Assets/Art/Incoming/` | آرت AI با نام طبق `docs/ART_MASTER_BRIEF.md` اینجا ریخته می‌شود؛ سپس با صحنه‌ی Game باز منوی `Hollow > Art > Apply Incoming Art` (SpriteSetها در `Assets/Art/SpriteSets`). موج ۱ آرت (۱۰۴ فایل) اینجاست؛ یادداشت تیم آرت و کارت‌ها در `docs/art/` |
-| `Assets/Tests/EditMode/` | تست‌های NUnit (۴۴۵ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
+| `Assets/Tests/EditMode/` | تست‌های NUnit (۵۰۲ تست، همه پاس؛ به `Hollow.Editor` هم ارجاع دارد) |
 | `Assets/Scripts/Presentation/Menu/MenuBackdrop.cs` + `Assets/Art/Menu/` | پس‌زمینه‌ی parallax منوی اصلی (لایه‌ها با عمق، حرکت با ماوس، دود، چراغ چشمک‌زن، پنجره‌ی روشن، دستیار AI، جرقه). آرت با `Hollow > Art > Generate Menu Backdrop` (`Editor/Art/MenuArt.cs`) و صحنه با `Rebuild Main Menu Scene` (`MenuBackdropBuilder`) ساخته می‌شود |
 | `ArtSource/` | فایل‌های منبع بیرون از Assets (import نمی‌شوند): پک CC0 کنی Background Elements Redux برای منو |
 | `Tools/ArtGen/` | اسکریپت‌های پایتون آرت (فقط Pillow لازم است): `animate.py` از هر فریم تکی با خم کردن mesh (تاب پا حول لگن، بالا و پایین رفتن، خم شدن، لگد سلاح) sheet انیمیشن می‌سازد و در `Assets/Art/Incoming/Generated` می‌نویسد؛ `fix_art.py` مشکلات آرت موج ۱ را درست می‌کند و نسخه‌ی اصلی را در `ArtSource/ArtWave1_Original` نگه می‌دارد (دوباره اجرا کردنش همان نتیجه را می‌دهد). ترتیب: `fix_art.py`، بعد `animate.py`، بعد `Apply Incoming Art`. sheet دست‌کشیده‌ی هم‌نام همیشه بر sheet ساخته‌شده مقدم است |
 | `Assets/Scripts/Presentation/Arena/` | `ArenaAuthoring` (لایه‌های هر فاز)، `ArenaProp` (مانع نام‌دار؛ footprint آن در bake به سلول مسدود تبدیل می‌شود)، `ArenaAtmosphere` (نور 2D هر فاز، درخشش بازیکن، مه، تاریک شدن پایان) |
 | `Assets/Editor/VisualTuningWindow.cs` + `docs/VISUAL_DEPTH_PASS.md` | داشبورد `Hollow > Visual Tuning` برای رنگ نور، افکت‌های دوربین و تنوع روشنایی زمین در هر فاز؛ روش تست و محدودیت آرت در سند |
-| `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle، جرقه، جسد/لکه با سقف، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse) |
+| `Assets/Scripts/Presentation/Feel/` | `FeedbackDirector`: لایه‌های حس بازی از روی SimEventها (muzzle با دود و پوکه، جرقه، خون/روغن پاشیده با لکه‌های کوچک، جسد/لکه با سقف، حلقه‌ها، ردّ دش، جلوه‌ی level up و مرگ بازیکن، عدد آسیب با محدودیت نرخ، shake با Cinemachine Impulse). چهار ParticleSystem (sparks، gore با جاذبه، puffs، motes رو به بالا) و حلقه‌ی ساخته‌شده با کد. لگد سلاح در `PlayerView.Kick`، `CompanionView.Fired(dir)` و `EnemyView.Kick` |
 | `Assets/Scripts/Dev/FrameProbe.cs` | اندازه‌گیری زمان فریم و GC برای stress (T05/T21) |
 | `Assets/Scripts/Presentation/Audio/` | `AudioDirector` (busها در کد، cooldown و priority، موسیقی هر فاز، جینگل پیروزی و بعد سکوت، stub بی‌صدا برای cue بدون فایل) و `AudioCatalog` (`Assets/Resources/Audio`، ساخت با `Hollow > Audio > Rebuild Catalog`؛ فایل‌ها در `Assets/Audio` با نام `<Cue>_<n>`) |
 | `Assets/Scripts/Sim/Telemetry/` | `RunTelemetry`: لاگ هر بازی (Observed جدا از Calculated)؛ فایل در `persistentDataPath/telemetry` توسط `Game/TelemetryFile.cs` |
@@ -63,13 +63,29 @@
 
 ## وضعیت فعلی
 
+- D90: فاز دوم اکنون هشت سازهٔ صنعتی ارسالی را از `ArenaLayout.json` با برخورد مشترک Sim/Unity می‌چیند؛ `FloorFactory` و `DetailFactory` زمین جداگانهٔ آن هستند. مسیرها و حریم‌های مهم با داده تست شدند. راهنما: `docs/ARENA_PHASE2.md`؛ بازبینی Play Mode باقی است.
+
+- D89: مهارت سرعت حرکت (+۱۲/۲۴/۳۶٪) و زمان خشاب (×0.8/0.62/0.45) قوی‌تر شدند. همه‌ی حمله‌های سنگین باس‌ها (شارژ، ضربه‌ی ناحیه‌ای، فرود pounce و leap، انفجار و نارنجک باس) موانع را می‌شکنند؛ تیر نه (`HeavyMovesBreakObstacles`). باس ۳: pounce دوتایی (سه‌تایی در جان کم) و سریع‌تر، رگبار ۱ ثانیه‌ای که مخروطش سریع رو به بازیکن می‌چرخد و گلوله‌هایش کمی دنبال بازیکن می‌روند، و سه نارنجک با فاصله‌ی ۰.۳ ثانیه جلو و دو طرف جهت حرکت بازیکن (هیچ‌وقت روی خود او). با دست بازی نشده است.
+
+- D88: فروشگاه و منوها فقط با ماوس (EventSystem رویداد navigation نمی‌فرستد؛ WASD انتخاب را جابه‌جا نمی‌کند و Space دکمه را نمی‌زند). صحنه‌های داستان با E (و Enter یا کلیک) جلو می‌روند. باس ۲ هر پنج حرکت یک بار leap می‌کند و مخروط رگبارش ثابت می‌ماند. با دست بازی نشده است.
+
+- D87: جان بازیکن دیگر خودکار پر نمی‌شود (فقط درمان فروشگاه). شارژ باس موانع فاز را می‌شکند و رد می‌شود (دیوار و ایستگاه نه؛ `World.BrokenCells` ذخیره می‌شود، `Sim/Arena/Obstacles.cs`). سایه‌ی باس از شعاع بدن ساخته می‌شود و باس دیگر معلق به نظر نمی‌رسد. باس‌ها هر ۸ ثانیه نیروی کمکی بدون پاداش می‌آورند و سقف دشمن‌ها بالاتر رفت. در Play mode شکستن سنگ و سایه‌ی باس ۱ دیده شد؛ با دست بازی نشده است.
+
+- D86 (سختی): باس‌ها زره دارند (۳۰/۴۰/۴۵٪، جز وقت recovery یا stun) و جان بیشتر (3400/8000/13500)؛ چرخه‌ی حمله از داده (`BossData.Moves`) با دو حرکت تازه: pounce (پرش روی جای علامت‌خورده‌ی بازیکن) و leap (بیرون رفتن از نقشه، دایره‌ی فرود بازیکن را دنبال می‌کند، قفل، کوبیدن). رگبار باس ۲ پهن، سه‌تایی، رفت‌وبرگشتی و دنبال‌کننده است. تفنگ‌های رگباری ضعیف‌تر شدند و bloom دارند (رتیکل باز می‌شود). در Play mode دیده شد؛ با دست بازی نشده است.
+
+- D85: آتش سر تفنگ پررنگ‌تر شد. E کنار هر ایستگاه فروشگاه را باز می‌کند (در موج و باس هم؛ D82 که خرید در نبرد را می‌بست جایگزین شد). فروشگاه زمان‌دار بین موج‌ها خودکار باز می‌شود و حالا با E بسته می‌شود؛ بالای آن نوشته «برای بستن E را بزن». کارت‌های راهنما خط «برای بستن راهنما E را بزن» دارند و E آن‌ها را زودتر می‌بندد.
+
+- D84: تیر حالا به کل بدن دشمن‌ها و باس‌ها می‌خورد (کپسول عمودی با `HitHeight` در بالانس، نه فقط دایره‌ی پا). همه‌ی شخصیت‌ها موقع راه رفتن ردّ ذره دارند (پهپاد بازیکن: جرقه‌ی فیروزه‌ای؛ بقیه: گرد و خاک به رنگ زمین هر فاز، جرقه‌ی ربات‌ها، سنگ‌ریزه‌ی انسان‌ها). در Play mode هر سه فاز دیده شد؛ با دست بازی نشده است.
+
+- پاس juice (D83): گلوله‌ها درست می‌چرخند، هشدار قرمز فقط برای charger و باس (کم‌رنگ‌تر)، پالس رانش حذف شد، لگد سلاح و muzzle برای بازیکن/اپراتور/دشمن تفنگ‌دار، shake شلیک و باتوم، جلوه‌ی دش، level up، مرگ دشمن و مرگ بازیکن. در Play mode دیده شد؛ هنوز کسی آن را با دست بازی نکرده است.
+
 - شاخهٔ codex/gameplay-ux-pass اکنون گیم‌پلیِ آموزش/فروشگاه زمان‌دار و آخرین آرت/نقشهٔ main را با هم دارد. تغییرات محلی صحنه و واردکننده‌ها نیز حفظ شده‌اند.
 
-- D78: علت قطع کنترل‌ها خطای برش اطلس کوچک‌شده بود؛ برش نرمال و راه‌اندازی مقاوم شد. هفت آرت جدید جنگل با footprint مشترک collider/شبیه‌سازی و کف دارای جزئیات نزدیک افزوده شدند. راهنما: docs/ARENA_LANDMARKS.md. شروع مرحله در Unity دیده شد؛ بررسی کامل ظاهر پس از توقف Computer Use توسط کاربر باقی است.
+- D79: علت قطع کنترل‌ها خطای برش اطلس کوچک‌شده بود؛ برش نرمال و راه‌اندازی مقاوم شد. هفت آرت جدید جنگل با footprint مشترک collider/شبیه‌سازی و کف دارای جزئیات نزدیک افزوده شدند. راهنما: docs/ARENA_LANDMARKS.md. شروع مرحله در Unity دیده شد؛ بررسی کامل ظاهر پس از توقف Computer Use توسط کاربر باقی است.
 
 - نقشه با دو مرجع تازه بازترکیب شد: زمین یکپارچهٔ جنگل و صنعت، آرت سه‌ربع کنده/الوار/بیل مکانیکی، سایهٔ تماس کوچک‌تر و محوشدن اجسام بلند روی بازیکن. کنترل Composed arena floor در Visual Tuning برای مقایسه حاضر است. راهنما و پرامپت‌ها در docs/ARENA_COMPOSITION.md؛ نمایش نهایی Play Mode هنوز تأیید نشده است.
 
-- پاس عمق بصری D76 برای اسکرین‌شات‌های پنج‌گانه: تنظیم مستقل رنگ نور/کنتراست/کاهش اشباع/تیرگی لبه‌ها برای هر فاز، Bloom ملایم دوربین دنیا، نور موضعی کیوسک‌ها و تنوع نرم روشنایی زمین. داشبورد `Hollow > Visual Tuning` با Apply در Play Mode و Save/Reset افزوده شد؛ بررسی تصویری در Play Mode هنوز لازم است. تغییرات `.meta` آرت که پیش از این تسک موجود بودند متعلق به این کار نیستند و دست نخورده‌اند.
+- پاس عمق بصری D77 برای اسکرین‌شات‌های پنج‌گانه: تنظیم مستقل رنگ نور/کنتراست/کاهش اشباع/تیرگی لبه‌ها برای هر فاز، Bloom ملایم دوربین دنیا، نور موضعی کیوسک‌ها و تنوع نرم روشنایی زمین. داشبورد `Hollow > Visual Tuning` با Apply در Play Mode و Save/Reset افزوده شد؛ بررسی تصویری در Play Mode هنوز لازم است. تغییرات `.meta` آرت که پیش از این تسک موجود بودند متعلق به این کار نیستند و دست نخورده‌اند.
 
 - انجام‌شده: T00–T04، T06–T15، T16a (importer آرت)، T16 (سه حالت آرنا)، T05 (جلوه‌ها)، T19 (صدا)، T18 (telemetry و ابزار)، T20 (آموزش و خوانایی)، T21 (بات و کارایی)، T22 (build نهایی)، (منوها، pause، ذخیره/بارگذاری، checkpoint، فروشگاه، آیتم‌ها، ۲۴ نوع دشمن، باس‌ها، داستان، پایان)، T17. پنل بالانس F9 و پنل توسعه F10 (فقط dev). ۴۴۵ تست پاس. هر دو اسلات سلاح هر سلاح خریده‌شده را می‌گیرند (D73). منوی اصلی پس‌زمینه‌ی 2D parallax دارد (D74). راهنماهای یک‌باره با تیره شدن صفحه و روشن ماندن بخش مربوط HUD (D75). عددهای بالانس از GDD v0.19 هستند. T23 تا T31 (اعمال v0.19): charger، رابط فارسی، انتخاب AI، هدیه‌ی تفنگ، یک اسلات آیتم، دو ایستگاه، فیلم‌نامه‌ی فارسی، تنظیمات صدا و زیرنویس، صدای هر دشمن.
 - کل بازی از ابتدا تا «You won.» در Play mode اجرا شد.
@@ -279,30 +295,124 @@
 
 ### 2026-10-17 — پاس عمق بصری و داشبورد نور
 - پنج تصویر کاربر با مرجع v0.19 و نمونه‌های Kill the Crows، Hades و The Ascent بررسی شد. تکرار کاشی زمین، لکه‌های تیره، رنگ نزدیک فازها و placeholderهای صنعتی مسائل اصلی‌اند؛ اولویت این پاس عمق بصری همراه با خوانایی نبرد است.
-- `AtmosphereData` و seed/JSON بالانس با رنگ نور، کنتراست، کاهش اشباع، vignette سه فاز، Bloom و تنوع روشنایی زمین گسترش یافت. `ArenaAtmosphere` حجم post-process دنیا و نور فیروزه‌ای کیوسک‌ها را می‌سازد؛ `ArenaAuthoring` نویز نرم غیرتکراری روی زمین می‌گذارد؛ `GameSession` این‌ها را هنگام شروع/بارگذاری/Apply زنده به‌روزرسانی می‌کند. `VisualTuningWindow` و راهنمای `docs/VISUAL_DEPTH_PASS.md` افزوده شد. برای جلوگیری از حذف shaderهای Volume ساخته‌شده در اجرا، حذف variantهای استفاده‌نشدهٔ Post Processing در تنظیمات URP خاموش شد. تصمیم D76.
+- `AtmosphereData` و seed/JSON بالانس با رنگ نور، کنتراست، کاهش اشباع، vignette سه فاز، Bloom و تنوع روشنایی زمین گسترش یافت. `ArenaAtmosphere` حجم post-process دنیا و نور فیروزه‌ای کیوسک‌ها را می‌سازد؛ `ArenaAuthoring` نویز نرم غیرتکراری روی زمین می‌گذارد؛ `GameSession` این‌ها را هنگام شروع/بارگذاری/Apply زنده به‌روزرسانی می‌کند. `VisualTuningWindow` و راهنمای `docs/VISUAL_DEPTH_PASS.md` افزوده شد. برای جلوگیری از حذف shaderهای Volume ساخته‌شده در اجرا، حذف variantهای استفاده‌نشدهٔ Post Processing در تنظیمات URP خاموش شد. تصمیم D77.
 - اسمبلی‌های Data/Presentation/Game/Editor/Tests.EditMode با کامپایلر Unity کامپایل شدند؛ JSON و بازه‌های تنظیم معتبرند. Test Runner به‌دلیل باز بودن پروژه در Editor از CLI اجرا نشد و بازبینی دیداری Play Mode باقی است. فایل‌های `.meta` آرت موجود پیش از این تسک در commit این کار وارد نمی‌شوند.
 
 ### 2026-10-18 — ترکیب‌بندی سه‌ربع نقشه براساس مرجع کاربر
 - با imagegen داخلی دو زمین غیرتکراری و اطلس شفاف کنده، الوار و بیل مکانیکی تولید، بررسی و در Resources/ArenaArt ذخیره شد. ApplyComposition زمین‌ها و سه آرت جایگزین را با pivot پایه روی موانع قبلی می‌نشاند. سایه‌ها براساس footprint کوچک شدند و اجسام بلند هنگام پوشاندن بازیکن نرم محو می‌شوند. تنظیم‌های ComposedGround و ContactShadowStrength در seed، JSON و داشبورد حاضرند.
-- اسمبلی‌های Data/Presentation/Game/Editor/Tests.EditMode کامپایل شدند؛ Test Runner به‌علت باز بودن پروژه در Editor اجرا نشد. نمایش واقعی Play Mode هنوز بررسی نشده است. فایل‌های art meta و تصاویر exec موجود پیش از این کار دست نخورده‌اند. تصمیم D77 و راهنمای docs/ARENA_COMPOSITION.md.
+- اسمبلی‌های Data/Presentation/Game/Editor/Tests.EditMode کامپایل شدند؛ Test Runner به‌علت باز بودن پروژه در Editor اجرا نشد. نمایش واقعی Play Mode هنوز بررسی نشده است. فایل‌های art meta و تصاویر exec موجود پیش از این کار دست نخورده‌اند. تصمیم D78 و راهنمای docs/ARENA_COMPOSITION.md.
 
 ### 2026-10-18 — رفع قطع کنترل‌ها و نصب هفت سازهٔ جنگل با برخورد
 - خطای ابعاد اطلس در Editor.log پیدا شد. ImportedAtlasRect برش را با اندازهٔ واردشده مقیاس می‌کند و ApplyArenaVisuals خطای آرت را از مسیر Loading جدا می‌کند. تست رگرسیون برای اندازه‌های واقعی/کوچک‌شده و shader افزوده شد.
 - هفت PNG ارسالی در Resources کپی و با footprintهای معتبر و ماسک گوشه‌ها به ArenaLayout اضافه شدند. نمای Runtime و BoxColliderهای ردیفی از همان دادهٔ برخورد سیم ساخته می‌شوند؛ Bake رکوردها را حفظ می‌کند. ذخیره‌های قدیمی در صورت برخورد با سازهٔ تازه به نقطهٔ آزاد منتقل می‌شوند. کف shader دارای detail و واردکنندهٔ بدون فشرده‌سازی دارد.
-- Sim/Presentation/Game/Editor/Tests.EditMode کامپایل؛ تست اجرایی Mono حرکت چهار جهت، برش و برخورد/خروج پاس؛ بررسی مسیرها در هر سه فاز پاس. ورود از منو به مرحله در Unity بدون خطای قبلی مشاهده شد. کاربر Computer Use را با Escape متوقف کرد؛ اجرای کامل NUnit و بررسی کامل نمای نهایی باقی است. جایگاه خالی سوم برای بررسی استفاده شد، دو جایگاه قبلی دست نخورده‌اند. تصمیم D78؛ docs/ARENA_LANDMARKS.md و نقشهٔ تشخیصی برخورد.
+- Sim/Presentation/Game/Editor/Tests.EditMode کامپایل؛ تست اجرایی Mono حرکت چهار جهت، برش و برخورد/خروج پاس؛ بررسی مسیرها در هر سه فاز پاس. ورود از منو به مرحله در Unity بدون خطای قبلی مشاهده شد. کاربر Computer Use را با Escape متوقف کرد؛ اجرای کامل NUnit و بررسی کامل نمای نهایی باقی است. جایگاه خالی سوم برای بررسی استفاده شد، دو جایگاه قبلی دست نخورده‌اند. تصمیم D79؛ docs/ARENA_LANDMARKS.md و نقشهٔ تشخیصی برخورد.
 
 ### 2026-10-17 — بازبینی آموزش، فروشگاه، اپراتور و اقتصاد
 - فایل Word مرجع v0.19 خوانده و با `docs/GDD_v0.19.md` و بالانس فعلی سنجیده شد. طبق درخواست کاربر، نمایش بالای HUD فقط محیط و حالت نبرد/استراحت را نشان می‌دهد؛ فروشگاه تب فاز ندارد و پیشنهادهای بازشده تا فاز فعلی را نشان می‌دهد. فلش آموزش به نزدیک‌ترین سکهٔ باقی‌مانده می‌رود. متن شروع با دش آغاز می‌شود و می‌گوید مرگ اپراتور بازی را تمام می‌کند.
 - خرید SMG آموزشی یک نارنجک رایگان می‌دهد؛ گروه دوم تا استفادهٔ موفق از آن صبر می‌کند. اپراتور پس از ۸ ثانیه بی‌آسیب‌ماندن با نرخ ۲ HP/s تا سقف جان خود ترمیم می‌شود؛ این اعداد در seed و Baseline.json هستند. پروفایل‌های ذخیره‌شدهٔ قبل از revision 3 فقط دو فیلد تازه را از baseline می‌گیرند.
-- بررسی عددی: داکیومنت ۵۰۸۹ سکهٔ درآمد سناریویی و ۱۴۲۱ سکه ماندهٔ مسیر خرید نمونه پیش‌بینی می‌کند. خشاب‌ها زمان reload دارند اما مهمات ذخیره محدود نیست. توصیهٔ اولیه حفظ دو اسلات و آزمودن تنظیم سلاح و درآمد پس از دادهٔ playtest؛ گزارش کامل در `docs/BALANCE_REVIEW_2026-10-17.md`. تصمیم D76.
+- بررسی عددی: داکیومنت ۵۰۸۹ سکهٔ درآمد سناریویی و ۱۴۲۱ سکه ماندهٔ مسیر خرید نمونه پیش‌بینی می‌کند. خشاب‌ها زمان reload دارند اما مهمات ذخیره محدود نیست. توصیهٔ اولیه حفظ دو اسلات و آزمودن تنظیم سلاح و درآمد پس از دادهٔ playtest؛ گزارش کامل در `docs/BALANCE_REVIEW_2026-10-17.md`. تصمیم D77.
 - فایل‌های تغییرکرده: `Assets/Editor/BaselineSeed.cs`، `Assets/Resources/Balance/Baseline.json`، `Assets/Resources/Localization/fa.json`، `Assets/Scripts/Data/BalanceProfile.cs` و `BalanceProfileStore.cs`، `Assets/Scripts/Game/GameSession.cs`، `Assets/Scripts/Sim/Companion/CompanionSystem.cs`، `Assets/Scripts/Sim/Items/ItemSystem.cs`، `Assets/Scripts/Sim/Shop/ShopSystem.cs`، `Assets/Scripts/Sim/Waves/WaveSystem.cs`، `Assets/Scripts/UI/ShopPanel.cs`، تست‌های ویرایش‌شده، `docs/DECISIONS.md`، گزارش بالانس و `agent.md`.
 - تأیید: پنج اسمبلی `Hollow.Data/Sim/UI/Game/Tests.EditMode` با کامپایلر Unity بدون خطا کامپایل شدند؛ دو JSON معتبرند و کلیدهای تازهٔ فارسی حاضرند. تست‌های NUnit و بررسی ظاهری در Play Mode به اتصال Pipeline ادیتور نیاز دارند و اجرا نشدند. فایل تغییرکردهٔ مستقل `ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json` دست‌نخورده ماند.
+
+### 2026-10-17 — زمین و آرنای 3/4
+- گزارش کاربر: زمین بازی 3/4 نیست و دوبعدی صاف است. علت: brief زمین را «از بالای بالا» خواسته بود و بافت ۸ واحدی با تکرار شبکه‌ای دیده می‌شد؛ decalهای زمین آزادانه می‌چرخیدند؛ سایه‌ها کم‌رنگ بودند.
+- `Tools/ArtGen/ground34.py`: هر زمین (از نسخه‌ی اصلی در `ArtSource/ArtWave1_Original`) به ۷۵٪ ارتفاع کوتاه می‌شود و یک بافت بی‌درز ۲۴×۲۴ واحدی (۳۰۷۲ پیکسل) ساخته می‌شود: خاک فاز ۱ با کپی‌های آینه‌ای و جابه‌جا زیر ماسک نرم؛ بتن فاز ۳ (و ۲) با تخته‌های ۴×۳ واحدی که جابه‌جا و رنگ‌به‌رنگ می‌شوند. درز زمین P1 حالا اینجا درست می‌شود نه در `fix_art.py`.
+- importer: زمین یک sprite تکی با ۱۲۸ پیکسل در واحد، FullRect و wrap Repeat (`ArtRules.GroundPixelsPerUnit`)؛ برش ۶۴ تایلی حذف شد و پوشه‌ی `Assets/Art/Tiles` پاک شد. `ArenaTools.PaintGround` زمین آرت را با یک SpriteRenderer تکرارشونده (`GroundArt`) روی کل آرنا می‌کشد.
+- `ArenaTools.FlattenDecor`: decalهای چرخیده چرخششان را روی فرزند Body می‌گیرند و با ارتفاع ۷۵٪ کشیده می‌شوند (`GroundSquash`)؛ از `Apply Incoming Art` و ساخت صحنه صدا زده می‌شود. `EdgeShade`: نوار تیره‌ی نرم داخل دیوارها (شمال ۲.۴ واحد، کناره‌ها ۰.۹، جنوب ۰.۵) زیر `Border_P<n>`. `PH_Shadow` پررنگ‌تر (هسته ۰.۷) و `PH_EdgeShade` جدید.
+- در Play mode هر سه فاز با دشمن دیده شد؛ تصویر: `docs/screenshots/Ground34_Phase1.png`، `Ground34_Phase3.png`. ۴۴۶ تست پاس (تست جدید `GroundArtIsOneTiledSpriteAt128PixelsPerUnit`). تصمیم D76.
+- باز: آرت حاشیه‌ها (به‌خصوص حاشیه‌ی کناری P3 که پنل حصار را از بالا نشان می‌دهد) هنوز همان آرت موج ۱ است؛ اگر آرت جدید زمین از تیم بیاید فقط کافی است `ground34.py` و بعد `Apply Incoming Art` اجرا شود.
+
+### 2026-10-17 — زمین فاز ۲ و ۳ با عمق
+- بازخورد کاربر: فاز ۱ خوب است ولی فاز ۲ و ۳ هنوز تخت به نظر می‌رسد (فاز ۲ تا آمدن آرت خودش زمین فاز ۳ را دارد). علت: شبکه‌ی تخته‌های هم‌سطح با نور یکنواخت؛ مستطیل به‌تنهایی عمق نشان نمی‌دهد.
+- `ground34.slabs`: هر تخته حالا رو + لبه‌ی جلو دارد: لبه‌ی بالا و چپ روشن (نور از بالا-چپ)، لبه‌ی راست تیره، لبه‌ی جلوی تیره (۷ پیکسل)، درز تیره؛ ۲۰٪ تخته‌ها بالاتر (لبه‌ی جلو +۱۸ پیکسل) و ۱۵٪ فرورفته (سایه از تخته‌ی پشتی). ردیف‌ها هم‌راستا ماندند؛ ردیف‌های جابه‌جا با لبه‌ی جلو شبیه دیوار آجری دیده می‌شدند.
+- در Play mode فاز ۲ و ۳ دیده شد؛ تصویر: `docs/screenshots/Ground34_Phase2.png`، `Ground34_Phase3.png`. ۴۴۶ تست پاس. D76 به‌روز شد.
+
+### 2026-10-18 — commit و push
+- `git pull` (چیز جدیدی نبود)، commit اطلس فونت‌ها و organizationId، و push هر سه commit به `origin/main`. پوشه‌ی `Assets/_Recovery` (نسخه‌ی بازیابی صحنه‌ی یونیتی بعد از crash) commit نشد.
 
 ### 2026-10-17 — شروع از منو، آموزش نارنجک، رابط و بالانس مبارزه
 - شاخهٔ `codex/gameplay-ux-pass` از آخرین commit ساخته شد. Play ادیتور از MainMenu آغاز می‌شود. خرید آموزشی با فلش روی دکمهٔ واقعی و چک‌پوینتِ پس از خرید، و نارنجک با دشمن تمرینی ثابت، نگه‌داشتن برای نشانه‌گیری، رهاکردن برای پرتاب، انتظار برای انفجار و جبران پرتاب ناموفق اجرا شد.
 - نوار reload با نشان‌های هر گلوله جایگزین شد؛ مدت بارگذاری به نسبت خشاب خالی است و تیرها یکی‌یکی اضافه می‌شوند. HUD محیط و شمارهٔ موج را نشان می‌دهد. Pause گزینهٔ Load ندارد؛ تنظیمات زیرنویس و جلوهٔ تصویری پنهان‌اند؛ جایگاه‌ها درصد پیشرفت، زمان بازی و آخرین ذخیره را نمایش می‌دهند. متن‌های گذرای اپراتور در بابل بالای سرش با فاصلهٔ ۲۸ تا ۴۴ ثانیه و جدا از دیالوگ داستانی می‌آیند.
-- بازسازی جان بازیکن (۶ ثانیه، ۳ HP/s)، مقاومت اپراتور فاز صنعتی (۲۶۰ HP و ۳۵٪ آسیب)، سقف/سرعت موج‌های انسانی و مهارت مین دش (از فاز ۲، ۰٫۷ ثانیه تأخیر و آسیب رتبه‌ای ۴۰/۶۵/۹۰) در seed و Baseline.json ثبت شد. پروفایل‌ها و ذخیره‌های قدیمی مهاجرت داده می‌شوند. تصمیم D77.
+- بازسازی جان بازیکن (۶ ثانیه، ۳ HP/s)، مقاومت اپراتور فاز صنعتی (۲۶۰ HP و ۳۵٪ آسیب)، سقف/سرعت موج‌های انسانی و مهارت مین دش (از فاز ۲، ۰٫۷ ثانیه تأخیر و آسیب رتبه‌ای ۴۰/۶۵/۹۰) در seed و Baseline.json ثبت شد. پروفایل‌ها و ذخیره‌های قدیمی مهاجرت داده می‌شوند. تصمیم D78.
 - همهٔ اسمبلی‌های `Hollow.Core/Data/Sim/App/UI/Game/Editor/Tests.EditMode` با Roslyn یونیتی کامپایل شدند و JSONها معتبرند. `unity test` به‌سبب باز بودن پروژه در Editor بدون اتصال Pipeline اجرا نشد؛ بررسی Play Mode باقی است. تغییر مستقل `ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json` دست‌نخورده ماند.
 
 ### 2026-10-18 — ادغام شاخه‌های گیم‌پلی و آرت
 - تغییرات اخیر محلی Unity حفظ شد؛ main و Art-Improvement در codex/gameplay-ux-pass ادغام شدند. تعارض‌ها با اولویت آرت و صحنهٔ تازه و حفظ قابلیت‌های گیم‌پلی حل شدند.
+
+### 2026-10-18 — merge شاخه‌ی codex/gameplay-ux-pass در main
+- conflictها: meta زمین‌های P1 و P3 و اطلس وزیرمتن از main (زمین یک sprite تکی ۱۲۸ پیکسلی طبق D76 است). در `docs/DECISIONS.md` تصمیم D76 (زمین 3/4) از main ماند و تصمیم‌های شاخه از D76–D81 به **D77–D82** شماره‌گذاری دوباره شدند (ارجاع‌های همین فایل هم عوض شد). تاریخچه‌ی هر دو طرف نگه داشته شد.
+- زمین: در commit بعدی به خواست کاربر فقط زمین شاخه ماند (پایین را ببین).
+- کامپایل بدون خطا. ۴۶۵ تست، ۴۶۰ پاس؛ ۵ تست ردشده همه از کد شاخه‌اند (روی شاخه NUnit اجرا نشده بود): `LocalizationTests` (کلید ساخته‌شده‌ی `operator.idle` + عدد)، `CompanionTests.PhaseTwoEntryRestoresToTheLowerMaximum` (۱۰۰ در برابر ۲۶۰ HP جدید)، `FullRunTests` (پاداش موج ۱ فاز ۱ با گرگ تمرینی نارنجک: ۳۱ سکه/۲۳ XP به‌جای ۲۹/۲۰)، `NoUnlistedNumberLiteralsInTheSimulation` (`ShopSystem.cs` عدد 3.5f)، `TelemetryRecordsTheTutorialWave` (موج آموزش unfinished).
+
+### 2026-10-18 — زمین شاخه به‌جای زمین main و رفع ۵ تست
+- به خواست کاربر زمین فقط از شاخه‌ی gameplay-ux است: کف ترکیبی (`ArenaAuthoring.ApplyComposition`، D78) روی tilemap آرت ۸×۸ (۶۴ تایل در `Assets/Art/Tiles`). از زمین main حذف شد: `Tools/ArtGen/ground34.py`، زمین تک‌sprite ۱۲۸ پیکسلی در `ArtImport`/`ArenaTools.PaintGround` (`PaintGround` حالا `GroundArt` قدیمی صحنه را پاک می‌کند)، تست `GroundArtIsOneTiledSpriteAt128PixelsPerUnit`، نسخه‌ی اصلی P3 در `ArtSource`. تصویرهای زمین P1/P3 همان نسخه‌ی شاخه‌اند. decal خوابیده، سایه‌ی زیر دیوار و سایه‌ی تماس main ماندند. صحنه‌ی Game دوباره رنگ شد (۱۹۲ تایل). D76 به‌روز شد.
+- تست‌ها: کلیدهای `operator.idle.<n>` (پیشوند نقطه‌دار مثل `ai.`)؛ تست اپراتور فاز ۲ جان را از پروفایل می‌خواند (۲۶۰)؛ گرگ تمرینی نارنجک kill حساب می‌شود ولی XP و سکه نمی‌دهد (`Rewards.OnEnemyKilled`) تا پاداش موج همان بودجه‌ی GDD بماند؛ فاصله‌ی آن `Spawning.TutorialGrenadeTargetDistance` = 3.5 (seed و JSON)؛ تست telemetry نارنجک تمرینی را پرتاب می‌کند و ۷ kill می‌شمارد. D80 به‌روز شد.
+- ۴۶۳ تست پاس. Play mode از CLI شروع نشد (فوراً stopped، بدون خطا)؛ زمین در Play mode دیده نشده.
+- نکته: یک جلسه‌ی دیگر (VFX/juice) هم‌زمان در همین پوشه کار می‌کند؛ فایل‌های نیمه‌کاره‌ی آن commit نشدند و در فایل‌های مشترک (`BalanceProfile.cs`، `BaselineSeed.cs`، `Baseline.json`) فقط hunkهای این کار stage شد.
+
+### 2026-10-18 — پاس juice: جلوه‌ها، لگد سلاح و shake
+- گلوله: هسته‌ی prefab گلوله (`PH_Projectile_*`) برای placeholder ۹۰ درجه چرخیده بود و آرت وارد شده هم با آن می‌چرخید؛ `ProjectileView` حالا برای آرت چرخش را صفر می‌کند و برای placeholder برمی‌گرداند.
+- هشدار قرمز: `EnemyView` فقط برای charger خط مسیر می‌کشد (کم‌رنگ‌تر: آلفای 0.12 تا 0.38)؛ خط نشانه‌گیری تیرانداز، قوس حمله‌ی نزدیک، دایره‌ی انفجاری و دایره‌ی پرتاب‌کننده حذف شد (شمارش معکوس انفجاری و هاله‌ی زرد درمان مانده‌اند). هشدار باس و منطقه‌ی hazard دشمن کم‌رنگ‌تر شد. رویدادهای telegraph شبیه‌سازی دست نخوردند.
+- پالس رانش: از seed و `Baseline.json` حذف شد؛ مقدار enum برای saveهای قدیمی ماند. `BalanceProfile.HasItem`، `ItemSystem.Available` نوع بدون داده را رد می‌کند، `WorldSerializer` موجودی فروشگاه save قدیمی را هم‌تراز می‌کند، revision 6 پروفایل ذخیره‌شده را مهاجرت می‌دهد. کد `Push` و متن فروشگاه و cue آن حذف شد. تست‌های آیتم/فروشگاه/راهنما/باس با مین و EMP بازنویسی شدند؛ تست جدید `ThePushPulseIsGoneEvenFromAnOldSave`.
+- لگد سلاح: `PlayerView.Kick` (سلاح ۱۱ درجه بالا و ۰.۱ واحد عقب، برگشت نمایی؛ اعداد روی prefab)، بدن اپراتور و دشمن تفنگ‌دار (ربات و انسان تیرانداز، نه حیوان و نه پرتاب‌کننده: `FeedbackDirector.FiresAGun`) هنگام شلیک عقب می‌رود. muzzle: strip آرت یا glow، نور، جرقه، دود و پوکه‌ی برنجی؛ برای دشمن رنگ گرم به‌جای قرمز هشدار.
+- shake: `ShakeOnShot` 0.09 (شاتگان ×۲)، داده‌های جدید `ShakeOnMelee` 0.12، `ShakeOnDash` 0.06، `ShakeOnPlayerDeath` 0.6؛ `DeathSparks` 22 و `DeathGore` 26 (seed، JSON، مهاجرت).
+- جلوه‌های جدید: دش (گرد و خاک، حلقه، جرقه، ردّ تصویر فیروزه‌ای هر ۰.۰۳۵ ثانیه، کش آمدن بدن)، level up (لحظه‌ای که کارت XP آماده می‌شود: نور طلایی، سه حلقه، جرقه و ذرات رو به بالا؛ انتخاب مهارت هم یک حلقه‌ی کوچک)، مرگ دشمن (پاشش خون/روغن با تکه‌ها، مه خون، حلقه، نور مرگ، ۷ لکه‌ی کوچک که با تأخیر روی زمین می‌نشینند و بعد از ۴ ثانیه محو می‌شوند)، مرگ بازیکن (نور، سه حلقه، ۴۰ جرقه، تکه‌های فلزی، دود، ذرات)، ضربه‌ی باتوم (جرقه‌ی قوس). انفجار و مرگ باس هم حلقه و پاشش گرفتند.
+- ۴۶۳ تست پاس. Play mode (جایگاه ۳، بعد پاک شد): مرگ دشمن، دش واقعی، شلیک و level up دیده شد، بدون خطای console. تصویرها: `docs/screenshots/Juice_KillDashLevelUp.png`، `Juice_DashAfterimage.png`. لگد سلاح و شدت shake فقط در کد بررسی شد و با دست بازی نشده است. تصمیم D83.
+- فایل‌های تغییرکرده: `Presentation/Feel/FeedbackDirector.cs`، `Presentation/WorldPresenter.cs`، `Views/PlayerView.cs`، `CompanionView.cs`، `EnemyView.cs`، `BossView.cs`، `ProjectileView.cs`، `SpriteSetAnimator.cs`، `Data/BalanceProfile.cs`، `BalanceProfileStore.cs`، `Ids.cs`، `Editor/BaselineSeed.cs`، `Resources/Balance/Baseline.json`، `Sim/Items/ItemSystem.cs`، `Sim/Save/WorldSerializer.cs`، `UI/ShopPanel.cs`، `Audio/AudioDirector.cs`، تست‌های Item/Shop/Hint/Boss، `docs/DECISIONS.md`، `agent.md`.
+
+### 2026-10-18 — commit و push پاس juice
+- `cebf9cb` (پاس juice) و `5fbfe32` (تغییرات خودکار یونیتی: spriteIDهای تازه با internalID ثابت، ورودی WebGL در meta تصویرها، glyphهای اضافه‌شده‌ی فونت وزیرمتن) روی `main` به `origin/main` push شدند. `Assets/_Recovery` مثل قبل commit نشد.
+
+### 2026-10-18 — برخورد تیر با کل بدن و ردّ راه رفتن
+- گزارش کاربر: در فاز ۳ تیر به شکم به بالای تیراندازها نمی‌خورد و از آن‌ها رد می‌شد. علت: شبیه‌سازی تیر را روی خط زمین می‌برد و نمایش آن را ۰.۳۵ واحد بالاتر می‌کشد، ولی بدن فقط دایره‌ای دور پا بود؛ برای همه‌ی دشمن‌های بلند (و باس‌ها) همین بود. حالا بدن یک کپسول عمودی است: `SimMath.SegmentCapsuleHit` (دایره‌ی پا که به اندازه‌ی `HitHeight` رو به بالای صفحه کشیده می‌شود). `HitHeight` فیلد تازه‌ی `EnemyData` و `BossData` است؛ در seed از جدول `BodyTops` (بالای بدن کشیده‌شده، اندازه‌گیری‌شده روی آرت) منهای ۰.۳۵ و شعاع حساب می‌شود. revision 7 پروفایل ذخیره‌شده را مهاجرت می‌دهد. تیری که از داخل بخش بالایی بدن شروع شود فقط وقتی به سمت بدن برود می‌خورد. بدن بازیکن و اپراتور عوض نشد.
+- ردّ راه رفتن (`FeedbackDirector.Walking`، فقط نمایشی): دو ParticleSystem تازه روی لایه‌ی Default زیر همه‌ی بدن‌ها (`WalkDust`، `WalkGlints`). پهپاد بازیکن جرقه‌ی فیروزه‌ای از زیرش می‌ریزد؛ اپراتور، حیوان‌ها، ربات‌ها، انسان‌ها و باس‌ها گرد و خاک به رنگ زمین هر فاز بلند می‌کنند؛ ربات‌ها جرقه‌ی سایش (شارژرها بیشتر)، انسان‌ها سنگ‌ریزه، پهپاد فرزند R7c دود گرم موتور. بر اساس مسافت طی‌شده در تیک‌های شبیه‌سازی (هنگام توقف بازی چیزی نمی‌سازد).
+- تست‌های تازه‌ی `HitShapeTests` (شلیک به سینه‌ی H1/H2/H6/R2 آسیب می‌زند، بالای سر نمی‌خورد، کپسول باس، شلیک رو به بیرون از بدنی که روی تیرانداز افتاده). ۴۷۲ تست پاس. seed و `Baseline.json` دقیقاً یکی‌اند. Play mode (صحنه‌ی Game مستقیم، بدون دست زدن به جایگاه‌ها): ردّ هر سه فاز دیده شد و شلیک به سینه‌ی نگهبان تفنگ‌دار آسیب زد. تصمیم D84.
+- نکته‌ی تست: `playModeStartScene` بعد از هر recompile دوباره MainMenu می‌شود (`ProjectSetup`)؛ برای اجرای مستقیم صحنه‌ی Game قبل از هر Play آن را null کن.
+- فایل‌های تغییرکرده: `Sim/SimMath.cs`، `Sim/Combat/ProjectileSystem.cs`، `Data/BalanceProfile.cs`، `Data/BalanceProfileStore.cs`، `Editor/BaselineSeed.cs`، `Resources/Balance/Baseline.json`، `Presentation/Feel/FeedbackDirector.cs`، `Tests/EditMode/Sim/HitShapeTests.cs`، `docs/DECISIONS.md`، `agent.md`.
+
+### 2026-10-18 — تنظیم ردّ راه رفتن
+- به خواست کاربر: ردّ جرقه‌ی پهپاد بازیکن حدود نصف شد (`GlintStride` 0.17، کوچک‌تر و کم‌رنگ‌تر). گرد و خاک NPCها و اپراتور بزرگ‌تر و پخش‌تر شد و هر پف به‌طور تصادفی کوچک (۰.۵–۰.۷۵)، معمولی (۰.۹–۱.۱) یا بزرگ (۱.۳۵–۱.۷۵) است؛ پف‌های بزرگ کم‌رنگ‌تر و ماندگارترند (`FeedbackDirector.FootDust`). در Play mode فاز ۱ دیده شد. ۴۷۲ تست پاس. D84 به‌روز شد.
+- سپس به خواست کاربر تعداد گرد و خاک NPCها حدود نصف شد (فاصله‌ی قدم‌ها `StrideBase` 0.45 و `StridePerRadius` 1.2، پف کوچک پاشنه فقط ۴۰٪ وقت‌ها)؛ تنوع اندازه دست نخورد. در Play mode دیده شد، ۴۷۲ تست پاس.
+
+### 2026-10-18 — آتش سر تفنگ، باز کردن فروشگاه با E، بستن راهنما با E
+- `FeedbackDirector.GunFlash`: strip بزرگ‌تر (×۱.۴۵)، هسته‌ی سفید، زبانه‌ی شعله‌ی نارنجی در دو glow رو به جلو، نور پخش بزرگ‌تر و کم‌رنگ‌تر، جرقه‌ها دو برابر به‌اضافه‌ی چند جرقه‌ی سریع نارنجی، دود بیشتر. `Flash` آلفای اختیاری گرفت و pool آن از ۲۴ به ۴۸ رسید. فقط نمایشی؛ با دست بازی و دیده نشده (شلیک از CLI تزریق نشد).
+- `ShopSystem.Step`: E کنار ایستگاه در هر encounter به‌جز PhaseComplete فروشگاه را باز و بسته می‌کند. فروشگاه زمان‌دار هنوز در `WaveSystem` خودکار باز می‌شود؛ دیگر هر تیک دوباره باز نمی‌شود، E آن را می‌بندد و حرکت و دش نه. `ShopPanel`: خط بالا در فروشگاه زمان‌دار با رنگ accent «{N} ثانیه تا موج بعد · برای بستن E را بزن». `GameSession`: «برای باز کردن فروشگاه E را بزن» حالا کنار هر ایستگاه بسته دیده می‌شود.
+- `HintCoach`: کارت بلندتر با خط «برای بستن راهنما E را بزن» (`hint.close`)؛ `InputRouter.InteractDownThisFrame` فشردن E را حتی وقتی ورودی دنیا بسته است می‌دهد و `HintCoach.Sync` با آن کارت را می‌بندد.
+- تست `WaveTests` به قانون تازه به‌روز شد. ۴۷۲ تست پاس. Play mode: فروشگاه زمان‌دار با متن تازه، بسته شدن آن با E، باز شدن با E کنار ایستگاه در موج، و بسته شدن کارت راهنما با E (۰.۲۵ ثانیه بعد از فشردن) دیده شد. تصمیم D85.
+
+### 2026-10-18 — سخت‌تر کردن بازی: زره و حرکت‌های تازه‌ی باس‌ها، متعادل کردن سلاح‌ها (D86)
+- زره باس: `BossData.Armor` سهمی از هر ضربه را می‌گیرد، جز در پنجره‌های exposed (هر recovery بعد از حمله یا stun با EMP) که `ExposedArmor` = 0 است. جان باس‌ها 3400/8000/13500. `BossSystem.ArmorNow/Exposed/Targetable/InAir/OffMap`.
+- `BossMove` و `BossData.Moves`: چرخه‌ی حمله از داده. Pounce (`BossAi.PounceWindup/Pouncing/PounceRecover`، زیر ۳۵٪ دو بار پشت‌سرهم) برای باس ۱ و ۳؛ Leap (`LeapRise/LeapAir/LeapLock/LeapRecover`) برای باس ۲ و ۳. در هوا باس هدف هیچ چیزی نیست (همه‌ی بررسی‌های `boss.Active && !boss.Dead` در Projectile/Melee/Dash/Hazard/Mine/Companion حالا `BossSystem.Targetable`) و با بدن‌ها برخورد ندارد. `BossView` بدن را بالا می‌برد، سایه می‌ماند و کوچک می‌شود؛ دایره‌ی فرود رسم می‌شود.
+- رگبار باس ۲: `BurstFanCount/BurstFanSpacing/BurstSweeps/BurstTrackRate`؛ مخروط ۷۰ درجه، سه گلوله هر ۰.۱۵ ثانیه، رفت‌وبرگشت در ۱.۸ ثانیه، دنبال کردن ۴۰ درجه بر ثانیه، ۱۸ آسیب. مخروط هنگام شلیک هم رسم می‌شود.
+- سلاح‌ها: SMG، تفنگ صنعتی و انرژی آسیب و خشاب کمتر و reload طولانی‌تر؛ `WeaponData.Bloom*` (پخش شدن با شلیک نگه‌داشته، برگشت بعد از مکث؛ `WeaponSystem.CurrentBloom`، `LoadoutState.Bloom/BloomTime`)؛ `ReticleView` با bloom باز می‌شود. تپانچه سطح ۲–۳ و شاتگان‌ها کمی قوی‌تر (falloff 0.6). revision 8 پروفایل ذخیره‌شده باس‌ها و سلاح‌ها را از baseline می‌گیرد.
+- دو باگ قدیمی: save وسط reload از خشاب خالی بعد از load شروع reload را اشتباه می‌گرفت (`LoadoutState.ReloadByRound`)؛ `ArcMesh` meshهای نابودشده‌ی Play قبلی را در cache استاتیک نگه می‌داشت (Domain Reload خاموش) و مخروط/دایره‌ی هشدار باس بعد از اولین Play دیده نمی‌شد.
+- تست‌ها: زره، leap (ترک نقشه، دنبال کردن، کوبیدن، فرار از دایره‌ی قفل)، pounce، رگبار پهن و دنبال‌کننده، EMP در هوا، bloom، save وسط reload. `FullRunTests` حالا محل اختلاف JSON را نشان می‌دهد. ۴۸۵ تست پاس. Play mode: leap، رگبار و pounce با اسکرین‌شات دیده شد (`docs/screenshots/Boss2_LeapTracking.png`، `Boss2_LeapLocked.png`، `Boss2_FanBurst.png`، `Boss1_Pounce.png`). با دست بازی نشده؛ اعداد باید با playtest تنظیم شوند.
+- نکته‌ی تست Play mode: با `GameApp.Instance.ToolFreeze = true` و `session.Sim.Step(...)` در eval می‌شود شبیه‌سازی را دقیقاً تا یک حالت باس جلو برد و با `capture_game_view --source camera` عکس گرفت (حالت screen وقتی ادیتور فوکوس ندارد فریم قدیمی می‌دهد).
+
+### 2026-10-18 — بدون بازسازی جان بازیکن، شکستن موانع با شارژ باس، سایه‌ی باس، نیروی کمکی باس (D87)
+- جان بازیکن: کد بازسازی خودکار و فیلدهای `PlayerData.RegenerationDelay/Rate` حذف شد (seed، JSON). بازسازی اپراتور سر جایش است. تست `PlayerHealthNeverComesBackByItself`.
+- شکستن موانع: `Sim/Arena/Obstacles.BreakAround` در هر تیک شارژ جلوی باس را بررسی می‌کند؛ کل بلوک متصل سلول‌های مسدود فاز (نه `BaseBlocked`: دیوار و ایستگاه) باز می‌شود، در `World.BrokenCells` ذخیره می‌شود (در `Bind` اعمال، در `EnterPhase` پاک، با retry برمی‌گردد) و `FlowField.Invalidate`. رویداد `ObstacleBroken`: تراشه، گرد و خاک، حلقه، shake و صدا. `ArenaAuthoring.SyncBroken` prop یا تایل‌های مانع شکسته را پنهان می‌کند و در صورت لزوم برمی‌گرداند. `BossData.ChargeBreaksObstacles`.
+- سایه‌ی باس: `BossView` اندازه و جای سایه را از شعاع بدن می‌سازد (۲.۵ × ۰.۷۵ شعاع، ۰.۲ شعاع بالاتر از پا)؛ قبلاً بیضی ۵ × ۳.۷ واحدی دور پا بود.
+- نیروی کمکی: `BossData.Reinforcements` و `ReinforceInterval` (۸ ثانیه)؛ `BossState.ReinforceQueue`، گروه `BossState.ReinforcementGroup` که XP و سکه نمی‌دهد (استخر پاداش ثابت می‌ماند). سقف‌ها 24/32/40، فاصله‌ی spawn کمتر. فرزندان producer حالا سقف باس را هم رعایت می‌کنند (باگ قدیمی). revision 9 داده‌ی باس‌ها را از baseline می‌گیرد.
+- تست‌های تازه‌ی `BossPressureTests` (شکستن و ادامه‌ی شارژ، ذخیره، دیوار نمی‌شکند، retry برمی‌گرداند، نیروی کمکی بدون پاداش). `SlowKillPaysExactlyTheSamePool` حالا ضربه‌ی آخر را وسط leap نمی‌زند. ۴۹۱ تست پاس. Play mode: باس ۱ با شارژ سنگ را شکست و رد شد، سایه زیر پا دیده شد. با دست بازی نشده است.
+
+### 2026-10-18 — فروشگاه فقط با ماوس، دیالوگ با E، باس ۲ (D88)
+- `UIRoot`: `EventSystem.sendNavigationEvents = false`؛ WASD دیگر انتخاب فروشگاه را جابه‌جا نمی‌کند و Space (Submit) دکمه‌ی انتخاب‌شده یا صحنه‌ی دیالوگ را نمی‌زند. در Play mode روی منوی اصلی `nav=False` دیده شد.
+- `GameSession.HandleKeys`: صحنه‌ی داستان با `Router.InteractDownThisFrame` (E) هم جلو می‌رود؛ متن `dialogue.hint`/`dialogue.hintSkip` حالا E را می‌گوید.
+- باس ۲: `Moves` = Burst، Blast، Burst، Blast، Leap (قبلاً هر سه حرکت یک leap)؛ `BurstTrackRate` = 0 (مخروط دنبال بازیکن نمی‌چرخد، رفت‌وبرگشت داخل همان مخروط مانده). باس ۳ هنوز دنبال می‌کند. seed و `Baseline.json` revision 10؛ `BalanceProfileStore` پروفایل‌های ذخیره‌شده‌ی قبل از آن را مهاجرت می‌دهد. تست `RobotBurstFansSweepsTheWholeConeAndStaysWhereItWarned`.
+- ۴۹۱ تست پاس. دیالوگ با E و باس ۲ در Play mode بررسی نشده‌اند.
+
+### 2026-10-18 — مهارت‌های محسوس‌تر، شکستن موانع با همه‌ی حمله‌های سنگین، باس ۳ تهاجمی‌تر (D89)
+- مهارت‌ها در seed: سرعت حرکت 5.6/6.2/6.8 (قبلاً 5.3/5.6/5.9)، ضریب خشاب 0.8/0.62/0.45 (قبلاً 0.92/0.84/0.76؛ کف 0.45 ثانیه سر جایش).
+- `BossData.ChargeBreaksObstacles` → `HeavyMovesBreakObstacles`؛ `Obstacles.BreakAround` حالا در ضربه‌ی ناحیه‌ای (Strike)، `Land` (فرود pounce و leap) و انفجار hazard باس (`HazardSystem.Detonate` با `SourceId == BossState.EntityId`) هم صدا زده می‌شود. باس ۲: همه‌چیز جز رگبار.
+- باس ۳: `Moves` = Burst، Pounce، Blast، Pounce، Leap؛ فیلد تازه‌ی `PounceChain` (۲، در جان کم ۳)؛ pounce سریع‌تر. رگبار: `BurstDuration` 1، آسیب 26، `BurstTrackRate` 160، فیلد تازه‌ی `BurstHoming` 50 (`ProjectileState.Homing`، `ProjectileSystem.Home` جهت را با سرعت ثابت می‌چرخاند). نارنجک: `BlastCount/BlastGap/BlastLead/BlastPlayerGap/BlastSideAngle`؛ `BossSystem.ThrowNextBlast` هر نارنجک را هنگام پرتاب از جای و جهت حرکت بازیکن می‌گذارد (`BossState.BlastsLeft/BlastIndex/NextBlastTick`، ذخیره می‌شوند).
+- revision 11 مهارت‌ها و باس‌های پروفایل ذخیره‌شده را از baseline می‌گیرد. seed و `Baseline.json` یکی‌اند.
+- تست‌های تازه: `HeavyMovesBreakTheObstaclesInTheirZone` (۷ حالت)، `ShotsAndRegularEnemyBlastsBreakNothing`، `FormerCompanionPouncesTwiceInARow`، `FormerCompanionBurstTurnsAndBendsTowardThePlayer`، `FormerCompanionGrenadesHemThePlayerInButNeverLandOnThem`. ۵۰۲ تست پاس. در Play mode دیده نشده و با دست بازی نشده است.
+
+### 2026-10-18 — commit و push
+- تغییرات خودکار یونیتی (glyphهای تازه‌ی اطلس وزیرمتن، یک rid در تنظیمات سراسری URP) commit شد و همراه `0dd6e5a` و `f120231` به `origin/main` push شد. `Assets/_Recovery` مثل قبل commit نشد.
+
+### 2026-10-18 — چیدمان و زمین اختصاصی فاز دوم (D90)
+- هشت سازهٔ صنعتی ارسالی با پایه و Collider مشترک با شبیه‌سازی به فاز دوم اضافه شدند. `ArenaAuthoring` اکنون آرت هر سازه را از مسیر متناسب با فاز می‌خواند.
+- `FloorFactory` و `DetailFactory` با imagegen داخلی ساخته و به زمین فاز دوم وصل شدند؛ فاز سوم همچنان زمین مستقل قبلی را دارد. راهنما و پرامپت‌ها در `docs/ARENA_PHASE2.md`.
+- بررسی داده‌ای اتصال همهٔ ۱۲۲۶ خانهٔ آزاد، نبود گذرگاه تک‌خانه‌ای و بازبودن حریم شروع/فروشگاه/ورود دشمن پاس شد. اسمبلی‌های Unity با Roslyn کامپایل شدند؛ نمای Play Mode هنوز باید بررسی شود.
