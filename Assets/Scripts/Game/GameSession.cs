@@ -97,6 +97,7 @@ namespace Hollow.Game
             dialogue.SubtitlesOn = GameSettings.Subtitles;
             dialogue.LineStarted += id => audio.PlayVoiceLine(id);
             dialogue.LinesStopped += () => audio.StopVoice();
+            dialogue.Typed += style => audio.PlayTypeTick(style);
 
             app.Balance.Applied += OnBalanceApplied;
             GameSettings.Changed += ApplyFeelSettings;
@@ -224,7 +225,7 @@ namespace Hollow.Game
         /// <summary>Dev tools: plays through the current dialogue scene at once.</summary>
         public void FinishSceneNow()
         {
-            for (int i = 0; i < 64 && app.States.Current == GameState.Scene; i++) dialogue.Next();
+            dialogue.FinishNow();
         }
 
         /// <summary>Dev tools changed the phase directly: show the matching obstacle layout.</summary>
@@ -375,6 +376,7 @@ namespace Hollow.Game
                 finalBossCleared = true;
                 SaveNow(quiet: true);
                 audio.PlayMusic(w.Phase);
+                PlayEnding();
             }
         }
 
@@ -429,6 +431,18 @@ namespace Hollow.Game
             });
         }
 
+        /// <summary>D03–D04 after the final boss (D98), then back to the main menu; the slot was saved just before.</summary>
+        void PlayEnding()
+        {
+            shopPanel.Hide();
+            app.States.Transition(GameState.Scene);
+            PlayScene("Ending", () =>
+            {
+                app.States.Transition(GameState.Ending);
+                app.GoToMainMenu();
+            });
+        }
+
         void ResumeAfterTransition()
         {
             app.States.Transition(GameState.Playing);
@@ -455,9 +469,6 @@ namespace Hollow.Game
             var seen = W.Narrative.SeenScenes;
             bool canSkip = seen.Contains(id);
             if (!canSkip) seen.Add(id);
-            var art = presenter.Catalog;
-            dialogue.SetPortrait("Assistant", art.AiPortrait);
-            dialogue.SetPortrait("Operator", W.Phase >= 2 && art.OperatorPortraitP2 != null ? art.OperatorPortraitP2 : art.OperatorPortraitP1);
             dialogue.PlayScene(id, canSkip, done);
         }
         static string TutorialWeaponName(World w) => Loc.Weapon(w.Profile.Economy.TutorialWeapon);

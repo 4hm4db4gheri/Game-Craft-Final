@@ -219,6 +219,65 @@ namespace Hollow.Presentation
         /// <summary>Briefly lowers music and effects (never warnings) under a big moment.</summary>
         public void Duck(float seconds) => duckUntil = Mathf.Max(duckUntil, Time.unscaledTime + seconds);
 
+        // ------------------------------------------------------------------ story typing
+
+        readonly Dictionary<string, AudioClip> typeClips = new();
+
+        /// <summary>
+        /// A letter typed in a story scene (D98), in the speaker's voice: a soft key for people, a digital blip for
+        /// the AI, a harsh buzz for alarms, a crackle over the radio; "Cut" is the low hit of a hard cut.
+        /// Synthesised here, so they need no files.
+        /// </summary>
+        public void PlayTypeTick(string style)
+        {
+            if (!typeClips.TryGetValue(style ?? "", out var clip))
+            {
+                clip = SynthTypeClip(style ?? "");
+                typeClips[style ?? ""] = clip;
+            }
+            var voice = TakeVoice(AudioBus.Interface, 5);
+            if (voice == null) return;
+            var s = voice.Source;
+            s.Stop();
+            s.clip = clip;
+            s.pitch = style == "Cut" ? 1f : Random.Range(0.92f, 1.1f);
+            voice.OwnerId = int.MinValue;
+            voice.BaseVolume = style switch { "Cut" => 0.7f, "Machine" => 0.16f, "Alarm" => 0.14f, "Radio" => 0.16f, _ => 0.22f };
+            voice.Priority = 5;
+            voice.StartedAt = Time.unscaledTime;
+            s.panStereo = 0f;
+            s.volume = voice.BaseVolume * BusGain(AudioBus.Interface);
+            s.Play();
+        }
+
+        static AudioClip SynthTypeClip(string style)
+        {
+            const int rate = 44100;
+            float seconds = style switch { "Cut" => 0.45f, "Alarm" => 0.045f, "Machine" => 0.04f, _ => 0.03f };
+            int n = (int)(rate * seconds);
+            var samples = new float[n];
+            var rng = new System.Random(style.GetHashCode());
+            float lowPass = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / rate;
+                float noise = (float)(rng.NextDouble() * 2 - 1);
+                float v = style switch
+                {
+                    "Machine" => (Mathf.Sin(2 * Mathf.PI * 1560f * t) * 0.7f + Mathf.Sin(2 * Mathf.PI * 3120f * t) * 0.2f) * Mathf.Exp(-t / 0.012f),
+                    "Alarm" => Mathf.Sign(Mathf.Sin(2 * Mathf.PI * 520f * t)) * 0.45f * Mathf.Exp(-t / 0.018f),
+                    "Radio" => noise * (rng.NextDouble() < 0.3 ? 1f : 0.35f) * Mathf.Exp(-t / 0.01f),
+                    "Cut" => (Mathf.Sin(2 * Mathf.PI * Mathf.Lerp(70f, 34f, t / seconds) * t) * 0.9f + noise * 0.25f * Mathf.Exp(-t / 0.03f)) * Mathf.Exp(-t / 0.16f),
+                    _ => (noise * 0.8f + Mathf.Sin(2 * Mathf.PI * 880f * t) * 0.25f) * Mathf.Exp(-t / 0.005f),
+                };
+                lowPass += (v - lowPass) * (style == "Cut" ? 0.2f : 0.55f); // takes the hiss off
+                samples[i] = lowPass;
+            }
+            var clip = AudioClip.Create("Type_" + style, n, 1, rate, false);
+            clip.SetData(samples, 0);
+            return clip;
+        }
+
         // ------------------------------------------------------------------ music
 
         public void PlayMusic(int phase)

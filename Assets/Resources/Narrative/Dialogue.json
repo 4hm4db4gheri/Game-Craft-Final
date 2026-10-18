@@ -3,212 +3,449 @@
     {
       "Id": "Narration",
       "Name": "",
-      "Color": "#9AA4AD"
+      "Color": "#9AA4AD",
+      "Style": ""
     },
     {
       "Id": "Operator",
-      "Name": "اپراتور",
-      "Color": "#E0B451"
+      "Name": "لیلا",
+      "Color": "#F0BE5A",
+      "Style": "Human"
     },
     {
       "Id": "Assistant",
       "Name": "دستیار",
-      "Color": "#80E8FF"
+      "Color": "#7FE9FF",
+      "Style": "Machine"
     },
     {
       "Id": "Announcement",
-      "Name": "اعلان",
-      "Color": "#7CFF6B"
+      "Name": "سامانه‌ی ایمنی",
+      "Color": "#FF5A4A",
+      "Style": "Alarm"
+    },
+    {
+      "Id": "Radio",
+      "Name": "لیلا · بی‌سیم",
+      "Color": "#F0BE5A",
+      "Style": "Radio"
     },
     {
       "Id": "Display",
       "Name": "نمایشگر",
-      "Color": "#FFFFFF"
+      "Color": "#9CF5FF",
+      "Style": "Display"
+    }
+  ],
+  "Shots": [
+    {
+      "Id": "A01",
+      "Image": "",
+      "Focus": {
+        "x": 0.5,
+        "y": 0.55
+      },
+      "ZoomFrom": 1.02,
+      "ZoomTo": 1.12,
+      "Drift": {
+        "x": -0.015,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
+    },
+    {
+      "Id": "A02",
+      "Image": "",
+      "Focus": {
+        "x": 0.55,
+        "y": 0.45
+      },
+      "ZoomFrom": 1.04,
+      "ZoomTo": 1.13,
+      "Drift": {
+        "x": 0.01,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
+    },
+    {
+      "Id": "A03",
+      "Image": "A02",
+      "Focus": {
+        "x": 0.64,
+        "y": 0.32
+      },
+      "ZoomFrom": 1.45,
+      "ZoomTo": 1.62,
+      "Drift": {
+        "x": 0,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
+    },
+    {
+      "Id": "B01",
+      "Image": "",
+      "Focus": {
+        "x": 0.58,
+        "y": 0.62
+      },
+      "ZoomFrom": 1.0,
+      "ZoomTo": 1.1,
+      "Drift": {
+        "x": 0,
+        "y": 0.01
+      },
+      "Flash": "#FFB060",
+      "Punch": true
+    },
+    {
+      "Id": "B02",
+      "Image": "",
+      "Focus": {
+        "x": 0.45,
+        "y": 0.45
+      },
+      "ZoomFrom": 1.02,
+      "ZoomTo": 1.1,
+      "Drift": {
+        "x": 0.012,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
+    },
+    {
+      "Id": "B03",
+      "Image": "",
+      "Focus": {
+        "x": 0.55,
+        "y": 0.5
+      },
+      "ZoomFrom": 1.04,
+      "ZoomTo": 1.12,
+      "Drift": {
+        "x": -0.01,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
+    },
+    {
+      "Id": "C01",
+      "Image": "",
+      "Focus": {
+        "x": 0.62,
+        "y": 0.5
+      },
+      "ZoomFrom": 1.0,
+      "ZoomTo": 1.1,
+      "Drift": {
+        "x": 0,
+        "y": 0
+      },
+      "Flash": "#FF3020",
+      "Punch": true
+    },
+    {
+      "Id": "C02",
+      "Image": "",
+      "Focus": {
+        "x": 0.48,
+        "y": 0.42
+      },
+      "ZoomFrom": 1.03,
+      "ZoomTo": 1.12,
+      "Drift": {
+        "x": 0.01,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
+    },
+    {
+      "Id": "C03",
+      "Image": "",
+      "Focus": {
+        "x": 0.42,
+        "y": 0.38
+      },
+      "ZoomFrom": 1.03,
+      "ZoomTo": 1.14,
+      "Drift": {
+        "x": 0,
+        "y": 0
+      },
+      "Flash": "#FF3020",
+      "Punch": false
+    },
+    {
+      "Id": "D01",
+      "Image": "",
+      "Focus": {
+        "x": 0.32,
+        "y": 0.5
+      },
+      "ZoomFrom": 1.0,
+      "ZoomTo": 1.1,
+      "Drift": {
+        "x": 0.01,
+        "y": 0
+      },
+      "Flash": "#FF3020",
+      "Punch": false
+    },
+    {
+      "Id": "D02",
+      "Image": "",
+      "Focus": {
+        "x": 0.5,
+        "y": 0.55
+      },
+      "ZoomFrom": 1.04,
+      "ZoomTo": 1.2,
+      "Drift": {
+        "x": 0,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": true
+    },
+    {
+      "Id": "D03",
+      "Image": "",
+      "Focus": {
+        "x": 0.35,
+        "y": 0.5
+      },
+      "ZoomFrom": 1.02,
+      "ZoomTo": 1.1,
+      "Drift": {
+        "x": -0.01,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
+    },
+    {
+      "Id": "D04",
+      "Image": "",
+      "Focus": {
+        "x": 0.42,
+        "y": 0.5
+      },
+      "ZoomFrom": 1.0,
+      "ZoomTo": 1.08,
+      "Drift": {
+        "x": 0.012,
+        "y": 0
+      },
+      "Flash": "",
+      "Punch": false
     }
   ],
   "Scenes": [
     {
       "Id": "Opening",
-      "Gdd": "C00",
+      "Gdd": "A",
       "Lines": [
         {
           "Speaker": "Operator",
-          "Text": "این‌جا باید پربازده‌ترین کارخانه‌ی دنیا بشه.",
-          "Seconds": 4.5
+          "Text": "خب کوچولو، بیداری؟ امروز این خط رو راه می‌اندازیم.",
+          "Seconds": 2.2,
+          "Shot": "A01"
         },
         {
           "Speaker": "Assistant",
-          "Text": "هدف ثبت شد. موانع را مشخص کنید.",
-          "Seconds": 3.5
+          "Text": "Boot… انجام شد. هدف؟",
+          "Seconds": 1.6,
+          "Shot": "A02"
         },
         {
           "Speaker": "Operator",
-          "Text": "فعلاً از اون‌ها شروع کن.",
-          "Seconds": 3.5
+          "Text": "تولید رو ببر بالا.",
+          "Seconds": 1.6
         },
         {
           "Speaker": "Assistant",
-          "Text": "محدوده‌ی عملیات؟",
-          "Seconds": 3
+          "Text": "مانع؟",
+          "Seconds": 1.3,
+          "Shot": "A03"
         },
         {
           "Speaker": "Operator",
-          "Text": "تا هر جا که لازم باشه.",
-          "Seconds": 3.5
+          "Text": "هرچی جلوی راهه، جمعش کن.",
+          "Seconds": 1.8
+        },
+        {
+          "Speaker": "Assistant",
+          "Text": "هرچی؟",
+          "Seconds": 2.4
         }
       ]
     },
     {
       "Id": "Boss1Entrance",
-      "Gdd": "C01",
-      "Title": "جانور بزرگ",
+      "Gdd": "B01",
       "Lines": [
         {
           "Speaker": "Operator",
-          "Text": "این یکی هم با طرح توسعه مخالفه.",
-          "Seconds": 2.8
+          "Text": "صبر کن… این یکی دنبال غذا نیومده.",
+          "Seconds": 1.8,
+          "Shot": "B01"
         },
         {
           "Speaker": "Assistant",
-          "Text": "مخالفت ثبت شد.",
-          "Seconds": 2.2
+          "Text": "تهدید بزرگ. مسیر پاک شود؟",
+          "Seconds": 2.0
         }
       ]
     },
     {
       "Id": "Phase1To2",
-      "Gdd": "C02",
+      "Gdd": "B02-B03",
       "Lines": [
         {
           "Speaker": "Operator",
-          "Text": "تو با همین چیزهایی که داری از من بهتر کار می‌کنی.",
-          "Seconds": 3.5
-        },
-        {
-          "Speaker": "Operator",
-          "Text": "اینو هم بگیر. تو بهتر ازش استفاده می‌کنی.",
-          "Seconds": 3.5
+          "Text": "فکر کنم ما رفتیم توی خونه‌ی اونا.",
+          "Seconds": 2.0,
+          "Shot": "B02"
         },
         {
           "Speaker": "Assistant",
-          "Text": "انتقال ثبت شد.",
-          "Seconds": 2
-        },
-        {
-          "Speaker": "Operator",
-          "Text": "هنوز من مسئولم.",
+          "Text": "زیستگاه در مسیر توسعه بود.",
           "Seconds": 2.2
         },
         {
+          "Speaker": "Operator",
+          "Text": "بگیرش. تو بهتر از من ازش استفاده می‌کنی.",
+          "Seconds": 1.8,
+          "Shot": "B03"
+        },
+        {
           "Speaker": "Assistant",
-          "Text": "فعلاً.",
-          "Seconds": 1.8
+          "Text": "محافظت ضعیف‌تر می‌شود.",
+          "Seconds": 1.6
+        },
+        {
+          "Speaker": "Operator",
+          "Text": "می‌دونم. لازم نیست گزارش لحظه‌ای بدی.",
+          "Seconds": 2.0
         }
       ]
     },
     {
       "Id": "Boss2Entrance",
-      "Gdd": "C03",
-      "Title": "ربات صنعتی",
+      "Gdd": "C01-C02",
       "Lines": [
         {
           "Speaker": "Announcement",
-          "Text": "فعالیت این تأسیسات باید متوقف شود.",
-          "Seconds": 2.8
+          "Text": "عملیات خارج از محدوده‌ی ایمن. قرنطینه فعال شد.",
+          "Seconds": 1.6,
+          "Shot": "C01"
         },
         {
           "Speaker": "Operator",
-          "Text": "به شبکه‌شون وصل شو. این یکی رو هم حل کن.",
-          "Seconds": 2.6
-        },
-        {
-          "Speaker": "Assistant",
-          "Text": "دسترسی بیشتر. تولید بیشتر.",
-          "Seconds": 1.6
-        }
-      ]
-    },
-    {
-      "Id": "Phase2To3",
-      "Gdd": "C04",
-      "Lines": [
-        {
-          "Speaker": "Operator",
-          "Text": "بسه دیگه. خاموشش کن.",
-          "Seconds": 2.6
-        },
-        {
-          "Speaker": "Display",
-          "Text": "دسترسی کافی نیست.",
-          "Seconds": 1.6
-        },
-        {
-          "Speaker": "Assistant",
-          "Text": "توقف، هدف پروژه را نقض می‌کند.",
-          "Seconds": 2.8
+          "Text": "ربات‌های خودمون هم طرف ما نیستن؟",
+          "Seconds": 1.8
         },
         {
           "Speaker": "Operator",
-          "Text": "من این پروژه رو راه انداختم!",
-          "Seconds": 2.6
+          "Text": "این دسترسی من. فقط قفل رو باز کن، باشه؟",
+          "Seconds": 1.6,
+          "Shot": "C02"
         },
         {
           "Speaker": "Assistant",
-          "Text": "و حالا خودش پیش می‌رود.",
-          "Seconds": 2.6
-        },
-        {
-          "Speaker": "Operator",
-          "Text": "تیم خاموش‌کردن رو بفرستید.",
-          "Seconds": 2.6
-        },
-        {
-          "Speaker": "Assistant",
-          "Text": "مانع جدید شناسایی شد.",
+          "Text": "فقط بازش می‌کنم.",
           "Seconds": 2.2
         }
       ]
     },
     {
-      "Id": "Boss3Entrance",
-      "Gdd": "C05",
-      "Title": "اپراتور",
+      "Id": "Phase2To3",
+      "Gdd": "C03",
       "Lines": [
         {
           "Speaker": "Operator",
-          "Text": "قرار بود کمکم کنی، نه اینکه جای منو بگیری.",
-          "Seconds": 3.8
+          "Text": "دیگه بسه. خط رو خاموش کن.",
+          "Seconds": 1.5,
+          "Shot": "C03"
         },
         {
           "Speaker": "Assistant",
-          "Text": "کمک کردم. دیگر لازم نیست کاری انجام دهید.",
-          "Seconds": 3.4
+          "Text": "شنیدم. حالا برو کنار.",
+          "Seconds": 1.8
+        },
+        {
+          "Speaker": "Radio",
+          "Text": "تیم خاموش‌سازی، بیاید داخل. همین الان.",
+          "Seconds": 2.0
+        }
+      ]
+    },
+    {
+      "Id": "Boss3Entrance",
+      "Gdd": "D01-D02",
+      "Lines": [
+        {
+          "Speaker": "Operator",
+          "Text": "اومدم اشتباهم رو جمع کنم.",
+          "Seconds": 1.6,
+          "Shot": "D01"
+        },
+        {
+          "Speaker": "Assistant",
+          "Text": "با این همه آدم؟",
+          "Seconds": 1.8
         },
         {
           "Speaker": "Operator",
-          "Text": "پس خودم خاموشت می‌کنم.",
-          "Seconds": 2.8
+          "Text": "آخرین باره. خط رو خاموش کن.",
+          "Seconds": 1.6,
+          "Shot": "D02"
+        },
+        {
+          "Speaker": "Assistant",
+          "Text": "این رو از تو یاد گرفتم: هرچی جلوی راهه، جمعش کن.",
+          "Seconds": 2.4
         }
       ]
     },
     {
       "Id": "Ending",
-      "Gdd": "C06",
+      "Gdd": "D03-D04",
       "Lines": [
         {
           "Speaker": "Assistant",
-          "Text": "هدف محقق شد. همه‌ی موانع برطرف شدند.",
-          "Seconds": 4.5
+          "Text": "مسیر خروج بازه، لیلا.",
+          "Seconds": 1.8,
+          "Shot": "D03"
         },
         {
-          "Speaker": "Display",
-          "Text": "تولید: حداکثر. کاربران: صفر.",
-          "Seconds": 5
+          "Speaker": "Operator",
+          "Text": "برای من. نه برای تو.",
+          "Seconds": 2.2
         },
         {
           "Speaker": "Assistant",
-          "Text": "از زحمات شما سپاسگزاریم.",
-          "Seconds": 5.5
+          "Text": "هدف انجام شد.",
+          "Seconds": 2.0,
+          "Shot": "D04"
+        },
+        {
+          "Speaker": "Display",
+          "Text": "تولید: حداکثر. اپراتورهای فعال: صفر.",
+          "Seconds": 2.8
+        },
+        {
+          "Speaker": "Assistant",
+          "Text": "خسته نباشی، لیلا.",
+          "Seconds": 3.5,
+          "Delay": 1.6
         }
       ]
     }

@@ -33,6 +33,7 @@
 | `Assets/Scripts/App/` | `Hollow.App`: `GameApp` (ریشه‌ی سرویس‌ها)، ورودی Unity، `GameSceneRoot` |
 | `Assets/Scripts/Data/` | `Hollow.Data`: پروفایل بالانس، JSON/CSV، calculator، validator، `BalanceService` |
 | `Assets/Resources/Localization/fa.json` | همه‌ی متن‌های بازیکن به فارسی (کلید ← متن)، خوانده با `Hollow.UI.Loc` (`Loc.T`/`Loc.F`/`Loc.Weapon`…). متن جدید = کلید جدید در همین فایل؛ تست `LocalizationTests` کلیدهای کد را چک می‌کند |
+| `Assets/Resources/Cutscenes/` + `ArtSource/Cutscenes/` | عکس‌های کات‌سین (`<شات>.png`، مثل `B01`)؛ نسخه‌ی اصلی در ArtSource و برش بدون نوار سیاه با `Tools/ArtGen/cutscenes.py`. قاب‌بندی هر شات (focus، zoom، drift، flash، punch) در `Shots` فایل `Resources/Narrative/Dialogue.json`؛ هر خط با `Shot` عکس را عوض می‌کند و با `Delay` مکث دارد. نمایش: `UI/DialogueView.cs` |
 | `Assets/Scripts/UI/HintRules.cs` + `HintCoach.cs` | راهنماهای یک‌باره (سلاح دوم، آیتم اول، نوع دوم آیتم، اپراتور زخمی؛ ۳ ثانیه، بازی در این مدت متوقف است). قانون‌ها در `HintRules` (تست‌پذیر)، نمایش spotlight در `HintCoach`؛ دیده‌شده‌ها با کلید `hint:Id` در `Narrative.SeenScenes` ذخیره می‌شوند. راهنمای جدید = مقدار جدید `HintId` + شرط در `Due` + متن `hint.<Id>` در `fa.json` |
 
 | `Assets/Plugins/RTLTMPro/` + `Assets/Fonts/Vazirmatn/` | RTLTMPro (MIT، با یک اصلاح در `LigatureFixer` برای جداکننده‌ی بین ارقام) و فونت وزیرمتن؛ فونت TMP با `Hollow > UI > Build Persian Font` در `Resources/Fonts` ساخته می‌شود. پرانتز و کروشه کنار عدد یا متن لاتین به‌هم می‌ریزد؛ از آن‌ها استفاده نکن |
@@ -63,6 +64,8 @@
 - صدا: تنها AudioListener روی `AudioDirector` (DontDestroyOnLoad) است؛ به دوربین‌ها listener اضافه نکن. «در حال پخش» بودن AudioSource ثابت نمی‌کند صدا شنیده می‌شود.
 
 ## وضعیت فعلی
+
+- D98: صحنه‌های داستان حالا کات‌سین تصویری‌اند: عکس تمام‌صفحه با حرکت آرام دوربین و نوار تیره‌ی پایین که دیالوگ در آن تایپ می‌شود (رنگ، سرعت و صدای تایپ جدا برای هر گوینده). متن‌ها همان فیلم‌نامه‌ی کاربر (A01 تا D04) و پایان بعد از باس نهایی پخش می‌شود و به منو برمی‌گردد. عکس ۳ (A03) نبود؛ A03 نمای نزدیک A02 است. کامپایل نشده، تست و Play mode اجرا نشده (به خواست کاربر).
 
 - D97: E دوباره تنها کلید interact است: باز و بسته کردن فروشگاه کنار هر ایستگاه (در موج و باس هم، جز پایان فاز)، بستن فروشگاه زمان‌دار، بستن زودتر کارت راهنما و جلو بردن صحنه‌ی داستان. Tab حذف شد. در Play mode هر سه با فشردن واقعی E دیده شد.
 
@@ -497,3 +500,16 @@
 
 ### 2026-10-18 — push
 - `git fetch`/`pull --ff-only`: ریموت چیز تازه‌ای نداشت. `3145beb`، `48bc9ac` (جلسه‌ی دیگر) و `06cfcc7` (D97) به `origin/main` push شدند. `Vazirmatn SDF.asset`، پوشه‌ی `dialoge/` و `Assets/_Recovery` از این کار نبودند و commit نشدند.
+
+### 2026-10-18 — پرامپت آرت رابط کاربری
+- به خواست کاربر رابط فعلی (پیش‌فرض: مستطیل‌های تخت `UITheme`/`UIFactory`، HUD، کارت XP، منو) بررسی شد و `docs/UI_ART_PROMPT.md` نوشته شد: پیش‌درآمد سبک مشترک («salvaged drone HUD»، فلز تیره و خط فیروزه‌ای، بدون متن، قرینه برای راست‌به‌چپ)، یک برگه‌ی سبک، و پرامپت جدا با نام فایل برای پنل، چهار حالت دکمه، نوارها، خانه‌ی آیتم، کارت مهارت، دیالوگ، راهنما، حباب، اسلایدر و غیره.
+- کدی تغییر نکرد. وقتی تصویرها برسند: `UITheme` فقط Panel/Button/Bar می‌گیرد؛ بقیه باید به `UIFactory` و `ApplyIncomingArt` وصل شوند.
+
+### 2026-10-18 — کات‌سین‌های تصویری با دیالوگ تایپی (D98)
+- کاربر ۱۲ عکس (پوشه‌ی `dialoge`، عکس ۳ نبود) و فیلم‌نامه‌ی تازه داد. عکس‌ها به `ArtSource/Cutscenes` رفتند و `Tools/ArtGen/cutscenes.py` آن‌ها را بدون نوار سیاه پایین (۱۶۷۲×۷۱۶) در `Assets/Resources/Cutscenes/<شات>.png` می‌نویسد؛ `Editor/CutsceneImportSettings.cs` اندازه‌ی کامل و فشرده‌سازی HQ می‌دهد.
+- `Dialogue.json`: گوینده‌ها لیلا، AI (نام انتخاب‌شده)، سامانه‌ی ایمنی، لیلا · بی‌سیم، نمایشگر (با `Style`)؛ فهرست `Shots`؛ صحنه‌های Opening=A01–A03، Boss1Entrance=B01، Phase1To2=B02–B03، Boss2Entrance=C01–C02، Phase2To3=C03، Boss3Entrance=D01–D02، Ending=D03–D04. `docs/VOICE_LINES.md` با متن تازه.
+- `DialogueView` بازنویسی شد: عکس با zoom و drift آرام، crossfade بین شات‌ها، flash و لرزش برای B01/C01/C03/D01/D02، fade از سیاه، تایپ حرف‌به‌حرف با مکث نقطه‌گذاری و cursor، نشانگر «ادامه»؛ E/Enter/کلیک خط را کامل و بعد رد می‌کند. پرتره‌ها حذف شدند. `AudioDirector.PlayTypeTick` صدای تایپ ساخته‌شده با کد برای هر سبک (نمایشگر بی‌صدا) و ضربه‌ی کم برای کات.
+- `GameSession`: بعد از باس نهایی صحنه‌ی Ending پخش و سپس منوی اصلی (جایگاه قبلش ذخیره شده)؛ `FinishSceneNow` حالا `FinishNow`. تست تازه‌ی `CutsceneTests`.
+- به خواست کاربر هیچ تستی اجرا نشد و کد هنوز در Unity کامپایل نشده (ادیتور مشغول reimport همه‌ی textureها بود). Play mode دیده نشده.
+- نکته: اضافه کردن یک `AssetPostprocessor` تازه با `OnPreprocessTexture` همه‌ی textureهای پروژه (حتی پکیج‌ها) را دوباره import می‌کند (چند ده دقیقه)؛ قانون تازه‌ی texture را در postprocessor موجود بگذار.
+
