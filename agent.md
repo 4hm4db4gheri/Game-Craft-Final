@@ -63,6 +63,8 @@
 
 ## وضعیت فعلی
 
+- D92 (شاخه‌ی `feature/post-process`): post process پررنگ‌تر (bloom، کنتراست، vignette، split toning هر فاز، film grain، کمی chromatic aberration)، مه دو لایه (زیر و روی بدن‌ها، unlit، رنگ هر فاز، نفس‌کشیدن؛ فاز ۳ غلیظ)، نور زنده (بالا و پایین رفتن آرام، قطع و وصل برق در فاز ۲ و بیشتر در ۳، دو نورافکن چرخان در فاز ۳؛ درخشش بازیکن ثابت می‌ماند)، و لبه‌ی قرمز با ضربه و ضربان قلب زیر ۳۰٪ جان. همه در `AtmosphereData` و پنجره‌ی Visual Tuning. در Play mode دیده شد؛ با دست بازی نشده است.
+
 - D91: دشمن زره‌دار که آرت دارد (فعلاً لاک‌پشت) دیگر صفحه‌ی خاکستری جلو ندارد. شلیک به زره (`SimEventType.ArmorBlocked`): برق سرد و حلقه‌ی کوچک جلوی بدن، جرقه‌ی سفید که برمی‌گردد (بدون خون)، صدای «دینگ» فلزی، و عدد آسیب آبی فولادی. در Play mode دیده شد.
 
 - D90 (آرت موج ۲): شش دشمن تازه (گراز، لاک‌پشت، گرگ زوزه‌کش، سوسک انفجاری، بچه‌عنکبوت، نگهبان باتوم‌دار) آرت و انیمیشن دارند؛ sheet دست‌کشیده‌ی دویدن گرگ و راه رفتن بچه‌عنکبوت جای sheet ساخته‌شده را گرفتند. نارنجک پرتاب‌شده با قوس و سایه پرواز می‌کند، لکه‌ی خون/روغن آرت دارد، صحنه‌های داستان پرتره‌ی گوینده دارند، آیکن برنامه گذاشته شد، و دروازه‌ی ورود هر فاز (فقط نمایشی) در سه منطقه‌ی spawn شمال/شرق/غرب است. در Play mode دیده شد؛ با دست بازی نشده است.
@@ -429,3 +431,9 @@
 
 ### 2026-10-18 — push
 - `f335491` (آرت موج ۲)، `a215c59` و `271da7d` (شیلد) به `origin/main` push شدند (۱۲۰ فایل LFS، ۴۹ مگابایت). تغییر تازه‌ای برای commit نبود؛ `Assets/_Recovery` مثل قبل commit نشد.
+
+### 2026-10-18 — post process و نور زنده (D92، شاخه‌ی `feature/post-process`)
+- به خواست کاربر (بازی ساده و خسته‌کننده بود؛ مه بیشتر به‌خصوص فاز ۳، نور فاز ۳ ثابت نباشد). `ArenaAtmosphere` بازنویسی شد: volume دنیا حالا `SplitToning`، `FilmGrain` و `ChromaticAberration` هم دارد؛ مه دو لایه (۲۲ تکه زیر بدن‌ها، ۱۰ تکه‌ی بزرگ‌تر روی آن‌ها در لایه‌ی Effects با order -100)، با متریال unlit (فیلد تازه‌ی `unlitMaterial`، در صحنه و `ProjectSetup` وصل شد)؛ `Look` همه‌ی مقدارهای فاز را با هم fade می‌کند؛ `Brownout` قطع و وصل تصادفی؛ نورافکن‌ها Light2D نقطه‌ای با زاویه از لبه‌ی شمال. `GameSession` هر فریم `atmosphere.SyncPlayer` را صدا می‌زند (پالس ضربه و ضربان قلب).
+- فیلدهای تازه‌ی `AtmosphereData` (رنگ مه، مه بالا، نفس مه، نوسان نور، brownout، نورافکن، رنگ سایه/روشن، grain، fringe، پالس ضربه)؛ عددهای قبلی هم عوض شدند (bloom، کنتراست، vignette، مه فاز ۳). seed و `Baseline.json` revision 12؛ پروفایل ذخیره‌شده‌ی قبل از آن atmosphere را از baseline می‌گیرد. `VisualTuningWindow` همه را نشان می‌دهد.
+- ۵۰۴ تست پاس. Play mode (صحنه‌ی Game مستقیم، جایگاه‌ها دست نخوردند): هر سه فاز، نورافکن، تغییر نور و پالس ضربه با اسکرین‌شات دیده شد (`docs/screenshots/PostProcess_Phase3.png`). با دست بازی نشده؛ صدا ندارد.
+- فایل‌های تغییرکرده: `Presentation/Arena/ArenaAtmosphere.cs`، `Data/BalanceProfile.cs`، `Data/BalanceProfileStore.cs`، `Game/GameSession.cs`، `Editor/BaselineSeed.cs`، `Editor/ProjectSetup.cs`، `Editor/VisualTuningWindow.cs`، `Resources/Balance/Baseline.json`، `Scenes/Game.unity`، `docs/DECISIONS.md`، `agent.md`.

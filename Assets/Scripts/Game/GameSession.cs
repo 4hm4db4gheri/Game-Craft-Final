@@ -253,6 +253,7 @@ namespace Hollow.Game
             arena.SyncBroken(w.Phase, w.BrokenCells, w.Layout.Width);
             arena.SyncForeground(Vector2.Lerp(w.Player.PrevPosition, w.Player.Position, alpha));
             cameraRig.Sync(w, alpha);
+            atmosphere.SyncPlayer(w.Player.Health, PlayerStats.MaxHealth(w), w.Player.Dead);
             var held = w.Profile.Weapon(w.Player.Loadout.ActiveId);
             reticle.Sync(w.Player.Aim, app.Router.WorldAcceptsInput, held.BloomMax > 0f ? WeaponSystem.CurrentBloom(w, held) / held.BloomMax : 0f);
             hud.Sync(w, worldCamera);

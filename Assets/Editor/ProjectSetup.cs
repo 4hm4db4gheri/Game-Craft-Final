@@ -169,7 +169,8 @@ namespace Hollow.EditorTools
                 ("glowSprite", PlaceholderArt.Load("PH_SoftGlow")), ("blobSprite", PlaceholderArt.Load("PH_Blob")));
 
             var atmosphere = new GameObject("Atmosphere").AddComponent<ArenaAtmosphere>();
-            Wire(atmosphere, ("follow", player.transform), ("fogSprite", PlaceholderArt.Load("PH_SoftGlow")));
+            Wire(atmosphere, ("follow", player.transform), ("fogSprite", PlaceholderArt.Load("PH_SoftGlow")),
+                ("unlitMaterial", AssetDatabase.LoadAssetAtPath<Material>(PrefabBuilder.UnlitMaterialPath)));
 
             var session = new GameObject("GameSession").AddComponent<GameSession>();
             Wire(session, ("worldCamera", cam), ("arena", arena), ("atmosphere", atmosphere), ("presenter", presenter), ("feedback", feedback),

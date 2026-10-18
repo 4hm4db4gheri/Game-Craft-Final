@@ -41120,8 +41120,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Hollow.Presentation::Hollow.Presentation.ArenaAtmosphere
   follow: {fileID: 707986977}
   fogSprite: {fileID: 21300000, guid: 8d7ccd2bba645bf40811d74667f7cb6a, type: 3}
+  unlitMaterial: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   arenaSize: {x: 48, y: 32}
-  fogPatches: 14
+  fogPatches: 22
+  highFogPatches: 10
+  maxSearchlights: 3
+  searchlightRange: 30
+  searchlightSweep: 38
+  searchlightSpeed: 0.22
+  hurtDecay: 2.5
+  heartbeatRate: 1.25
 --- !u!4 &589129001
 Transform:
   m_ObjectHideFlags: 0

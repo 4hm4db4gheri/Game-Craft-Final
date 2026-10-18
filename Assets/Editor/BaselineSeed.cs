@@ -39,7 +39,7 @@ namespace Hollow.EditorTools
 
         public static BalanceProfile Create()
         {
-            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 11, Name = "Baseline (GDD v0.19)" };
+            var p = new BalanceProfile { Schema = BalanceProfile.CurrentSchema, Revision = 12, Name = "Baseline (GDD v0.19)" };
 
             // §4 player. Acceleration/deceleration: placeholders giving ~0.06 s to full speed and ~0.05 s to stop.
             p.Player = new PlayerData
@@ -141,14 +141,23 @@ namespace Hollow.EditorTools
             p.Camera = new CameraData { OrthographicSize = 7.5f, LookAheadFactor = 0.15f, LookAheadMax = 3f, FollowDamping = 0.12f, ViewAspect = 16f / 9f, ViewMargin = 0.75f };
             p.Atmosphere = new AtmosphereData
             {
-                LightPhase1 = 1f, LightPhase2 = 0.82f, LightPhase3 = 0.6f, PlayerLightRadius = 8f, PlayerLightIntensity = 0.7f,
-                FogPhase1 = 0.10f, FogPhase2 = 0.08f, FogPhase3 = 0.12f, PhaseFadeTime = 1.5f, EndingFadeTime = 4f,
-                LightColorPhase1 = "#FFF3DE", LightColorPhase2 = "#DFECF1", LightColorPhase3 = "#DCE3F0",
-                ContrastPhase1 = 4f, ContrastPhase2 = 7f, ContrastPhase3 = 10f,
-                DesaturationPhase1 = 2f, DesaturationPhase2 = 7f, DesaturationPhase3 = 12f,
-                VignettePhase1 = 0.07f, VignettePhase2 = 0.10f, VignettePhase3 = 0.13f,
-                BloomIntensity = 0.18f, BloomThreshold = 1f, GroundVariation = 0.12f,
+                LightPhase1 = 1f, LightPhase2 = 0.82f, LightPhase3 = 0.55f, PlayerLightRadius = 8f, PlayerLightIntensity = 0.75f,
+                FogPhase1 = 0.12f, FogPhase2 = 0.10f, FogPhase3 = 0.2f, PhaseFadeTime = 1.5f, EndingFadeTime = 4f,
+                LightColorPhase1 = "#FFF3DE", LightColorPhase2 = "#DFECF1", LightColorPhase3 = "#D2DCF0",
+                ContrastPhase1 = 8f, ContrastPhase2 = 12f, ContrastPhase3 = 16f,
+                DesaturationPhase1 = 0f, DesaturationPhase2 = 6f, DesaturationPhase3 = 14f,
+                VignettePhase1 = 0.2f, VignettePhase2 = 0.24f, VignettePhase3 = 0.32f,
+                BloomIntensity = 0.45f, BloomThreshold = 0.85f, BloomScatter = 0.7f, GroundVariation = 0.12f,
                 ComposedGround = true, ContactShadowStrength = 0.55f,
+                FogColorPhase1 = "#D9E4CC", FogColorPhase2 = "#CBD3DA", FogColorPhase3 = "#B9C7DD",
+                HighFogPhase1 = 0.03f, HighFogPhase2 = 0.05f, HighFogPhase3 = 0.1f, FogBreath = 0.45f,
+                LightPulsePhase1 = 0.04f, LightPulsePhase2 = 0.05f, LightPulsePhase3 = 0.16f, LightPulseSpeed = 0.2f,
+                FlickersPerMinutePhase1 = 0f, FlickersPerMinutePhase2 = 2f, FlickersPerMinutePhase3 = 7f, FlickerDepth = 0.55f,
+                SearchlightsPhase1 = 0, SearchlightsPhase2 = 0, SearchlightsPhase3 = 2, SearchlightIntensity = 1.3f,
+                ShadowTintPhase1 = "#56735E", ShadowTintPhase2 = "#4C6078", ShadowTintPhase3 = "#3F4C7C",
+                HighlightTintPhase1 = "#CDAA74", HighlightTintPhase2 = "#C69C6C", HighlightTintPhase3 = "#92B6CC",
+                GrainPhase1 = 0.12f, GrainPhase2 = 0.18f, GrainPhase3 = 0.3f, ChromaticAberration = 0.06f,
+                HurtPulse = 0.2f, LowHealthFraction = 0.3f,
             };
 
             p.BuildIndex();

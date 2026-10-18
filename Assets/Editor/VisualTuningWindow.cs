@@ -49,8 +49,16 @@ namespace Hollow.EditorTools
             EditorGUILayout.LabelField("Shared effects", EditorStyles.boldLabel);
             draft.ComposedGround = EditorGUILayout.Toggle("Composed arena floor", draft.ComposedGround);
             draft.ContactShadowStrength = EditorGUILayout.Slider("Prop contact shadows", draft.ContactShadowStrength, 0f, 1f);
-            draft.BloomIntensity = EditorGUILayout.Slider(new GUIContent("Bloom", "Soft glow on bright sources; keep warning silhouettes sharp."), draft.BloomIntensity, 0f, 1f);
+            draft.BloomIntensity = EditorGUILayout.Slider(new GUIContent("Bloom", "Soft glow on bright sources; keep warning silhouettes sharp."), draft.BloomIntensity, 0f, 1.5f);
             draft.BloomThreshold = EditorGUILayout.Slider("Bloom threshold", draft.BloomThreshold, 0f, 2f);
+            draft.BloomScatter = EditorGUILayout.Slider("Bloom spread", draft.BloomScatter, 0f, 1f);
+            draft.ChromaticAberration = EditorGUILayout.Slider("Lens fringe", draft.ChromaticAberration, 0f, 0.5f);
+            draft.HurtPulse = EditorGUILayout.Slider(new GUIContent("Hurt pulse", "Red edge flash on a hit and the low-health heartbeat."), draft.HurtPulse, 0f, 0.5f);
+            draft.LowHealthFraction = EditorGUILayout.Slider("Heartbeat below health", draft.LowHealthFraction, 0f, 0.6f);
+            draft.FogBreath = EditorGUILayout.Slider("Mist breathing", draft.FogBreath, 0f, 1f);
+            draft.LightPulseSpeed = EditorGUILayout.Slider("Light swell speed", draft.LightPulseSpeed, 0f, 1f);
+            draft.FlickerDepth = EditorGUILayout.Slider("Brownout depth", draft.FlickerDepth, 0f, 1f);
+            draft.SearchlightIntensity = EditorGUILayout.Slider("Searchlight brightness", draft.SearchlightIntensity, 0f, 1.5f);
             draft.PlayerLightRadius = EditorGUILayout.Slider("Player glow radius", draft.PlayerLightRadius, 2f, 14f);
             draft.PlayerLightIntensity = EditorGUILayout.Slider("Player glow intensity", draft.PlayerLightIntensity, 0f, 1.5f);
             draft.GroundVariation = EditorGUILayout.Slider(new GUIContent("Ground variation", "Broad, smooth brightness variation breaks up the repeated 8 x 8 floor art."), draft.GroundVariation, 0f, 0.22f);
@@ -78,24 +86,41 @@ namespace Hollow.EditorTools
             color = EditorGUILayout.ColorField("Ambient light color", color);
             hex = "#" + ColorUtility.ToHtmlStringRGB(color);
             float light = EditorGUILayout.Slider("Ambient brightness", draft.Light(p), 0.35f, 1.3f);
-            float fog = EditorGUILayout.Slider("Ground mist", draft.Fog(p), 0f, 0.22f);
-            float contrast = EditorGUILayout.Slider("Contrast", draft.Contrast(p), 0f, 25f);
+            float fog = EditorGUILayout.Slider("Ground mist", draft.Fog(p), 0f, 0.5f);
+            float highFog = EditorGUILayout.Slider(new GUIContent("Mist over bodies", "Drifts over the characters: keep it faint."), draft.HighFog(p), 0f, 0.3f);
+            if (!ColorUtility.TryParseHtmlString(draft.FogColor(p), out var fogColor)) fogColor = Color.white;
+            string fogHex = "#" + ColorUtility.ToHtmlStringRGB(EditorGUILayout.ColorField("Mist color", fogColor));
+            float pulse = EditorGUILayout.Slider("Light swell", draft.LightPulse(p), 0f, 0.4f);
+            float flickers = EditorGUILayout.Slider("Brownouts per minute", draft.FlickersPerMinute(p), 0f, 20f);
+            int searchlights = EditorGUILayout.IntSlider("Searchlights", draft.Searchlights(p), 0, 3);
+            if (!ColorUtility.TryParseHtmlString(draft.ShadowTint(p), out var shadowTint)) shadowTint = Color.gray;
+            if (!ColorUtility.TryParseHtmlString(draft.HighlightTint(p), out var highlightTint)) highlightTint = Color.gray;
+            string shadowHex = "#" + ColorUtility.ToHtmlStringRGB(EditorGUILayout.ColorField("Shadow tint", shadowTint));
+            string highlightHex = "#" + ColorUtility.ToHtmlStringRGB(EditorGUILayout.ColorField("Highlight tint", highlightTint));
+            float grainAmount = EditorGUILayout.Slider("Film grain", draft.Grain(p), 0f, 1f);
+            float contrast = EditorGUILayout.Slider("Contrast", draft.Contrast(p), 0f, 30f);
             float desaturation = EditorGUILayout.Slider("Desaturation", draft.Desaturation(p), 0f, 30f);
-            float vignette = EditorGUILayout.Slider("Edge shading", draft.Vignette(p), 0f, 0.3f);
+            float vignette = EditorGUILayout.Slider("Edge shading", draft.Vignette(p), 0f, 0.5f);
             if (p == 1)
             {
                 draft.LightColorPhase1 = hex; draft.LightPhase1 = light; draft.FogPhase1 = fog;
                 draft.ContrastPhase1 = contrast; draft.DesaturationPhase1 = desaturation; draft.VignettePhase1 = vignette;
+                draft.HighFogPhase1 = highFog; draft.FogColorPhase1 = fogHex; draft.LightPulsePhase1 = pulse; draft.FlickersPerMinutePhase1 = flickers;
+                draft.SearchlightsPhase1 = searchlights; draft.ShadowTintPhase1 = shadowHex; draft.HighlightTintPhase1 = highlightHex; draft.GrainPhase1 = grainAmount;
             }
             else if (p == 2)
             {
                 draft.LightColorPhase2 = hex; draft.LightPhase2 = light; draft.FogPhase2 = fog;
                 draft.ContrastPhase2 = contrast; draft.DesaturationPhase2 = desaturation; draft.VignettePhase2 = vignette;
+                draft.HighFogPhase2 = highFog; draft.FogColorPhase2 = fogHex; draft.LightPulsePhase2 = pulse; draft.FlickersPerMinutePhase2 = flickers;
+                draft.SearchlightsPhase2 = searchlights; draft.ShadowTintPhase2 = shadowHex; draft.HighlightTintPhase2 = highlightHex; draft.GrainPhase2 = grainAmount;
             }
             else
             {
                 draft.LightColorPhase3 = hex; draft.LightPhase3 = light; draft.FogPhase3 = fog;
                 draft.ContrastPhase3 = contrast; draft.DesaturationPhase3 = desaturation; draft.VignettePhase3 = vignette;
+                draft.HighFogPhase3 = highFog; draft.FogColorPhase3 = fogHex; draft.LightPulsePhase3 = pulse; draft.FlickersPerMinutePhase3 = flickers;
+                draft.SearchlightsPhase3 = searchlights; draft.ShadowTintPhase3 = shadowHex; draft.HighlightTintPhase3 = highlightHex; draft.GrainPhase3 = grainAmount;
             }
             EditorGUILayout.HelpBox("Keep enemies, coins and red attack telegraphs readable at actual Game view size. Use small adjustments, then compare a combat screenshot.", MessageType.None);
         }

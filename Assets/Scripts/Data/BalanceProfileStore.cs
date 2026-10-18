@@ -98,6 +98,11 @@ namespace Hollow.Data
                 profile.Bosses = BalanceJson.Clone(baseline).Bosses;
                 profile.BuildIndex();
             }
+            if (profile.Revision < 12)
+            {
+                // Post-processing pass: richer grading, mist, brownouts and searchlights per phase.
+                profile.Atmosphere = BalanceJson.Clone(baseline).Atmosphere;
+            }
             if (profile.Revision < 3)
             {
                 profile.Companion.RegenerationDelay = baseline.Companion.RegenerationDelay;

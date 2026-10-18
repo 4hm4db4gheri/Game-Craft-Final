@@ -614,6 +614,47 @@ namespace Hollow.Data
         [Placeholder] public float GroundVariation = 0.12f;
         [Placeholder] public bool ComposedGround = true;
         [Placeholder] public float ContactShadowStrength = 0.55f;
+        [Placeholder] public float BloomScatter = 0.7f;
+        /// <summary>Hex RGB tint of the mist in each phase.</summary>
+        [Placeholder] public string FogColorPhase1 = "#D9E4CC";
+        [Placeholder] public string FogColorPhase2 = "#CBD3DA";
+        [Placeholder] public string FogColorPhase3 = "#B9C7DD";
+        /// <summary>Faint mist banks that drift over the characters, per phase.</summary>
+        [Placeholder] public float HighFogPhase1 = 0.03f;
+        [Placeholder] public float HighFogPhase2 = 0.05f;
+        [Placeholder] public float HighFogPhase3 = 0.1f;
+        /// <summary>How much each mist patch thickens and thins over time (0 = steady).</summary>
+        [Placeholder] public float FogBreath = 0.45f;
+        /// <summary>Slow swell of the ambient light, as a fraction of its brightness.</summary>
+        [Placeholder] public float LightPulsePhase1 = 0.04f;
+        [Placeholder] public float LightPulsePhase2 = 0.05f;
+        [Placeholder] public float LightPulsePhase3 = 0.16f;
+        [Placeholder, Unit("Hz")] public float LightPulseSpeed = 0.2f;
+        /// <summary>Brownouts: short flicker bursts of the ambient light and every lamp.</summary>
+        [Placeholder] public float FlickersPerMinutePhase1;
+        [Placeholder] public float FlickersPerMinutePhase2 = 2f;
+        [Placeholder] public float FlickersPerMinutePhase3 = 7f;
+        /// <summary>Fraction of the light a brownout cuts at its deepest.</summary>
+        [Placeholder] public float FlickerDepth = 0.55f;
+        /// <summary>Searchlight beams that sweep the arena from the north edge.</summary>
+        [Placeholder] public int SearchlightsPhase1;
+        [Placeholder] public int SearchlightsPhase2;
+        [Placeholder] public int SearchlightsPhase3 = 2;
+        [Placeholder] public float SearchlightIntensity = 1.3f;
+        /// <summary>Hex RGB split toning per phase: the hue pushed into the shadows and into the highlights.</summary>
+        [Placeholder] public string ShadowTintPhase1 = "#56735E";
+        [Placeholder] public string ShadowTintPhase2 = "#4C6078";
+        [Placeholder] public string ShadowTintPhase3 = "#3F4C7C";
+        [Placeholder] public string HighlightTintPhase1 = "#CDAA74";
+        [Placeholder] public string HighlightTintPhase2 = "#C69C6C";
+        [Placeholder] public string HighlightTintPhase3 = "#92B6CC";
+        [Placeholder] public float GrainPhase1 = 0.12f;
+        [Placeholder] public float GrainPhase2 = 0.18f;
+        [Placeholder] public float GrainPhase3 = 0.3f;
+        [Placeholder] public float ChromaticAberration = 0.06f;
+        /// <summary>Red edge pulse and lens fringe when the player is hit, and a heartbeat below the health fraction.</summary>
+        [Placeholder] public float HurtPulse = 0.2f;
+        [Placeholder] public float LowHealthFraction = 0.3f;
         [Placeholder, Unit("s")] public float PhaseFadeTime;
         /// <summary>The world goes dark during the ending scene.</summary>
         [Placeholder, Unit("s")] public float EndingFadeTime;
@@ -624,6 +665,14 @@ namespace Hollow.Data
         public float Contrast(int phase) => phase switch { 1 => ContrastPhase1, 2 => ContrastPhase2, _ => ContrastPhase3 };
         public float Desaturation(int phase) => phase switch { 1 => DesaturationPhase1, 2 => DesaturationPhase2, _ => DesaturationPhase3 };
         public float Vignette(int phase) => phase switch { 1 => VignettePhase1, 2 => VignettePhase2, _ => VignettePhase3 };
+        public string FogColor(int phase) => phase switch { 1 => FogColorPhase1, 2 => FogColorPhase2, _ => FogColorPhase3 };
+        public float HighFog(int phase) => phase switch { 1 => HighFogPhase1, 2 => HighFogPhase2, _ => HighFogPhase3 };
+        public float LightPulse(int phase) => phase switch { 1 => LightPulsePhase1, 2 => LightPulsePhase2, _ => LightPulsePhase3 };
+        public float FlickersPerMinute(int phase) => phase switch { 1 => FlickersPerMinutePhase1, 2 => FlickersPerMinutePhase2, _ => FlickersPerMinutePhase3 };
+        public int Searchlights(int phase) => phase switch { 1 => SearchlightsPhase1, 2 => SearchlightsPhase2, _ => SearchlightsPhase3 };
+        public string ShadowTint(int phase) => phase switch { 1 => ShadowTintPhase1, 2 => ShadowTintPhase2, _ => ShadowTintPhase3 };
+        public string HighlightTint(int phase) => phase switch { 1 => HighlightTintPhase1, 2 => HighlightTintPhase2, _ => HighlightTintPhase3 };
+        public float Grain(int phase) => phase switch { 1 => GrainPhase1, 2 => GrainPhase2, _ => GrainPhase3 };
     }
 
     [Serializable]
