@@ -25,6 +25,8 @@ namespace Hollow.Presentation
         WaveStart, WaveClear, BossEntry, BossDefeated, UiClick, Victory,
         // Music (menu, phase and boss loops)
         MusicPhase1, MusicPhase2, MusicPhase3, MusicMenu, MusicBoss,
+        // Footsteps: Leila on forest ground / on concrete, human enemies' boots (appended so saved values keep their number)
+        StepSoft, StepHard, StepBoots,
     }
 
     /// <summary>Mixing buses. Warnings are never ducked, so telegraph sounds always cut through (T19).</summary>

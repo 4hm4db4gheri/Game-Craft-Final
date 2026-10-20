@@ -444,6 +444,47 @@ namespace Hollow.Presentation
                     }
                 }
             }
+            Footsteps(w);
+        }
+
+        // Footsteps of Leila and the human enemies, one per stride walked. Faster walkers take longer strides, so
+        // the cadence stays near a natural 2–3 steps a second. Display only; nothing here touches the simulation.
+        const float StrideBase = 0.45f, StridePerSpeed = 0.22f, StrideMin = 0.8f, StrideMax = 1.5f, StepTeleport = 1.5f;
+        readonly Dictionary<int, (Vector2 Pos, float Walked)> walkers = new();
+        readonly List<int> gone = new();
+
+        void Footsteps(World w)
+        {
+            float dt = Time.deltaTime;
+            gone.Clear();
+            foreach (var id in walkers.Keys) gone.Add(id);
+
+            var c = w.Companion;
+            if (c.Present && !c.Dead)
+                Walk(CompanionState.EntityId, c.Position, dt, w.Phase == 1 ? AudioCue.StepSoft : AudioCue.StepHard);
+            foreach (var e in w.Enemies)
+            {
+                if (!e.Alive || e.Ai == EnemyAi.Spawning || w.Profile.Enemy(e.Type).Faction != Faction.Humans) continue;
+                if (OnScreen(e.Position)) Walk(e.Id, e.Position, dt, AudioCue.StepBoots);
+            }
+            foreach (var id in gone) walkers.Remove(id);
+        }
+
+        void Walk(int id, Vector2 at, float dt, AudioCue cue)
+        {
+            gone.Remove(id);
+            if (!walkers.TryGetValue(id, out var s)) { walkers[id] = (at, Random.Range(0f, StrideMin)); return; }
+            float moved = (at - s.Pos).magnitude;
+            if (moved > StepTeleport) moved = 0f; // load, retry or phase change
+            float speed = dt > 1e-4f ? moved / dt : 0f;
+            float stride = Mathf.Clamp(StrideBase + speed * StridePerSpeed, StrideMin, StrideMax);
+            float walked = s.Walked + moved;
+            if (walked >= stride)
+            {
+                walked %= stride;
+                Play(cue, at);
+            }
+            walkers[id] = (at, walked);
         }
 
         /// <summary>Forget per-enemy timers (load, retry, phase change).</summary>
@@ -451,6 +492,7 @@ namespace Hollow.Presentation
         {
             nextPresence.Clear();
             detonated.Clear();
+            walkers.Clear();
             foreach (var v in voices[AudioBus.Warnings]) v.Source.Stop();
         }
 

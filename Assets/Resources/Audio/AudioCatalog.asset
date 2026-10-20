@@ -420,6 +420,49 @@ MonoBehaviour:
     PitchJitter: 0.06
     Cooldown: 0.05
     Priority: 50
+  - Cue: 48
+    Clips:
+    - {fileID: 8300000, guid: 0761300f0afa9344eba5a739cde4f2a9, type: 3}
+    - {fileID: 8300000, guid: 06774a7b5b8a62141aaf332fcded8b72, type: 3}
+    - {fileID: 8300000, guid: f55ad0183a00fb94c941758bf5668bc3, type: 3}
+    - {fileID: 8300000, guid: 1b8622cb0dd1adc47b8168410727b8e3, type: 3}
+    - {fileID: 8300000, guid: ef67e700d3604ad4f9bc6116d143c5ce, type: 3}
+    - {fileID: 8300000, guid: 10948452f5576c348a67f2d2c235e5e8, type: 3}
+    - {fileID: 8300000, guid: 36f30ac5adc9d5a46b3e16a25fbcf1a8, type: 3}
+    - {fileID: 8300000, guid: ea8fe42b11189584cac413b0a9916499, type: 3}
+    - {fileID: 8300000, guid: 77be6ed181e65974bb198a1185902049, type: 3}
+    - {fileID: 8300000, guid: 5ee1942ad67350c4b8399464073cc91a, type: 3}
+    Bus: 1
+    Volume: 0.4
+    PitchJitter: 0.06
+    Cooldown: 0.08
+    Priority: 12
+  - Cue: 49
+    Clips:
+    - {fileID: 8300000, guid: fefe86a98a434c141aedc44066aa70ef, type: 3}
+    - {fileID: 8300000, guid: e939bbb65001e3e408e3418748435ead, type: 3}
+    - {fileID: 8300000, guid: c17a13aea1c279041a21aa12afd26f0a, type: 3}
+    - {fileID: 8300000, guid: f2bb0b828d8d22143b60be028737d7ad, type: 3}
+    - {fileID: 8300000, guid: d0d1fe3663da6e94f9601864e7a9a251, type: 3}
+    - {fileID: 8300000, guid: 1be0c6c5ea845a94eaec18320d49f9d0, type: 3}
+    Bus: 1
+    Volume: 0.4
+    PitchJitter: 0.06
+    Cooldown: 0.08
+    Priority: 12
+  - Cue: 50
+    Clips:
+    - {fileID: 8300000, guid: 45923c444a971d1409eec5357b064434, type: 3}
+    - {fileID: 8300000, guid: f81e1209eebab844a8d3b127405141bc, type: 3}
+    - {fileID: 8300000, guid: 55eec1feb180db14196365c67e03da2e, type: 3}
+    - {fileID: 8300000, guid: 99ab89a0f7d92d544be476cf42cc6de5, type: 3}
+    - {fileID: 8300000, guid: 51311f9bf65d52e4c90652da420a939a, type: 3}
+    - {fileID: 8300000, guid: 00890bc131fa0574ca7fa205db38dfab, type: 3}
+    Bus: 1
+    Volume: 0.3
+    PitchJitter: 0.06
+    Cooldown: 0.07
+    Priority: 10
   Enemies:
   - Key: A1_RunnerWolf
     Presence:

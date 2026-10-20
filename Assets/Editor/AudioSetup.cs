@@ -66,6 +66,9 @@ namespace Hollow.EditorTools
             [AudioCue.MusicPhase1] = (AudioBus.Music, 0.55f, 0f, 100),
             [AudioCue.MusicPhase2] = (AudioBus.Music, 0.55f, 0f, 100),
             [AudioCue.MusicPhase3] = (AudioBus.Music, 0.55f, 0f, 100),
+            [AudioCue.StepSoft] = (AudioBus.Effects, 0.4f, 0.08f, 12),
+            [AudioCue.StepHard] = (AudioBus.Effects, 0.4f, 0.08f, 12),
+            [AudioCue.StepBoots] = (AudioBus.Effects, 0.3f, 0.07f, 10),
         };
 
         /// <summary>Every enemy type, spawned type and boss has a profile (v0.19 §20: 27 profiles).</summary>

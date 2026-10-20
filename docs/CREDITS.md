@@ -154,4 +154,9 @@ Supplied by the team as `Sounds1.zip` and `Sound2.zip`; the originals are kept u
 | `Enemies/Enemy_H2_…_Death`, `H5` (pitch 1.1), `H6` (pitch 0.88) | 368180 — danielausme | Human deaths |
 | `Enemies/Enemy_H3_FastAssaulter_Death.mp3` | 161357 — dream4dreamtheater | Human death |
 
-Not used yet: 592804 (robot voice test), 383164 (robot "I have only one function"), 548249 (can drop), 649417 (coin drop, `.m4a` cannot be imported by Unity), and the five footstep recordings (85208, 698584, 823172, 329605, 813622): the game has no footstep sound yet.
+| `Sfx/StepSoft_1`–`6` | 823172 — geoff-bremner-audio | Leila's steps, phase 1 (forest) |
+| `Sfx/StepSoft_7`–`10` | 329605 — inspectorj | Leila's steps, phase 1 (mud) |
+| `Sfx/StepHard_1`–`6` | 813622 — securesubset | Leila's steps on concrete, phase 2 |
+| `Sfx/StepBoots_1`–`6` | 698584 — minimilka | Human enemies' steps |
+
+Not used yet: 592804 (robot voice test), 383164 (robot "I have only one function"), 548249 (can drop), 649417 (coin drop, `.m4a` cannot be imported by Unity) and 85208 (footsteps, no clean single steps found in it).
