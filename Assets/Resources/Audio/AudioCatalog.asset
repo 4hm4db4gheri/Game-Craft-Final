@@ -15,9 +15,8 @@ MonoBehaviour:
   Cues:
   - Cue: 0
     Clips:
-    - {fileID: 8300000, guid: 70d6a1ad85da676479992ded073f5370, type: 3}
-    - {fileID: 8300000, guid: 7749cb036f3a7104bb92d6cbc46e3645, type: 3}
-    - {fileID: 8300000, guid: b4b66b29c84c2ef4d8f175d6b30174ea, type: 3}
+    - {fileID: 8300000, guid: 7cd7f4f032a1be24e96f2aaabc06f1c9, type: 3}
+    - {fileID: 8300000, guid: 6db4eeac24bd1074595ee29f36d93e1e, type: 3}
     Bus: 1
     Volume: 0.55
     PitchJitter: 0.06
@@ -25,8 +24,9 @@ MonoBehaviour:
     Priority: 60
   - Cue: 1
     Clips:
-    - {fileID: 8300000, guid: 1221819fd4da9cd4480b333cb32247bf, type: 3}
-    - {fileID: 8300000, guid: 742880e3e6a14684b88d74a06ed78303, type: 3}
+    - {fileID: 8300000, guid: 16286cecc1b22b945b38e155566b26a7, type: 3}
+    - {fileID: 8300000, guid: 6ca8a1314502a634ba72cf7266791e9d, type: 3}
+    - {fileID: 8300000, guid: 2aee0be3f7c809540932e11318ec6798, type: 3}
     Bus: 1
     Volume: 0.45
     PitchJitter: 0.06
@@ -34,8 +34,8 @@ MonoBehaviour:
     Priority: 60
   - Cue: 2
     Clips:
-    - {fileID: 8300000, guid: 176ce7a34d5f8c940886f534ae5a3d49, type: 3}
-    - {fileID: 8300000, guid: 26eebca60ac1cef4f86498398bba966f, type: 3}
+    - {fileID: 8300000, guid: 9a0971152f107ca438159c6c1a3ce49e, type: 3}
+    - {fileID: 8300000, guid: eacd31e0de39cce4cb5b0b6cd70a7122, type: 3}
     Bus: 1
     Volume: 0.65
     PitchJitter: 0.06
@@ -43,8 +43,9 @@ MonoBehaviour:
     Priority: 65
   - Cue: 3
     Clips:
-    - {fileID: 8300000, guid: 585db13662d3c09418c49ad8c3a8dcbe, type: 3}
-    - {fileID: 8300000, guid: a3d1f5a1e526c0b49987e2e06ddb3b70, type: 3}
+    - {fileID: 8300000, guid: 093244fb9ecd73949881a5b387960a58, type: 3}
+    - {fileID: 8300000, guid: 2dd36929e6db28849a8d0acea8bd3549, type: 3}
+    - {fileID: 8300000, guid: 41a8f111e4c2e4b4a85ff9dd5b8464f4, type: 3}
     Bus: 1
     Volume: 0.6
     PitchJitter: 0.06
@@ -52,7 +53,7 @@ MonoBehaviour:
     Priority: 62
   - Cue: 4
     Clips:
-    - {fileID: 8300000, guid: 4f432d2bf19b5a842a73adb74ebb14dc, type: 3}
+    - {fileID: 8300000, guid: 95ef868b34543d049bc9eca2ebc8551f, type: 3}
     Bus: 1
     Volume: 0.55
     PitchJitter: 0.06
@@ -77,8 +78,9 @@ MonoBehaviour:
     Priority: 60
   - Cue: 7
     Clips:
-    - {fileID: 8300000, guid: d3d9be953a91a4f4db3ec0ec454996fc, type: 3}
-    - {fileID: 8300000, guid: 1fc5bf3813581a140ad047dbce35eeb8, type: 3}
+    - {fileID: 8300000, guid: 5de48ddaf7d28e144a54b832fdd36c89, type: 3}
+    - {fileID: 8300000, guid: 4c3450d5ada6efe4ab99d04cc3da709b, type: 3}
+    - {fileID: 8300000, guid: a3e149e31f8b65b4cb6b6c209e89f390, type: 3}
     Bus: 1
     Volume: 0.4
     PitchJitter: 0.06
@@ -153,7 +155,8 @@ MonoBehaviour:
     Priority: 45
   - Cue: 15
     Clips:
-    - {fileID: 8300000, guid: e6d766ad31d2f084ab006684b27461f6, type: 3}
+    - {fileID: 8300000, guid: e452107a8fa0cf945bc9d04af521c097, type: 3}
+    - {fileID: 8300000, guid: 720e702a86636d940bee7e2668c18be6, type: 3}
     Bus: 1
     Volume: 0.6
     PitchJitter: 0.06
@@ -161,7 +164,7 @@ MonoBehaviour:
     Priority: 70
   - Cue: 16
     Clips:
-    - {fileID: 8300000, guid: ee3956f00226ab444aba1dde3f350a71, type: 3}
+    - {fileID: 8300000, guid: 80245a663da5cd845a4eaae164ed04bc, type: 3}
     Bus: 1
     Volume: 0.5
     PitchJitter: 0.06
@@ -185,8 +188,7 @@ MonoBehaviour:
     Priority: 75
   - Cue: 19
     Clips:
-    - {fileID: 8300000, guid: d7f087f25526fa141936465964b41262, type: 3}
-    - {fileID: 8300000, guid: af386245188bd834a9373976c831f705, type: 3}
+    - {fileID: 8300000, guid: e250875f42e97ef4585cb2519cbcb1c1, type: 3}
     Bus: 2
     Volume: 0.8
     PitchJitter: 0
@@ -194,8 +196,7 @@ MonoBehaviour:
     Priority: 90
   - Cue: 20
     Clips:
-    - {fileID: 8300000, guid: 0af666a9e9291264fbc14cc2b1b095c3, type: 3}
-    - {fileID: 8300000, guid: 0353cd2f884182f4d8b98f4bcdb8d7d9, type: 3}
+    - {fileID: 8300000, guid: 63019cf34cbca134c8794b12385cf6fa, type: 3}
     Bus: 1
     Volume: 0.35
     PitchJitter: 0.06
@@ -222,7 +223,7 @@ MonoBehaviour:
     Priority: 80
   - Cue: 23
     Clips:
-    - {fileID: 8300000, guid: e700834601950aa49a6c2261d59e352d, type: 3}
+    - {fileID: 8300000, guid: 5420415c6a4af984baba36beff396544, type: 3}
     Bus: 3
     Volume: 0.6
     PitchJitter: 0
@@ -246,7 +247,7 @@ MonoBehaviour:
     Priority: 80
   - Cue: 26
     Clips:
-    - {fileID: 8300000, guid: 00530cdd486c3e743b5734f40013b92e, type: 3}
+    - {fileID: 8300000, guid: b1e48841f32f84c448b8e46b22ba7583, type: 3}
     Bus: 2
     Volume: 0.9
     PitchJitter: 0
@@ -338,7 +339,7 @@ MonoBehaviour:
     Priority: 70
   - Cue: 37
     Clips:
-    - {fileID: 8300000, guid: b3046977f2b3f9c4799db01871bea210, type: 3}
+    - {fileID: 8300000, guid: fb68ea2c099f3b145a70ec96cfea3a1e, type: 3}
     Bus: 3
     Volume: 0.6
     PitchJitter: 0
@@ -346,7 +347,7 @@ MonoBehaviour:
     Priority: 85
   - Cue: 38
     Clips:
-    - {fileID: 8300000, guid: aa67300f68b42e04099a5b26d887f9ac, type: 3}
+    - {fileID: 8300000, guid: 419571938cc7e8d4a99e8763e864bbb1, type: 3}
     Bus: 3
     Volume: 0.7
     PitchJitter: 0
@@ -483,12 +484,12 @@ MonoBehaviour:
   - Key: A3_ChargingBoar
     Presence:
       Clips:
-      - {fileID: 8300000, guid: 63f152d9871eb3a47bfc92a8f8445f7b, type: 3}
+      - {fileID: 8300000, guid: fea6fa4bca0ca1243bc776115ee61762, type: 3}
       Volume: 0.25
       Pitch: 1
     Warning:
       Clips:
-      - {fileID: 8300000, guid: 88ddab93a1ef96940b678fe338eea738, type: 3}
+      - {fileID: 8300000, guid: b38f6180221ed0548bf888b0f14bcabc, type: 3}
       Volume: 0.75
       Pitch: 1
     AreaWarning:
@@ -926,7 +927,7 @@ MonoBehaviour:
       Pitch: 0.95
     Death:
       Clips:
-      - {fileID: 8300000, guid: 738a184b8729eb447998982e4bc6cc36, type: 3}
+      - {fileID: 8300000, guid: 3603554e39bda0d47adf56f062fd73b9, type: 3}
       Volume: 0.6
       Pitch: 1
     PresenceInterval: 3

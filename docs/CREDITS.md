@@ -125,3 +125,33 @@ Source silhouettes in `ArtSource/GameIcons`, coloured into `Assets/Art/Incoming/
 | `ICO_MIN_Mine_icon.png` | Teller mine | Skoll |
 | `ICO_EMP_EmpPulse_icon.png` | Lightning helix | Lorc |
 | `ICO_SHD_Shield_icon.png` | Energy shield | Lorc |
+
+## Sound effects from Freesound (supplied by the team, 2026-10-20)
+
+Supplied by the team as `Sounds1.zip` and `Sound2.zip`; the originals are kept unchanged in `ArtSource/Audio_Freesound_2026-10/`. Each file name starts with its Freesound id and author, so its page is `https://freesound.org/s/<id>/`. **The licence of each sound has not been checked yet**: Freesound sounds are CC0, CC BY or CC BY-NC. CC BY needs the author's name in the game's credits; CC BY-NC cannot be used in a game that is sold. The WAVs were cut into single sounds, faded, made mono and normalised (some pitched for variety); the MP3/AIFF files were copied unchanged. They replace the Kenney or synthesised files listed above for these cues.
+
+| Project file(s) | Freesound id — author | Use |
+|---|---|---|
+| `Sfx/ShotPistol_1` | 180961 — kleeb | Pistol |
+| `Sfx/ShotPistol_2`, `ShotShotgun_1`, `ShotShotgun_2` (pitch 0.9) | 833318 — malikarsyasakani | Pistol, shotguns |
+| `Sfx/ShotSmg_1`–`3` | 718948 — tb0y298 | Light SMG (each shot of the burst) |
+| `Sfx/ShotRifle_1`–`3` | 650643 — greenbird11 | Industrial rifle |
+| `Sfx/ShotEnergy_1` | 427396 — erokia | Energy rifle |
+| `Sfx/CompanionShot_1`–`3` | 580434 — insaind | Leila's gun |
+| `Sfx/Reload_1.mp3` | 276959 — gfl7 | Reload |
+| `Sfx/Reload_2.mp3` | 276964 — gfl7 | Reload |
+| `Sfx/ReloadDone_1` | 844416 — blankened | Reload finished |
+| `Sfx/PlayerHurt_1` | 826373 — charonfaustinus | Player drone hit |
+| `Sfx/Denied_1` | 433637 — djfroyd | Purchase refused |
+| `Sfx/WaveStart_1` | 131006 — shot846 | Wave start ("let's rock") |
+| `Sfx/WaveClear_1.aiff` | 275971 — (deleted user) | Wave cleared |
+| `Sfx/CoinDrop_1` | 414437 — inspectorj | Coin drop |
+| `Sfx/CompanionWarning_1` | 619910 — bjp09 | Leila hit |
+| `Enemies/Enemy_A5_HowlingWolf_Warning` | 172652 — adrilahan | Howl |
+| `Enemies/Enemy_A3_ChargingBoar_Warning.mp3`, `_Presence.mp3` | 117250 — rvinyard | Boar |
+| `Enemies/Enemy_R7c_Drone_Presence` | 652851 — misticalsounds2o | Small drone propellers |
+| `Enemies/Enemy_H1_…_Death`, `H4` (pitch 0.9), `H7` (pitch 1.08) | 385819 — iceofdoom | Human deaths |
+| `Enemies/Enemy_H2_…_Death`, `H5` (pitch 1.1), `H6` (pitch 0.88) | 368180 — danielausme | Human deaths |
+| `Enemies/Enemy_H3_FastAssaulter_Death.mp3` | 161357 — dream4dreamtheater | Human death |
+
+Not used yet: 592804 (robot voice test), 383164 (robot "I have only one function"), 548249 (can drop), 649417 (coin drop, `.m4a` cannot be imported by Unity), and the five footstep recordings (85208, 698584, 823172, 329605, 813622): the game has no footstep sound yet.
