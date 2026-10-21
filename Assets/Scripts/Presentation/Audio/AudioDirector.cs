@@ -37,8 +37,8 @@ namespace Hollow.Presentation
         float duck = 1f, duckUntil;
         float musicFadeStart, musicFadeTime, musicOutStart;
         bool musicFading;
-        float pauseGain = 1f;
-        bool paused;
+        float pauseGain = 1f, storyGain = 1f;
+        bool paused, story;
 
         /// <summary>Cues that have no audio file yet and play silent stubs.</summary>
         public readonly List<AudioCue> MissingCues = new();
@@ -115,12 +115,13 @@ namespace Hollow.Presentation
         AudioSource voiceSource;
 
         /// <summary>
-        /// Plays the recorded line <c>Resources/Audio/Voice/&lt;lineId&gt;</c> if it exists (the list of ids is in
-        /// docs/VOICE_LINES.md). Lines without a file are silent: the subtitle carries them.
+        /// Plays the recorded line at <paramref name="resourcePath"/> (Resources/Dialogez/&lt;n&gt; for the story scenes)
+        /// if it exists. Lines without a file are silent: the subtitle carries them.
         /// </summary>
-        public bool PlayVoiceLine(string lineId)
+        public bool PlayVoiceLine(string resourcePath)
         {
-            var clip = Resources.Load<AudioClip>("Audio/Voice/" + lineId);
+            voiceSource?.Stop();
+            var clip = Resources.Load<AudioClip>(resourcePath);
             if (clip == null || voiceSource == null) return false;
             voiceSource.Stop();
             voiceSource.clip = clip;
@@ -128,6 +129,8 @@ namespace Hollow.Presentation
             voiceSource.Play();
             return true;
         }
+
+        public bool VoicePlaying => voiceSource != null && voiceSource.isPlaying;
 
         /// <summary>Skipping a scene or a cancelled line stops its audio at once.</summary>
         public void StopVoice()
@@ -211,7 +214,7 @@ namespace Hollow.Presentation
 
         float BusGain(AudioBus bus) => bus switch
         {
-            AudioBus.Music => musicVolume * duck * pauseGain,
+            AudioBus.Music => musicVolume * duck * pauseGain * storyGain,
             AudioBus.Effects => effectsVolume * duck,
             _ => effectsVolume, // Warnings and interface are never ducked
         };
@@ -289,6 +292,8 @@ namespace Hollow.Presentation
         public void PlayMenuMusic() => StartMusic(AudioCue.MusicMenu);
         public void PlayBossMusic(bool restart = false) => StartMusic(AudioCue.MusicBoss, restart);
         public void SetPaused(bool value) => paused = value;
+        /// <summary>No music under a story scene: it fades out while the scene plays and back in after.</summary>
+        public void SetStoryPlaying(bool value) => story = value;
 
         void StartMusic(AudioCue cue, bool restart = false)
         {
@@ -336,6 +341,7 @@ namespace Hollow.Presentation
         {
             pauseGain = Mathf.MoveTowards(pauseGain, paused ? (mix != null ? mix.PauseMusicLevel : 0.18f) : 1f,
                 Time.unscaledDeltaTime * 2.5f);
+            storyGain = Mathf.MoveTowards(storyGain, story ? 0f : 1f, Time.unscaledDeltaTime * (story ? 3f : 1f));
             duck = Mathf.MoveTowards(duck, Time.unscaledTime < duckUntil ? catalog.DuckLevel : 1f, Time.unscaledDeltaTime * 3f);
             foreach (var kv in voices)
                 foreach (var v in kv.Value)

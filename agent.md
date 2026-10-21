@@ -65,6 +65,8 @@
 
 ## وضعیت فعلی
 
+- صدای کات‌سین‌ها (2026-10-21، شاخه‌ی `After-Deadline`): ۲۷ ضبط `Resources/Dialogez/<n>.wav` با فیلد `Voice` هر خط `Dialogue.json` به ترتیب پخش می‌شوند؛ خط تا تمام شدن ضبط (و ۰.۴ ثانیه بعد) جلو نمی‌رود و E آن را رد می‌کند. موسیقی در تمام مدت صحنه‌ی داستان خاموش است (`AudioDirector.SetStoryPlaying`). کاربر گفت ۲۰ تا ۲۸ برای پایان ولی فایل ۲۸ نیست؛ خط نمایشگر بی‌صدا ماند. آغاز ۶ خط و ۵ فایل دارد؛ «هرچی؟» بی‌صدا ماند. در Play mode شنیده نشده.
+
 - صداهای Freesound (2026-10-20): شلیک همه‌ی سلاح‌ها (جز شاتگان انرژی و باتوم)، تیر لیلا، reload، ضربه به بازیکن، شروع و پایان موج، Denied، افتادن سکه، ضربه به لیلا، زوزه‌ی گرگ، گراز، پهپاد R7c و مرگ انسان‌های H1 تا H7 حالا از دو zip تیم هستند (منبع در `ArtSource/Audio_Freesound_2026-10`، فهرست در `docs/CREDITS.md`). **لایسنس هیچ‌کدام بررسی نشده.** کسی هنوز به آن‌ها در بازی گوش نداده. صدای قدم: لیلا (فاز ۱ جنگل `StepSoft`، فاز ۲ بتن `StepHard`) و دشمن‌های انسانی روی صفحه (`StepBoots`)؛ در `AudioDirector.Footsteps`، یک صدا به ازای هر گام (طول گام با سرعت).
 
 - کاهش حجم build (2026-10-19): همه‌ی آرت (Incoming، ArenaArt، Cutscenes) حالا DXT5 crunched است (قبلاً BC7 و سازه‌های نقشه بدون فشرده‌سازی)؛ سازه‌های ۱۲۵۴ پیکسلی با ۱۰۲۴ import می‌شوند. `BuildTool` پوشه‌ی خروجی را قبل از build پاک می‌کند (zip قبلی یک `Hollow_Data` کهنه‌ی ۵۷۶ مگابایتی هم داشت) و ۶۰ asset بزرگ را در `Builds/last_build_assets.txt` می‌نویسد. حجم build تازه هنوز اندازه‌گیری نشده (کاربر خودش build می‌گیرد).
@@ -555,3 +557,8 @@
 
 ### 2026-10-21 — شاخه‌ی After-Deadline
 - به خواست کاربر همه‌ی تغییرات commit‌نشده (اطلس فونت وزیرمتن، `fa.json`، حذف پکیج `com.unity.ai.navigation` از manifest، ترتیب define symbolها، meta تست کات‌سین و `Assets/_Recovery`) در شاخه‌ی تازه‌ی `After-Deadline` (git اسم با فاصله را قبول نمی‌کند) commit و push شد. `main` دست نخورد.
+
+### 2026-10-21 — صدای دیالوگ کات‌سین‌ها و قطع موسیقی
+- کاربر پوشه‌ی `Assets/Dialogez` (۲۷ WAV) را اضافه کرد؛ به `Assets/Resources/Dialogez` منتقل شد تا با `Resources.Load` خوانده شود. `DialogueLine.Voice` (شماره‌ی فایل) در `Dialogue.json`: ۱–۵ Opening، ۶–۱۲ Boss1Entrance+Phase1To2، ۱۳–۱۹ Boss2Entrance+Phase2To3، ۲۰–۲۷ Boss3Entrance+Ending (خط Display بی‌صدا؛ آخرین خط Opening فایل ندارد). طول فایل‌ها و مکث‌هایشان با متن خط‌ها می‌خواند.
+- `DialogueView`: `LineStarted` حالا مسیر Resources را می‌دهد؛ `VoiceBusy` جلوی جلو رفتن خودکار را تا پایان ضبط می‌گیرد. `AudioDirector`: `PlayVoiceLine(path)` (ضبط قبلی را همیشه قطع می‌کند)، `VoicePlaying`، `SetStoryPlaying` (ضریب `storyGain` روی bus موسیقی: خاموش در ۰.۳ ثانیه، برگشت در ۱ ثانیه). `GameSession` هر فریم آن را از `dialogue.Playing` می‌گیرد.
+- تست تازه‌ی `CutsceneTests.EveryRecordingIsFoundAndUsedOnceInOrder`. کامپایل بدون خطا، ۳ تست CutsceneTests پاس. Play mode دیده و شنیده نشده.

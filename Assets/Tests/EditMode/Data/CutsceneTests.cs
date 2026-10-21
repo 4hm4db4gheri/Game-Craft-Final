@@ -45,5 +45,21 @@ namespace Hollow.Tests.Data
                     Assert.Greater(shot.ZoomFrom, 0.99f, line.Shot + " would show the frame's edge");
                 }
         }
+
+        [Test]
+        public void EveryRecordingIsFoundAndUsedOnceInOrder()
+        {
+            var data = DialogueData.Load();
+            int next = 1;
+            foreach (var id in Triggered)
+                foreach (var line in data.Scene(id).Lines)
+                {
+                    if (string.IsNullOrEmpty(line.Voice)) continue;
+                    Assert.AreEqual(next.ToString(), line.Voice, $"{id}: recordings play in order");
+                    Assert.IsNotNull(Resources.Load<AudioClip>("Dialogez/" + line.Voice), "Resources/Dialogez/" + line.Voice);
+                    next++;
+                }
+            Assert.IsNull(Resources.Load<AudioClip>("Dialogez/" + next), $"Dialogez/{next} is never played");
+        }
     }
 }

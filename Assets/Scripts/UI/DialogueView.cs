@@ -13,10 +13,11 @@ namespace Hollow.UI
 
     /// <summary>
     /// Seconds: how long the line stays once fully typed. Shot: the picture from this line on (empty keeps the
-    /// current one). Delay: a silent pause before the line is typed.
+    /// current one). Delay: a silent pause before the line is typed. Voice: the recorded line
+    /// Resources/Dialogez/&lt;Voice&gt;; the line waits for it to end before moving on.
     /// </summary>
     [Serializable]
-    public sealed class DialogueLine { public string Speaker; public string Text; public float Seconds; public string Shot; public float Delay; }
+    public sealed class DialogueLine { public string Speaker; public string Text; public float Seconds; public string Shot; public float Delay; public string Voice; }
 
     [Serializable]
     public sealed class DialogueScene { public string Id; public List<DialogueLine> Lines = new(); }
@@ -75,6 +76,7 @@ namespace Hollow.UI
         const float ShotSeconds = 16f;      // one full push-in
         const float CrossFade = 0.55f;
         const float FadeIn = 0.6f, FadeOut = 0.45f, Dim = 0.25f;
+        const float VoiceGap = 0.4f;        // silence between a recording's end and the next line
 
         sealed class Layer
         {
@@ -104,8 +106,13 @@ namespace Hollow.UI
 
         /// <summary>v0.19 §15: subtitles can be turned off (spoken lines still play).</summary>
         public bool SubtitlesOn = true;
-        /// <summary>A line starts: its id is "&lt;scene&gt;_&lt;n&gt;" (voice file names, docs/VOICE_LINES.md).</summary>
+        /// <summary>
+        /// A line starts: the Resources path of its recording, "Dialogez/&lt;Voice&gt;", or
+        /// "Audio/Voice/&lt;scene&gt;_&lt;n&gt;" when the line names none (docs/VOICE_LINES.md).
+        /// </summary>
         public event Action<string> LineStarted;
+        /// <summary>True while the line's recording is still playing: the line is not moved on by time until it ends.</summary>
+        public Func<bool> VoiceBusy;
         /// <summary>The scene ended or was skipped: stop any spoken line.</summary>
         public event Action LinesStopped;
         /// <summary>A letter was typed (the speaker's style: Human, Machine, Alarm, Radio); "Cut" for a hard cut.</summary>
@@ -334,7 +341,7 @@ namespace Hollow.UI
             cursorImage.color = color;
             line.gameObject.SetActive(SubtitlesOn);
             speakerName.gameObject.SetActive(SubtitlesOn);
-            LineStarted?.Invoke($"{current.Id}_{index + 1}");
+            LineStarted?.Invoke(string.IsNullOrEmpty(l.Voice) ? $"Audio/Voice/{current.Id}_{index + 1}" : "Dialogez/" + l.Voice);
 
             float perSecond = style switch { "Display" => 15f, "Machine" => 40f, "Alarm" => 36f, "Radio" => 30f, _ => 34f };
             nextCharAt = Time.unscaledTime;
@@ -468,6 +475,7 @@ namespace Hollow.UI
                 float pulse = 0.5f + 0.5f * Mathf.Sin(now * 5f);
                 markerImage.color = new Color(cursorImage.color.r, cursorImage.color.g, cursorImage.color.b, 0.35f + 0.65f * pulse);
                 marker.anchoredPosition = new Vector2(110, 48 + 4 * pulse);
+                if (VoiceBusy != null && VoiceBusy()) holdUntil = Mathf.Max(holdUntil, now + VoiceGap); // a beat after the recording ends
                 if (now >= holdUntil) ShowLine(index + 1);
             }
         }

@@ -95,7 +95,8 @@ namespace Hollow.Game
             dialogue.Init(ui, DialogueData.Load());
             operatorLines = Resources.Load<OperatorBubbleLines>("Narrative/OperatorBubbleLines");
             dialogue.SubtitlesOn = GameSettings.Subtitles;
-            dialogue.LineStarted += id => audio.PlayVoiceLine(id);
+            dialogue.LineStarted += path => audio.PlayVoiceLine(path);
+            dialogue.VoiceBusy = () => audio.VoicePlaying;
             dialogue.LinesStopped += () => audio.StopVoice();
             dialogue.Typed += style => audio.PlayTypeTick(style);
 
@@ -113,6 +114,7 @@ namespace Hollow.Game
         void OnDestroy()
         {
             if (app != null) SetHintHold(false);
+            if (audio != null) audio.SetStoryPlaying(false);
             if (app != null && app.Balance != null) app.Balance.Applied -= OnBalanceApplied;
             GameSettings.Changed -= ApplyFeelSettings;
             if (telemetry != null && telemetry.Run.Observed.Outcome == "running")
@@ -242,6 +244,7 @@ namespace Hollow.Game
         void Update()
         {
             if (Sim == null) return;
+            audio.SetStoryPlaying(dialogue.Playing);
             HandleKeys();
 
             var state = app.States.Current;
