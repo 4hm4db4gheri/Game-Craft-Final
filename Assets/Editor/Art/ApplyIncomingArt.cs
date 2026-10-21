@@ -141,7 +141,7 @@ namespace Hollow.EditorTools
                         break;
                     case "ENV" when k.Length > 2:
                         if (states.ContainsKey("ground")) { ground = true; applied++; }
-                        else if (k[2] is "BorderH" or "BorderV" or "Entrance") { ground = true; applied++; } // placed in the scene with the ground
+                        else if (k[2] is "BorderH" or "BorderV") { ground = true; applied++; } // placed in the scene with the ground
                         else if (states.ContainsKey("prop")) applied += Wire($"{PrefabBuilder.Dir}/PH_Prop_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
                         else if (states.Keys.Any(s => s.StartsWith("decor"))) applied += Wire($"{PrefabBuilder.Dir}/PH_Decor_{id}_{k[2]}.prefab", "Body/Shape", Set(key, states));
                         break;

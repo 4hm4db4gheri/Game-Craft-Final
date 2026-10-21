@@ -6,7 +6,6 @@ Reads the untouched files from ArtSource/ArtWave2_Original, so running this agai
     pure key becomes transparent, edge pixels keep their own colour at lower opacity.
   * ExplosiveBeetle: painted motion lines off the body are removed (loose blobs).
   * BatonGuard windup touches the top edge: left as drawn (the cut is under one screen pixel in game).
-  * Entrance props: loose cut-out debris under the drawing is removed.
   * RunnerWolf walk sheet: colours matched to the wave 1 frames, so the walk and the other states look alike.
 
 Run:  python Tools/ArtGen/fix_wave2.py [preview-dir]   then  python Tools/ArtGen/animate.py
@@ -22,8 +21,7 @@ from fix_art import match_colours
 ORIGINALS = os.path.join(L.ROOT, "ArtSource", "ArtWave2_Original")
 
 KEYED = ("ENM_A3_", "ENM_A4_", "ENM_A5_", "ENM_A6_", "ENM_A7c_")
-LOOSE_BITS = ("ENM_A6_ExplosiveBeetle_idle", "ENM_A6_ExplosiveBeetle_move", "ENM_A6_ExplosiveBeetle_windup",
-              "ENV_P1_Entrance_prop", "ENV_P2_Entrance_prop", "ENV_P3_Entrance_prop")
+LOOSE_BITS = ("ENM_A6_ExplosiveBeetle_idle", "ENM_A6_ExplosiveBeetle_move", "ENM_A6_ExplosiveBeetle_windup")
 
 
 def unkey_magenta(img):

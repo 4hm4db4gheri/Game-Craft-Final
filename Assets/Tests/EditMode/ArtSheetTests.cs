@@ -41,8 +41,6 @@ namespace Hollow.Tests
             Assert.AreEqual(("Operator", "P2_ui"), (p.Name, p.State));
             Assert.IsTrue(ArtName.TryParse("ENM_A7c_Spiderling_move_f8.png", out var s));
             Assert.AreEqual(("ENM_A7c", "move", 8), (s.Key, s.State, s.Frames));
-            Assert.IsTrue(ArtName.TryParse("ENV_P2_Entrance_prop.png", out var e));
-            Assert.AreEqual(3f, ArtRules.FrameWidthUnits(e));
         }
 
         [Test]

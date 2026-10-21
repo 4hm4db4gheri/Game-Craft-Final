@@ -341,7 +341,6 @@ namespace Hollow.EditorTools
                     }
                 }
                 EdgeShade(parent, a);
-                PlaceEntrances(parent, a, BorderSprite(i + 1, "Entrance"));
                 parent.gameObject.SetActive(a.Props[i] == null || a.Props[i].gameObject.activeSelf);
             }
         }
@@ -378,42 +377,6 @@ namespace Hollow.EditorTools
             Band("East", o + new Vector2(w - 1 - side / 2, h / 2), h - 2, side, -90, 0.45f);
             Band("South", o + new Vector2(w / 2, 1 + south / 2), w - 2, south, 180, 0.35f);
         }
-
-        /// <summary>
-        /// Where enemies come in (v0.19 §10: the artist's entrances): the phase's entrance art at the middle of the
-        /// north, east and west spawn zones, just inside the wall. Visual only; spawning and collision are unchanged. The south wall
-        /// is the near one, so a gate there would hide the arena.
-        /// </summary>
-        static void PlaceEntrances(Transform parent, ArenaAuthoring a, Sprite sprite)
-        {
-            if (sprite == null) return;
-            foreach (var zone in a.SpawnZones)
-            {
-                Vector2 c = zone.Center;
-                float hx = a.Size.x / 2f, hy = a.Size.y / 2f;
-                (Vector2 at, float scale, bool flip) place = zone.Side switch
-                {
-                    // The camera stops at the arena edge: the gate stands in front of the wall line, fully on screen.
-                    // Drawn 2 units wide (footprint 2 × 1); shown larger so a boar or a guard fits through it.
-                    // Off the middle: the HUD's environment and wave label sits at the top centre of the screen.
-                    SpawnSide.North => (new Vector2(c.x + 4.5f, hy - 3.4f), GateScale, false),
-                    SpawnSide.East => (new Vector2(hx - 2.6f, c.y + 0.5f), GateScale, true),
-                    SpawnSide.West => (new Vector2(-hx + 2.6f, c.y + 0.5f), GateScale, false),
-                    _ => (default, 0f, false),
-                };
-                if (place.scale <= 0) continue;
-                var go = new GameObject($"{EntranceName} {zone.Side}");
-                go.transform.SetParent(parent, false);
-                go.transform.position = place.at;
-                go.transform.localScale = new Vector3(place.scale, place.scale, 1);
-                var r = go.AddComponent<SpriteRenderer>();
-                r.sprite = sprite;
-                r.flipX = place.flip;
-            }
-        }
-
-        public const string EntranceName = "Entrance";
-        const float GateScale = 1.6f;
 
         static void Border(Transform parent, string side, Sprite sprite, Vector2 bottomLeft, int order)
         {
